@@ -12,4 +12,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio;
  */
 public enum OvineType {
     SHEEP, RAM, LAMB;
+    
+    static OvineType getDefaultOvineType(){
+        return SHEEP;
+    }
 }

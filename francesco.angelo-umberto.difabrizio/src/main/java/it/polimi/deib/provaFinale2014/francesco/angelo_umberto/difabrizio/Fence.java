@@ -10,18 +10,14 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio;
  *
  * @author Francesco
  */
-public class Ovine {
-    private OvineType type;
+public class Fence {
+    private boolean finalFence;
     
-    public void setOvineType(OvineType type){
-        this.type = type;
+    public boolean isFinal(){
+        return finalFence;
     }
     
-    public Ovine(OvineType type){
-        this.type = type;
-    }
-    
-    public Ovine(){
-        this.type = OvineType.getDefaultOvineType();
+    public void setFinal(){
+        finalFence = true;
     }
 }

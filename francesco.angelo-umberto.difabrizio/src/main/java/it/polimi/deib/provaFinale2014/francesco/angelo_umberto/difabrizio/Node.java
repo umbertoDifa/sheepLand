@@ -13,9 +13,30 @@ import java.util.ArrayList;
  * @author Francesco
  */
 abstract class Node { 
-    public ArrayList<Node> neighbourNodes;
-    
-    void connectTo(Node node){
-        neighbourNodes.add(node);
+    private ArrayList<Node> neighbourNodes;
+
+    public Node() {
+        this.neighbourNodes = new ArrayList<Node>();
     }
+    /**
+     * aggiunge un link bidirezionale tra due nodi
+     * @param node 
+     */
+    public void connectTo(Node node){
+        this.addNeighbour(node);
+        node.addNeighbour(this);
+    }
+    /**
+     * aggiunge un link monodirezionale verso node
+     * @param node 
+     */
+    private void addNeighbour(Node node){
+        this.neighbourNodes.add(node);
+    }
+
+    public ArrayList<Node> getNeighbourNodes() {
+        return neighbourNodes;
+    }
+ 
+    
 }

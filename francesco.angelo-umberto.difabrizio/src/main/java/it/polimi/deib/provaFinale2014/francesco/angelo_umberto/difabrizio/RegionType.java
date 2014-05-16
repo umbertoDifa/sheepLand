@@ -11,7 +11,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio;
  * @author Francesco
  */
 public enum RegionType {
-    MOUNTAIN, HILL, COUNTRYSIDE, PLAIN, LAKE, DESERT, SHEEP, SHEEPSBURG;
+    MOUNTAIN, HILL, COUNTRYSIDE, PLAIN, LAKE, DESERT, SHEEPSBURG;
     
     static RegionType getDefaultRegionType(){
         return MOUNTAIN;

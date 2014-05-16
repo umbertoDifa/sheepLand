@@ -10,18 +10,20 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio;
  *
  * @author Francesco
  */
-public class Ovine {
-    private OvineType type;
-    
-    public void setOvineType(OvineType type){
-        this.type = type;
+public class Wallet {
+    private int amount;
+    private final int INITIAL_AMOUNT = 20;
+            
+    public Wallet(){
+        amount = INITIAL_AMOUNT;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
     
-    public Ovine(OvineType type){
-        this.type = type;
-    }
-    
-    public Ovine(){
-        this.type = OvineType.getDefaultOvineType();
-    }
 }
