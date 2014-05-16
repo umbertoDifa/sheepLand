@@ -24,7 +24,7 @@ public class Map {
     }
     
     private void addNode(Node node){
-        map.add(node);
+
     }
     
   //TODO: hardcode mapping create node+create links
