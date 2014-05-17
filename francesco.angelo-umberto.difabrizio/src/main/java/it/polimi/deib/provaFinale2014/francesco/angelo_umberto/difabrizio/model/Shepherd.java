@@ -35,4 +35,13 @@ class Shepherd {
     public void moveTo(Street street){
         this.setStreet(street);
     }
+    
+	public Wallet getWallet() {
+		return wallet;
+	}
+
+	public Street getStreet() {
+		return street;
+	}
+    
 }

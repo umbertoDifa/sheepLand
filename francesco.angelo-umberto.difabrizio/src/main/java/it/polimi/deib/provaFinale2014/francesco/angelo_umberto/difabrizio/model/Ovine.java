@@ -24,4 +24,12 @@ public class Ovine {
     public Ovine(){
         this.type = OvineType.getDefaultOvineType();
     }
+
+	public OvineType getType() {
+		return type;
+	}
+
+	public void setType(OvineType type) {
+		this.type = type;
+	}
 }

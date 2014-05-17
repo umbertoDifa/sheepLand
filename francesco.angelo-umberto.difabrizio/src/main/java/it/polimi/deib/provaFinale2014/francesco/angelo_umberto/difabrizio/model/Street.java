@@ -6,7 +6,11 @@ public class Street extends Node {
     private Fence fence;
     private Shepherd shepherd;
     
-    /**
+    public Street(int value) {
+		super();
+		this.value = value;
+	}
+	/**
      * 
      * @return vero se e solo se la strada è occupata da un recinto
      */
@@ -27,5 +31,13 @@ public class Street extends Node {
     public boolean isFree(){
         return !(this.hasFence()||this.hasSheeherd());
     }
+    
+	public int getValue() {
+		return value;
+	}
+	public void setValue(int value) {
+		this.value = value;
+	}
+    
 
 }
