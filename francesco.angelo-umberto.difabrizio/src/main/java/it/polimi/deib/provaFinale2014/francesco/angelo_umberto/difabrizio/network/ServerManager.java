@@ -24,21 +24,20 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
-    //constanti
-    private final int MAX_NUMBER_OF_GAMES;
-    private final int MAX_CLIENTS_FOR_GAME;
-    private final int MIN_CLIENTS_FOR_GAME; 
-    private final int MAX_NUMBER_OF_CLIENT_SERVER_CONNECTIONS_AVAILABLE;
-    private final int SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN = 10; //puramente indicativo, tanto ho messo threadcore = al massimo dei thread attivi
+//    private final int SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN = 10; 
+    //puramente indicativo, tanto ho messo threadcore = al massimo dei thread attivi
     //serve solo con ThreadPoolExecutor
 
-    private final int MAX_QUEUED_GAMES = 2;
-    private final int MILLISECONDS_IN_SECONDS = 1000;
-    private final int SECONDS_BEFORE_ACCEPT_TIMEOUT; //modifica qui per cambiare il timeout della accept per la connessione ad una partita
-    private final int SECONDS_BEFORE_REFRESH_NUMBER_OF_GAMES; //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
-    private final int TIMEOUT_REFRESH_NUMBER_OF_GAMES;
-    private final int TIMEOUT_ACCEPT;
+//    private final int MAX_QUEUED_GAMES = 2; //serve solo per ThreadPoolExecutor
+    
+    private final int secondsBeforeAcceptTimeout; //modifica qui per cambiare il timeout della accept per la connessione ad una partita
+    private final int secondsBeforeRefreshNumberOfGamesActive; //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
+    private final int timeoutRefreshNumberOfGames;
+    private final int timeoutAccept;
+    
+    //constanti generiche
     private final int NUMBER_OF_TIMER = 1;
+    private final int MILLISECONDS_IN_SECONDS = 1000;
 
     //costanti di default per i costruttori
     private static final int DEFAULT_TIMEOUT_ACCEPT = 10;
@@ -49,20 +48,21 @@ public class ServerManager {
 
     //variabili
     private final int port;
+    private final int maxNumberOfGames;
+    private final int maxClientsForGame;
+    private final int minClientsForGame;
     static int activatedGames = 0; //variabile che tiene conto delle partite avviate, modificabile da ogni thread
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,
                          int minClientsForGame, int acceptTimeout,
                          int refreshTimeout) {//TODO: queste qua sotto non sono costanti
-        this.MAX_NUMBER_OF_GAMES = maxGames;
-        this.MAX_CLIENTS_FOR_GAME = maxClientsForGame;
-        this.MIN_CLIENTS_FOR_GAME = minClientsForGame;
-        //FIXME: mi sembra che la costante sotto non venga mai usata
-        this.MAX_NUMBER_OF_CLIENT_SERVER_CONNECTIONS_AVAILABLE = MAX_NUMBER_OF_GAMES * MAX_CLIENTS_FOR_GAME;
-        this.SECONDS_BEFORE_REFRESH_NUMBER_OF_GAMES = refreshTimeout;
-        this.SECONDS_BEFORE_ACCEPT_TIMEOUT = acceptTimeout;
-        this.TIMEOUT_ACCEPT = SECONDS_BEFORE_ACCEPT_TIMEOUT * MILLISECONDS_IN_SECONDS;
-        this.TIMEOUT_REFRESH_NUMBER_OF_GAMES = SECONDS_BEFORE_REFRESH_NUMBER_OF_GAMES * MILLISECONDS_IN_SECONDS;
+        this.maxNumberOfGames = maxGames;
+        this.maxClientsForGame = maxClientsForGame;
+        this.minClientsForGame = minClientsForGame;
+        this.secondsBeforeRefreshNumberOfGamesActive = refreshTimeout;
+        this.secondsBeforeAcceptTimeout = acceptTimeout;
+        this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
+        this.timeoutRefreshNumberOfGames = secondsBeforeRefreshNumberOfGamesActive * MILLISECONDS_IN_SECONDS;
         //setta la porta del server 
         this.port = port;
     }
@@ -129,11 +129,11 @@ public class ServerManager {
 
         while (true) {
             try {
-                clientSockets = timedOutAccept(serverSocket, TIMEOUT_ACCEPT,
-                        MAX_CLIENTS_FOR_GAME);
+                clientSockets = timedOutAccept(serverSocket, timeoutAccept,
+                        maxClientsForGame);
                 //a questo punto ho la lista dei client per una partita
-                if (clientSockets.size() >= MIN_CLIENTS_FOR_GAME) {
-                    executor.submit(new ServerThread(clientSockets, MIN_CLIENTS_FOR_GAME));//TODO: ripensare chi gestisce il minimo per la partita
+                if (clientSockets.size() >= minClientsForGame) {
+                    executor.submit( new ServerThread(clientSockets) );//TODO: ripensare chi gestisce il minimo per la partita
                     System.out.println("Partita avviata.");
                     activatedGames++; //essendo static questa variabile potra essere decrementata
                     //dai thread appena prima di terminare
@@ -144,7 +144,7 @@ public class ServerManager {
                     System.out.print(
                             "Non ci sono abbastanza client per una partita.");
                 }
-                while (activatedGames >= MAX_NUMBER_OF_GAMES) { //finchè un thread non mi cambia il valore di activatedGames
+                while (activatedGames >= maxNumberOfGames) { //finchè un thread non mi cambia il valore di activatedGames
                     //messaggio di rifiuto delle connessioni
                     this.handleClientRejection(serverSocket);
 
@@ -165,7 +165,7 @@ public class ServerManager {
     private void handleClientRejection(ServerSocket server) {
         Socket rejectedSocket = new Socket(); //controllo se qualche client vuole connettersi
         try {
-            server.setSoTimeout(TIMEOUT_REFRESH_NUMBER_OF_GAMES); //imposto timer per accept
+            server.setSoTimeout(timeoutRefreshNumberOfGames); //imposto timer per accept
             rejectedSocket = server.accept();// lo accetto
             PrintWriter socketOut = new PrintWriter(rejectedSocket.
                     getOutputStream());//creo l'output stream verso quel client
@@ -190,9 +190,9 @@ public class ServerManager {
             try {
                 clientSockets.add(serverSocket.accept());//aspetto il primo client
                 //avvio il thread del timer
-                future = timerExecutor.submit(new TimerCallable(TIMEOUT_ACCEPT));
+                future = timerExecutor.submit(new TimerCallable(timeoutAccept));
                 //inizio la lettura di max 6 client
-                for (int i = 0; i < MAX_CLIENTS_FOR_GAME - 1; i++) {
+                for (int i = 0; i < maxClientsForGame - 1; i++) {
                     clientSockets.add(serverSocket.accept()); //aggiungo man mano i client che si connetton
                 }
                 //se arrivo qui tutti i client si sono connessi prima del timeout quindi uccido il thread del timer
