@@ -9,8 +9,8 @@ public class Map {
  * crea mappa e istanzia i due array di nodi, uno per strade, uno per regioni, secondo le dimensioni ufficiali del gioco
  */
     public Map() {
-        this.streets = new Node[GameConstants.NUM_STREETS.getValue()];
-        this.regions = new Node[GameConstants.NUM_REGIONS.getValue()];
+        this.streets = new Street[GameConstants.NUM_STREETS.getValue()];
+        this.regions = new Region[GameConstants.NUM_REGIONS.getValue()];
     }
     
 /**
@@ -258,11 +258,11 @@ public class Map {
 	    this.regions[j] = new Region(RegionType.SHEEPSBURG);	
 	}
 
-    public Node[] getStreets() {
-        return streets;
+    public Street[] getStreets() {
+        return (Street[])streets;
     }
 
-    public Node[] getRegions() {
-        return regions;
+    public Region[] getRegions() {
+        return (Region[])regions;
     }
 }

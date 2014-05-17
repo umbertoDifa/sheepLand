@@ -24,4 +24,7 @@ public class Region extends Node {
         return myOvines;
     }
     
+    public void addOvine(Ovine ovine){
+        this.myOvines.add(ovine);
+    }
 }

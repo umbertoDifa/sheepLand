@@ -20,9 +20,11 @@ public class Ovine {
     public Ovine(OvineType type){
         this.type = type;
     }
-    
+    /**
+     * per default l'oggetto ovino viene creato con un tipo casuale
+     */
     public Ovine(){
-        this.type = OvineType.getDefaultOvineType();
+        this.type = OvineType.getRandomOvineType();
     }
 
 	public OvineType getType() {

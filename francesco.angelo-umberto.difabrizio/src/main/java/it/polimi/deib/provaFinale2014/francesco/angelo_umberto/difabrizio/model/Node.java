@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author Francesco
  */
-abstract class Node { 
+public abstract class Node { 
     private ArrayList<Node> neighbourNodes;
 
     public Node() {
