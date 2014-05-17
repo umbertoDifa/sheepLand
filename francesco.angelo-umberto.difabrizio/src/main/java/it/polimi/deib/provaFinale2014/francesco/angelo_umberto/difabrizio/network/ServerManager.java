@@ -1,61 +1,113 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * manager che tiene in vita il server e di volta in volta avvia un thread per
- * gestire una nuova partita
+ * gestire una nuova partita. implementa un timeout(secondi) di attesa per le
+ * connessioni ad ogni partita e un timeout(secondi) per il refresh delle numero
+ * delle partite garantendo un massimo di partite avviate.
  *
  * @author francesco.angelo-umberto.difabrizio
  */
 public class ServerManager {
 
     //constanti
-    private final int MAX_NUMBER_OF_GAMES = 3;
-    private final int MAX_CLIENTS_FOR_GAME = 6;
-    private final int MIN_CLIENTS_FOR_GAME = 2;
+    private final int MAX_NUMBER_OF_GAMES;
+    private final int MAX_CLIENTS_FOR_GAME;
+    private final int MIN_CLIENTS_FOR_GAME; 
     private final int MAX_NUMBER_OF_CLIENT_SERVER_CONNECTIONS_AVAILABLE;
-    private final int SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN = 10; //TODO: boh, puramente indicativo, tanto ho messo threadcore = al massimo dei thread attivi
+    private final int SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN = 10; //puramente indicativo, tanto ho messo threadcore = al massimo dei thread attivi
+    //serve solo con ThreadPoolExecutor
 
     private final int MAX_QUEUED_GAMES = 2;
-
-    private final int SECONDS_BEFORE_ACCEPT_TIMEOUT = 20;
     private final int MILLISECONDS_IN_SECONDS = 1000;
-    private final int TIMEOUT_ACCEPT = SECONDS_BEFORE_ACCEPT_TIMEOUT * MILLISECONDS_IN_SECONDS; //TODO: controlla sto dato
+    private final int SECONDS_BEFORE_ACCEPT_TIMEOUT; //modifica qui per cambiare il timeout della accept per la connessione ad una partita
+    private final int SECONDS_BEFORE_REFRESH_NUMBER_OF_GAMES; //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
+    private final int TIMEOUT_REFRESH_NUMBER_OF_GAMES;
+    private final int TIMEOUT_ACCEPT;
     private final int NUMBER_OF_TIMER = 1;
+
+    //costanti di default per i costruttori
+    private static final int DEFAULT_TIMEOUT_ACCEPT = 10;
+    private static final int DEFAULT_TIMEOUT_REFRESH = 10;
+    private static final int DEFAULT_MIN_CLIENTS = 2;
+    private static final int DEFAULT_MAX_GAMES = 3;
+    private static final int DEFAULT_MAX_CLIENTS_FOR_GAME = 6;
+
     //variabili
     private final int port;
-    static int activatedGames = 0;
+    static int activatedGames = 0; //variabile che tiene conto delle partite avviate, modificabile da ogni thread
 
-    //TODO: overlodare il server manager per avere come parametri MAX_NUMBER_OF_GAMES e MAX_NUMBER_OF_CLIENTS_FOR_GAME
-    public ServerManager(int port) {
+    public ServerManager(int port, int maxGames, int maxClientsForGame,
+                         int minClientsForGame, int acceptTimeout,
+                         int refreshTimeout) {//TODO: queste qua sotto non sono costanti
+        this.MAX_NUMBER_OF_GAMES = maxGames;
+        this.MAX_CLIENTS_FOR_GAME = maxClientsForGame;
+        this.MIN_CLIENTS_FOR_GAME = minClientsForGame;
+        //FIXME: mi sembra che la costante sotto non venga mai usata
         this.MAX_NUMBER_OF_CLIENT_SERVER_CONNECTIONS_AVAILABLE = MAX_NUMBER_OF_GAMES * MAX_CLIENTS_FOR_GAME;
-        //il costruttore setta la porta del server 
+        this.SECONDS_BEFORE_REFRESH_NUMBER_OF_GAMES = refreshTimeout;
+        this.SECONDS_BEFORE_ACCEPT_TIMEOUT = acceptTimeout;
+        this.TIMEOUT_ACCEPT = SECONDS_BEFORE_ACCEPT_TIMEOUT * MILLISECONDS_IN_SECONDS;
+        this.TIMEOUT_REFRESH_NUMBER_OF_GAMES = SECONDS_BEFORE_REFRESH_NUMBER_OF_GAMES * MILLISECONDS_IN_SECONDS;
+        //setta la porta del server 
         this.port = port;
     }
 
+    public ServerManager(int port, int maxGames, int maxClientsForGame,
+                         int minClientsForGame) {
+        this(port, maxGames, maxClientsForGame, minClientsForGame,
+                DEFAULT_TIMEOUT_ACCEPT, DEFAULT_TIMEOUT_REFRESH);
+    }
+
+    public ServerManager(int port, int maxGames, int maxClientsForGame) {
+        this(port, maxGames, maxClientsForGame, DEFAULT_MIN_CLIENTS);
+    }
+
+    public ServerManager(int port) { //default constructor
+        this(port, DEFAULT_MAX_GAMES, DEFAULT_MAX_CLIENTS_FOR_GAME);
+    }
+
+    /**
+     * crea un socket server e avvia handleClientRequest che gestirà le
+     * connessioni
+     */
     public void startServer() {
         ServerSocket serverSocket;
         //cerco di tirare su il server
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            //TODO: vedere come esce sto errore
             System.err.println(e.getMessage()); // porta non disponibile
             return;
         }
-        System.out.println("Server ready");
+        System.out.println("Server pronto");
         this.handleClientRequest(serverSocket);
     }
 
+    /**
+     * si occupa di gestire le connessioni al serverSocket secondo la politica
+     * del caso. Accetta un massimo di client per partita specificato nelle
+     * costanti della classe accetta un massimo di partite specificato nelle
+     * costanti della classe per ogni partita accettata avvia un thread che si
+     * occupa di gestirla quando è pieno imposta il rifiuto delle connessioni
+     * gestite col metodo handleClientRejection
+     *
+     * @param serverSocket
+     */
     private void handleClientRequest(ServerSocket serverSocket) {
         ArrayList<Socket> clientSockets;
         ExecutorService executor = Executors.newCachedThreadPool();
@@ -74,22 +126,28 @@ public class ServerManager {
 //                        new ArrayBlockingQueue<Runnable>(MAX_QUEUED_GAMES),
 //                        threadFactory,
 //                        rejectionHandler);
+
         while (true) {
             try {
                 clientSockets = timedOutAccept(serverSocket, TIMEOUT_ACCEPT,
                         MAX_CLIENTS_FOR_GAME);
                 //a questo punto ho la lista dei client per una partita
                 if (clientSockets.size() >= MIN_CLIENTS_FOR_GAME) {
-                    executor.submit(new ServerThread(clientSockets));
+                    executor.submit(new ServerThread(clientSockets, MIN_CLIENTS_FOR_GAME));//TODO: ripensare chi gestisce il minimo per la partita
+                    System.out.println("Partita avviata.");
                     activatedGames++; //essendo static questa variabile potra essere decrementata
                     //dai thread appena prima di terminare
 
-                    //TODO: serverExecutorPool.submit( new ServerThread(clientSockets) );
+                    //serverExecutorPool.submit( new ServerThread(clientSockets) );
                     //sta riga serve se uso la parte commentata sopra come executor             
+                } else {
+                    System.out.print(
+                            "Non ci sono abbastanza client per una partita.");
                 }
-                while (activatedGames >= MAX_NUMBER_OF_GAMES) {
-                    //TODO: messaggio di rifiuto delle connessioni
-                    //finchè un thread non mi cambia il valore di activatedGames
+                while (activatedGames >= MAX_NUMBER_OF_GAMES) { //finchè un thread non mi cambia il valore di activatedGames
+                    //messaggio di rifiuto delle connessioni
+                    this.handleClientRejection(serverSocket);
+
                 }
             } catch (IOException e) {
                 break; //entro qui quando il serverSocket è chiuso
@@ -98,33 +156,57 @@ public class ServerManager {
         executor.shutdown();
     }
 
-    private void handleClientRequestSecondVersion(ServerSocket serverSocket) {//TODO:completamente non funzionante
+    /**
+     * se arriva una connessione al server entro un timeout tale connessione
+     * viene rifiutata avvisando il client con un messaggio
+     *
+     * @param server
+     */
+    private void handleClientRejection(ServerSocket server) {
+        Socket rejectedSocket = new Socket(); //controllo se qualche client vuole connettersi
+        try {
+            server.setSoTimeout(TIMEOUT_REFRESH_NUMBER_OF_GAMES); //imposto timer per accept
+            rejectedSocket = server.accept();// lo accetto
+            PrintWriter socketOut = new PrintWriter(rejectedSocket.
+                    getOutputStream());//creo l'output stream verso quel client
+            socketOut.println("Il server è pieno, riprova più tardi");
+        } catch (SocketTimeoutException e) {
+            //refresh activatedGames
+            return;
+        } catch (IOException e) {
+            System.err.println(e.getMessage()); // errore di connessione col client
+            return;
+        }
+    }
+
+    private void handleClientRequestSecondVersion(ServerSocket serverSocket) {//FIXME:completamente non funzionante
         ArrayList<Socket> clientSockets = new ArrayList<Socket>();
         ExecutorService serverExecutor = Executors.newCachedThreadPool();
         Future future; // variabile che servirà a collezionare l'exception lanciata dal timer
-        ExecutorService timerExecutor = Executors.newFixedThreadPool(NUMBER_OF_TIMER);
-        
+        ExecutorService timerExecutor = Executors.newFixedThreadPool(
+                NUMBER_OF_TIMER);
+
         while (true) {
             try {
-                clientSockets.add( serverSocket.accept() );//aspetto il primo client
+                clientSockets.add(serverSocket.accept());//aspetto il primo client
                 //avvio il thread del timer
-                future = timerExecutor.submit(new TimerCallable(TIMEOUT_ACCEPT));   
+                future = timerExecutor.submit(new TimerCallable(TIMEOUT_ACCEPT));
                 //inizio la lettura di max 6 client
-                for(int i = 0; i < MAX_CLIENTS_FOR_GAME - 1; i++){
-                clientSockets.add( serverSocket.accept() ); //aggiungo man mano i client che si connetton
+                for (int i = 0; i < MAX_CLIENTS_FOR_GAME - 1; i++) {
+                    clientSockets.add(serverSocket.accept()); //aggiungo man mano i client che si connetton
                 }
                 //se arrivo qui tutti i client si sono connessi prima del timeout quindi uccido il thread del timer
                 timerExecutor.shutdownNow();
-                 try{
-                future.get();
-                }catch (InterruptedException e){
+                try {
+                    future.get();
+                } catch (InterruptedException e) {
                     //TODO: gestire eccezione dovuta al kill del timer sopra
                 }
                 //controllo quanti client ho rimendiato
                 //eventualmente ripeto il tutto
             } catch (IOException e) {
                 break; //entro qui se il serverSocket viene chiuso
-            } catch (ExecutionException e){
+            } catch (ExecutionException e) {
                 //TODO: gestire eccezione che mi arriva dal timerCallable
                 //causata dal timer stesso
             }
@@ -150,6 +232,7 @@ public class ServerManager {
         long startTime, endTime;
 
         try {
+            server.setSoTimeout(0); //imposto timeout infinito
             socketList.add(server.accept()); // aspetto il primo client
             server.setSoTimeout(timeout); // imposto il primo timeout intero
             startTime = System.currentTimeMillis(); //prendo il timestamp del primo client
@@ -159,14 +242,55 @@ public class ServerManager {
                 if (timeout - (endTime - startTime) > 0) //se ho ancora tempo
                 {
                     server.setSoTimeout((int) (timeout - (endTime - startTime))); //aggiorno il timeout sottraendo il tempo aspettato per l'isemo clientù
-                } //TODO: forse alla riga sopra ci potrebbe essere un errore per la sottrazione fra int e long anche se la differenza dei long dovrebbe essere molto piccola
+                } //TODO: forse alla riga sopra ci potrebbe essere un errore per la sottrazione fra int e long anche se la differenza dei long dovrebbe essere molto piccola, test?
                 else {
                     break; //altrimenti finisco
                 }
             }
         } catch (SocketTimeoutException e) {
+            System.out.println("Timeout connessioni!");
+            server.setSoTimeout(0); //Resetto il timeout ad un tempo infinito, così il prossimo gruppo di client non avrà il timer
+            //per il primo così come succede la prima volta
             return socketList;
         }
         return socketList;
+    }
+
+    /**
+     * puramete un metodo di prova per testare la connessione con il client
+     */
+    public void provaServer() {
+        ServerSocket serverSocket;
+        //cerco di tirare su il server
+        try {
+            serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            System.err.println(e.getMessage()); // porta non disponibile
+            return;
+        }
+        System.out.println("Server ready");
+        Socket socketProva = new Socket();
+
+        try {
+            socketProva = serverSocket.accept();
+
+            System.out.println("ClientConnected");
+            Scanner socketIn = new Scanner(socketProva.getInputStream());//input stream
+            PrintWriter socketOut = new PrintWriter(socketProva.
+                    getOutputStream());//outputstream
+            String clientLine = socketIn.nextLine();
+            System.out.println("Mesaggio ricevuto " + clientLine);
+            socketOut.println(clientLine);
+            socketOut.flush();
+            System.out.println("Messsaggio inviato indietro");
+        } catch (IOException ex) {
+            Logger.getLogger(ServerManager.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void main(String[] args) {
+        ServerManager server = new ServerManager(5050);
+        server.startServer();
     }
 }

@@ -11,6 +11,6 @@ public class ClientRejectionHandler implements RejectedExecutionHandler{
     
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-       //TODO: impostare cosa succede quando un thread viene rifiutato
+       //impostare cosa succede quando un thread viene rifiutato
     }
 }
