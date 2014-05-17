@@ -6,6 +6,8 @@
 
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Francesco
@@ -13,9 +15,10 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 public class Shepherd {
     private Street street;
     private Wallet wallet;
+    private ArrayList<Card> myCards = new ArrayList<Card>();
     
     public Shepherd(){
-        wallet = new Wallet();      
+        wallet = new Wallet();
     }
 /**
  * Modifica la strada che occupa il pastore. privato in quanto è invocato da moveTo
@@ -42,6 +45,10 @@ public class Shepherd {
 
 	public Street getStreet() {
 		return street;
+	}
+	
+	public void addCard(Card card){
+		this.myCards.add(card);
 	}
     
 }

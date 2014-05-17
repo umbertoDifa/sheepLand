@@ -1,19 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
-/**
- *
- * @author Francesco
- */
+
 public enum RegionType {
-    MOUNTAIN, HILL, COUNTRYSIDE, PLAIN, LAKE, DESERT, SHEEPSBURG;
+	MOUNTAIN(0), HILL(1), COUNTRYSIDE(2), PLAIN(3), LAKE(4), DESERT(5), SHEEPSBURG(6);
+    private int id;
+	
+    RegionType(int id){
+    	this.id = id;
+    }
     
-    static RegionType getDefaultRegionType(){
+    public static RegionType getDefaultRegionType(){
         return MOUNTAIN;
     }
+    
+    public int getIndex(){
+    	return id;
+    }
+
 }
