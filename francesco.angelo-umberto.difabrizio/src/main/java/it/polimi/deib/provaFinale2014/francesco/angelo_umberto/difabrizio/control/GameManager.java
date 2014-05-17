@@ -3,9 +3,9 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -70,16 +70,32 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * chiede ad ogni giocatore dove posizionare il proprio pastore
      */
     private void setUpShepherds() {
+        String stringedStreet;
+        String errorString = "Strada già occupata, prego riprovare:";
+        Street chosenStreet;
         for (int i = 0; i < this.playersNumber; i++) {
-            String answer = this.server.talkTo(this.playersHashCode[i],
-                    "In quale regione vuoi posizionare il pastore?");
+            //ciclo che chiede la strada per un pastore ogni volta che questa risulta già occupata
+            while (true) {
+                try {
+                    stringedStreet = this.server.talkTo(this.playersHashCode[i],
+                            "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
+                    chosenStreet = convertStringToStreet(stringedStreet); //traducila in oggetto steet
+                    if ( !isStreetFree(chosenStreet) ) { //se la strada è occuapata
+                        throw new Exception(errorString); //solleva eccezione
+                    }
+                    break;
+                } catch (Exception e) {
+                    this.server.sendTo(this.playersHashCode[i], e.getMessage());//manda il messaggio di errore al client
+                }
+            }
             //prendi il pastore dell'iesimo giocatore e spostalo sulla strada 
             //corrispondente all'indice dell'array delle strade ottenuto
             //convertendo la risposta ottenuta in int
-            this.players.get(i).getShepherd().moveTo(map.getStreets()[Integer.
-                    parseInt(answer)]);
-            this.server.sendTo(this.playersHashCode[i], "Pastore posizionato");
+            this.players.get(i).getShepherd().moveTo(chosenStreet);
+            this.server.sendTo(this.playersHashCode[i],
+                    "Pastore posizionato");
         }
+
     }
 
     private void setUpShift() {
@@ -98,5 +114,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
      */
     private void setUpSocketPlayerMap() {
         this.server.setUpSocketPlayerMap(playersHashCode);
+    }
+
+    private boolean isStreetFree(Street street) {
+        return street.isFree();
+    }
+
+    private Street convertStringToStreet(String street) {
+        return map.getStreets()[Integer.parseInt(street)];
     }
 }

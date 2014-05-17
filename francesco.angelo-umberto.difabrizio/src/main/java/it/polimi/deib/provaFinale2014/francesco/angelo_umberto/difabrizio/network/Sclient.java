@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 /**
- *classe del client visto dal server, contiene il socket e gli stream per parlarci
+ *Classe del client visto dal server, contiene il socket e gli stream per parlarci
  * @author francesco.angelo-umberto.difabrizio
  */
 public class Sclient {
@@ -24,12 +24,17 @@ public class Sclient {
             System.err.println(ex.getMessage()); //TODO: provalo
         }
     }
-    
+    /**
+     * Manda un messaggio al client attraverso il proprio socket
+     * @param message 
+     */
     public void send(String message){
         toClient.println(message);
         toClient.flush();
     }
-    
+    /**
+     * Riceve un messaggio dal client
+    */
     public String receive(){
        return fromClient.nextLine();
     }
