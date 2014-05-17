@@ -257,4 +257,12 @@ public class Map {
 	        this.regions[j] = new Region(RegionType.PLAIN);
 	    this.regions[j] = new Region(RegionType.SHEEPSBURG);	
 	}
+
+    public Node[] getStreets() {
+        return streets;
+    }
+
+    public Node[] getRegions() {
+        return regions;
+    }
 }
