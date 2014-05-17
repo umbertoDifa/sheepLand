@@ -13,10 +13,21 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 public class Card {
     private int value;
     private int marketValue;
-    private boolean initial;
+    private boolean initial; //TODO: serve? forse no perchè le carte iniziali le
+                            //crea il GameManager...poi le tratto normalmente...
+    private RegionType type;
 
+    public RegionType getType() {
+        return type;
+    }
+    
     public int getValue() {
         return value;
+    }
+
+    public Card(int value, RegionType type) {
+        this.value = value;
+        this.type = type;
     }
 
     public void setValue(int value) {
@@ -31,11 +42,11 @@ public class Card {
         this.marketValue = marketValue;
     }
 
-    public boolean isInitial() {
+    public boolean isInitial() { //TODO: come sopra per la var initial
         return initial;
     }
 
-    public void setInitial() {
+    public void setInitial() {//TODO: tambem come sopra
         this.initial = true;
     }
    
