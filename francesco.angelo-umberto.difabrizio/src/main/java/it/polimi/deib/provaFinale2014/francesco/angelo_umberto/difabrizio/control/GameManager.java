@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
@@ -85,8 +86,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
         for (Region reg : region) { //per ogni regione
             reg.addOvine(new Ovine());//aggiungi un ovino (a caso)          
         }
-        //TODO: devo posizionare lupo e pecora nera sheepsburg
+        //posiziono lupo e pecora nera a sheepsburg
         map.getBlackSheep().setAt(map.getRegions()[SHEEPSBURG_ID]);
+        map.getWolf().setAt(map.getRegions()[SHEEPSBURG_ID]);
     }
 
     /**
@@ -184,6 +186,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     public void startGame() {
         this.SetUpGame();
         this.playTheGame();
+        //gameFinished
     }
 
     private void executeRounds() {
@@ -202,19 +205,47 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 currentPlayer %= this.playersNumber;
                 //controllo se ho il fine giro per muovere il lupo
                 if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
-                    //TODO:muovo il lupo e se ci sono pecore ne mangio una                   
+                    //calcolo su quale strada mi vorrebbe far passare il dado sapendo di partire dalla regione del lupo
+                    Street potentialWalkthroughStreet = this.map.getStreetByValue(
+                            this.map.getWolf().getMyRegion(),
+                            Dice.getRandomValue());
+                    try {
+                        if(potentialWalkthroughStreet != null){
+                        //cerco di farcelo passare
+                        this.map.getWolf().moveThrough(
+                                potentialWalkthroughStreet);
+                        //se tutto ok
+                        //TODO:broadcast lupo mosso
+                        }
+                        else throw new CannotMoveWolfException("La strada non esiste.");
+                    } catch (CannotMoveWolfException ex) {//se non può avviso e lo lascio dov'è
+                        //TODO: brodcast lupo can't move
+                    }
                 }
             }
         }//while
-        //fine gioco
+        //fine round
     }
 
     private void executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
-
-        //TODO:muovi la pecora nera
+        //TODO SUPERIMPORTANTE: il tentativo di muovere la pecora nera qua sotto
+        //è praticamente identico a quelle del lupo....metodino?
+        //cerca la strada che potrebbe attraversare la pecora nera
+        try {
+        Street potentialWalkthroughStreet = this.map.getStreetByValue(
+                this.map.getBlackSheep().getMyRegion(), Dice.getRandomValue());
+        if(potentialWalkthroughStreet != null){
+         //cerco di far passare la pecora nera
+            this.map.getBlackSheep().moveThrough(potentialWalkthroughStreet);
+            //tutto ok
+            //TODO:broadcast pecora mossa
+        }else throw new CannotMoveBlackSheepException("La strada non esiste");
+        } catch (CannotMoveBlackSheepException ex) {
+            //TODO: broadcast sheep stays in place
+        }
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
-            try {               
+            try {
                 this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
             } catch (ActionNotFoundException ex) {
                 this.server.sendTo(playersHashCode[i], ex.getMessage());

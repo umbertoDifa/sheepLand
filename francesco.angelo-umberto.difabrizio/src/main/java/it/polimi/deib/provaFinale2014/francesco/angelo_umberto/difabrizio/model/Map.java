@@ -1,10 +1,13 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import java.util.ArrayList;
+
 public class Map {
 
     private Node[] streets;
     private Node[] regions;
     private BlackSheep blackSheep;
+    private Wolf wolf;
 
     /**
      * crea mappa e istanzia i due array di nodi, uno per strade, uno per
@@ -14,10 +17,11 @@ public class Map {
         this.streets = new Street[GameConstants.NUM_STREETS.getValue()];
         this.regions = new Region[GameConstants.NUM_REGIONS.getValue()];
         this.blackSheep = new BlackSheep();
+        this.wolf = new Wolf();
     }
-    
-    public Street convertStringToStreet(String street) {
-        return  (Street) this.streets[Integer.parseInt(street)] ;
+
+    public Street convertStringToStreet(String streetId) {
+        return (Street) this.streets[Integer.parseInt(streetId)];
     }
 
     /**
@@ -31,6 +35,31 @@ public class Map {
 
     public BlackSheep getBlackSheep() {
         return blackSheep;
+    }
+
+    public Wolf getWolf() {
+        return wolf;
+    }
+    /**
+     * Ritorna la strada col valore corrispondente confinante con la Region
+     * @param region La regione i cui confini devono essere controllati
+     * @param value Il valore della strada limitrofa che si cerca
+     * @return La strada trovata, null altrimenti
+     */
+    public Street getStreetByValue(Region region, int value) {
+        //salvo i nodi adiacenti alla regione
+        ArrayList<Node> adjacentStreet = region.getNeighbourNodes();
+        for (int i = 0; i < adjacentStreet.size(); i++) { //per ogni nodo            
+            if (adjacentStreet.get(i) instanceof Street) { //se il nodo è una strada
+                Street tmpStreet = (Street) adjacentStreet.get(i);  //castalo a street
+                if (tmpStreet.getValue() == value)//se il valore è uguale a value
+                {
+                    return tmpStreet;//ritornala            
+                }
+            }
+        }
+        //se non hai trovato nessuna strada limitrofa con quel valore
+        return null;
     }
 
     /**
