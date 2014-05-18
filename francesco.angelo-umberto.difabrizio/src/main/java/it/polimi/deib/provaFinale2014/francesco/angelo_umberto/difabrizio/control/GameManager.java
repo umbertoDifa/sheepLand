@@ -91,23 +91,16 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
     private void setUpShepherds() {
-        String stringedStreet;
-        String errorString = "Strada già occupata, prego riprovare:";
         Street chosenStreet;
         for (int i = 0; i < this.playersNumber; i++) {
             //ciclo che chiede la strada per un pastore ogni volta che questa risulta già occupata
-            //TODO: fare un metodo della roba while?
             while (true) {
-                try {
-                    stringedStreet = this.server.talkTo(this.playersHashCode[i],
-                            "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
-                    chosenStreet = convertStringToStreet(stringedStreet); //traducila in oggetto steet
-                    if (!isStreetFree(chosenStreet)) { //se la strada è occuapata
-                        throw new Exception(errorString); //solleva eccezione
-                    }
-                    break;                          //altrimenti brekka il while
-                } catch (Exception e) {
-                    this.server.sendTo(this.playersHashCode[i], e.getMessage());//manda il messaggio di errore al client
+                try {   //prova a chiedere la strada
+                    chosenStreet = askStreet(i);    //se ho un valore di ritorno
+                    break;                          //brekka
+                } catch (BadStreetException e) {    //se ho un eccezione
+                    //manda il messaggio di errore al client e ricomincia il loop
+                    this.server.sendTo(this.playersHashCode[i], e.getMessage());
                 }
             }
             this.players.get(i).getShepherd().moveTo(chosenStreet); //sposta il pastore 
@@ -223,6 +216,19 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 this.playersHashCode[player],
                 "Scegli l'azione da fare tra:" + Arrays.toString(possibleActions)));//TODO: chissa se funziona sta roba del to string
         return Action.make(actionChoice);
+    }
+
+    private Street askStreet(int player) throws BadStreetException {
+        String errorString = "Strada già occupata, prego riprovare:";
+        
+        String stringedStreet = this.server.talkTo(this.playersHashCode[player],
+                "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
+        //traducila in oggetto steet
+        Street chosenStreet = convertStringToStreet(stringedStreet); 
+        if (!isStreetFree(chosenStreet)) { //se la strada è occuapata
+            throw new BadStreetException(errorString); //solleva eccezione
+        }
+        return chosenStreet; //altrimenti ritorna la strada
     }
 
     /**
