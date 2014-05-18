@@ -81,10 +81,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * animale il cui tipo è scelto in maniera randomica
      */
     private void setUpAnimals() {
+        int SHEEPSBURG_ID = 12;
         Region[] region = this.map.getRegions();//recupera l'array delle regioni
         for (Region reg : region) { //per ogni regione
-            reg.addOvine(new Ovine());//aggiungi un ovino (a caso)
+            reg.addOvine(new Ovine());//aggiungi un ovino (a caso)          
         }
+    //TODO: devo posizionare lupo e pecora nera sheepsburg
+        map.getBlackSheep().moveTo(map.getRegions()[SHEEPSBURG_ID]);
     }
 
     /**
@@ -193,6 +196,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 //aggiorno il player che gioca in modulo playersNumber
                 currentPlayer++;
                 currentPlayer %= this.playersNumber;
+                //controllo se ho il fine giro per muovere il lupo
+                if(currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
+                    //TODO:muovo il lupo e se ci sono pecore ne mangio una                   
+                }
             }
         }//while
         //fine gioco
@@ -200,6 +207,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
+        
+       //TODO:muovi la pecora nera
+        
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) { //per il numero di azioni possibili per un turno
             this.chooseAction(player).execute(); //scegli l'azione e falla
         }//TODO: metodo complentare a numberOfUsedFence
