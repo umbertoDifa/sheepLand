@@ -10,6 +10,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -206,13 +207,22 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private void executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
-            //this.chooseAction();
-            //this.Act(Action action);
+            this.chooseAction(player).execute();
         }
         if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
             throw new FinishedFencesException(noMoreFenceMessage);
         }
         //this.server.talkTo(this.playersHashCode[player], "Selezione un'azione da fare:")
+    }
+
+    private Action chooseAction(int player) {
+        String[] possibleActions = {"1- Sposta una pecora", "2- Sposta pastore",
+                                    "3-Compra terreno", "4-Accoppia pecore", "5-Accoppia montone e pecora",
+                                    "6-Abbatti pecora"};
+        int actionChoice = Integer.parseInt(this.server.talkTo(
+                this.playersHashCode[player],
+                "Scegli l'azione da fare tra:" + Arrays.toString(possibleActions)));//TODO: chissa se funziona sta roba del to string
+        return Action.make(actionChoice);
     }
 
     /**
