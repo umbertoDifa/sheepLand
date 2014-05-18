@@ -5,6 +5,8 @@
  */
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.MissingCardException;
+
 /**
  *
  * @author Francesco
@@ -31,10 +33,9 @@ public class Bank {
      * @param type Tipo di carta voluto
      *
      * @return una Card del tipo chiesto
-     *
      * @throws Exception Se la carta non c'è
      */
-    public Card getCard(RegionType type) throws Exception {//TODO: modellare questa exception
+    public Card getCard(RegionType type) throws MissingCardException {
         String missingCardMessage = "Non ci sono più carte per il tipo " + type.toString(); //preparo un messaggio di errore
         //l'algoritmo che segue a come idea di indicizzare l'array
         //le carte vengono caricate nell'array di quelle a disposizione della 
@@ -47,7 +48,7 @@ public class Bank {
                 return foundedCard;
             }
         }
-        throw new Exception(missingCardMessage);
+        throw new MissingCardException(missingCardMessage);
     }
 
     /**

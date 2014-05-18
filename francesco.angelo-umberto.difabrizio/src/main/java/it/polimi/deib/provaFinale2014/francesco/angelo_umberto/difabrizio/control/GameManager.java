@@ -73,7 +73,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.setUpCards();
         this.setUpFences();
         this.setUpShift();
-        //this.startGame();
+        this.startGame();
     }
 
     /**
@@ -98,7 +98,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 try {   //prova a chiedere la strada
                     chosenStreet = askStreet(i);    //se ho un valore di ritorno
                     break;                          //brekka
-                } catch (BadStreetException e) {    //se ho un eccezione
+                } catch (BusyStreetException e) {    //se ho un eccezione
                     //manda il messaggio di errore al client e ricomincia il loop
                     this.server.sendTo(this.playersHashCode[i], e.getMessage());
                 }
@@ -212,13 +212,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
         String[] possibleActions = {"1- Sposta una pecora", "2- Sposta pastore",
                                     "3-Compra terreno", "4-Accoppia pecore", "5-Accoppia montone e pecora",
                                     "6-Abbatti pecora"};
+        //raccogli la scelta trasformando la string in int
         int actionChoice = Integer.parseInt(this.server.talkTo(
                 this.playersHashCode[player],
                 "Scegli l'azione da fare tra:" + Arrays.toString(possibleActions)));//TODO: chissa se funziona sta roba del to string
+        //crea un'azione in base alla scelta e ritornala
         return Action.make(actionChoice);
     }
 
-    private Street askStreet(int player) throws BadStreetException {
+    private Street askStreet(int player) throws BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
         
         String stringedStreet = this.server.talkTo(this.playersHashCode[player],
@@ -226,7 +228,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //traducila in oggetto steet
         Street chosenStreet = convertStringToStreet(stringedStreet); 
         if (!isStreetFree(chosenStreet)) { //se la strada è occuapata
-            throw new BadStreetException(errorString); //solleva eccezione
+            throw new BusyStreetException(errorString); //solleva eccezione
         }
         return chosenStreet; //altrimenti ritorna la strada
     }
