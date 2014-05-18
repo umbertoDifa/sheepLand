@@ -17,7 +17,7 @@ public class TimerCallable implements Callable<Void>{
         try{
         Thread.sleep(timer);
         } catch (InterruptedException e){
-            //TODO: gestire sta eccezione
+            //TODO junk: gestire sta eccezione
         }          
         throw new TimerException("Timeout connessione al server per la partita"); 
     }

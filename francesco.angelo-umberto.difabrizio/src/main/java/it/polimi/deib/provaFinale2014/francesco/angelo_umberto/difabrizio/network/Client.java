@@ -49,7 +49,6 @@ public class Client {
             String serverLine = socketIn.nextLine();
             System.out.println(serverLine);
         } catch (IOException ex) {
-            //TODO: gestisci fallimento connessione...non serve è solo di prova  
         }
     }
 

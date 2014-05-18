@@ -174,12 +174,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void startGame() {
-        this.executeRound();
+        this.executeRounds();
         //this.calculatePoints();
         //this.broadcastWinner();
     }
 
-    private void executeRound() {
+    private void executeRounds() {
         int currentPlayer = this.firstPlayer;
         boolean lastRound = false;
 
@@ -194,18 +194,18 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 currentPlayer++;
                 currentPlayer %= this.playersNumber;
             }
-        }
+        }//while
+        //fine gioco
     }
 
     private void executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
-        for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
-            this.chooseAction(player).execute();
-        }
+        for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) { //per il numero di azioni possibili per un turno
+            this.chooseAction(player).execute(); //scegli l'azione e falla
+        }//TODO: metodo complentare a numberOfUsedFence
         if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
-            throw new FinishedFencesException(noMoreFenceMessage);
+            throw new FinishedFencesException(noMoreFenceMessage); //occhio che questo è lanciato per ogni turno dell'ultimo giro
         }
-        //this.server.talkTo(this.playersHashCode[player], "Selezione un'azione da fare:")
     }
 
     private Action chooseAction(int player) {

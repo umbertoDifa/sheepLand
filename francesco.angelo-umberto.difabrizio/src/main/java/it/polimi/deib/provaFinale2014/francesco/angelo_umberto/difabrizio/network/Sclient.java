@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -30,13 +31,16 @@ public class Sclient {
      */
     public void send(String message){
         toClient.println(message);
-        toClient.flush();
+        //flusha lo stream e controlla eventuali errori
+        toClient.checkError(); //TODO: gestisci un errore se lo stream si sputtana
     }
     /**
      * Riceve un messaggio dal client
+     * @return la stringa ricevuta dal client
     */
-    public String receive(){
-       return fromClient.nextLine();
+    public String receive() throws NoSuchElementException,IllegalStateException{//TODO:gestisci queste eccez
+       String answer = fromClient.nextLine();
+       return answer;
     }
 
 }

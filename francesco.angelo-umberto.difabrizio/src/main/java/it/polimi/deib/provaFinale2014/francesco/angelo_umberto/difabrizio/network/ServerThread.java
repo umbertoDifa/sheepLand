@@ -23,11 +23,12 @@ public class ServerThread implements Runnable {
             client.add(new Sclient(clientSocket)); //aggiungi ai client un nuovo client legato al rispettivo socket
         }
         this.gameManager = new GameManager(clientSockets.size(), this);
-
+        
     }
 
     public void run() {
         this.startGame();
+        ServerManager.activatedGames--; //un thread è appena terminato e con lui la partita
     }
 
     /**

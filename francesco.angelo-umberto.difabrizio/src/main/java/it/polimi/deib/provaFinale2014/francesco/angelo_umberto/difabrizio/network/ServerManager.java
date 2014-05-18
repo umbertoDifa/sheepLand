@@ -55,7 +55,7 @@ public class ServerManager {
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,
                          int minClientsForGame, int acceptTimeout,
-                         int refreshTimeout) {//TODO: queste qua sotto non sono costanti
+                         int refreshTimeout) {
         this.maxNumberOfGames = maxGames;
         this.maxClientsForGame = maxClientsForGame;
         this.minClientsForGame = minClientsForGame;
@@ -112,7 +112,7 @@ public class ServerManager {
         ArrayList<Socket> clientSockets;
         ExecutorService executor = Executors.newCachedThreadPool();
 //        //********* Tutta questa parte può essere usata per gestire il numero di serverThread creata ma è un bazooca
-//        //TODO: forse tutta sta parte di executor è barocca, magari posso facilmente usare solo le slide
+//        //TODO junk: forse tutta sta parte di executor è barocca, magari posso facilmente usare solo le slide
 //        //creo il mio handler per il rifiuto dei client
 //        ClientRejectionHandler rejectionHandler = new ClientRejectionHandler();
 //        //questa factory crea un thread quando necessario e se può li riusa
@@ -133,7 +133,7 @@ public class ServerManager {
                         maxClientsForGame);
                 //a questo punto ho la lista dei client per una partita
                 if (clientSockets.size() >= minClientsForGame) {
-                    executor.submit( new ServerThread(clientSockets) );//TODO: ripensare chi gestisce il minimo per la partita
+                    executor.submit( new ServerThread(clientSockets) );
                     System.out.println("Partita avviata.");
                     activatedGames++; //essendo static questa variabile potra essere decrementata
                     //dai thread appena prima di terminare
@@ -179,7 +179,7 @@ public class ServerManager {
         }
     }
 
-    private void handleClientRequestSecondVersion(ServerSocket serverSocket) {//FIXME:completamente non funzionante
+    private void handleClientRequestSecondVersion(ServerSocket serverSocket) {//FIXME junk:completamente non funzionante
         ArrayList<Socket> clientSockets = new ArrayList<Socket>();
         ExecutorService serverExecutor = Executors.newCachedThreadPool();
         Future future; // variabile che servirà a collezionare l'exception lanciata dal timer
@@ -200,14 +200,14 @@ public class ServerManager {
                 try {
                     future.get();
                 } catch (InterruptedException e) {
-                    //TODO: gestire eccezione dovuta al kill del timer sopra
+                    //TODO junk: gestire eccezione dovuta al kill del timer sopra
                 }
                 //controllo quanti client ho rimendiato
                 //eventualmente ripeto il tutto
             } catch (IOException e) {
                 break; //entro qui se il serverSocket viene chiuso
             } catch (ExecutionException e) {
-                //TODO: gestire eccezione che mi arriva dal timerCallable
+                //TODO junk: gestire eccezione che mi arriva dal timerCallable
                 //causata dal timer stesso
             }
         }
@@ -224,7 +224,6 @@ public class ServerManager {
      * @return la lista di client accettati, ce n'è almeno uno perchè la prima
      *         accept non ha un timeout
      */
-    //TODO: leggendo la riga sopra forse va messo un timeout "grande" anceh sulla prima accept
     private ArrayList<Socket> timedOutAccept(ServerSocket server, int timeout,
                                              int maxConnections)
             throws IOException {
@@ -242,7 +241,7 @@ public class ServerManager {
                 if (timeout - (endTime - startTime) > 0) //se ho ancora tempo
                 {
                     server.setSoTimeout((int) (timeout - (endTime - startTime))); //aggiorno il timeout sottraendo il tempo aspettato per l'isemo clientù
-                } //TODO: forse alla riga sopra ci potrebbe essere un errore per la sottrazione fra int e long anche se la differenza dei long dovrebbe essere molto piccola, test?
+                } //TODO warn: forse alla riga sopra ci potrebbe essere un errore per la sottrazione fra int e long anche se la differenza dei long dovrebbe essere molto piccola, test?
                 else {
                     break; //altrimenti finisco
                 }

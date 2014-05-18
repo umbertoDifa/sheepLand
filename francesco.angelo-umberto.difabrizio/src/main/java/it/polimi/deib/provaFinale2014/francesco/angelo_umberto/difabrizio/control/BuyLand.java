@@ -14,7 +14,9 @@ public class BuyLand extends Action{
     }
     @Override
     public void execute() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //chiedi quale comprare
+        //verifica se è possibile (deve esistere un terreno di quel tipo e il giocatore deve avere soldi)
+        //ritorna il terreno o l'avviso di impossibilità
     }
 
 }

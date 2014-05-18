@@ -24,7 +24,7 @@ public enum RegionType {
     	return index;
     }
     
-    public static RegionType getRandomRegionType() {//TODO: sta storia random si ripete anche per gli ovini....metodino statico?
+    public static RegionType getRandomRegionType() {
         int choice = random.nextInt(size); //prendi un numero a caso appartenente al totale dei valori dell'enum
         return RegionType.values()[choice]; //ritorno la region corrispondente
     }

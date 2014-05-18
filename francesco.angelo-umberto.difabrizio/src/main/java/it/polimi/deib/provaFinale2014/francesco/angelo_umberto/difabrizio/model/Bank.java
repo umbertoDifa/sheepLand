@@ -21,10 +21,6 @@ public class Bank {
         this.unusedFences = new Fence[numeFences];
     }
 
-    public Card[] getUnusedCards() {
-        return unusedCards;
-    }
-
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
      * la ritorna se esiste, altrimenti solleva un eccezione se le carte sono
@@ -94,8 +90,5 @@ public class Bank {
         return i; //unico caso tutti i recinti dati...male male
     }
 
-    public Fence[] getUnusedFences() { //TODO: serve?
-        return unusedFences;
-    }
 
 }
