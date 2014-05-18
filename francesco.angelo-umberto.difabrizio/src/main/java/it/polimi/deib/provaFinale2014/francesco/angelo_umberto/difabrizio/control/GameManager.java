@@ -10,6 +10,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -18,15 +19,24 @@ import java.util.ArrayList;
  * @author francesco.angelo-umberto.difabrizio
  */
 public class GameManager {//TODO: pattern memento per ripristini?
+//TODO: dividere la classe fra GameSetupper e GameManager? è grossa...
 
     private final ServerThread server;
 
     private final Map map;
     private ArrayList<Player> players = new ArrayList<Player>();
     private final int playersNumber;
+    private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
     private final int[] playersHashCode; //valore cached degli hash dei giocatori
+
     private final Bank bank;
 
+    /**
+     * Crea un GameManager
+     *
+     * @param playersNumber Numero dei giocatori di una partita
+     * @param server        Thread che gestisce la partita
+     */
     public GameManager(int playersNumber, ServerThread server) {
         this.playersNumber = playersNumber;
         this.playersHashCode = new int[playersNumber]; //creo un array della dimensione del numero dei player
@@ -38,29 +48,31 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     /**
-     * dato il numero di player, riempie l'arraylist dei player e riempie
+     * Dato il numero di player, riempie l'arraylist dei player e riempie
      * l'array dei rispettivi hashcode
      *
      * @param numbPlayer
      */
     private void setUpPlayers(int numbPlayer) {
         for (int i = 0; i < playersNumber; i++) { //per ogni giocatore
-            players.add(new Player());   //TODO:occhio al costruttore id player       //lo aggiungo alla lista dei giocatori
+            players.add(new Player());       //lo aggiungo alla lista dei giocatori
             playersHashCode[i] = players.get(i).hashCode();//salvo il suo hashcode
         }
     }
 
     /**
-     * metodo principale che viene invocato dal server thread per avviare la
-     * partita
+     * Metodo principale che viene invocato dal server thread per creare tutti
+     * gli oggetti di una partita e avviarla
      */
     public void SetUpGame() {
         this.setUpMap();
         this.setUpSocketPlayerMap();
         this.setUpAnimals();
         this.setUpShepherds();
+        this.setUpCards();
         this.setUpFences();
         this.setUpShift();
+        //this.startGame();
     }
 
     /**
@@ -111,7 +123,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void setUpShift() {
-        //TODO
+        //creo oggetto random
+        Random random = new Random();
+        //imposto il primo giocatore a caso tra quelli presenti
+        this.firstPlayer = random.nextInt(this.playersNumber);
     }
 
     /**
@@ -147,6 +162,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
+    /**
+     * Crea le carte di tutti i tipi necessari da caricare nel banco
+     */
     private void setUpCards() {
         for (int i = 0; i < RegionType.values().length - 1; i++)            //per ogni tipo di regione - sheepsburg  
             for (int j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) { //per tante quante sono le carte di ogni tipo
@@ -159,6 +177,42 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 bank.loadCard(cardToAdd, position);
             }
 
+    }
+
+    private void startGame() {
+        this.executeRound();
+        //this.calculatePoints();
+        //this.broadcastWinner();
+    }
+
+    private void executeRound() {
+        int currentPlayer = this.firstPlayer;
+        boolean lastRound = false;
+
+        while (!(lastRound && currentPlayer == this.firstPlayer)) {//se non è l'ultimo giro o il giocatore non è l'ultimo del giro
+            try { //prova a fare un turno
+                this.executeShift(currentPlayer);
+            } catch (FinishedFencesException e) { //se finiscono i recinti
+                //i recinti sono finiti chiama l'ultimo giro
+                lastRound = true;
+            } finally {//comunque vada
+                //aggiorno il player che gioca in modulo playersNumber
+                currentPlayer++;
+                currentPlayer %= this.playersNumber;
+            }
+        }
+    }
+
+    private void executeShift(int player) throws FinishedFencesException {
+        String noMoreFenceMessage = "Recinti Finiti!";
+        for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
+            //this.chooseAction();
+            //this.Act(Action action);
+        }
+        if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
+            throw new FinishedFencesException(noMoreFenceMessage);
+        }
+        //this.server.talkTo(this.playersHashCode[player], "Selezione un'azione da fare:")
     }
 
     /**
@@ -176,9 +230,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * converte una stringa street che indica l'id della strada sulla mappa
      * nell'oggetto Street corrispondente
      *
-     * @param street
+     * @param street L'id stringa che indica la strada
      *
-     * @return una Street
+     * @return la Street corrispondente
      */
     private Street convertStringToStreet(String street) {
         return map.getStreets()[Integer.parseInt(street)];
