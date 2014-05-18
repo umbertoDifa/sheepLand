@@ -35,7 +35,7 @@ public class ServerThread implements Runnable {
      * il serverThread avvia il gioco cedendo il controllo al GameManager
      */
     private void startGame() {
-        gameManager.SetUpGame();
+        gameManager.startGame();
     }
 
     /**

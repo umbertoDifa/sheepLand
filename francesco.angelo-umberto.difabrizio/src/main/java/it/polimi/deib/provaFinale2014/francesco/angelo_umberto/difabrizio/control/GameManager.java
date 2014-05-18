@@ -10,7 +10,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -56,7 +55,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      */
     private void setUpPlayers(int numbPlayer) {
         for (int i = 0; i < playersNumber; i++) { //per ogni giocatore
-            players.add(new Player());       //lo aggiungo alla lista dei giocatori
+            players.add(new Player(this));       //lo aggiungo alla lista dei giocatori
             playersHashCode[i] = players.get(i).hashCode();//salvo il suo hashcode
         }
     }
@@ -65,7 +64,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Metodo principale che viene invocato dal server thread per creare tutti
      * gli oggetti di una partita e avviarla
      */
-    public void SetUpGame() {
+    private void SetUpGame() {
         this.setUpMap();
         this.setUpSocketPlayerMap();
         this.setUpAnimals();
@@ -73,7 +72,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.setUpCards();
         this.setUpFences();
         this.setUpShift();
-        this.startGame();
+        this.playTheGame();
     }
 
     /**
@@ -86,7 +85,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         for (Region reg : region) { //per ogni regione
             reg.addOvine(new Ovine());//aggiungi un ovino (a caso)          
         }
-    //TODO: devo posizionare lupo e pecora nera sheepsburg
+        //TODO: devo posizionare lupo e pecora nera sheepsburg
         map.getBlackSheep().setAt(map.getRegions()[SHEEPSBURG_ID]);
     }
 
@@ -176,10 +175,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     }
 
-    private void startGame() {
+    private void playTheGame() {
         this.executeRounds();
         //this.calculatePoints();
         //this.broadcastWinner();
+    }
+
+    public void startGame() {
+        this.SetUpGame();
+        this.playTheGame();
     }
 
     private void executeRounds() {
@@ -197,7 +201,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 currentPlayer++;
                 currentPlayer %= this.playersNumber;
                 //controllo se ho il fine giro per muovere il lupo
-                if(currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
+                if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
                     //TODO:muovo il lupo e se ci sono pecore ne mangio una                   
                 }
             }
@@ -207,37 +211,28 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
-        
-       //TODO:muovi la pecora nera
-        
-        for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) { //per il numero di azioni possibili per un turno
-            this.chooseAction(player).execute(); //scegli l'azione e falla
-        }//TODO: metodo complentare a numberOfUsedFence
+
+        //TODO:muovi la pecora nera
+        for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
+            try {               
+                this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
+            } catch (ActionNotFoundException ex) {
+                this.server.sendTo(playersHashCode[i], ex.getMessage());
+            }
+        }
         if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
             throw new FinishedFencesException(noMoreFenceMessage); //occhio che questo è lanciato per ogni turno dell'ultimo giro
         }
     }
 
-    private Action chooseAction(int player) {
-        String[] possibleActions = {"1- Sposta una pecora", "2- Sposta pastore",
-                                    "3-Compra terreno", "4-Accoppia pecore", "5-Accoppia montone e pecora",
-                                    "6-Abbatti pecora"};
-        //raccogli la scelta trasformando la string in int
-        int actionChoice = Integer.parseInt(this.server.talkTo(
-                this.playersHashCode[player],
-                "Scegli l'azione da fare tra:" + Arrays.toString(possibleActions)));//TODO: chissa se funziona sta roba del to string
-        //crea un'azione in base alla scelta e ritornala
-        return Action.make(actionChoice);
-    }
-
     private Street askStreet(int player) throws BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
-        
+
         String stringedStreet = this.server.talkTo(this.playersHashCode[player],
                 "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
         //traducila in oggetto steet
-        Street chosenStreet = convertStringToStreet(stringedStreet); 
-        if (!isStreetFree(chosenStreet)) { //se la strada è occuapata
+        Street chosenStreet = map.convertStringToStreet(stringedStreet);
+        if (!chosenStreet.isFree()) { //se la strada è occuapata
             throw new BusyStreetException(errorString); //solleva eccezione
         }
         return chosenStreet; //altrimenti ritorna la strada
@@ -250,20 +245,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
      *
      * @return true se libera, false altrimenti
      */
-    private boolean isStreetFree(Street street) {
-        return street.isFree();
-    }
-
-    /**
-     * converte una stringa street che indica l'id della strada sulla mappa
-     * nell'oggetto Street corrispondente
-     *
-     * @param street L'id stringa che indica la strada
-     *
-     * @return la Street corrispondente
-     */
-    private Street convertStringToStreet(String street) {
-        return map.getStreets()[Integer.parseInt(street)];
+    public ServerThread getServer() {
+        return server;
     }
 
 }

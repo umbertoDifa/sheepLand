@@ -15,6 +15,10 @@ public class Map {
         this.regions = new Region[GameConstants.NUM_REGIONS.getValue()];
         this.blackSheep = new BlackSheep();
     }
+    
+    public Street convertStringToStreet(String street) {
+        return  (Street) this.streets[Integer.parseInt(street)] ;
+    }
 
     /**
      * crea nodi, li assegna a map, collega fra di loro i node
