@@ -37,6 +37,9 @@ public abstract class Node {
     public ArrayList<Node> getNeighbourNodes() {
         return neighbourNodes;
     }
- 
+    
+    public boolean isNeighbour(Node node){
+        return this.getNeighbourNodes().contains(node);
+    }
     
 }
