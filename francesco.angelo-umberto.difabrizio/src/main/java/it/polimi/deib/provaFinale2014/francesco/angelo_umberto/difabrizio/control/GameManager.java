@@ -87,7 +87,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             reg.addOvine(new Ovine());//aggiungi un ovino (a caso)          
         }
     //TODO: devo posizionare lupo e pecora nera sheepsburg
-        map.getBlackSheep().moveTo(map.getRegions()[SHEEPSBURG_ID]);
+        map.getBlackSheep().setAt(map.getRegions()[SHEEPSBURG_ID]);
     }
 
     /**

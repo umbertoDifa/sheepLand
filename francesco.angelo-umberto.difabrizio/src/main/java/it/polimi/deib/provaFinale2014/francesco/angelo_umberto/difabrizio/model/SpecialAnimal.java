@@ -6,9 +6,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
  */
 public abstract class SpecialAnimal {
     private Region myRegion;
-    public void moveTo(Region region){
-        
-    }
+    public void setAt(Region region){};
+    public void moveThroughTo(Street street,Region endRegion){};
     public Region getMyRegion() {
         return myRegion;
     }
