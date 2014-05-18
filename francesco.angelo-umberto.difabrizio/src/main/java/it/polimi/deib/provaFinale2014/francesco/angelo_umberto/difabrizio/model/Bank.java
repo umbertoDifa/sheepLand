@@ -84,7 +84,7 @@ public class Bank {
      * Restitutisce il numero di recinti ceduti dalla banca
      * @return Il numero di recinti usati
      */
-    public int numberOfUsedFence() {
+    public int numberOfUsedFences() {
         int i; //serve a contare quanti recinti sono stati dati
         for (i = 0; i < unusedFences.length; i++) { //scorri l'array
             if (unusedFences[i] != null) //al primo recinto disponibile               
@@ -93,6 +93,8 @@ public class Bank {
         return i; //unico caso tutti i recinti dati...male male
     }
 
+    //TODO: aggiungi metodo numberOfUnusedFences
+    
     public Fence[] getUnusedFences() { //TODO: serve?
         return unusedFences;
     }

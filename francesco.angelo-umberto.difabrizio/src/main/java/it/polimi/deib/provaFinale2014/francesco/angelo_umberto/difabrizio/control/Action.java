@@ -6,7 +6,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public abstract class Action {//TODO: interface?
+public abstract class Action {
 
     public abstract void execute();
 
