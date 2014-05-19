@@ -27,4 +27,21 @@ public class Region extends Node {
     public void addOvine(Ovine ovine){
         this.myOvines.add(ovine);
     }
+    
+    /**
+     * controlla che tutte le strade limitrofe abbiano un recinto
+     * @return true se e solo se sono tutte recintate
+     */
+    public boolean isAllFenced(){
+        ArrayList<Node> endStreets = this.getNeighbourNodes();
+        for(Node s: endStreets){           //per ogni strada limitrofa
+            if(s instanceof Street){       //se è una strada
+                Street street = (Street) s; //casto a strada
+                if(!street.hasFence()){    //ritorno false se non ha un recinto
+                    return false;
+                }   
+            }
+        }
+        return true;                    //controllati tutti posso ritornare true
+    }
 }

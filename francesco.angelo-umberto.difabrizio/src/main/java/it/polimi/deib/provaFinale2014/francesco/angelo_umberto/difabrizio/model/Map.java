@@ -20,8 +20,23 @@ public class Map {
         this.wolf = new Wolf();
     }
 
-    public Street convertStringToStreet(String streetId) {
-        return (Street) this.streets[Integer.parseInt(streetId)];
+    //TODO: compattare convertStringToStreet e convertStringTo Region in un metodo di Node?
+    public Street convertStringToStreet(String streetId) throws StreetNotFoundException {
+        int id = Integer.parseInt(streetId);
+        if (id < GameConstants.NUM_STREETS.getValue()) {
+            return (Street) this.streets[Integer.parseInt(streetId)];
+        } else {
+            throw new StreetNotFoundException("strada non esistente");
+        }
+    }
+
+    public Region convertStringToRegion(String regionId) throws RegionNotFoundException {
+        int id = Integer.parseInt(regionId);
+        if (id < GameConstants.NUM_REGIONS.getValue()) {
+            return (Region) this.regions[id];
+        } else {
+            throw new RegionNotFoundException("regione non esistente");
+        }
     }
 
     /**
@@ -40,8 +55,10 @@ public class Map {
     public Wolf getWolf() {
         return wolf;
     }
+
     /**
      * Ritorna la strada col valore corrispondente confinante con la Region
+     *
      * @param region La regione i cui confini devono essere controllati
      * @param value Il valore della strada limitrofa che si cerca
      * @return La strada trovata, null altrimenti
@@ -72,70 +89,70 @@ public class Map {
         this.regions[0].connectTo(this.streets[0]);
         this.regions[0].connectTo(this.streets[3]);
         this.regions[0].connectTo(this.streets[10]);
-        this.regions[1].connectTo(this.streets[0]);
-        this.regions[1].connectTo(this.streets[1]);
-        this.regions[1].connectTo(this.streets[4]);
-        this.regions[1].connectTo(this.streets[5]);
-        this.regions[2].connectTo(this.streets[1]);
-        this.regions[2].connectTo(this.streets[2]);
-        this.regions[2].connectTo(this.streets[6]);
-        this.regions[3].connectTo(this.streets[2]);
-        this.regions[3].connectTo(this.streets[7]);
-        this.regions[3].connectTo(this.streets[8]);
-        this.regions[3].connectTo(this.streets[9]);
-        this.regions[4].connectTo(this.streets[9]);
-        this.regions[4].connectTo(this.streets[13]);
-        this.regions[4].connectTo(this.streets[14]);
-        this.regions[5].connectTo(this.streets[10]);
-        this.regions[5].connectTo(this.streets[15]);
-        this.regions[5].connectTo(this.streets[22]);
-        this.regions[5].connectTo(this.streets[26]);
-        this.regions[6].connectTo(this.streets[3]);
-        this.regions[6].connectTo(this.streets[4]);
-        this.regions[6].connectTo(this.streets[11]);
-        this.regions[6].connectTo(this.streets[15]);
-        this.regions[6].connectTo(this.streets[16]);
-        this.regions[6].connectTo(this.streets[20]);
-        this.regions[7].connectTo(this.streets[5]);
-        this.regions[7].connectTo(this.streets[6]);
+        this.regions[3].connectTo(this.streets[0]);
+        this.regions[3].connectTo(this.streets[1]);
+        this.regions[3].connectTo(this.streets[4]);
+        this.regions[3].connectTo(this.streets[5]);
+        this.regions[4].connectTo(this.streets[1]);
+        this.regions[4].connectTo(this.streets[2]);
+        this.regions[4].connectTo(this.streets[6]);
+        this.regions[7].connectTo(this.streets[2]);
         this.regions[7].connectTo(this.streets[7]);
-        this.regions[7].connectTo(this.streets[11]);
-        this.regions[7].connectTo(this.streets[12]);
-        this.regions[7].connectTo(this.streets[17]);
-        this.regions[8].connectTo(this.streets[8]);
-        this.regions[8].connectTo(this.streets[12]);
+        this.regions[7].connectTo(this.streets[8]);
+        this.regions[7].connectTo(this.streets[9]);
+        this.regions[8].connectTo(this.streets[9]);
         this.regions[8].connectTo(this.streets[13]);
-        this.regions[8].connectTo(this.streets[18]);
-        this.regions[8].connectTo(this.streets[19]);
-        this.regions[8].connectTo(this.streets[21]);
-        this.regions[9].connectTo(this.streets[14]);
+        this.regions[8].connectTo(this.streets[14]);
+        this.regions[1].connectTo(this.streets[10]);
+        this.regions[1].connectTo(this.streets[15]);
+        this.regions[1].connectTo(this.streets[22]);
+        this.regions[1].connectTo(this.streets[26]);
+        this.regions[5].connectTo(this.streets[3]);
+        this.regions[5].connectTo(this.streets[4]);
+        this.regions[5].connectTo(this.streets[11]);
+        this.regions[5].connectTo(this.streets[15]);
+        this.regions[5].connectTo(this.streets[16]);
+        this.regions[5].connectTo(this.streets[20]);
+        this.regions[6].connectTo(this.streets[5]);
+        this.regions[6].connectTo(this.streets[6]);
+        this.regions[6].connectTo(this.streets[7]);
+        this.regions[6].connectTo(this.streets[11]);
+        this.regions[6].connectTo(this.streets[12]);
+        this.regions[6].connectTo(this.streets[17]);
+        this.regions[9].connectTo(this.streets[8]);
+        this.regions[9].connectTo(this.streets[12]);
+        this.regions[9].connectTo(this.streets[13]);
+        this.regions[9].connectTo(this.streets[18]);
         this.regions[9].connectTo(this.streets[19]);
-        this.regions[9].connectTo(this.streets[25]);
-        this.regions[9].connectTo(this.streets[32]);
-        this.regions[10].connectTo(this.streets[26]);
-        this.regions[10].connectTo(this.streets[27]);
-        this.regions[10].connectTo(this.streets[38]);
-        this.regions[11].connectTo(this.streets[20]);
-        this.regions[11].connectTo(this.streets[22]);
-        this.regions[11].connectTo(this.streets[23]);
-        this.regions[11].connectTo(this.streets[27]);
-        this.regions[11].connectTo(this.streets[28]);
-        this.regions[11].connectTo(this.streets[33]);
-        this.regions[12].connectTo(this.streets[16]);
-        this.regions[12].connectTo(this.streets[17]);
-        this.regions[12].connectTo(this.streets[18]);
-        this.regions[12].connectTo(this.streets[23]);
+        this.regions[9].connectTo(this.streets[21]);
+        this.regions[10].connectTo(this.streets[14]);
+        this.regions[10].connectTo(this.streets[19]);
+        this.regions[10].connectTo(this.streets[25]);
+        this.regions[10].connectTo(this.streets[32]);
+        this.regions[17].connectTo(this.streets[26]);
+        this.regions[17].connectTo(this.streets[27]);
+        this.regions[17].connectTo(this.streets[38]);
+        this.regions[2].connectTo(this.streets[20]);
+        this.regions[2].connectTo(this.streets[22]);
+        this.regions[2].connectTo(this.streets[23]);
+        this.regions[2].connectTo(this.streets[27]);
+        this.regions[2].connectTo(this.streets[28]);
+        this.regions[2].connectTo(this.streets[33]);
+        this.regions[18].connectTo(this.streets[16]);
+        this.regions[18].connectTo(this.streets[17]);
+        this.regions[18].connectTo(this.streets[18]);
+        this.regions[18].connectTo(this.streets[23]);
+        this.regions[18].connectTo(this.streets[24]);
+        this.regions[18].connectTo(this.streets[29]);
+        this.regions[12].connectTo(this.streets[21]);
         this.regions[12].connectTo(this.streets[24]);
-        this.regions[12].connectTo(this.streets[29]);
-        this.regions[13].connectTo(this.streets[21]);
-        this.regions[13].connectTo(this.streets[24]);
-        this.regions[13].connectTo(this.streets[25]);
-        this.regions[13].connectTo(this.streets[30]);
-        this.regions[13].connectTo(this.streets[31]);
-        this.regions[13].connectTo(this.streets[36]);
-        this.regions[14].connectTo(this.streets[31]);
-        this.regions[14].connectTo(this.streets[32]);
-        this.regions[14].connectTo(this.streets[37]);
+        this.regions[12].connectTo(this.streets[25]);
+        this.regions[12].connectTo(this.streets[30]);
+        this.regions[12].connectTo(this.streets[31]);
+        this.regions[12].connectTo(this.streets[36]);
+        this.regions[11].connectTo(this.streets[31]);
+        this.regions[11].connectTo(this.streets[32]);
+        this.regions[11].connectTo(this.streets[37]);
         this.regions[15].connectTo(this.streets[33]);
         this.regions[15].connectTo(this.streets[34]);
         this.regions[15].connectTo(this.streets[38]);
@@ -146,13 +163,13 @@ public class Map {
         this.regions[16].connectTo(this.streets[34]);
         this.regions[16].connectTo(this.streets[35]);
         this.regions[16].connectTo(this.streets[39]);
-        this.regions[17].connectTo(this.streets[35]);
-        this.regions[17].connectTo(this.streets[36]);
-        this.regions[17].connectTo(this.streets[37]);
-        this.regions[17].connectTo(this.streets[41]);
-        this.regions[18].connectTo(this.streets[39]);
-        this.regions[18].connectTo(this.streets[40]);
-        this.regions[18].connectTo(this.streets[41]);
+        this.regions[13].connectTo(this.streets[35]);
+        this.regions[13].connectTo(this.streets[36]);
+        this.regions[13].connectTo(this.streets[37]);
+        this.regions[13].connectTo(this.streets[41]);
+        this.regions[14].connectTo(this.streets[39]);
+        this.regions[14].connectTo(this.streets[40]);
+        this.regions[14].connectTo(this.streets[41]);
 
         //collego strade a strade con un link bidirezionale
         this.streets[0].connectTo(this.streets[3]);
@@ -284,18 +301,24 @@ public class Map {
     private void createRegions() {
 
         int j = 0;
-        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++)
-            this.regions[j] = new Region(RegionType.MOUNTAIN);
-        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++)
-            this.regions[j] = new Region(RegionType.COUNTRYSIDE);
-        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++)
-            this.regions[j] = new Region(RegionType.DESERT);
-        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++)
+        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++) {
             this.regions[j] = new Region(RegionType.HILL);
-        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++)
+        }
+        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++) {
+            this.regions[j] = new Region(RegionType.COUNTRYSIDE);
+        }
+        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++) {
+            this.regions[j] = new Region(RegionType.MOUNTAIN);
+        }
+        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++) {
+            this.regions[j] = new Region(RegionType.DESERT);
+        }
+        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++) {
             this.regions[j] = new Region(RegionType.LAKE);
-        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++)
+        }
+        for (int i = 0; i < GameConstants.NUM_REGIONS_FOR_TYPE.getValue(); i++, j++) {
             this.regions[j] = new Region(RegionType.PLAIN);
+        }
         this.regions[j] = new Region(RegionType.SHEEPSBURG);
     }
 
@@ -305,5 +328,26 @@ public class Map {
 
     public Region[] getRegions() {
         return (Region[]) regions;
+    }
+
+    /**
+     * data una regione e una strada attraverso cui passare mi restituisce la
+     * regione in cui arrivo
+     *
+     * @param startRegion
+     * @param street
+     * @return
+     */
+    public Region getEndRegion(Region startRegion, Street street) {
+        ArrayList<Node> neighbourRegions;
+
+        neighbourRegions = street.getNeighbourNodes();
+        for (Node node : neighbourRegions) {           //per ogni nodo confinante alla strada
+            if (!node.equals(startRegion) && (node instanceof Region)) {   //
+                return (Region) node;
+            }
+        }
+        //se non hai trovato nessun altra regione
+        return null;
     }
 }
