@@ -5,7 +5,7 @@
  */
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.MissingCardException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
 
 /**
  *

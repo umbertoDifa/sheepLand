@@ -1,6 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.CannotMoveWolfException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveWolfException;
 
 public class Wolf extends SpecialAnimal {
 
