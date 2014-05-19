@@ -23,7 +23,7 @@ public class Street extends Node {
      *
      * @return vero se e solo se la strada è occupata da un pastore
      */
-    public boolean hasSheeherd() {
+    public boolean hasShepherd() {
         return (this.shepherd != null);
     }
 
@@ -32,7 +32,7 @@ public class Street extends Node {
      * @return vero se e solo non è occupata da un recinto o da un pastore
      */
     public boolean isFree() {
-        return (!this.hasFence() && !this.hasSheeherd());
+        return (!this.hasFence() && !this.hasShepherd());
     }
 
     public int getValue() {

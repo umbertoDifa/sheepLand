@@ -12,10 +12,9 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
  */
 public class Wallet {
     private int amount;
-    private final int INITIAL_AMOUNT = 20;
             
     public Wallet(){
-        amount = INITIAL_AMOUNT;
+        amount = GameConstants.INITIAL_WALLET_AMMOUNT.getValue();
     }
 
     public int getAmount() {

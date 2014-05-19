@@ -43,5 +43,9 @@ public class Shepherd {
 	public void addCard(Card card){
 		this.myCards.add(card);
 	}
+        
+        public void removeCard(Card card){
+            //TODO ci vuole pure il tipo?
+        }
     
 }

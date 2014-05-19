@@ -29,6 +29,7 @@ public class Bank {
      * @param type Tipo di carta voluto
      *
      * @return una Card del tipo chiesto
+     *
      * @throws Exception Se la carta non c'è
      */
     public Card getCard(RegionType type) throws MissingCardException {
@@ -45,6 +46,19 @@ public class Bank {
             }
         }
         throw new MissingCardException(missingCardMessage);
+    }
+
+    public Fence getFence() {
+        //TODO eccezione qui o in numberOfUsedFence?
+        //salvo il primo recinto che ho
+        int position = this.numberOfUsedFence();
+        if (position >= 0 && position < this.unusedFences.length) { //se l'indice ha senso
+            Fence availableFence = unusedFences[this.numberOfUsedFence()]; //salva il recinto
+            unusedFences[this.numberOfUsedFence()] = null; //annulla il riferimento nell'arrray
+            return availableFence;//ritorna il recinto
+        } else {
+         throw new FenceFinishedException("Non ci sono più recinti");
+        }
     }
 
     /**
@@ -77,18 +91,21 @@ public class Bank {
     public void loadCard(Card card, int position) {
         unusedCards[position] = card;
     }
+
     /**
      * Restitutisce il numero di recinti ceduti dalla banca
+     *
      * @return Il numero di recinti usati
      */
     public int numberOfUsedFence() {
         int i; //serve a contare quanti recinti sono stati dati
         for (i = 0; i < unusedFences.length; i++) { //scorri l'array
             if (unusedFences[i] != null) //al primo recinto disponibile               
+            {
                 return i;         //restituisci quanti ne sono stati dati        }            
+            }
         }
-        return i; //unico caso tutti i recinti dati...male male
+        return -1; //unico caso tutti i recinti dati...male male
     }
-
 
 }
