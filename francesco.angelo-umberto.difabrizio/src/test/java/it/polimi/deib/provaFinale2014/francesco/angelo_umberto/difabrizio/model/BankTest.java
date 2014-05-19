@@ -15,23 +15,38 @@ public class BankTest {
     }
 
     /**
-     * Test of getCard method, of class Bank.
+     * Test dei costruttori di Bank e Card.
+     * Test dei metodi loadCard e getCard di Bank
      * @throws java.lang.Exception
      */
     @Test
     public void testGetCard() throws Exception {
         System.out.println("getCard");
-        RegionType type = RegionType.COUNTRYSIDE;
-        Bank instance = new Bank(3, 3);
-        Card expResult = new Card(2, type);
-        instance.loadCard(expResult, 0);
+        RegionType type = RegionType.COUNTRYSIDE; //creo una carta country
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(), GameConstants.NUM_FENCES.getValue()); //inizializzo una bank con 3 carte e 3 recinti
+        Card expResult = new Card(2, type); //creo una carta di valore 2 e tipo country
+        instance.loadCard(expResult, RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());//la carico in corrispondenza di dove inizia il suo indice(2)
         try{
             Card result = instance.getCard(type);
-            assertSame("Card aggiunta =! carta messa",expResult, result);
+            assertSame("Card aggiunta == carta ricevuta",expResult, result);
         }catch(MissingCardException e){
-            fail("get Card solleva eccezione quando provo a prelevare "
+            fail("get Card solleva eccezione quando provo a prelevare "+e.getMessage()
                     + "una carte di un tipo presente fra le cards");
         }
+        
+    }
+    //TODO commenta e finisci
+    @Test (expected = MissingCardException.class)
+    public void testGetCardException() throws MissingCardException{
+        System.out.println("getCard");
+        RegionType type = RegionType.COUNTRYSIDE; //creo una carta country
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(), GameConstants.NUM_FENCES.getValue()); //inizializzo una bank con 3 carte e 3 recinti
+        Card expResult = new Card(2, type); //creo una carta di valore 2 e tipo country
+        //instance.loadCard(expResult, RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());//la carico in corrispondenza di dove inizia il suo indice(2)
+        
+            Card result = instance.getCard(type);
+            assertSame("Card aggiunta == carta ricevuta",expResult, result);
+       
         
     }
     
