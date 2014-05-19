@@ -27,14 +27,12 @@ public class ServerManager {
 //    private final int SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN = 10; 
     //puramente indicativo, tanto ho messo threadcore = al massimo dei thread attivi
     //serve solo con ThreadPoolExecutor
-
 //    private final int MAX_QUEUED_GAMES = 2; //serve solo per ThreadPoolExecutor
-    
     private final int secondsBeforeAcceptTimeout; //modifica qui per cambiare il timeout della accept per la connessione ad una partita
     private final int secondsBeforeRefreshNumberOfGamesActive; //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
     private final int timeoutRefreshNumberOfGames;
     private final int timeoutAccept;
-    
+
     //constanti generiche
     private final int NUMBER_OF_TIMER = 1;
     private final int MILLISECONDS_IN_SECONDS = 1000;
@@ -111,29 +109,13 @@ public class ServerManager {
     private void handleClientRequest(ServerSocket serverSocket) {
         ArrayList<Socket> clientSockets;
         ExecutorService executor = Executors.newCachedThreadPool();
-//        //********* Tutta questa parte può essere usata per gestire il numero di serverThread creata ma è un bazooca
-//        //TODO junk: forse tutta sta parte di executor è barocca, magari posso facilmente usare solo le slide
-//        //creo il mio handler per il rifiuto dei client
-//        ClientRejectionHandler rejectionHandler = new ClientRejectionHandler();
-//        //questa factory crea un thread quando necessario e se può li riusa
-//        ThreadFactory threadFactory = Executors.defaultThreadFactory();
-//        // esecutore che si occupa ti avviare il thread di gestione di un gioco
-//        ThreadPoolExecutor serverExecutorPool
-//                = new ThreadPoolExecutor(MAX_NUMBER_OF_GAMES,
-//                        MAX_NUMBER_OF_GAMES,
-//                        SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN,
-//                        TimeUnit.SECONDS,
-//                        new ArrayBlockingQueue<Runnable>(MAX_QUEUED_GAMES),
-//                        threadFactory,
-//                        rejectionHandler);
-
         while (true) {
             try {//TODO implementare il timeOut anche come processo!
                 clientSockets = timedOutAccept(serverSocket, timeoutAccept,
                         maxClientsForGame);
                 //a questo punto ho la lista dei client per una partita
                 if (clientSockets.size() >= minClientsForGame) {
-                    executor.submit( new ServerThread(clientSockets) );
+                    executor.submit(new ServerThread(clientSockets));
                     System.out.println("Partita avviata.");
                     activatedGames++; //essendo static questa variabile potra essere decrementata
                     //dai thread appena prima di terminare
@@ -176,40 +158,6 @@ public class ServerManager {
         } catch (IOException e) {
             System.err.println(e.getMessage()); // errore di connessione col client
             return;
-        }
-    }
-
-    private void handleClientRequestSecondVersion(ServerSocket serverSocket) {//FIXME junk:completamente non funzionante
-        ArrayList<Socket> clientSockets = new ArrayList<Socket>();
-        ExecutorService serverExecutor = Executors.newCachedThreadPool();
-        Future future; // variabile che servirà a collezionare l'exception lanciata dal timer
-        ExecutorService timerExecutor = Executors.newFixedThreadPool(
-                NUMBER_OF_TIMER);
-
-        while (true) {
-            try {
-                clientSockets.add(serverSocket.accept());//aspetto il primo client
-                //avvio il thread del timer
-                future = timerExecutor.submit(new TimerCallable(timeoutAccept));
-                //inizio la lettura di max 6 client
-                for (int i = 0; i < maxClientsForGame - 1; i++) {
-                    clientSockets.add(serverSocket.accept()); //aggiungo man mano i client che si connetton
-                }
-                //se arrivo qui tutti i client si sono connessi prima del timeout quindi uccido il thread del timer
-                timerExecutor.shutdownNow();
-                try {
-                    future.get();
-                } catch (InterruptedException e) {
-                    //TODO junk: gestire eccezione dovuta al kill del timer sopra
-                }
-                //controllo quanti client ho rimendiato
-                //eventualmente ripeto il tutto
-            } catch (IOException e) {
-                break; //entro qui se il serverSocket viene chiuso
-            } catch (ExecutionException e) {
-                //TODO junk: gestire eccezione che mi arriva dal timerCallable
-                //causata dal timer stesso
-            }
         }
     }
 
