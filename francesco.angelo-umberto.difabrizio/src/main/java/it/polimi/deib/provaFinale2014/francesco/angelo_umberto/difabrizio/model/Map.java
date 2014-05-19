@@ -1,5 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
 
 public class Map {
@@ -23,19 +25,20 @@ public class Map {
     //TODO: compattare convertStringToStreet e convertStringTo Region in un metodo di Node?
     public Street convertStringToStreet(String streetId) throws StreetNotFoundException {
         int id = Integer.parseInt(streetId);
-        if (id < GameConstants.NUM_STREETS.getValue()) {
+        if (id >= 0 && id < GameConstants.NUM_STREETS.getValue() &&
+                this.streets[Integer.parseInt(streetId)] != null) {//se l'id è nel range dell'array e quello che c'è dentro non è null
             return (Street) this.streets[Integer.parseInt(streetId)];
         } else {
-            throw new StreetNotFoundException("strada non esistente");
+            throw new StreetNotFoundException("Strada non esistente");
         }
     }
 
     public Region convertStringToRegion(String regionId) throws RegionNotFoundException {
         int id = Integer.parseInt(regionId);
-        if (id < GameConstants.NUM_REGIONS.getValue()) {
+        if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue()) {
             return (Region) this.regions[id];
         } else {
-            throw new RegionNotFoundException("regione non esistente");
+            throw new RegionNotFoundException("Regione non esistente");
         }
     }
 
