@@ -17,5 +17,7 @@ public abstract class SpecialAnimal {
     public void setMyRegion(Region myRegion) {
         this.myRegion = myRegion;
     }
+    @Override
+    public abstract String toString();
     
 }

@@ -27,13 +27,6 @@ public class Shepherd {
     private void setStreet(Street street) {
         this.street = street;
     }
-/**
- * imposta la somma totale dei soldi del pastore
- * @param amount è la somma totale dei soldi da impostare
- */
-    public void setWalletAmount(int amount) {
-        this.wallet.setAmount(amount);
-    }
     
     public void moveTo(Street street){
         this.setStreet(street);

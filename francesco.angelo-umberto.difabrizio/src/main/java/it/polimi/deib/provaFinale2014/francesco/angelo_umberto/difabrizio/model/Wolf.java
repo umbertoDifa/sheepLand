@@ -20,6 +20,11 @@ public class Wolf extends SpecialAnimal {
                     "La strada è sbarrata il lupo non può passare");
         }
     }
-;
+
+    @Override
+    public String toString() {
+        return "Wolf";
+    }
+    
 
 }

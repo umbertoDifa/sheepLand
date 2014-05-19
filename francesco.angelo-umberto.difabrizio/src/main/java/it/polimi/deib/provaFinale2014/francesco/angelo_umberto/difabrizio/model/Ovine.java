@@ -13,10 +13,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 public class Ovine {
     private OvineType type;
     
-    public void setOvineType(OvineType type){
-        this.type = type;
-    }
-    
     public Ovine(OvineType type){
         this.type = type;
     }
