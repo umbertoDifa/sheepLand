@@ -1,38 +1,57 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import java.util.ArrayList;
-
+/**
+ * Rappresenta una Regione. E' un nodo della mappa.
+ * @author Umberto
+ */
 public class Region extends Node {
 
     final private RegionType type;
     private ArrayList<Ovine> myOvines = new ArrayList<Ovine>();
-
+    
+    /**
+     * Costruisce una regione di tipo a caso fra i tipi di regione
+     */
     public Region() {
         super();
         this.type = RegionType.getDefaultRegionType();
     }
-
+    
+    /**
+     * Costruisce una regione del tipo specificato
+     * @param type Tipo di regione da costruire
+     */
     public Region(RegionType type) {
         super();
         this.type = type;
     }
-
+    /**
+     * 
+     * @return Il tipo di regione
+     */
     public RegionType getType() {
         return type;
     }
-
+    /**
+     * 
+     * @return La lista degli ovini in una regione
+     */
     public ArrayList<Ovine> getMyOvines() {
         return myOvines;
     }
-
+    /**
+     * Aggiunge un ovino a quelli presenti in una regione
+     * @param ovine Ovino da aggiungere
+     */
     public void addOvine(Ovine ovine) {
         this.myOvines.add(ovine);
     }
 
     /**
-     * controlla che tutte le strade limitrofe abbiano un recinto
+     * Controlla che tutte le strade limitrofe abbiano un recinto
      *
-     * @return true se e solo se sono tutte recintate
+     * @return True se e solo se tutte le strade sono recintate
      */
     public boolean isAllFenced() {
         ArrayList<Node> endStreets = this.getNeighbourNodes();

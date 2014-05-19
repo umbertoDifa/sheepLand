@@ -1,14 +1,11 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveWolfException;
-
+/**
+ * Lupo
+ * @author Umberto
+ */
 public class Wolf extends SpecialAnimal {
-
-    @Override
-    public void setAt(Region region) {
-        super.setMyRegion(region);
-    }
-    
     @Override
     public void moveThrough(Street street, Region endRegion) throws
             CannotMoveWolfException {

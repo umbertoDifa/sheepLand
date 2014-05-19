@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 /**
- *
+ * Costanti del gioco
  * @author Francesco
  */
 public enum GameConstants {
@@ -22,7 +16,7 @@ public enum GameConstants {
     }
     
     /**
-     * @return valore corrispondente alla costante di inizializzazione del gioco
+     * @return Valore corrispondente alla costante in questione
      */
     public int getValue(){
         return this.value;

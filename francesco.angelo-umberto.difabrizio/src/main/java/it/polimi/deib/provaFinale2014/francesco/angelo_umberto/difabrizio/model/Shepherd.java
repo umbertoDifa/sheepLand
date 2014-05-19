@@ -1,51 +1,68 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import java.util.ArrayList;
 
 /**
+ * Rappresenta il pastore di un giocatore. Gestisce il portafoglio e conosce in
+ * quale strada si trova. Conserva le carte acquistate.
  *
  * @author Francesco
  */
 public class Shepherd {
+
     private Street street;
     private Wallet wallet;
     private ArrayList<Card> myCards = new ArrayList<Card>();
-    
-    public Shepherd(){
+
+    public Shepherd() {
         wallet = new Wallet();
     }
-/**
- * Modifica la strada che occupa il pastore. privato in quanto è invocato da moveTo
- * @param street 
- */
+
+    /**
+     * Modifica la strada che occupa il pastore. privato in quanto è invocato da
+     * moveTo
+     *
+     * @param street Strada in cui spostarsi
+     */
     private void setStreet(Street street) {
         this.street = street;
     }
-    
-    public void moveTo(Street street){
+    /**
+     * Sposta il pastore nella strada passata come parametro
+     * @param street Strada su cui spostare il pastore
+     */
+    public void moveTo(Street street) {
         this.setStreet(street);
     }
+    /**
+     * 
+     * @return Il portafoglio del pastore
+     */
+    public Wallet getWallet() {
+        return wallet;
+    }
     
-	public Wallet getWallet() {
-		return wallet;
-	}
+    /**
+     * 
+     * @return La strada in cui si trova il pastore
+     */
+    public Street getStreet() {
+        return street;
+    }
+    
+    /**
+     * Aggiunge una carta terreno a quelle del pastore
+     * @param card Carta da aggiungere
+     */
+    public void addCard(Card card) {
+        this.myCards.add(card);
+    }
+    /**
+     * Rimuove una carta precisa da quelle appartenenti al pastore
+     * @param card Carta da rimuovere
+     */
+    public void removeCard(Card card) {
+        //TODO ci vuole pure il tipo?
+    }
 
-	public Street getStreet() {
-		return street;
-	}
-	
-	public void addCard(Card card){
-		this.myCards.add(card);
-	}
-        
-        public void removeCard(Card card){
-            //TODO ci vuole pure il tipo?
-        }
-    
 }

@@ -1,33 +1,43 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 /**
+ * Classe ovino. Può rappresentare una pecora, un montone o un agnello
  *
  * @author Francesco
  */
 public class Ovine {
+
     private OvineType type;
-    
-    public Ovine(OvineType type){
+
+    /**
+     * Costruisce un ovino del tipo specificato
+     *
+     * @param type Tipo di ovino che si vuole
+     */
+    public Ovine(OvineType type) {
         this.type = type;
     }
+
     /**
-     * per default l'oggetto ovino viene creato con un tipo casuale
+     * Crea un ovino di un tipo a caso
      */
-    public Ovine(){
+    public Ovine() {
         this.type = OvineType.getRandomOvineType();
     }
-
-	public OvineType getType() {
-		return type;
-	}
-
-	public void setType(OvineType type) {
-		this.type = type;
-	}
+    
+    /**
+     * 
+     * @return Il tipo di ovino
+     */
+    public OvineType getType() {
+        return type;
+    }
+    
+    /**
+     * Imposta il tipo di ovino
+     * @param type Tipo da impostare
+     */
+    public void setType(OvineType type) {
+        this.type = type;
+    }
 }

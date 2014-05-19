@@ -2,13 +2,18 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveBlackSheepException;
 
+/**
+ * Classe pecora nera.
+ * @author Umberto
+ */
 public class BlackSheep extends SpecialAnimal {
-    
-    @Override
-    public void setAt(Region region) {
-        super.setMyRegion(region);
-    }
-    
+    /**
+     * Se la street è libera la attraversa per raggiungere la endRegion
+     * @param street Strada da attraversare
+     * @param endRegion Regione in cui arrivare 
+     * @throws CannotMoveBlackSheepException Se la strada è occupata da un pastore
+     * o da un recinto
+     */
     @Override
     public void moveThrough(Street street, Region endRegion) throws
             CannotMoveBlackSheepException {
@@ -21,7 +26,10 @@ public class BlackSheep extends SpecialAnimal {
     
         }
     }
-
+    /**
+     * 
+     * @return La stringa "Blacksheep"
+     */
     @Override
     public String toString() {
     return "Blacksheep";

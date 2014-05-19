@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
 
 /**
- *
+ *Contiene le carte che non sono state ancora vendute e i recinti non ancora usati.
+ * Se chiesto può tornare sia una carta che un recinto.
  * @author Francesco
  */
 public class Bank {
@@ -23,14 +19,14 @@ public class Bank {
 
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
-     * la ritorna se esiste, altrimenti solleva un eccezione se le carte sono
-     * finite
+     * la ritorna se esiste, altrimenti solleva un eccezione se le carte (di quel tipo)
+     * sono finite
      *
      * @param type Tipo di carta voluto
      *
      * @return una Card del tipo chiesto
      *
-     * @throws Exception Se la carta non c'è
+     * @throws MissingCardException Se la carta non c'è
      */
     public Card getCard(RegionType type) throws MissingCardException {
         String missingCardMessage = "Non ci sono più carte per il tipo " + type.toString(); //preparo un messaggio di errore
@@ -62,20 +58,20 @@ public class Bank {
     }
 
     /**
-     * Crea un recinto non finale e lo aggiunge all'array nella posizione
-     * specificata
+     * Crea un recinto non finale e lo aggiunge all'array dei recinti non usati
+     * nella posizione specificata
      *
-     * @param position
+     * @param position Posizione in cui inserire il recinto
      */
     public void loadFence(int position) {
         unusedFences[position] = new Fence(false);
     }
 
     /**
-     * Crea un recinto finale e lo aggiunge all'array nella posizione
-     * specificata
+     * Crea un recinto finale e lo aggiunge all'array dei recinti non usati 
+     * nella posizione specificata
      *
-     * @param position
+     * @param position Posizione in cui inserire il recinto
      */
     public void loadFinalFence(int position) {
         unusedFences[position] = new Fence(true);
