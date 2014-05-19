@@ -6,8 +6,9 @@ public class Wolf extends SpecialAnimal {
 
     @Override
     public void setAt(Region region) {
+        super.setMyRegion(region);
     }
-
+    
     @Override
     public void moveThrough(Street street, Region endRegion) throws
             CannotMoveWolfException {

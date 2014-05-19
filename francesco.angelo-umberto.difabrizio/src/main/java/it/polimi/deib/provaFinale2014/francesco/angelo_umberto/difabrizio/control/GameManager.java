@@ -81,7 +81,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * animale il cui tipo è scelto in maniera randomica
      */
     private void setUpAnimals() {
-        int SHEEPSBURG_ID = 12;
+        int SHEEPSBURG_ID = 18;
         Region[] region = this.map.getRegions();//recupera l'array delle regioni
         for (Region reg : region) { //per ogni regione
             reg.addOvine(new Ovine());//aggiungi un ovino (a caso)          
@@ -276,7 +276,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         String stringedStreet = this.server.talkTo(this.playersHashCode[player],
                 "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
-        //traducila in oggetto steet
+        //traducila in oggetto steet TODO:raccogliere eccezione
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
         if (!chosenStreet.isFree()) { //se la strada è occuapata
             throw new BusyStreetException(errorString); //solleva eccezione
