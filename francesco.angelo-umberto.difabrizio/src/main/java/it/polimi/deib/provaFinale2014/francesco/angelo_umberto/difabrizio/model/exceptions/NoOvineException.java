@@ -4,12 +4,12 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class NodeNotFoundException extends MovementException{
+public class NoOvineException extends MovementException{
 
-    public NodeNotFoundException() {
+    public NoOvineException() {
     }
 
-    public NodeNotFoundException(String message) {
+    public NoOvineException(String message) {
         super(message);
     }
 
