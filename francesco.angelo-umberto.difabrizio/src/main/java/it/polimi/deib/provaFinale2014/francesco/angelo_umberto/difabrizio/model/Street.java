@@ -42,5 +42,13 @@ public class Street extends Node {
     public void setValue(int value) {
         this.value = value;
     }
+    /**
+     * Dato un pastore shepherd dice se si trova o no su quella strada
+     * @param shepherd
+     * @return true se il pastore è sulla strada, false altrimenti
+     */
+    public boolean isShepherdThere(Shepherd shepherd){
+        return shepherd == this.shepherd;
+    }
 
 }
