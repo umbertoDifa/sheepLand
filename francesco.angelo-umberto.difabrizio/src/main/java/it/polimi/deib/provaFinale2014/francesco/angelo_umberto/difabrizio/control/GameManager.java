@@ -3,9 +3,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveWolfException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveBlackSheepException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
@@ -14,6 +13,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
@@ -207,37 +207,19 @@ public class GameManager {//TODO: pattern memento per ripristini?
         while (!(lastRound && currentPlayer == this.firstPlayer)) {//se non è l'ultimo giro o il giocatore non è l'ultimo del giro
             try { //prova a fare un turno
                 this.executeShift(currentPlayer);
-            } catch (FinishedFencesException e) { //se finiscono i recinti
-                //i recinti sono finiti chiama l'ultimo giro
+            } catch (FinishedFencesException e) { //se finiscono i recinti durante quel turno
+                //chiama l'ultimo giro
                 lastRound = true;
             } finally {//comunque vada
-                //aggiorno il player che gioca in modulo playersNumber
+                //aggiorno il player che gioca 
                 currentPlayer++;
-                currentPlayer %= this.playersNumber;
-                //controllo se ho il fine giro per muovere il lupo
+                currentPlayer %= this.playersNumber; //conto in modulo playersNumber
+                //controllo se ho il fine giro per:
+                //1)avviare il market
+                //2)muovere il lupo
                 if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
-                    //calcolo su quale strada mi vorrebbe far passare il dado sapendo di partire dalla regione del lupo
-                    Region actualWolfRegion = this.map.getWolf().getMyRegion();
-                    Street potentialWalkthroughStreet = this.map.getStreetByValue(
-                            actualWolfRegion,
-                            Dice.getRandomValue());
-                    try {
-                        if (potentialWalkthroughStreet != null) {
-                            Region endRegion = this.map.getEndRegion(
-                                    actualWolfRegion,
-                                    potentialWalkthroughStreet);
-                            //cerco di farcelo passare
-                            this.map.getWolf().moveThrough(
-                                    potentialWalkthroughStreet, endRegion);
-                            //se tutto ok
-                            //TODO:broadcast lupo mosso
-                        } else {
-                            throw new CannotMoveWolfException(
-                                    "La strada non esiste.");
-                        }
-                    } catch (CannotMoveWolfException ex) {//se non può avviso e lo lascio dov'è
-                        //TODO: brodcast lupo can't move
-                    }
+                    //calcolo su quale strada dovrebbe andare il lupo secondo il dado
+                    this.moveSpecialAnimal(this.map.getWolf());
                 }
             }
         }//while
@@ -246,30 +228,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
-        //TODO SUPERIMPORTANTE: il tentativo di muovere la pecora nera qua sotto
-        //è praticamente identico a quelle del lupo....metodino?
-        //cerca la strada che potrebbe attraversare la pecora nera
-        try {
-            //salvo la regione in cui si trova la pecora
-            Region actualBlacksheepRegion = this.map.getBlackSheep().getMyRegion();
-            //cerco la strada che dovrebbe attraversare
-            Street potentialWalkthroughStreet = this.map.getStreetByValue(
-                    actualBlacksheepRegion,
-                    Dice.getRandomValue());
-            if (potentialWalkthroughStreet != null) {//se esiste
-                Region endRegion = this.map.getEndRegion(actualBlacksheepRegion,
-                        potentialWalkthroughStreet);
-                //cerco di far passare la pecora nera
-                this.map.getBlackSheep().moveThrough(potentialWalkthroughStreet,
-                        endRegion);
-                //tutto ok
-                //TODO:broadcast pecora mossa
-            } else {
-                throw new CannotMoveBlackSheepException("La strada non esiste");
-            }
-        } catch (CannotMoveBlackSheepException ex) {
-            //TODO: broadcast sheep stays in place
-        }
+        this.moveSpecialAnimal(this.map.getBlackSheep());
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
             while (true) {
                 try {
@@ -299,10 +258,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
         return chosenStreet; //altrimenti ritorna la strada
     }
-    
-    private void askUntilRightAnswer(Object query){
-        while(true){
-            
+
+    private void askUntilRightAnswer(Object query) {
+        while (true) {
+
         }
     }
 
@@ -312,6 +271,37 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     public Map getMap() {
         return map;
+    }
+
+    private void broadcastMessage(String message) {
+        for (int i = 0; i < this.playersNumber; i++) {
+            this.server.sendTo(this.playersHashCode[i], message);
+        }
+    }
+
+    private void moveSpecialAnimal(SpecialAnimal animal) { //TODO:rivedi un secondo
+        //salvo la regione in cui si trova l'animale
+        Region actualAnimalRegion = animal.getMyRegion();
+        //cerco la strada che dovrebbe attraversare
+        Street potentialWalkthroughStreet = this.map.getStreetByValue(
+                actualAnimalRegion,
+                Dice.getRandomValue());
+        try {
+            if (potentialWalkthroughStreet != null) {//se esiste
+                Region endRegion = this.map.getEndRegion(actualAnimalRegion,
+                        potentialWalkthroughStreet);
+                //cerco di farlo passare 
+                animal.moveThrough(potentialWalkthroughStreet,
+                        endRegion);
+                //tutto ok
+                this.broadcastMessage(animal.toString() + "mosso!");
+            } else {
+                throw new CannotMoveAnimalException("La strada non esiste");
+            }
+
+        } catch (CannotMoveAnimalException ex) {
+            this.broadcastMessage(ex.getMessage());
+        }
     }
 
 }
