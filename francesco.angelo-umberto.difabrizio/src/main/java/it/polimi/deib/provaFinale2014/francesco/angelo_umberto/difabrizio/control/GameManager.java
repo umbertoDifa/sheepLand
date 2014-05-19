@@ -1,7 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveWolfException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
@@ -79,7 +79,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.setUpCards();
         this.setUpFences();
         this.setUpShift();
-        this.playTheGame();
     }
 
     /**
@@ -272,10 +271,14 @@ public class GameManager {//TODO: pattern memento per ripristini?
             //TODO: broadcast sheep stays in place
         }
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
-            try {
-                this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
-            } catch (ActionNotFoundException ex) {
-                this.server.sendTo(playersHashCode[i], ex.getMessage());
+            while (true) {
+                try {
+                    this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
+                    break; //se non arriva l'eccezione
+                } catch (ActionNotFoundException ex) {
+                    //avvisa e riavvia la procedura di scelta dell'i-esima azione
+                    this.server.sendTo(playersHashCode[i], ex.getMessage());
+                }
             }
         }
         if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
@@ -295,6 +298,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
             throw new BusyStreetException(errorString); //solleva eccezione
         }
         return chosenStreet; //altrimenti ritorna la strada
+    }
+    
+    private void askUntilRightAnswer(Object query){
+        while(true){
+            
+        }
     }
 
     public ServerThread getServer() {

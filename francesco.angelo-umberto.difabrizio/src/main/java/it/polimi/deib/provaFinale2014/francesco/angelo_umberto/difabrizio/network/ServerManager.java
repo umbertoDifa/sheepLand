@@ -128,7 +128,7 @@ public class ServerManager {
 //                        rejectionHandler);
 
         while (true) {
-            try {
+            try {//TODO implementare il timeOut anche come processo!
                 clientSockets = timedOutAccept(serverSocket, timeoutAccept,
                         maxClientsForGame);
                 //a questo punto ho la lista dei client per una partita
@@ -150,7 +150,7 @@ public class ServerManager {
 
                 }
             } catch (IOException e) {
-                break; //entro qui quando il serverSocket è chiuso
+                break; //TODO: che faccio ?entro qui quando il serverSocket è chiuso
             }
         }
         executor.shutdown();

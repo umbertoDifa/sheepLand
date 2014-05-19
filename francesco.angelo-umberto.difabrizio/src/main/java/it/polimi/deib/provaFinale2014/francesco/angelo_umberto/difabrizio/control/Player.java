@@ -34,9 +34,12 @@ public class Player {
     }
 
     public void chooseAndMakeAction() throws ActionNotFoundException {
-        String[] possibleActions = {"1- Sposta una pecora", "2- Sposta pastore",
-                                    "3-Compra terreno", "4-Accoppia pecore", "5-Accoppia montone e pecora",
-                                    "6-Abbatti pecora"};
+
+        //crea array con le possibili scelte //TODO montone agnello
+        String[] possibleActions = {"1- Sposta una pecora", "2-Sposta Montone", "3-Sposta agnello", "4- Sposta pastore",
+                                    "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
+                                    "8-Abbatti pecora"};
+
         //raccogli la scelta trasformando la string in int
         int actionChoice = Integer.parseInt(this.gameManager.getServer().talkTo(
                 this.hashCode(),
@@ -47,22 +50,29 @@ public class Player {
                 this.moveSheep();
                 break;
             case 2:
-                this.moveShepherd();
+                this.moveRam();
                 break;
             case 3:
-                this.buyLand();
+                this.moveLamb();
                 break;
             case 4:
-                this.mateSheeps();
+                this.moveShepherd();
                 break;
             case 5:
-                this.mateSheepAndRam();
+                this.buyLand();
                 break;
             case 6:
+                this.mateSheeps();
+                break;
+            case 7:
+                this.mateSheepAndRam();
+                break;
+            case 8:
                 this.killSheep();
                 break;
             default:
-                throw new ActionNotFoundException("Azione non esistente");
+                throw new ActionNotFoundException(
+                        "Azione non esistente.Prego inserire una scelta valida.");
         }
     }
 
@@ -77,7 +87,7 @@ public class Player {
                 Region startRegion = this.gameManager.getMap().convertStringToRegion(
                         stringedRegion);
                 Ovine sheepToKill = startRegion.hasOvine(OvineType.SHEEP);
-                if (sheepToKill != null ) {// se c'è una pecora nella regione
+                if (sheepToKill != null) {// se c'è una pecora nella regione
                     //chiedi attraverso quale strada
                     String stringedStreet = this.gameManager.getServer().talkTo(
                             this.hashCode(), "Attraverso quale strada?");
@@ -137,6 +147,14 @@ public class Player {
     }
 
     private void killSheep() {
+        //TODO
+    }
+
+    private void moveRam() {
+    //TODO
+    }
+
+    private void moveLamb() {
         //TODO
     }
 }
