@@ -1,10 +1,10 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveAnimalException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
@@ -15,9 +15,13 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -234,7 +238,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 try {
                     this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
                     break; //se non arriva l'eccezione
-                } catch (ActionNotFoundException ex) {
+                } catch (ActionException ex) {
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
                     this.server.sendTo(playersHashCode[i], ex.getMessage());
                 }

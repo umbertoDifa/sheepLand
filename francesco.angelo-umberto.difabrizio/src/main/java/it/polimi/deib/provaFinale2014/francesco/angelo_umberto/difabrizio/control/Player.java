@@ -6,8 +6,9 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MovementException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import java.util.Arrays;
 
 /**
@@ -33,7 +34,7 @@ public class Player {
         return shepherd;
     }
 
-    public void chooseAndMakeAction() throws ActionNotFoundException {
+    public void chooseAndMakeAction() throws ActionNotFoundException, ActionCancelledException {
 
         //crea array con le possibili scelte //TODO montone agnello
         String[] possibleActions = {"1- Sposta una pecora", "2-Sposta Montone", "3-Sposta agnello", "4- Sposta pastore",
@@ -47,13 +48,13 @@ public class Player {
 //TODO: chissa se funziona sta roba sopra 
         switch (actionChoice) {
             case 1:
-                this.moveSheep();
+                this.moveOvine(OvineType.SHEEP);
                 break;
             case 2:
-                this.moveRam();
+                this.moveOvine(OvineType.RAM);
                 break;
             case 3:
-                this.moveLamb();
+                this.moveOvine(OvineType.LAMB);
                 break;
             case 4:
                 this.moveShepherd();
@@ -76,58 +77,54 @@ public class Player {
         }
     }
 
-    private void moveSheep() {
+    private void moveOvine(OvineType type) throws ActionCancelledException {
         //TODO       
         boolean tryAction = true;
         while (tryAction) {
             try {
                 //chiedi da quale regione
                 String stringedRegion = this.gameManager.getServer().talkTo(
-                        this.hashCode(), "Da dove vuoi spostare la pecora?");
+                        this.hashCode(), "Da dove vuoi spostare l'ovino?");
                 Region startRegion = this.gameManager.getMap().convertStringToRegion(
                         stringedRegion);
-                Ovine sheepToKill = startRegion.hasOvine(OvineType.SHEEP);
-                if (sheepToKill != null) {// se c'è una pecora nella regione
+                Ovine ovineToKill = startRegion.hasOvine(type);
+                if (ovineToKill != null) {// se c'è quell'ovino nella regione
                     //chiedi attraverso quale strada
                     String stringedStreet = this.gameManager.getServer().talkTo(
                             this.hashCode(), "Attraverso quale strada?");
                     Street throughStreet = this.gameManager.getMap().convertStringToStreet(
                             stringedRegion);
-                    if (throughStreet.isFree()) {// se la strada è free 
+                    if (!throughStreet.hasFence() && throughStreet.isShepherdThere(
+                            this.shepherd)) {// se la strada non ha recinti e il tuo pastore è li 
                         //trova la regione in cui andrà
                         Region endRegion = this.gameManager.getMap().getEndRegion(
                                 startRegion, throughStreet); //questa non dovrebbe mai fallire!
                         //spostala                        
-                        startRegion.removeOvine(sheepToKill);  //non fallisce perchè sopra ho controllato se c'erano delle pecore
-                        endRegion.addOvine(new Ovine(OvineType.SHEEP));
+                        startRegion.removeOvine(ovineToKill);  //non fallisce perchè sopra ho controllato se c'erano delle pecore
+                        endRegion.addOvine(new Ovine(type));
                         //informa
                         this.gameManager.getServer().sendTo(this.hashCode(),
-                                "Pecora spostata!");
+                                "Movimento di" + type.toString() + "effettuato!");
                     }
                 } else {
-                    //TODO non ci sono ovini li
+                    throw new NoOvineException(
+                            "Non ci sono" + type.toString() + "nella regione selezionata.");
                 }
-            } catch (RegionNotFoundException ex) {
+            } catch (MovementException ex) { //se non c'è l'ovino, o la strada o la regione
                 //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
                 Character choice = this.gameManager.getServer().talkTo(
                         this.hashCode(),
                         ex.getMessage() + " Riprovare(R) o Annullare(A)?").charAt(
                                 0); //TODO vedi che qui c'è una getMessage da riempire 
+                //TODO se vuole annullare non gli devo togliere l'azione
                 switch (choice) {
                     case 'R':
                         break;
                     default: //se vuole annullare o se mette una roba a caso
-                        tryAction = false;
-                        break;
-                }
-
-            } catch (StreetNotFoundException ex) {
-                //TODO da compattare con quella sopra
-                this.gameManager.getServer().talkTo(this.hashCode(),
-                        "Strada non esistente.Riprovare(R) o Annullare(A)?");
-
-            }
-        }
+                        throw new ActionCancelledException("Azione annullata");                        
+                }//switch
+            }//catch
+        }//while
     }
 
     private void moveShepherd() {
@@ -150,14 +147,6 @@ public class Player {
         //TODO
     }
 
-    private void moveRam() {
-    //TODO
-    }
-
-    private void moveLamb() {
-        //TODO
-    }
-
     void sellCards() {
         //TODO
     }
@@ -165,4 +154,5 @@ public class Player {
     void buyCards() {
         //TODO
     }
+
 }
