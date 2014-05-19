@@ -214,11 +214,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 //aggiorno il player che gioca 
                 currentPlayer++;
                 currentPlayer %= this.playersNumber; //conto in modulo playersNumber
-                //controllo se ho il fine giro per:
-                //1)avviare il market
-                //2)muovere il lupo
+                //controllo se ho finito il giro                            
                 if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
-                    //calcolo su quale strada dovrebbe andare il lupo secondo il dado
+                    //1)avviare il market  
+                    this.startMarket();
+                    //2)muovo il lupo
                     this.moveSpecialAnimal(this.map.getWolf());
                 }
             }
@@ -301,6 +301,22 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         } catch (CannotMoveAnimalException ex) {
             this.broadcastMessage(ex.getMessage());
+        }
+    }
+
+    private void startMarket() {
+        int i; //iteratore sui player
+        for (i = 0; i < this.playersNumber; i++) {//per ogni player 
+            //raccogli cosa vuole vendere
+            this.players.get(i).sellCards();
+        }
+        //lancia il dado per sapere il primo a comprare
+        int playerThatBuys = Dice.getRandomValue() % this.playersNumber; //il modulo serve ad essere sicuro che venga selezionato un player esistente
+        for (i = 0; i < this.playersNumber; i++) {//per ogni player 
+            //chiedi se vuole comprare           
+            this.players.get(playerThatBuys).buyCards();
+            //aggiorno il prossimo player
+            playerThatBuys = (playerThatBuys + 1) % this.playersNumber;
         }
     }
 

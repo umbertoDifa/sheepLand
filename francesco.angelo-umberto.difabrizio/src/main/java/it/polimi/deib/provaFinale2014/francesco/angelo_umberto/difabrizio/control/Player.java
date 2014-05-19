@@ -157,4 +157,12 @@ public class Player {
     private void moveLamb() {
         //TODO
     }
+
+    void sellCards() {
+        //TODO
+    }
+
+    void buyCards() {
+        //TODO
+    }
 }
