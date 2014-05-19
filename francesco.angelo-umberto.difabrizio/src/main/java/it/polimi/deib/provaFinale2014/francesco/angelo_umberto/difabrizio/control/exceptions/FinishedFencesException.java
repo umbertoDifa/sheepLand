@@ -1,4 +1,4 @@
-package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
+package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions;
 
 /**
  * Eccezione sollevata se finiscono i recinti
