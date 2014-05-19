@@ -1,9 +1,13 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.Arrays;
 
 /**
@@ -72,7 +76,8 @@ public class Player {
                         this.hashCode(), "Da dove vuoi spostare la pecora?");
                 Region startRegion = this.gameManager.getMap().convertStringToRegion(
                         stringedRegion);
-                if (startRegion.hasOvine(OvineType.SHEEP)) {// se ci sono pecore nella regione
+                Ovine sheepToKill = startRegion.hasOvine(OvineType.SHEEP);
+                if (sheepToKill != null ) {// se c'è una pecora nella regione
                     //chiedi attraverso quale strada
                     String stringedStreet = this.gameManager.getServer().talkTo(
                             this.hashCode(), "Attraverso quale strada?");
@@ -82,10 +87,8 @@ public class Player {
                         //trova la regione in cui andrà
                         Region endRegion = this.gameManager.getMap().getEndRegion(
                                 startRegion, throughStreet); //questa non dovrebbe mai fallire!
-                        //spostala
-                        //TODO:occhio che qua io tolgo un ovino a caso che va bene se e solo se il giocatore non sceglie COSA spostare da una regoine all'altra
-                        //nel caso removeOvine dovrebbe prendere anche il tipo da rimuovere....
-                        startRegion.removeOvine(OvineType.SHEEP);  //non fallisce perchè sopra ho controllato se c'erano delle pecore
+                        //spostala                        
+                        startRegion.removeOvine(sheepToKill);  //non fallisce perchè sopra ho controllato se c'erano delle pecore
                         endRegion.addOvine(new Ovine(OvineType.SHEEP));
                         //informa
                         this.gameManager.getServer().sendTo(this.hashCode(),
@@ -98,7 +101,7 @@ public class Player {
                 //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
                 Character choice = this.gameManager.getServer().talkTo(
                         this.hashCode(),
-                        ex.getMessage + " Riprovare(R) o Annullare(A)?").charAt(
+                        ex.getMessage() + " Riprovare(R) o Annullare(A)?").charAt(
                                 0); //TODO vedi che qui c'è una getMessage da riempire 
                 switch (choice) {
                     case 'R':

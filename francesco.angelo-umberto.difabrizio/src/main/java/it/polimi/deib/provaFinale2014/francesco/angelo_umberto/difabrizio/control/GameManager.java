@@ -1,5 +1,11 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveWolfException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveBlackSheepException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
@@ -95,29 +101,35 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
     private void setUpShepherds() {
-        Street chosenStreet;
+        Street chosenStreet = new Street(0); //HACK: creo cmq una strada con valore 0 così non ho errori 
+        //perchè la variabile potrebbe essere null fuori dal while infatti tutti i controlli necessari li faccio
+        //in askStreet e nelle funzioni da lei chiamate che mi ridanno una delle eccezioni che gestisco
         for (int i = 0; i < this.playersNumber; i++) {
             //ciclo che chiede la strada per un pastore ogni volta che questa risulta già occupata
             while (true) {
                 try {   //prova a chiedere la strada
                     chosenStreet = askStreet(i);    //se ho un valore di ritorno
                     break;                          //brekka
-                } catch (BusyStreetException e) {    //se ho un eccezione
+                } catch (StreetNotFoundException ex) {//se strada non trovata 
+                    this.server.sendTo(this.playersHashCode[i], ex.getMessage()); //invia strada non trovata e ricomincia loop
+                } catch (BusyStreetException e) {    //se la strada è occupata
                     //manda il messaggio di errore al client e ricomincia il loop
                     this.server.sendTo(this.playersHashCode[i], e.getMessage());
-                }
-            }
-            this.players.get(i).getShepherd().moveTo(chosenStreet); //sposta il pastore 
-            //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
-            //quelle del pastore corrispondente al mio player
-            this.players.get(i).getShepherd().addCard(new Card(0, RegionType.
-                    getRandomRegionType())); //aggiungi la carta
-            //invia conferma riepilogativa
-            this.server.sendTo(this.playersHashCode[i],
-                    "Pastore posizionato. Hai una carta terreno di tipo: " + RegionType.MOUNTAIN.
-                    toString());
-        }
 
+                }
+                this.players.get(i).getShepherd().moveTo(chosenStreet); //sposta il pastore 
+                //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
+                //quelle del pastore corrispondente al mio player
+                this.players.get(i).getShepherd().addCard(new Card(0,
+                        RegionType.
+                        getRandomRegionType())); //aggiungi la carta
+                //invia conferma riepilogativa
+                this.server.sendTo(this.playersHashCode[i],
+                        "Pastore posizionato. Hai una carta terreno di tipo: " + RegionType.MOUNTAIN.
+                        toString());
+            }
+
+        }
     }
 
     private void setUpShift() {
@@ -271,12 +283,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
-    private Street askStreet(int player) throws BusyStreetException {
+    private Street askStreet(int player) throws StreetNotFoundException,
+                                                BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
 
         String stringedStreet = this.server.talkTo(this.playersHashCode[player],
                 "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
-        //traducila in oggetto steet TODO:raccogliere eccezione
+        //traducila in oggetto steet 
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
         if (!chosenStreet.isFree()) { //se la strada è occuapata
             throw new BusyStreetException(errorString); //solleva eccezione
@@ -284,13 +297,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return chosenStreet; //altrimenti ritorna la strada
     }
 
-    /**
-     * Controlla se street è libera
-     *
-     * @param street
-     *
-     * @return true se libera, false altrimenti
-     */
     public ServerThread getServer() {
         return server;
     }
@@ -298,7 +304,5 @@ public class GameManager {//TODO: pattern memento per ripristini?
     public Map getMap() {
         return map;
     }
-    
-    
 
 }
