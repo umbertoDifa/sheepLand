@@ -147,11 +147,11 @@ public class Player {
         //TODO
     }
 
-    void sellCards() {
+    public void sellCards() {
         //TODO
     }
 
-    void buyCards() {
+    public void buyCards() {
         //TODO
     }
 

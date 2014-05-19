@@ -263,12 +263,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return chosenStreet; //altrimenti ritorna la strada
     }
 
-    private void askUntilRightAnswer(Object query) {
-        while (true) {
-
-        }
-    }
-
     public ServerThread getServer() {
         return server;
     }
