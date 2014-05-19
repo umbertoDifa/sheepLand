@@ -206,18 +206,24 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 //controllo se ho il fine giro per muovere il lupo
                 if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
                     //calcolo su quale strada mi vorrebbe far passare il dado sapendo di partire dalla regione del lupo
+                    Region actualWolfRegion = this.map.getWolf().getMyRegion();
                     Street potentialWalkthroughStreet = this.map.getStreetByValue(
-                            this.map.getWolf().getMyRegion(),
+                            actualWolfRegion,
                             Dice.getRandomValue());
                     try {
-                        if(potentialWalkthroughStreet != null){
-                        //cerco di farcelo passare
-                        this.map.getWolf().moveThrough(
-                                potentialWalkthroughStreet);
-                        //se tutto ok
-                        //TODO:broadcast lupo mosso
+                        if (potentialWalkthroughStreet != null) {
+                            Region endRegion = this.map.getEndRegion(
+                                    actualWolfRegion,
+                                    potentialWalkthroughStreet);
+                            //cerco di farcelo passare
+                            this.map.getWolf().moveThrough(
+                                    potentialWalkthroughStreet, endRegion);
+                            //se tutto ok
+                            //TODO:broadcast lupo mosso
+                        } else {
+                            throw new CannotMoveWolfException(
+                                    "La strada non esiste.");
                         }
-                        else throw new CannotMoveWolfException("La strada non esiste.");
                     } catch (CannotMoveWolfException ex) {//se non può avviso e lo lascio dov'è
                         //TODO: brodcast lupo can't move
                     }
@@ -233,14 +239,23 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //è praticamente identico a quelle del lupo....metodino?
         //cerca la strada che potrebbe attraversare la pecora nera
         try {
-        Street potentialWalkthroughStreet = this.map.getStreetByValue(
-                this.map.getBlackSheep().getMyRegion(), Dice.getRandomValue());
-        if(potentialWalkthroughStreet != null){
-         //cerco di far passare la pecora nera
-            this.map.getBlackSheep().moveThrough(potentialWalkthroughStreet);
-            //tutto ok
-            //TODO:broadcast pecora mossa
-        }else throw new CannotMoveBlackSheepException("La strada non esiste");
+            //salvo la regione in cui si trova la pecora
+            Region actualBlacksheepRegion = this.map.getBlackSheep().getMyRegion();
+            //cerco la strada che dovrebbe attraversare
+            Street potentialWalkthroughStreet = this.map.getStreetByValue(
+                    actualBlacksheepRegion,
+                    Dice.getRandomValue());
+            if (potentialWalkthroughStreet != null) {//se esiste
+                Region endRegion = this.map.getEndRegion(actualBlacksheepRegion,
+                        potentialWalkthroughStreet);
+                //cerco di far passare la pecora nera
+                this.map.getBlackSheep().moveThrough(potentialWalkthroughStreet,
+                        endRegion);
+                //tutto ok
+                //TODO:broadcast pecora mossa
+            } else {
+                throw new CannotMoveBlackSheepException("La strada non esiste");
+            }
         } catch (CannotMoveBlackSheepException ex) {
             //TODO: broadcast sheep stays in place
         }
@@ -279,5 +294,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
     public ServerThread getServer() {
         return server;
     }
+
+    public Map getMap() {
+        return map;
+    }
+    
+    
 
 }
