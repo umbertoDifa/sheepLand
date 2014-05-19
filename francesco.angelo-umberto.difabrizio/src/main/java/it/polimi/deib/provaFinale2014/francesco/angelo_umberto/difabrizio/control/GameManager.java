@@ -295,4 +295,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return server;
     }
 
+    public Map getMap() {
+        return map;
+    }
+    
+    
+
 }
