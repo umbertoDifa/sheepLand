@@ -31,6 +31,10 @@ public class Street extends Node {
         return (this.shepherd != null);
     }
 
+    public void setFence(Fence fence) {
+        this.fence = fence;
+    }
+
     /**
      *
      * @return Vero se e solo non è occupata da un recinto o da un pastore
