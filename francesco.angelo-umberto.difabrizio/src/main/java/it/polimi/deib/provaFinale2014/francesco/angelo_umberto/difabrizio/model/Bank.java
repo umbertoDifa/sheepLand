@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
 
 /**
@@ -53,7 +54,7 @@ public class Bank {
             unusedFences[this.numberOfUsedFence()] = null; //annulla il riferimento nell'arrray
             return availableFence;//ritorna il recinto
         } else {
-         throw new FenceFinishedException("Non ci sono più recinti");
+         throw new FinishedFencesException("Non ci sono più recinti");
         }
     }
 

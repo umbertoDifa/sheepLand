@@ -17,7 +17,7 @@ import java.util.Arrays;
  * @author francesco.angelo-umberto.difabrizio
  */
 public class Player {
-
+    //TODO: pensare modalità 2 giocatori, 2 shepherd ciascuno
     private final Shepherd shepherd;
     private final GameManager gameManager;
 
@@ -86,9 +86,9 @@ public class Player {
                 String stringedRegion = this.gameManager.getServer().talkTo(
                         this.hashCode(), "Da dove vuoi spostare l'ovino?");
                 Region startRegion = this.gameManager.getMap().convertStringToRegion(
-                        stringedRegion);
-                Ovine ovineToKill = startRegion.hasOvine(type);
-                if (ovineToKill != null) {// se c'è quell'ovino nella regione
+                        stringedRegion); //TODO: controllare validità regione, eccezione
+                Ovine ovineToMove = startRegion.hasOvine(type); //TODO: spostare NoOvineException in Ovine
+                if (ovineToMove != null) {// se c'è quell'ovino nella regione
                     //chiedi attraverso quale strada
                     String stringedStreet = this.gameManager.getServer().talkTo(
                             this.hashCode(), "Attraverso quale strada?");
@@ -100,7 +100,7 @@ public class Player {
                         Region endRegion = this.gameManager.getMap().getEndRegion(
                                 startRegion, throughStreet); //questa non dovrebbe mai fallire!
                         //spostala                        
-                        startRegion.removeOvine(ovineToKill);  //non fallisce perchè sopra ho controllato se c'erano delle pecore
+                        startRegion.removeOvine(ovineToMove);  //non fallisce perchè sopra ho controllato se c'erano delle pecore
                         endRegion.addOvine(new Ovine(type));
                         //informa
                         this.gameManager.getServer().sendTo(this.hashCode(),

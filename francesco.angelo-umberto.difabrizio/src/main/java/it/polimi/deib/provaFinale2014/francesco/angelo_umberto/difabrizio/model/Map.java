@@ -46,7 +46,8 @@ public class Map {
 
     public Region convertStringToRegion(String regionId) throws RegionNotFoundException {
         int id = Integer.parseInt(regionId);
-        if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue()) {
+        if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue() &&
+                this.regions[Integer.parseInt(regionId)] != null) {
             return (Region) this.regions[id];
         } else {
             throw new RegionNotFoundException("Regione non esistente");

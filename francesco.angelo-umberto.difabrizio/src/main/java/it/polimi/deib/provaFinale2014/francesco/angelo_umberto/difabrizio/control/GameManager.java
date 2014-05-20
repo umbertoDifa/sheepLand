@@ -46,7 +46,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Crea un GameManager
      *
      * @param playersNumber Numero dei giocatori di una partita
-     * @param server        Thread che gestisce la partita
+     * @param server Thread che gestisce la partita
      */
     public GameManager(int playersNumber, ServerThread server) {
         this.playersNumber = playersNumber;
@@ -87,7 +87,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     /**
      * Per ogni terreno regione della mappa aggiungi un collegamento ad un
-     * animale il cui tipo è scelto in maniera randomica
+     * animale il cui tipo è scelto in maniera randomica e posiziono pecora nera
+     * e lupo a sheepsburg
      */
     private void setUpAnimals() {
         int SHEEPSBURG_ID = 18;
@@ -114,25 +115,26 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     chosenStreet = askStreet(i);    //se ho un valore di ritorno
                     break;                          //brekka
                 } catch (StreetNotFoundException ex) {//se strada non trovata 
-                    this.server.sendTo(this.playersHashCode[i], ex.getMessage()); //invia strada non trovata e ricomincia loop
+                    this.server.sendTo(this.playersHashCode[i], ex.getMessage()); //invio msg strada non trovata e ricomincia loop
                 } catch (BusyStreetException e) {    //se la strada è occupata
                     //manda il messaggio di errore al client e ricomincia il loop
                     this.server.sendTo(this.playersHashCode[i], e.getMessage());
 
                 }
-                this.players.get(i).getShepherd().moveTo(chosenStreet); //sposta il pastore 
-                //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
-                //quelle del pastore corrispondente al mio player
-                this.players.get(i).getShepherd().addCard(new Card(0,
-                        RegionType.
-                        getRandomRegionType())); //aggiungi la carta
-                //invia conferma riepilogativa
-                this.server.sendTo(this.playersHashCode[i],
-                        "Pastore posizionato. Hai una carta terreno di tipo: " + RegionType.MOUNTAIN.
-                        toString());
-            }
-
+            }//while
+            this.players.get(i).getShepherd().moveTo(chosenStreet); //sposta il pastore 
+            //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
+            //quelle del pastore corrispondente al mio player
+            //TODO: carte iniziali crearle o prenderle da banco?
+            this.players.get(i).getShepherd().addCard(new Card(0,
+                    RegionType.
+                    getRandomRegionType())); //aggiungi la carta
+            //invia conferma riepilogativa
+            this.server.sendTo(this.playersHashCode[i],
+                    "Pastore posizionato. Hai una carta terreno di tipo: " + RegionType.MOUNTAIN.
+                    toString());
         }
+
     }
 
     private void setUpShift() {
@@ -179,7 +181,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Crea le carte di tutti i tipi necessari da caricare nel banco
      */
     private void setUpCards() {
-        for (int i = 0; i < RegionType.values().length - 1; i++)            //per ogni tipo di regione - sheepsburg  
+        for (int i = 0; i < RegionType.values().length - 1; i++) //per ogni tipo di regione - sheepsburg  
+        {
             for (int j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) { //per tante quante sono le carte di ogni tipo
                 //crea una carta col valore giusto( j crescente da 0 al max) e tipo giusto(dipendente da i) 
                 Card cardToAdd = new Card(j, RegionType.values()[i]);
@@ -189,6 +192,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 //caricala
                 bank.loadCard(cardToAdd, position);
             }
+        }
 
     }
 
@@ -250,7 +254,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private Street askStreet(int player) throws StreetNotFoundException,
-                                                BusyStreetException {
+            BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
 
         String stringedStreet = this.server.talkTo(this.playersHashCode[player],

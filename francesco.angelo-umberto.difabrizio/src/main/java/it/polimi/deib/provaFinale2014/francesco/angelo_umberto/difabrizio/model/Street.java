@@ -58,6 +58,8 @@ public class Street extends Node {
      * @param shepherd Pastore di cui controllare la posizione sulla strada
      * @return True se il pastore è sulla strada, false altrimenti
      */
+    
+    //TODO: ridondante, usare la strada che fornisce il giocatore
     public boolean isShepherdThere(Shepherd shepherd){
         return shepherd == this.shepherd;
     }
