@@ -1,6 +1,10 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -54,59 +58,112 @@ public class RegionTest {
     }
 
     /**
-     * Test of addOvine method, of class Region.
+     * Test of addOvine method, e removeOvine of class Region.
      */
     @Test
     public void testAllRegionMethods() {
         System.out.println("addOvine");
-        
+
         int numberOfOvine = 5;
         int i;
         int j;
+        int exCounter = 0;
+        int exCounterExpected = 10;
         //creo una regione a caso
         Region instance = new Region();
 
         //creo dei lamb e li aggiungo; 
-        for ( i = 0; i < numberOfOvine; i++) {
-            instance.addOvine( new Ovine(OvineType.LAMB));
+        for (i = 0; i < numberOfOvine; i++) {
+            instance.addOvine(new Ovine(OvineType.LAMB));
         }
         //creo dei sheep e li aggiungo
-        for ( i = 0; i < numberOfOvine; i++) {
+        for (i = 0; i < numberOfOvine; i++) {
             instance.addOvine(new Ovine(OvineType.SHEEP));
         }
         //creo dei ram e li aggiungo
-        for ( i = 0; i < numberOfOvine; i++) {
+        for (i = 0; i < numberOfOvine; i++) {
             instance.addOvine(new Ovine(OvineType.RAM));
         }
-        
+
         //uso la getMyOvines per testare che siano stati inserirti nella regione
         ArrayList<Ovine> myOvines = instance.getMyOvines();
-        
+
         //controllo che ci siano gli ovini cosi come li ho inseriti
         //controllo i lamb; 
-        for ( i = 0; i < numberOfOvine; i++) {
-            assertSame(myOvines.get(i).getType(),OvineType.LAMB);
+        for (i = 0; i < numberOfOvine; i++) {
+            assertSame(myOvines.get(i).getType(), OvineType.LAMB);
         }
         //controllo sheep
-       for ( j = 0; j < numberOfOvine; j++) {
-            assertSame(myOvines.get(i).getType(),OvineType.SHEEP);
+        for (j = 0; j < numberOfOvine; j++, i++) {
+            assertSame(myOvines.get(i).getType(), OvineType.SHEEP);
         }
-        //creo dei ram e li aggiungo
-       for ( j = 0; j < numberOfOvine; j++) {
-            assertSame(myOvines.get(i).getType(),OvineType.RAM);
+        //controllo i ram
+        for (j = 0; j < numberOfOvine; j++, i++) {
+            assertSame(myOvines.get(i).getType(), OvineType.RAM);
         }
-       
-       //elimino tutte le pecore
-       //controllo che non ci siano
-       //controllo che ci siano ancora agnelli e montoni
-       
-       //elimino anche gli agnelli
-       //controllo ci siano sono montoni
-       
-       //elimino i montoni
-       //controllo non ci sia nulla
-       
-       //aggiungo un agnello,una pecora,un montone nell'ordine per 5 volte
+        try {
+            //elimino tutte le pecore
+            for (i = 0; i < numberOfOvine; i++) {
+                instance.removeOvine(OvineType.SHEEP);
+            }
+        } catch (NoOvineException ex) {
+            fail("Non è possibile rimuovere le pecore");
+        }
+
+        //elimino anche gli agnelli
+        try {
+            for (i = 0; i < numberOfOvine; i++) {
+                instance.removeOvine(OvineType.LAMB);
+            }
+        } catch (NoOvineException ex) {
+            fail("Non è possibile rimuovere gli agnelli");
+        }
+
+        //elimino i montoni
+        try {
+            for (i = 0; i < numberOfOvine; i++) {
+                instance.removeOvine(OvineType.RAM);
+            }
+        } catch (NoOvineException ex) {
+            fail("Non è possibile rimuovere i montoni");
+        }
+        //controllo non ci sia nulla rimuovendo animali a caso 
+        for (i = 0; i < exCounterExpected; i++) {
+            try {
+                instance.removeOvine(OvineType.getRandomOvineType());
+            } catch (NoOvineException ex) {
+                exCounter++;
+            }
+        }
+        assertEquals(exCounterExpected, exCounter);
+
+        //aggiungo un agnello,una pecora,un montone nell'ordine per 5 volte
+        for (i = 0; i < numberOfOvine; i++) {
+            instance.addOvine(new Ovine(OvineType.LAMB));
+            instance.addOvine(new Ovine(OvineType.SHEEP));
+            instance.addOvine(new Ovine(OvineType.RAM));
+        }
+        //elimino tutte le pecore meno una
+        try {
+            for (i = 0; i < numberOfOvine - 1; i++) {
+                instance.removeOvine(OvineType.SHEEP);
+            }
+        } catch (NoOvineException ex) {
+            fail("L'unica pecora rimasta non è stata trovata");
+        }
+        //elimino lal 5 pecora
+        try {
+            instance.removeOvine(OvineType.SHEEP);
+        } catch (NoOvineException ex) {
+            fail("Non ho trovato l'ultima pecora");
+        }
+        //elimno la 6 pecora e fallisco
+        try {
+            instance.removeOvine(OvineType.SHEEP);
+            fail("Ho ottenuto una pecora che non c'era");
+        } catch (NoOvineException ex) {
+            assertTrue(true);
+        }
     }
 
     /**
@@ -114,33 +171,71 @@ public class RegionTest {
      */
     @Test
     public void testIsAllFenced() {
+        //Il test è fortemente dipendente dalla struttura della mappa nonchè  
+        //dalla struttura dati usata per implementarla
         System.out.println("isAllFenced");
-        Region instance = new Region();
-        boolean expResult = false;
-        boolean result = instance.isAllFenced();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+        //faccio il setu up della mappa
+        Map map = new Map();
+        map.setUp();
+        //scelgo una regione e aggiungo recinti a tutte le sue strade
+        String stringedRegion1 = "3"; //questa avrà tutti recinti
+        Region region = new Region(); //la istanzio solo perchè altrimenti mi dice che potrebbe non essere stata instanziata
+        try {
+            region = map.convertStringToRegion(stringedRegion1); //converto l'id della stringa in regione
+            ArrayList<Node> neighbourNodes = region.getNeighbourNodes(); //prendo i suoi nodi vicini
+            for (Node nodo : neighbourNodes) {//per ogni nodo
+                if (nodo instanceof Street) {//se è una strada
+                    Street street = (Street) nodo;
+                    street.setFence(new Fence(false)); //gli aggiungo un recinto
+                }
 
-    /**
-     * Test of hasOvine method, of class Region.
-     */
-    @Test
-    public void testHasOvine() {
-        System.out.println("hasOvine");
-        OvineType ovineType = null;
-        Region instance = new Region();
-        Ovine expResult = null;
-        Ovine result = instance.hasOvine(ovineType);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+            }
+        } catch (RegionNotFoundException ex) {
+            fail("Regione1 non trovata, ma ti pare??");
+        }
+        //testo che sia allFences
+        assertTrue(region.isAllFenced());
+
+        //scelgo un'altra regione
+        String stringedRegion2 = "0"; //questa avrà 2 recinti su 3
+        //ci metto recinti su tutte le strade tranne una
+        //considerando la mappa e che già ci sono recinti nella regione 3
+        Region region2 = new Region();
+        try {
+            region2 = (Region) map.convertStringToRegion(stringedRegion2);//converto l'id in regione
+            map.getStreetByValue(region2, 3).setFence(new Fence(false)); //prendo la strada con valore 3 e ci metto un recinto
+        } catch (RegionNotFoundException ex) {
+            fail("Regione2 non trovata, ma ti pare??");
+        }
+        //testo
+        assertFalse(region2.isAllFenced());
+        //scelgo un'altra regione
+        String stringedRegion3 = "1"; //questa ha zero recinti
+        Region region3 = new Region();
+        try {
+            region3 = map.convertStringToRegion(stringedRegion3);
+        } catch (RegionNotFoundException ex) {
+            fail("Regione3 non trovata, ma ti pare??");
+        }
+        assertFalse(region3.isAllFenced());
+        
+        try {
+            //test super compatto
+            assertFalse(map.convertStringToRegion("15").isAllFenced());
+            assertFalse(map.convertStringToRegion("9").isAllFenced());
+            assertFalse(map.convertStringToRegion("11").isAllFenced());
+                       
+            map.getStreetByValue(region2, 1).setFence(new Fence(false));
+            assertTrue(region2.isAllFenced());
+        } catch (RegionNotFoundException ex) {
+                        fail("Regione non trovata, ma ti pare??");
+        }
     }
 
     /**
      * Test of removeOvine method, of class Region.
      */
+    @Ignore
     @Test
     public void testRemoveOvine() {
         System.out.println("removeOvine");
@@ -154,6 +249,7 @@ public class RegionTest {
     /**
      * Test of addOvine method, of class Region.
      */
+    @Ignore
     @Test
     public void testAddOvine() {
         System.out.println("addOvine");
