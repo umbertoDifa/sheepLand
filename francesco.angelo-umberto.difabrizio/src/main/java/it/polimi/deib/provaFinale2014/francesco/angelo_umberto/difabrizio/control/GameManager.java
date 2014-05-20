@@ -41,7 +41,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
     private final int[] playersHashCode; //valore cached degli hash dei giocatori
 
-    private final Bank bank;
+    protected final Bank bank;  //per permettere a player di usarlo
 
     /**
      * Crea un GameManager
@@ -336,6 +336,20 @@ public class GameManager {//TODO: pattern memento per ripristini?
             //aggiorno il prossimo player
             playerThatBuys = (playerThatBuys + 1) % this.playersNumber;
         }
+    }
+    
+    protected void askCancelOrRetry(int hashCode, String message) throws ActionCancelledException{
+        //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
+        Character choice = this.getServer().talkTo(
+                hashCode(),message + " Riprovare(R) o Annullare(A)?").charAt(0); 
+        //TODO vedi che qui c'è una getMessage da riempire 
+        //TODO: se vuole annullare non gli devo togliere l'azione
+        switch (choice) {
+            case 'R':
+                break;
+            default: //se vuole annullare o se mette una roba a caso
+                throw new ActionCancelledException("Azione annullata");
+        }//switch
     }
 
 }
