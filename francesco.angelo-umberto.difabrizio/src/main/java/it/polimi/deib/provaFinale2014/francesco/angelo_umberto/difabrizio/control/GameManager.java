@@ -16,6 +16,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
@@ -265,6 +266,21 @@ public class GameManager {//TODO: pattern memento per ripristini?
             throw new BusyStreetException(errorString); //solleva eccezione
         }
         return chosenStreet; //altrimenti ritorna la strada
+    }
+
+    /**
+     * Chiede al player inviandogli la stringa message un id regione
+     *
+     * @param player
+     * @param message
+     * @return Regione corrispondente
+     * @throws RegionNotFoundException
+     */
+    protected Region askAboutRegion(int player, String message) throws RegionNotFoundException {
+        Region chosenRegion;
+        String stringedRegion = this.getServer().talkTo(this.hashCode(), message);
+        chosenRegion = getMap().convertStringToRegion(stringedRegion);
+        return chosenRegion;
     }
 
     public ServerThread getServer() {

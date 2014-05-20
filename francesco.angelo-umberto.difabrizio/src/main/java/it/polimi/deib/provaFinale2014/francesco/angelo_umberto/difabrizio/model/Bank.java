@@ -48,14 +48,17 @@ public class Bank {
     public Fence getFence() throws FinishedFencesException {
         //TODO eccezione qui o in numberOfUsedFence?
         //salvo il primo recinto che ho
-        int position = this.numberOfUsedFence();
-        if (position >= 0 && position < this.unusedFences.length) { //se l'indice ha senso
-            Fence availableFence = unusedFences[this.numberOfUsedFence()]; //salva il recinto
-            unusedFences[this.numberOfUsedFence()] = null; //annulla il riferimento nell'arrray
-            return availableFence;//ritorna il recinto
-        } else {
-         throw new FinishedFencesException("Non ci sono più recinti");
+        try{
+            int position = this.numberOfUsedFence();
+            if (position >= 0 && position < this.unusedFences.length) { //se l'indice ha senso
+                Fence availableFence = unusedFences[this.numberOfUsedFence()]; //salva il recinto
+                unusedFences[this.numberOfUsedFence()] = null; //annulla il riferimento nell'arrray
+                return availableFence;//ritorna il recinto
+            }
+        }catch(FinishedFencesException e){
+            throw e;
         }
+        return null; //altri casi
     }
 
     /**
@@ -91,10 +94,11 @@ public class Bank {
 
     /**
      * Restitutisce il numero di recinti ceduti dalla banca
-     *
+     * lancia l'eccezione FinishedFencesException
      * @return Il numero di recinti usati
+     * @throws it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
-    public int numberOfUsedFence() {
+    public int numberOfUsedFence() throws FinishedFencesException{
         int i; //serve a contare quanti recinti sono stati dati
         for (i = 0; i < unusedFences.length; i++) { //scorri l'array
             if (unusedFences[i] != null) //al primo recinto disponibile               
@@ -102,7 +106,7 @@ public class Bank {
                 return i;         //restituisci quanti ne sono stati dati        }            
             }
         }
-        return -1; //unico caso tutti i recinti dati...male male
+        throw new FinishedFencesException();
     }
 
 }
