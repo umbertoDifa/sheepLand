@@ -45,7 +45,7 @@ public class Bank {
         throw new MissingCardException(missingCardMessage);
     }
 
-    public Fence getFence() {
+    public Fence getFence() throws FinishedFencesException {
         //TODO eccezione qui o in numberOfUsedFence?
         //salvo il primo recinto che ho
         int position = this.numberOfUsedFence();
