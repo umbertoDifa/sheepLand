@@ -3,6 +3,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Node;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
@@ -203,7 +205,7 @@ public class Player {
                 if (startStreet.isNeighbour(endStreet) && endStreet.isFree()) {
                     this.shepherd.get(idShepherd).moveTo(endStreet);  //muovilo
                 }
-                startStreet.addFence(this.gameManager.bank.getFence()); //metti recinto
+                startStreet.setFence(this.gameManager.bank.getFence()); //metti recinto
             } catch (MovementException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(), "Mossa non valida");  //richiedi o cancella mossa
             } catch (FinishedFencesException e) {
@@ -212,28 +214,40 @@ public class Player {
         }
     }
 
-    private void buyLand() {
-        RegionType[] possibleRegionsType = new RegionType[RegionType.values().length];
+    private void buyLand() throws ActionCancelledException {
+        ArrayList<RegionType> possibleRegionsType = new ArrayList<RegionType>();
         String stringedTypeOfCard;
-        int chosenTypeOfCard;
+        RegionType chosenTypeOfCard;
         Region endRegion = null;
-        Node region;
+        int prize;
+        int amount = this.shepherd.get(0).getWallet().getAmount();
 
         for (Shepherd shepherd : this.getShepherd()) {  //per ogni pastore del giocatore
-            for (int i = 0; i < shepherd.getStreet().getNeighbourNodes().size(); i++) {  //per ogni nodo confinante alla strada di quel pastore
-                region = shepherd.getStreet().getNeighbourNodes().get(i);
+            for (Node region: shepherd.getStreet().getNeighbourNodes()) {  //per ogni nodo confinante alla strada di quel pastore
                 if (region instanceof Region) {  // se è una regione
                     endRegion = (Region) region;   // castala a tipo di regione
-                    possibleRegionsType[i] = endRegion.getType();  //aggiungila ai tipi di regione possibili
+                    possibleRegionsType.add(endRegion.getType());  //aggiungila ai tipi di regione possibili
                 }
 
             }
-
-            stringedTypeOfCard = this.gameManager.getServer().talkTo(this.hashCode(), "Quale tipo di carta vuoi comprare?");
-            chosenTypeOfCard = Integer.parseInt(stringedTypeOfCard);
-            this.gameManager.bank.getCard(chosenTypeOfCard);
-            
-            //TODO
+        }
+        while(true){
+            try{
+                stringedTypeOfCard = this.gameManager.getServer().talkTo(this.hashCode(), "Quale tipo di carta vuoi comprare?");
+                //chiedi il tipo di carta desiderato e convertilo in RegionType
+                chosenTypeOfCard = RegionType.values()[Integer.parseInt(stringedTypeOfCard)];
+                prize = this.gameManager.bank.getPrizeOf(chosenTypeOfCard);  //prendi prezzo della carta da banca //TODO: bank.getPrizeOf da implementare
+                if (possibleRegionsType.contains(chosenTypeOfCard)){   //se il tipo è contenuto nei tipi comprabili dal pastore
+                    if(amount>= prize){
+                        Card card = this.gameManager.bank.getCard(chosenTypeOfCard);
+                        this.shepherd.get(0).addCard(card);
+                        this.shepherd.get(0).getWallet().setAmount(amount-prize); 
+                        return;
+                    }
+                }
+            }catch (MissingCardException e){ //TODO: gestire meglio eccezione
+                this.gameManager.askCancelOrRetry(this.hashCode(), "Tipo carta non valido");
+            }
         }
     }
     
