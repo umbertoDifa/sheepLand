@@ -37,17 +37,22 @@ public class StreetTest {
     /**
      * Test of hasFence method, of class Street.
      */
-    @Ignore
     @Test
     public void testHasFence() {
         System.out.println("hasFence");
-        Street instance = null;
-        boolean expResult = false;
-        boolean result = instance.hasFence();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //creo una strada
+        Street instance = new Street(3);
+        
+        //che non ha recinto
+        assertFalse(instance.hasFence());
+        
+        //glielo metto
+        instance.setFence(new Fence(true));
+        
+        //e ora ce l'ha
+        assertTrue(instance.hasFence());
     }
+    
     /**
      * Test per chiarire le modalità e proprietà del casting
      */
@@ -76,74 +81,133 @@ public class StreetTest {
     /**
      * Test of hasShepherd method, of class Street.
      */
-    @Ignore
     @Test
     public void testHasShepherd() {
         System.out.println("hasShepherd");
-        Street instance = null;
-        boolean expResult = false;
-        boolean result = instance.hasShepherd();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //creo una stada
+        Street instance = new Street(0);
+        
+        //testo che non abbia un pastore
+        assertFalse(instance.hasShepherd());
+        
+        //aggiungo un pastore
+        instance.setShepherd(new Shepherd());
+        
+        //testo che abbia un pastore
+        assertTrue(instance.hasShepherd());
+        
+        //elimino il pastore nella strada
+        instance.setShepherd(null);
+        //testo
+        
+        assertFalse(instance.hasShepherd());
+        //lo riaggiungo
+        
+        instance.setShepherd(new Shepherd());
+        
+        //testo
+        assertTrue(instance.hasShepherd());
+        
     }
 
     /**
      * Test of setFence method, of class Street.
      */
-    @Ignore
+   
     @Test
     public void testSetFence() {
         System.out.println("setFence");
-        Fence fence = null;
-        Street instance = null;
-        instance.setFence(fence);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+       //aggiungo una strada
+        Street street = new Street(0);
+        
+        //testo che non abbia il recinto
+        assertFalse(street.hasFence());
+        
+        //aggiungo un recinto
+        street.setFence(new Fence(false));
+        
+        //testo che lo abbia
+        assertTrue(street.hasFence());
     }
 
     /**
      * Test of isFree method, of class Street.
      */
-    @Ignore
+   
     @Test
     public void testIsFree() {
         System.out.println("isFree");
-        Street instance = null;
-        boolean expResult = false;
-        boolean result = instance.isFree();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        //creo una strada
+        Street instance = new Street(0);
+        
+        //testo is free
+        assertTrue(instance.isFree());
+        
+        //aggiungo un recinto
+        instance.setFence(new Fence(true));
+        
+        //testo is free
+        assertFalse(instance.isFree());
+        
+        //creo un'altra strada
+        Street instance2 = new Street(0);
+        
+        //testo is free
+        assertTrue(instance2.isFree());
+   
+        //aggiungo un pastore
+        instance2.setShepherd(new Shepherd());
+        
+        //testo is free
+        assertFalse(instance2.isFree());
+        
+        //rimuovo il pastore
+        instance2.setShepherd(null);
+        
+        //testo
+        assertTrue(instance2.isFree());
+        
+        //riaggiungo un pastore
+        instance2.setShepherd(new Shepherd());
+        
+        //aggiungo una fence
+        instance2.setFence(new Fence(true));
+        
+        //testo is free
+        assertFalse(instance2.isFree());
+        
+        //annullo il pastore
+        instance2.setShepherd(null);
+        
+        //testo is free
+        assertFalse(instance2.isFree());
+        
+        //riaggiungo un pastore
+        instance2.setShepherd(new Shepherd());
+        
+        //testo is free
+        assertFalse(instance2.isFree());
+        
+        //aggiungo un pastore alla prima
+        instance.setShepherd(new Shepherd());        
+
+        //testo il free
+        assertFalse(instance.isFree());
+       
     }
 
     /**
      * Test of getValue method, of class Street.
      */
-    @Ignore
+ 
     @Test
     public void testGetValue() {
         System.out.println("getValue");
-        Street instance = null;
-        int expResult = 0;
+        Street instance = new Street(3);
+        int expResult = 3;
         int result = instance.getValue();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setValue method, of class Street.
-     */
-    @Ignore
-    @Test
-    public void testSetValue() {
-        System.out.println("setValue");
-        int value = 0;
-        Street instance = null;
-        instance.setValue(value);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(expResult, result);       
     }
 
     /**

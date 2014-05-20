@@ -64,5 +64,9 @@ public class Shepherd {
     public void removeCard(Card card) {
         //TODO ci vuole pure il tipo?
     }
+    
+    public void setWallet(Wallet wallet){
+        this.wallet = wallet;
+    }
 
 }

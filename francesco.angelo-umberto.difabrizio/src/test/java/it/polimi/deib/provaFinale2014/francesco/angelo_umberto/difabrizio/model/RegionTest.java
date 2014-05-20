@@ -61,7 +61,7 @@ public class RegionTest {
      * Test of addOvine method, e removeOvine of class Region.
      */
     @Test
-    public void testAllRegionMethods() {
+    public void testAddAndRemoveOvine() {
         System.out.println("addOvine");
 
         int numberOfOvine = 5;
@@ -186,7 +186,7 @@ public class RegionTest {
             for (Node nodo : neighbourNodes) {//per ogni nodo
                 if (nodo instanceof Street) {//se è una strada
                     Street street = (Street) nodo;
-                    street.setFence(new Fence(false)); //gli aggiungo un recinto
+                    street.setFence(new Fence(true)); //gli aggiungo un recinto
                 }
 
             }
@@ -231,33 +231,4 @@ public class RegionTest {
                         fail("Regione non trovata, ma ti pare??");
         }
     }
-
-    /**
-     * Test of removeOvine method, of class Region.
-     */
-    @Ignore
-    @Test
-    public void testRemoveOvine() {
-        System.out.println("removeOvine");
-        Ovine ovine = null;
-        Region instance = new Region();
-        //instance.removeOvine();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of addOvine method, of class Region.
-     */
-    @Ignore
-    @Test
-    public void testAddOvine() {
-        System.out.println("addOvine");
-        Ovine ovine = null;
-        Region instance = new Region();
-        instance.addOvine(ovine);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
 }

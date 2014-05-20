@@ -1,7 +1,8 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 /**
  * Rappresenta un nodo Strada della mappa. Può essere recintata o essere occupata
- * da un pastore. Ha un valore da 1 a 6 
+ * da un pastore. Ha un valore da 1 a 6. Attenzione potenzialmente la classe accetta
+ * un qualsiasi intero come valore.
  * @author Umberto
  */
 public class Street extends Node {
@@ -34,6 +35,10 @@ public class Street extends Node {
     public void setFence(Fence fence) {
         this.fence = fence;
     }
+    
+    public void setShepherd(Shepherd shepherd){
+        this.shepherd = shepherd;
+    }
 
     /**
      *
@@ -50,13 +55,7 @@ public class Street extends Node {
     public int getValue() {
         return value;
     }
-    /**
-     * Imposta il valore della strada
-     * @param value Valore da dare alla strada
-     */
-    public void setValue(int value) {
-        this.value = value;
-    }
+   
     /**
      * Dato un pastore shepherd dice se si trova o no su quella strada
      * @param shepherd Pastore di cui controllare la posizione sulla strada
