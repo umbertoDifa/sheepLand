@@ -75,22 +75,6 @@ public class Region extends Node {
     }
 
     /**
-     * Scandisce gli ovini in una regione per cercare un ovino di tipo ovineType
-     *
-     * @param ovineType Tipo di ovino da cercare
-     *
-     * @return L'ovino trovato, null altrimenti
-     */
-    public Ovine hasOvine(OvineType ovineType) {
-        for (Ovine myOvine : this.myOvines) { //per ogni mio ovino
-            if (myOvine.getType() == ovineType) { //se il tipo è quello che cercavo
-                return myOvine;//ritorno vero
-            }
-        }
-        return null;//se non ho trovato nessun ovino di quel tipo ritorno falso
-    }
-
-    /**
      * Rimuove dagli ovini di una regione quello che gli passo
      *
      * @param type Tipo di ovino da cercare
