@@ -61,6 +61,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
         }
         this.setUpPlayers(); //setto arraylist giocatori e array hashcode giocatori
+        this.setUpSocketPlayerMap();
     }
 
     /**
@@ -80,7 +81,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
      */
     private void SetUpGame() {
         this.setUpMap();
-        this.setUpSocketPlayerMap();
         this.setUpAnimals();
         this.setUpShepherds();
         this.setUpCards();
@@ -414,7 +414,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
  * @param playerHashCode
  * @return 
  */
-    protected int askThrowDice(int playerHashCode){
+    protected int askAndThrowDice(int playerHashCode){
         this.getServer().talkTo(playerHashCode, "vuoi lanciare dado?");
         return Dice.getRandomValue();
     }
