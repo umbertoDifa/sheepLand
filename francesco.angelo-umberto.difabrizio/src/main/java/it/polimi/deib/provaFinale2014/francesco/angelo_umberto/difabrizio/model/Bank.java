@@ -68,29 +68,32 @@ public class Bank {
     public Card getCard(RegionType type) throws MissingCardException {
         //salvo la carta da restituire
         Card cardToReturn = this.findCard(type);
-        
+
         //elimino il suo riferimento nell'array
         removeCard(cardToReturn);
-        
+
         //ritorno la carta
         return cardToReturn;
     }
+
     /**
-     * Il metodo elimina una carta dall'array delle carte della banca ponendo 
-     * il suo riferimento a null. Non gestisce casi di ArrayOutOfBounds perche
+     * Il metodo elimina una carta dall'array delle carte della banca ponendo il
+     * suo riferimento a null. Non gestisce casi di ArrayOutOfBounds perche
      * viene chiamata quando il controllo è stato già fatto da un'altra funzione
      * tipicamente findCard
+     *
      * @param deleteMe Carta da eliminare
      */
     private void removeCard(Card deleteMe) {
         //per ogni carta
-        for (Card card : this.unusedCards) {
-            
+        for (int i = 0; i < unusedCards.length; i++) {
+
             //se la carta è quella da eliminare
-            if (card == deleteMe) {
-                
+            if (unusedCards[i] == deleteMe) {
+
                 //impostala a null
-                card = null;
+                unusedCards[i] = null;
+                return;
             }
         }
     }
@@ -147,7 +150,8 @@ public class Bank {
 
     /**
      * Riceve una card e la posiziona dove richiesto nell'array delle carte non
-     * usate(del banco)
+     * usate(del banco). Attenzione è necessario fornire una position > 0 e
+     * minore della lunghezza totale dell'array.
      *
      * @param card     Carta da caricare
      * @param position Posizione in cui caricarla

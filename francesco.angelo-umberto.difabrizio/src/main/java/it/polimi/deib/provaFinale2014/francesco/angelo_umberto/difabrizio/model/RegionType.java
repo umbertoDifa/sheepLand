@@ -41,11 +41,11 @@ public enum RegionType {
     	return index;
     }
     /**
-     * 
+     * Restitutisce una regione a caso. Tranne sheepsburg
      * @return Un tipo a caso di regione
      */
     public static RegionType getRandomRegionType() {
-        int choice = random.nextInt(size); //prendi un numero a caso appartenente al totale dei valori dell'enum
+        int choice = random.nextInt(size-1); //prendi un numero a caso appartenente al totale dei valori dell'enum
         return RegionType.values()[choice]; //ritorno la region corrispondente
     }
 
