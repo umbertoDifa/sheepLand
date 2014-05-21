@@ -2,26 +2,50 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
+import java.util.ArrayList;
 
 /**
- *Contiene le carte che non sono state ancora vendute e i recinti non ancora usati.
- * Se chiesto può tornare sia una carta che un recinto.
+ * Contiene le carte che non sono state ancora vendute e i recinti non ancora
+ * usati. Se chiesto può tornare sia una carta che un recinto.
+ *
  * @author Francesco
  */
 public class Bank {
 
     private Card[] unusedCards;
-    private Fence[] unusedFences;
+    private ArrayList<Card> initialCards = new ArrayList<Card>();
+    private Fence[] unusedFences; //TODO: magari inseriamo un margine di sicurezza? se mi arriva una FinishedFenceException 
+    //mi si sputtana tutto
 
-    public Bank(int numCards, int numeFences) {
+    public Bank(int numCards, int numInitialCard, int numeFences) {
         this.unusedCards = new Card[numCards];
         this.unusedFences = new Fence[numeFences];
+        //creo le carte iniziali
+        for (int i = 0; i < numInitialCard; i++) {//per tutte le carte iniziali da dare
+            
+            //creo una carta con valore 0
+            //e con tipo RegionType ciclicamente ovvero partendo dal primo tipo
+            //fino all'ultimo, se le carte da distribuire sono più dei terreni
+            //allora ricomincio dalla prima
+            this.initialCards.add(new Card(0,
+                    RegionType.values()[i % numInitialCard]));
+        }
     }
-
+    /**
+     * Ritorna una carta tra quelle iniziali e la rimuove da quelle disponibili
+     * @return Una carta il cui tipo è casuale ma unico nella lista 
+     */
+    //TODO: guarda che sta roba manda un ArrayOutOfBound se non ha carte quindi boh...
+    public Card getInitialCard() {
+       Card returnableCard = this.initialCards.get(0);//prendi la prima carta della lista
+       this.initialCards.remove(0); //rimuovila dalla lista
+       return returnableCard; //ritornala
+    }
+    
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
-     * la ritorna se esiste, altrimenti solleva un eccezione se le carte (di quel tipo)
-     * sono finite
+     * la ritorna se esiste, altrimenti solleva un eccezione se le carte (di
+     * quel tipo) sono finite
      *
      * @param type Tipo di carta voluto
      *
@@ -46,19 +70,13 @@ public class Bank {
     }
 
     public Fence getFence() throws FinishedFencesException {
-        //TODO eccezione qui o in numberOfUsedFence?
-        //salvo il primo recinto che ho
-        try{
-            int position = this.numberOfUsedFence();
-            if (position >= 0 && position < this.unusedFences.length) { //se l'indice ha senso
-                Fence availableFence = unusedFences[this.numberOfUsedFence()]; //salva il recinto
-                unusedFences[this.numberOfUsedFence()] = null; //annulla il riferimento nell'arrray
-                return availableFence;//ritorna il recinto
-            }
-        }catch(FinishedFencesException e){
-            throw e;
-        }
-        return null; //altri casi
+        int position = this.numberOfUsedFence(); //questo valore avrà sempre senso per come è implementata la numberOfUsedFence
+
+        Fence returnableFence = unusedFences[this.numberOfUsedFence()]; //salva il recinto
+
+        unusedFences[this.numberOfUsedFence()] = null; //eliminalo dall'array
+        return returnableFence;//ritorna il recinto
+
     }
 
     /**
@@ -72,7 +90,7 @@ public class Bank {
     }
 
     /**
-     * Crea un recinto finale e lo aggiunge all'array dei recinti non usati 
+     * Crea un recinto finale e lo aggiunge all'array dei recinti non usati
      * nella posizione specificata
      *
      * @param position Posizione in cui inserire il recinto
@@ -93,12 +111,15 @@ public class Bank {
     }
 
     /**
-     * Restitutisce il numero di recinti ceduti dalla banca
-     * lancia l'eccezione FinishedFencesException
+     * Restitutisce il numero di recinti ceduti dalla banca lancia l'eccezione
+     * FinishedFencesException
+     *
      * @return Il numero di recinti usati
-     * @throws it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
+     *
+     * @throws
+     * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
-    public int numberOfUsedFence() throws FinishedFencesException{
+    public int numberOfUsedFence() throws FinishedFencesException {
         int i; //serve a contare quanti recinti sono stati dati
         for (i = 0; i < unusedFences.length; i++) { //scorri l'array
             if (unusedFences[i] != null) //al primo recinto disponibile               
@@ -106,7 +127,7 @@ public class Bank {
                 return i;         //restituisci quanti ne sono stati dati        }            
             }
         }
-        throw new FinishedFencesException();
+        throw new FinishedFencesException("I recinti sono terminati");
     }
 
 }
