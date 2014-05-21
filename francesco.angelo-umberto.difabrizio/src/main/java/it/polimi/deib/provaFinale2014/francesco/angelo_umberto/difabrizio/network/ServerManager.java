@@ -35,7 +35,7 @@ public class ServerManager {
     private final int MILLISECONDS_IN_SECONDS = 1000;
 
     //costanti di default per i costruttori
-    private static final int DEFAULT_TIMEOUT_ACCEPT = 10;
+    private static final int DEFAULT_TIMEOUT_ACCEPT = 13;
     private static final int DEFAULT_TIMEOUT_REFRESH = 10;
     private static final int DEFAULT_MIN_CLIENTS = 2;
     private static final int DEFAULT_MAX_GAMES = 3;
@@ -125,16 +125,18 @@ public class ServerManager {
     private void startGame() {
         //se ci sono abbastanza  giocatori
         if (this.clientSockets.size() >= minClientsForGame) {
-
+            logger.info(
+                    "Avvio il gioco con " + clientSockets.size() + " giocatori");
             //avvio il thread per gestire la partita
             executor.submit(new ServerThread(clientSockets));
-            System.out.println("Partita avviata.");
 
             //aumento i giochi attivi
             activatedGames++;
 
-        } else {//se non ci sono abbastanza giocatori
+            System.out.println("Partita numero" + activatedGames + " avviata.");
 
+        } else {//se non ci sono abbastanza giocatori
+            logger.info("Rifiuto Client, pochi giocatori.");
             //per tutti i client
             for (Socket client : clientSockets) {
                 PrintWriter toClient;
@@ -144,6 +146,7 @@ public class ServerManager {
                     toClient = new PrintWriter(client.getOutputStream());
                     toClient.println(
                             "Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.");
+                    toClient.flush();
                 } catch (IOException ex) {
                     //Il client a cui stavo per dire che non può giocare si è già disconnesso, stica.
                 }
@@ -167,47 +170,45 @@ public class ServerManager {
      */
     //TODO chiedere il doppio processo con il problema del kill simultaneo
     private void handleClientRequest(ServerSocket serverSocket) {
+        //creo un timer
+        Timer timer = new Timer();
+
         while (true) {
             try {
-                //aspetto la prima accept
+                //accetto un client
                 clientSockets.add(serverSocket.accept());
 
-                logger.info("Client accettato");
-                //faccio partire il thread timer, ogni volta diverso perchè non
-                //posso chiamare la run due volte sullo stesso thread
-                Timer timer = new Timer();
+                //se non ho attivato tutte le partite
+                if (this.activatedGames < maxNumberOfGames) {
+                    logger.info("Client accettato");
+                    //se è il primo client
+                    if (clientSockets.size() == 1) {
 
-                //setto a false il timeout
-                timeout = false;
+                        //ne creo un altro
+                        timer = new Timer();
 
-                //avvio il timer
-                timer.startTimer();
-                logger.info("timer avviato");
-                //accetto le connessioni mentre il timer non è scaduto
-                for (int i = 0; i < maxClientsForGame - 1 && !timeout; i++) {
-                    clientSockets.add(serverSocket.accept()); //aspetto l'isemo client
+                        //avvio il timer
+                        timer.startTimer();
+                        logger.info("timer avviato");
+                    }
+
+                    //se ho tutti i client per un game
+                    if (clientSockets.size() == maxClientsForGame) {
+                        //fermo il timer
+                        timer.stopTimer();
+
+                        //avvio il gioco
+                        startGame();
+                    }
+                } else {//se le partite attivate sono il massimo
+                    logger.info("Client rifiutato");
+                    handleClientRejection(clientSockets.get(0));
                 }
-
-                //se raggiungo il numero massimo di player prima della fine del timeout
-                if (!timeout) {
-                    //uccido il processo di timeout
-                    timer.stopTimer();
-                }
-
-                //avvio il gioco
-                startGame();
-
-                //finchè un thread non mi cambia il valore di activatedGames
-                while (activatedGames >= maxNumberOfGames) {
-                    //messaggio di rifiuto delle connessioni
-                    this.handleClientRejection(serverSocket);
-                }
-                //ricomincio ad accettare connessioni
             } catch (IOException ex) {
-                //cose andate male nella connessione
-                System.err.println(ex.getMessage());
+                //casini col server
             }
         }
+
     }
 
     private class Timer implements Runnable {
@@ -225,12 +226,12 @@ public class ServerManager {
         public void run() {
             try {
                 //avvio il timer
-                synchronized (this) {
-                    myThread.wait(timeoutAccept);
-                }
-                //se finisce
-                //fermo l'accettazione dei client
-                timeout = true;
+
+                this.myThread.sleep(timeoutAccept);
+
+                logger.info("Timer finito");
+                //se finisce avvio game
+                startGame();
 
             } catch (InterruptedException ex) {
                 //se blocco il timer io non succede niente, muori e basta.
@@ -239,6 +240,8 @@ public class ServerManager {
 
         public void stopTimer() {
             this.myThread.interrupt();
+            logger.info("Timer fermato");
+
         }
 
     }
@@ -249,63 +252,23 @@ public class ServerManager {
      *
      * @param server
      */
-    private void handleClientRejection(ServerSocket server) {
-        Socket rejectedSocket = new Socket(); //controllo se qualche client vuole connettersi
+    private void handleClientRejection(Socket client) {
         try {
-            server.setSoTimeout(timeoutRefreshNumberOfGames); //imposto timer per accept
-            rejectedSocket = server.accept();// lo accetto
-            PrintWriter socketOut = new PrintWriter(rejectedSocket.
-                    getOutputStream());//creo l'output stream verso quel client
+            //svuoto array socket
+            clientSockets.removeAll(clientSockets);
+
+            //creo l'output stream verso quel client
+            PrintWriter socketOut = new PrintWriter(client.
+                    getOutputStream());
+
+            //invio messaggio di informazione
             socketOut.println("Il server è pieno, riprova più tardi");
-        } catch (SocketTimeoutException e) {
-            //refresh activatedGames
-            return;
-        } catch (IOException e) {
-            System.err.println(e.getMessage()); // errore di connessione col client
-            return;
+            socketOut.flush();
+        } catch (IOException ex) {
+            //il client si è disconnesso prima di sapere che tanto non poteva 
+            //giocare stica
         }
-    }
 
-    /**
-     * colleziona tutte le connessioni possibili a un server in un certo timeout
-     * ma non più di maxConnections
-     *
-     * @param server
-     * @param timeout
-     * @param maxConnections
-     *
-     * @return la lista di client accettati, ce n'è almeno uno perchè la prima
-     *         accept non ha un timeout
-     */
-    private ArrayList<Socket> timedOutAccept(ServerSocket server, int timeout,
-                                             int maxConnections)
-            throws IOException {
-        ArrayList<Socket> socketList = new ArrayList<Socket>();
-        long startTime, endTime;
-
-        try {
-            server.setSoTimeout(0); //imposto timeout infinito
-            socketList.add(server.accept()); // aspetto il primo client
-            server.setSoTimeout(timeout); // imposto il primo timeout intero
-            startTime = System.currentTimeMillis(); //prendo il timestamp del primo client
-            for (int i = 0; i < maxConnections - 1; i++) {
-                socketList.add(server.accept()); //aspetto l'isemo o una exception del timer
-                endTime = System.currentTimeMillis();
-                if (timeout - (endTime - startTime) > 0) //se ho ancora tempo
-                {
-                    server.setSoTimeout((int) (timeout - (endTime - startTime))); //aggiorno il timeout sottraendo il tempo aspettato per l'isemo clientù
-                } //TODO warn: forse alla riga sopra ci potrebbe essere un errore per la sottrazione fra int e long anche se la differenza dei long dovrebbe essere molto piccola, test?
-                else {
-                    break; //altrimenti finisco
-                }
-            }
-        } catch (SocketTimeoutException e) {
-            System.out.println("Timeout connessioni!");
-            server.setSoTimeout(0); //Resetto il timeout ad un tempo infinito, così il prossimo gruppo di client non avrà il timer
-            //per il primo così come succede la prima volta
-            return socketList;
-        }
-        return socketList;
     }
 
     public static void main(String[] args) {
