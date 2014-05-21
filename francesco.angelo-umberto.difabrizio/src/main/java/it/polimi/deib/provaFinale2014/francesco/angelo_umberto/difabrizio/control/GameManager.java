@@ -50,7 +50,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.playersHashCode = new int[playersNumber]; //creo un array della dimensione del numero dei player
         this.map = new Map(); //creo la mappa univoca del gioco
         this.server = server; //creo il collegamento all'univoco serverThread
-        this.setUpPlayers(playersNumber); //setto arraylist giocatori e array hashcode giocatori
+        this.setUpPlayers(); //setto arraylist giocatori e array hashcode giocatori
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
@@ -62,12 +62,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     /**
-     * Dato il numero di player, riempie l'arraylist dei player e riempie
+     * Riempie l'arraylist dei player e riempie
      * l'array dei rispettivi hashcode
      *
-     * @param numbPlayer
      */
-    private void setUpPlayers(int numbPlayer) {
+    private void setUpPlayers() {
         for (int i = 0; i < playersNumber; i++) { //per ogni giocatore
             players.add(new Player(this, this.shepherd4player));       //lo aggiungo alla lista dei giocatori
             playersHashCode[i] = players.get(i).hashCode();//salvo il suo hashcode
@@ -261,11 +260,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
             while (true) {
                 try {
-                    this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
+                    this.players.get(player).chooseAndMakeAction(); //scegli l'azione e falla
                     break; //se non arriva un l'eccezione passo alla prossima azione
                 } catch (ActionException ex) {
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
-                    this.server.sendTo(playersHashCode[i], ex.getMessage());
+                    this.server.sendTo(playersHashCode[player], ex.getMessage());
                 }
             }
         }
