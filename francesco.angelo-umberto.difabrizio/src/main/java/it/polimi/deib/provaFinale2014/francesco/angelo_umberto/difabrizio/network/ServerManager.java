@@ -133,7 +133,7 @@ public class ServerManager {
             //aumento i giochi attivi
             activatedGames++;
 
-            System.out.println("Partita numero" + activatedGames + " avviata.");
+            System.out.println("Partita numero " + activatedGames + " avviata.");
 
         } else {//se non ci sono abbastanza giocatori
             logger.info("Rifiuto Client, pochi giocatori.");
