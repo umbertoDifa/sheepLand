@@ -37,6 +37,36 @@ public abstract class Node {
     }
     
     /**
+     * 
+     * @return la lista delle strade confinanti a quel nodo, null se vuota
+     */
+    public ArrayList<Street> getNeighbourStreets() {
+        ArrayList<Node> possibleStreets = this.getNeighbourNodes();
+        ArrayList<Street> neighbourStreets = new ArrayList<Street>();
+        
+        for(Node node: possibleStreets){
+            if((node instanceof Street))
+                neighbourStreets.add( (Street) node);
+        }
+        return neighbourStreets;
+    }
+    
+    /**
+     * 
+     * @return la lista delle regioni confinanti a quel nodo, null se vuota
+     */
+    public ArrayList<Region> getNeighbourRegions() {
+        ArrayList<Node> possibleRegions = this.getNeighbourNodes();
+        ArrayList<Region> neighbourRegions = new ArrayList<Region>();
+        
+        for(Node node: possibleRegions){
+            if((node instanceof Region))
+                neighbourRegions.add( (Region) node);
+        }
+        return neighbourRegions;
+    }
+    
+    /**
      * Verifica se il chiamante è un nodo connesso col nodo passato nel parametro
      * @param node Nodo con cui verificare la connessione
      * @return True se sono connessi, false altrimenti

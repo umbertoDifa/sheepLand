@@ -121,7 +121,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             for (j = 0; j < this.shepherd4player; j++) {//per ogni suo pastore
                 while (true) {
                     try {   //prova a chiedere la strada per il j-esimo pastore
-                        chosenStreet = askStreet(i, j);    //se ho un valore di ritorno
+                        chosenStreet = askStreet(i, this.playersHashCode[j]);    //se ho un valore di ritorno
                         break;                          //brekka
 
                     } catch (StreetNotFoundException ex) {//se strada non trovata 
@@ -134,8 +134,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                                 e.getMessage());
                     }
                 }//while
-            }//for pastori
             this.players.get(i).getShepherd(j).moveTo(chosenStreet); //sposta il pastore 
+            }//for pastori
 
             //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
             //quelle del pastore corrispondente al mio player
@@ -275,14 +275,23 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return false;   //se ci sono ancora recinti non chiamo l'ultimo giro
     }
 
-    private Street askStreet(int player, int shepherd) throws
+    /**
+     * Chiede al giocatore corrispondente all playerHashCode,
+     * in quale strada posizionare il pastore il cui id è idShepherd
+     * @param playerHashCode
+     * @param idShepherd
+     * @return
+     * @throws StreetNotFoundException se la strada non esiste
+     * @throws BusyStreetException se la strada è occupata
+     */
+    protected Street askStreet(int playerHashCode, int idShepherd) throws
             StreetNotFoundException,
             BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
 
-        String stringedStreet = this.server.talkTo(this.playersHashCode[player],
+        String stringedStreet = this.server.talkTo(playerHashCode,
                 "In quale strada vuoi posizionare il pastore?" + Integer.toString(
-                        shepherd + 1)); //raccogli decisione
+                        idShepherd + 1)); //raccogli decisione
         //traducila in oggetto steet 
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
         if (!chosenStreet.isFree()) { //se la strada è occuapata
@@ -294,17 +303,17 @@ public class GameManager {//TODO: pattern memento per ripristini?
     /**
      * Chiede al player inviandogli la stringa message un id regione
      *
-     * @param player
+     * @param playerHashCode
      * @param message
      *
      * @return Regione corrispondente
      *
      * @throws RegionNotFoundException
      */
-    protected Region askAboutRegion(int player, String message) throws
+    protected Region askAboutRegion(int playerHashCode, String message) throws
             RegionNotFoundException {
         Region chosenRegion;
-        String stringedRegion = this.getServer().talkTo(this.hashCode(), message);
+        String stringedRegion = this.getServer().talkTo(playerHashCode, message);
         chosenRegion = getMap().convertStringToRegion(stringedRegion);
         return chosenRegion;
     }
@@ -331,12 +340,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
             //calcola regione d'arrivo
             Region endRegion = this.map.getEndRegion(actualAnimalRegion,
                     potentialWalkthroughStreet);
+            
             //cerco di farlo passare (nel caso del lupo si occupa pure di farlo mangiare)
             animal.moveThrough(potentialWalkthroughStreet,
                     endRegion);
+            
             //tutto ok
-            this.getServer().broadcastMessage(animal.toString() + "mosso!");            
-
+            this.getServer().broadcastMessage(animal.toString() + "mosso!");
         } catch (CannotMoveAnimalException ex) {
             this.getServer().broadcastMessage(ex.getMessage());
         } catch (StreetNotFoundException ex) {
@@ -373,5 +383,39 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 throw new ActionCancelledException("Azione annullata");
         }//switch
     }
-
+    
+    
+    /**
+     * Chiede, mandandogli la stringa message, al giocatore corrispondente 
+     * all hashCode, qual'è l'id del pastore da muovere tra i suoi
+     * numShepherd pastori. Il metodo dev'essere invocato con numShepherd
+     * maggiore di zero.
+     * @param hashCode
+     * @param numShepherd
+     * @param message
+     * @return id pastore scelto
+     */
+    protected int askIdShepherd(int hashCode, int numShepherd, String message){
+        int idShepherd;
+        do {
+            //chiedi quale pastore muovere
+            idShepherd = Integer.parseInt(this.getServer().talkTo(
+                        this.hashCode(), "Quale pastore vuoi muovere?"));
+            
+            //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array
+            idShepherd--;
+        } while (idShepherd < 0 && idShepherd > numShepherd);  //fintanto che non va bene l'id
+        return idShepherd;
+    }
+    
+/**
+ * chiedo conferma per lanciare il dado al giocatore
+ * corrispondente al playerHashCode. Ritorno sempre un valore random
+ * @param playerHashCode
+ * @return 
+ */
+    protected int askThrowDice(int playerHashCode){
+        this.getServer().talkTo(playerHashCode, "vuoi lanciare dado?");
+        return Dice.getRandomValue();
+    }
 }
