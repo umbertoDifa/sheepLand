@@ -4,9 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contro
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  * thread che gestisce la connessione client server
@@ -29,6 +27,7 @@ public class ServerThread implements Runnable {
     }
 
     public void run() {
+        this.broadcastMessage("Partita avviata!");
         this.startGame();
         ServerManager.activatedGames--; //un thread è appena terminato e con lui la partita
     }

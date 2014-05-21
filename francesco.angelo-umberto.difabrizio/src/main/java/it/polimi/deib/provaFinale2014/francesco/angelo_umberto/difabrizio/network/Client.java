@@ -24,10 +24,12 @@ public class Client {
     public void startClient() {
         //TODO: importante! verficare cosa succede se un client si connette e si disconnette subito!
         //viene contato nell'accept del server ma poi a conti fatti non ci sarà!
+        //TODO e se disconnette il server?
         try {
             Socket socket = new Socket(ip, port);
             System.out.println("Connessione stabilita");
             Scanner stdIn = new Scanner(System.in);
+            System.out.println(stdIn.nextLine());
             String stop = stdIn.nextLine();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

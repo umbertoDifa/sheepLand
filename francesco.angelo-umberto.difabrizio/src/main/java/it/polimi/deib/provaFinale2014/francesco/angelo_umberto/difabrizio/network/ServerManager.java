@@ -6,9 +6,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +32,6 @@ public class ServerManager {
     private final int timeoutAccept;
 
     //constanti generiche
-    private final int NUMBER_OF_TIMER = 1;
     private final int MILLISECONDS_IN_SECONDS = 1000;
 
     //costanti di default per i costruttori
@@ -59,6 +58,15 @@ public class ServerManager {
 
     ArrayList<Socket> clientSockets = new ArrayList<Socket>();
     ExecutorService executor = Executors.newCachedThreadPool();
+    /**
+     * Creo un logger per il sistema
+     */
+    private final static Logger logger = Logger.getLogger(
+            ServerManager.class.getName());
+    /**
+     * Creo una console per il logger
+     */
+    ConsoleHandler console = new ConsoleHandler();
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,
                          int minClientsForGame, int acceptTimeout,
@@ -72,6 +80,14 @@ public class ServerManager {
         this.timeoutRefreshNumberOfGames = secondsBeforeRefreshNumberOfGamesActive * MILLISECONDS_IN_SECONDS;
         //setta la porta del server 
         this.port = port;
+        //setto il livello della console
+//        console.setLevel(Level.OFF); //lui decide cosa dare in output del loggato
+//        
+//     
+//        //aggiungo la console al logger
+//        logger.addHandler(console);        
+        logger.setLevel(Level.INFO); //lui decide cosa loggare
+
     }
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,
@@ -101,7 +117,8 @@ public class ServerManager {
             System.err.println(e.getMessage()); // porta non disponibile
             return;
         }
-        System.out.println("Server pronto");
+        logger.info("Serever pronto");
+        //System.out.println("Server pronto");
         this.handleClientRequest(serverSocket);
     }
 
@@ -155,6 +172,7 @@ public class ServerManager {
                 //aspetto la prima accept
                 clientSockets.add(serverSocket.accept());
 
+                logger.info("Client accettato");
                 //faccio partire il thread timer, ogni volta diverso perchè non
                 //posso chiamare la run due volte sullo stesso thread
                 Timer timer = new Timer();
@@ -164,8 +182,8 @@ public class ServerManager {
 
                 //avvio il timer
                 timer.startTimer();
-
-                //accetto le connessioni metre il timer non è scaduto
+                logger.info("timer avviato");
+                //accetto le connessioni mentre il timer non è scaduto
                 for (int i = 0; i < maxClientsForGame - 1 && !timeout; i++) {
                     clientSockets.add(serverSocket.accept()); //aspetto l'isemo client
                 }
@@ -207,12 +225,13 @@ public class ServerManager {
         public void run() {
             try {
                 //avvio il timer
-                myThread.wait(timeoutAccept);
-
+                synchronized (this) {
+                    myThread.wait(timeoutAccept);
+                }
                 //se finisce
                 //fermo l'accettazione dei client
                 timeout = true;
-                
+
             } catch (InterruptedException ex) {
                 //se blocco il timer io non succede niente, muori e basta.
             }
@@ -287,41 +306,6 @@ public class ServerManager {
             return socketList;
         }
         return socketList;
-    }
-
-    /**
-     * puramete un metodo di prova per testare la connessione con il client
-     */
-    public void provaServer() {
-        ServerSocket serverSocket;
-        //cerco di tirare su il server
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            System.err.println(e.getMessage()); // porta non disponibile
-            return;
-        }
-        System.out.println("Server ready");
-        Socket socketProva = new Socket();
-
-        try {
-            socketProva = serverSocket.accept();
-
-            System.out.println("ClientConnected");
-            Scanner socketIn = new Scanner(socketProva.getInputStream());//input stream
-            PrintWriter socketOut = new PrintWriter(socketProva.
-                    getOutputStream());//outputstream
-            String clientLine = socketIn.nextLine();
-            System.out.println("Mesaggio ricevuto " + clientLine);
-            socketOut.println(clientLine);
-            socketOut.flush();
-            System.out.println("Messsaggio inviato indietro");
-
-        } catch (IOException ex) {
-            Logger.getLogger(ServerManager.class
-                    .getName()).
-                    log(Level.SEVERE, null, ex);
-        }
     }
 
     public static void main(String[] args) {
