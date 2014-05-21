@@ -106,4 +106,12 @@ public class Region extends Node {
         }
         return (sheepFounded && otherOvineFounded);
     }
+    
+    public boolean hasOvine(OvineType thisOvineType){
+        for(Ovine ovine: this.getMyOvines()){
+            if(ovine.getType() == thisOvineType)
+                return true;
+        }
+        return false;
+    }
 }
