@@ -92,4 +92,18 @@ public class Region extends Node {
         //se non lo trovi
         throw new NoOvineException("Non c'è un ovino del tipo cercato.");
     }
+    
+    public boolean isPossibleMeetSheepWith(OvineType otherOvineType){
+        boolean sheepFounded = false, otherOvineFounded = false;
+        
+        for(int i=0; (i< this.getMyOvines().size())||
+                (sheepFounded&&otherOvineFounded); i++){ //per tutti gli ovini nella regione o finchè non li trovi
+            if(this.getMyOvines().get(i).getType() == OvineType.SHEEP){ //se Sheep metti alza flag pecora
+                sheepFounded = true;
+            }else if(this.getMyOvines().get(i).getType() == otherOvineType){ //se di otherType alza relativo flag
+                otherOvineFounded = true;
+            }
+        }
+        return (sheepFounded && otherOvineFounded);
+    }
 }
