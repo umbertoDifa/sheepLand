@@ -15,6 +15,11 @@ public class Client {
 
     private final String ip;
     private final int port;
+     /**
+     * Creo un logger per il sistema
+     */
+    private final static Logger logger = Logger.getLogger(
+            ServerManager.class.getName());
 
     public Client(String ip, int port) {
         this.ip = ip;
@@ -27,9 +32,10 @@ public class Client {
         //TODO e se disconnette il server?
         try {
             Socket socket = new Socket(ip, port);
-            System.out.println("Connessione stabilita");
-            Scanner stdIn = new Scanner(System.in);
-            System.out.println(stdIn.nextLine());
+            logger.info("Connessione stabilita");
+            //System.out.println("Connessione stabilita");
+            Scanner stdIn = new Scanner(socket.getInputStream());
+            logger.info(stdIn.nextLine());
             String stop = stdIn.nextLine();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
