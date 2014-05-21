@@ -102,10 +102,10 @@ public class Player {
                 this.buyLand();
                 break;
             case 6:
-                this.mateSheeps();
+                this.mateSheepWith(OvineType.SHEEP);
                 break;
             case 7:
-                this.mateSheepAndRam();
+                this.mateSheepWith(OvineType.RAM);
                 break;
             case 8:
                 this.killSheep();
@@ -280,55 +280,80 @@ public class Player {
         }
     }
 
-    private void mateSheeps() {
+    private void mateSheepWith(OvineType otherOvineType) throws ActionCancelledException {
+        //TODO: ricontrollare e scomporre
         ArrayList<Region> nearRegions = null;
-        Region chosenRegion = null;
+        Region chosenRegion;
         int randomStreetValue;
-        String errorMessage;
+        String errorMessage = "";
+        boolean sheepFounded = false, otherOvineFounded = false;
         
         //per ogni pastore del giocatore
-        for(Shepherd shepherd: this.shepherd){
+        for(Shepherd shepherdPlayer: this.shepherd){
             //per ogni regione confinante alla strada di quel pastore
-            for(Region region: shepherd.getStreet().getNeighbourRegions()){
+            for(Region region: shepherdPlayer.getStreet().getNeighbourRegions()){
                 //se non contenuta nelle regioni vicine aggiungila
-                if(!nearRegions.contains(region))
+                if((nearRegions != null) && !nearRegions.contains(region))
                     nearRegions.add(region);
             }
         }
         try{
-            //chiedi conferma per lanciare dado
-            randomStreetValue = this.gameManager.askThrowDice(this.hashCode());
-            //chiedi regione
+            //chiedi conferma per lanciare dado e lancialo
+            randomStreetValue = this.gameManager.askAndThrowDice(this.hashCode());
+            //chiedi regione (può lanciare RegionNotFoundException)
             chosenRegion = this.gameManager.askAboutRegion(this.hashCode(),
                     "In quale regione?");
             //se regione è fra le regioni vicine
             if((nearRegions != null) && nearRegions.contains(chosenRegion)){
-                //se nella regione è possibile accoppiare Sheep
-                if(chosenRegion.getMyOvines().size()>1){
+                //controlla che nella regione sia possibile accoppiare Sheep con otherOvine
+                if(chosenRegion.isPossibleMeetSheepWith(otherOvineType)){
                     //per ogni strada confinante alla regione scelta
                     for(Street street: chosenRegion.getNeighbourStreets()){
-                        //se ha valore uguale a quello del dado
-                        if(street.getValue() == randomStreetValue)
-                            
+                        //se ha valore uguale a quello del dado e sopra c'è un suo pastore
+                        if(street.getValue() == randomStreetValue && this.hasShepherdIn(street)){
                             //aggiungi ovino e esci dal ciclo
-                            chosenRegion.addOvine(new Ovine(OvineType.SHEEP));
+                            if(otherOvineType == otherOvineType.SHEEP)
+                                chosenRegion.addOvine(new Ovine(OvineType.SHEEP));
+                            else if(otherOvineType == otherOvineType.RAM)
+                                chosenRegion.addOvine(new Ovine(OvineType.LAMB));
+                            return;
+                        }else{
+                            errorMessage = "Accoppiamento non permesso";
                             break;
-                    }
-                }                
+                        }
+                    } if(errorMessage.compareTo("")==0)
+                        errorMessage = "Nessuna strada con quel valore e col tuo pastore";
+                }else{
+                    errorMessage = "Nessun possibile accoppiamento per questa regione.";
+                }
             }else{
-                errorMessage = "";
+                errorMessage = "Regione lontana dai tuoi pastori.";
             }
-        } catch(RegionNotFoundException e){
-            
-        }       
-    }
-
-    private void mateSheepAndRam() {
-        //TODO
+        } catch(RegionNotFoundException ex){
+            errorMessage = ex.getMessage();
+        }finally{
+            this.gameManager.askCancelOrRetry(this.hashCode(), errorMessage);
+        }
     }
 
     private void killSheep() {
-        //TODO
+        Region chosenRegion;
+        int randomValue;
+        
+        randomValue = this.gameManager.askAndThrowDice(this.hashCode());
+        for(Street street: this.getShepherdsStreets()){
+            if(street.getValue() == randomValue;)
+            //
+                
+        }
+        
+        
+        try{
+            chosenRegion = this.gameManager.askAboutRegion(this.hashCode(), "scegliere la regione da attaccare");
+        }catch(RegionNotFoundException e){
+            
+        }
+        
     }
 
     public void sellCards() {
@@ -352,6 +377,14 @@ public class Player {
             streets[i] = this.shepherd[i].getStreet();
         }
         return streets;
+    }
+
+    private boolean hasShepherdIn(Street street) {
+        for(Shepherd shepherd: this.shepherd){ //per ogni suo pastore
+            if(shepherd.getStreet().equals(street))
+                return true;
+        }
+        return false;
     }
 
 }
