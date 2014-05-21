@@ -14,10 +14,12 @@ public enum RegionType {
     private static final Random random = new Random(); //oggetto random cached
 
     /**
-     * Costruisce un tipo di regione corrispondente all'indice passato
+     * Costruisce un tipo di regione corrispondente all'indice passato.
+     * L'indice è fondamentale perchè usato nella ricerca delle regioni
+     * nella mappa. Infatti viene cercato solo il range in cui ci aspettiamo 
+     * ti trovare quei tipi di regione.
      * @param index Indice della regione da creare
      */
-    //TODO: che è sta roba?
     RegionType(int index){
     	this.index = index;
     }

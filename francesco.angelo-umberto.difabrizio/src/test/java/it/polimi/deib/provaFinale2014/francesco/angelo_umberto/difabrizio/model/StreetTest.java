@@ -209,21 +209,5 @@ public class StreetTest {
         int result = instance.getValue();
         assertEquals(expResult, result);       
     }
-
-    /**
-     * Test of isShepherdThere method, of class Street.
-     */
-    @Ignore
-    @Test
-    public void testIsShepherdThere() {
-        System.out.println("isShepherdThere");
-        Shepherd shepherd = null;
-        Street instance = null;
-        boolean expResult = false;
-        boolean result = instance.isShepherdThere(shepherd);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
     
 }

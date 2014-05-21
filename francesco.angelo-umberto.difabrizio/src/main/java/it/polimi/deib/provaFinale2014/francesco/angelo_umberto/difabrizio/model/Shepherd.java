@@ -70,7 +70,7 @@ public class Shepherd {
      * @param card Carta da rimuovere
      */
     public void removeCard(Card card) {
-        //TODO ci vuole pure il tipo?
+        this.myCards.remove(card);
     }
     
     public void setWallet(Wallet wallet){
