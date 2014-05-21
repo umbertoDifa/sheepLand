@@ -52,7 +52,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.playersHashCode = new int[playersNumber]; //creo un array della dimensione del numero dei player
         this.map = new Map(); //creo la mappa univoca del gioco
         this.server = server; //creo il collegamento all'univoco serverThread
-        this.setUpPlayers(); //setto arraylist giocatori e array hashcode giocatori
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
@@ -61,6 +60,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         } else {
             this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
         }
+        this.setUpPlayers(); //setto arraylist giocatori e array hashcode giocatori
     }
 
     /**
