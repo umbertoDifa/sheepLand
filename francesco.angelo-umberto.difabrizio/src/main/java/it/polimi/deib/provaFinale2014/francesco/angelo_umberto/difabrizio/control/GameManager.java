@@ -317,7 +317,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return map;
     }
 
-    private void moveSpecialAnimal(SpecialAnimal animal) { //TODO:rivedi un secondo
+    private void moveSpecialAnimal(SpecialAnimal animal) { 
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
 
@@ -327,22 +327,21 @@ public class GameManager {//TODO: pattern memento per ripristini?
             potentialWalkthroughStreet = this.map.getStreetByValue(
                     actualAnimalRegion,
                     Dice.getRandomValue());
-            if (potentialWalkthroughStreet != null) {//se esiste
-                Region endRegion = this.map.getEndRegion(actualAnimalRegion,
-                        potentialWalkthroughStreet);
-                //cerco di farlo passare 
-                animal.moveThrough(potentialWalkthroughStreet,
-                        endRegion);
-                //tutto ok
-                this.getServer().broadcastMessage(animal.toString() + "mosso!");
-            } else {
-                throw new CannotMoveAnimalException("La strada non esiste");
-            }
+            
+            //calcola regione d'arrivo
+            Region endRegion = this.map.getEndRegion(actualAnimalRegion,
+                    potentialWalkthroughStreet);
+            //cerco di farlo passare (nel caso del lupo si occupa pure di farlo mangiare)
+            animal.moveThrough(potentialWalkthroughStreet,
+                    endRegion);
+            //tutto ok
+            this.getServer().broadcastMessage(animal.toString() + "mosso!");            
 
         } catch (CannotMoveAnimalException ex) {
             this.getServer().broadcastMessage(ex.getMessage());
         } catch (StreetNotFoundException ex) {
-            this.getServer().broadcastMessage(ex.getMessage());
+            this.getServer().broadcastMessage(
+                    ex.getMessage() + "Il lupo non si muove.");
         }
     }
 
