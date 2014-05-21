@@ -366,10 +366,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
         Character choice = this.getServer().talkTo(
                 hashCode(), message + " Riprovare(R) o Annullare(A)?").charAt(0);
-        //TODO vedi che qui c'è una getMessage da riempire 
-        //TODO: se vuole annullare non gli devo togliere l'azione
         switch (choice) {
-            case 'R':
+            case 'R': //se vuole riprovare
                 break;
             default: //se vuole annullare o se mette una roba a caso
                 throw new ActionCancelledException("Azione annullata");

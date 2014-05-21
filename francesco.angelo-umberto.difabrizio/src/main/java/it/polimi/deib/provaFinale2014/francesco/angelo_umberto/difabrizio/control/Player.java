@@ -24,7 +24,6 @@ import java.util.Arrays;
  */
 public class Player {
 
-    //TODO: pensare modalità 2 giocatori, 2 shepherd ciascuno
     private final Shepherd[] shepherd;
     private final GameManager gameManager;
     private final int numShepherd;
@@ -32,10 +31,23 @@ public class Player {
     public Player(GameManager gameManager, int numShepherd) {
         this.numShepherd = numShepherd;
         this.shepherd = new Shepherd[numShepherd];
-        //TODO condividere soldi e carte dei pastori
+        //condivido le risorse del primo pastore con tutti gli altri
+        this.setUpSheperdSharing(this.shepherd[0]);
         this.gameManager = gameManager;
     }
-
+    
+    private void setUpSheperdSharing(Shepherd mainShepherd){
+        
+        //per ogni pastore tranne il (for inizia da 1)
+        for(int i = 1; i < this.shepherd.length; i++){
+            
+            //condividi il portafoglio
+            this.shepherd[i].setWallet(mainShepherd.getWallet());
+            
+            //condividi le carte
+            this.shepherd[i].setMyCards(mainShepherd.getMyCards());
+        }
+    }
     /**
      * Dato un indice i, ritorna il pastore corrispondente a quell'indice
      *
@@ -55,7 +67,7 @@ public class Player {
                                              ActionCancelledException,
                                              FinishedFencesException {
 
-        //crea array con le possibili scelte //TODO montone agnello
+        //crea array con le possibili scelte 
         String[] possibleActions = {"1- Sposta una pecora", "2-Sposta Montone", "3-Sposta agnello", "4- Sposta pastore",
                                     "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
                                     "8-Abbatti pecora"};
@@ -116,14 +128,15 @@ public class Player {
                 endRegion = this.gameManager.askAboutRegion(this.hashCode(),
                         "in quale regione vuoi spostarlo?"); //e regione arrivo
                 for (Street possibleStreet : this.getShepherdsStreets()) {   //per ogni strada occupata dai patori del giocatore
-                    if (startRegion.isNeighbour(possibleStreet) && possibleStreet.isNeighbour(
-                            endRegion)) { //se la strada confina con le due regioni
+                    if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
+                            possibleStreet)) { //se le regioni confinano con la strada
                         startRegion.removeOvine(type);     //rimuovi ovino del tipo specificato
                         endRegion.addOvine(new Ovine(type));     //e aggiungilo nella regione d'arrivo 
                         return;
                     }
                 }
-                throw new MovementException("Mossa non valida");
+                throw new MovementException(
+                        "Mossa non valida, nessun ovino presente nella regione di partenza.");
             } catch (MovementException ex) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         ex.getMessage());
@@ -338,7 +351,7 @@ public class Player {
     private Street[] getShepherdsStreets() {
         //creo array grande come il numero dei pastori
         Street[] streets = new Street[numShepherd];
-               
+
         for (int i = 0; i < numShepherd; i++) {
             streets[i] = this.shepherd[i].getStreet();
         }

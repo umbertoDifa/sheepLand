@@ -49,6 +49,14 @@ public class Shepherd {
     public Street getStreet() {
         return street;
     }
+
+    public ArrayList<Card> getMyCards() {
+        return myCards;
+    }
+
+    public void setMyCards(ArrayList<Card> myCards) {
+        this.myCards = myCards;
+    }
     
     /**
      * Aggiunge una carta terreno a quelle del pastore
