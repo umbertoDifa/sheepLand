@@ -55,4 +55,8 @@ public class Street extends Node {
     public int getValue() {
         return value;
     }
+    
+    public Shepherd getShepherd() {
+        return shepherd;
+    }
 }
