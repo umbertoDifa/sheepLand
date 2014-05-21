@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Contiene le carte che non sono state ancora vendute e i recinti non ancora
@@ -37,14 +38,24 @@ public class Bank {
      */
     //TODO: guarda che sta roba manda un ArrayOutOfBound se non ha carte quindi boh...
     public Card getInitialCard() {
-       Card returnableCard = this.initialCards.get(0);//prendi la prima carta della lista
-       this.initialCards.remove(0); //rimuovila dalla lista
+       //crea oggetto random
+       Random random = new Random();
+       
+       //trova index casuale tra quelli disponibili
+       int index = random.nextInt(this.initialCards.size());
+       
+       //prendi la carta 
+       Card returnableCard = this.initialCards.get(index);
+       
+       //rimuovila dalla lista
+       this.initialCards.remove(index); 
        return returnableCard; //ritornala
     }
     
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
-     * la ritorna se esiste, altrimenti solleva un eccezione se le carte (di
+     * la ritorna se esiste eliminandola da quelle disponibili
+     * altrimenti solleva un eccezione se le carte (di
      * quel tipo) sono finite
      *
      * @param type Tipo di carta voluto
@@ -67,6 +78,21 @@ public class Bank {
             }
         }
         throw new MissingCardException(missingCardMessage);
+    }
+    
+    public int priceOfCard(RegionType type) throws MissingCardException{
+        String missingCardMessage = "Non ci sono più carte per il tipo " + type.toString(); //preparo un messaggio di errore
+        //l'algoritmo che segue a come idea di indicizzare l'array
+        //le carte vengono caricate nell'array di quelle a disposizione della 
+        //banca in maniera ordinata
+        for (int i = type.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue();
+                i < (type.getIndex() + 1) * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
+            if (this.unusedCards[i] != null) {               
+                return this.unusedCards[i].getValue();
+            }
+        }
+        throw new MissingCardException(missingCardMessage);
+        
     }
 
     public Fence getFence() throws FinishedFencesException {
