@@ -55,7 +55,7 @@ public class Player {
      *
      * @return Un pastore del giocatore, null se non esiste l'iesmo pastore
      */
-    //TODO quando si fanno le chiamate a questa funzione assicurarsi di inserire un idice valido
+    //TODO warn: quando si fanno le chiamate a questa funzione assicurarsi di inserire un idice valido
     public Shepherd getShepherd(int i) {
         if (i >= 0 && i < this.numShepherd) {
             return shepherd[i];
@@ -144,60 +144,6 @@ public class Player {
         }//while
     }
 
-//        while (true) {
-//            try {
-//
-//                //TODO: mossa da regione, attraverso strada              
-//                //chiedi da quale regione
-//                askRegion();
-//                askStreet();
-//
-//                String stringedRegion = this.gameManager.getServer().talkTo(
-//                        this.hashCode(), "Da dove vuoi spostare l'ovino?");
-//                Region startRegion = this.gameManager.getMap().convertStringToRegion(
-//                        stringedRegion); //TODO: controllare validità regione, eccezione
-//                if(startRegion.isNeighbour(this.shepherd.getStreet())){  //se la regione selezionata confina con la strada del pastore
-//                    Ovine ovineToMove = startRegion.hasOvine(type); //TODO: spostare NoOvineException in Ovine
-//                    if (ovineToMove != null) {// se c'è quell'ovino nella regione
-//                        //chiedi attraverso quale strada
-//                        String stringedStreet = this.gameManager.getServer().talkTo(
-//                                this.hashCode(), "Attraverso quale strada?");
-//                        Street throughStreet = this.gameManager.getMap().convertStringToStreet(
-//                                stringedRegion);
-//                        if (!throughStreet.hasFence() && throughStreet.isShepherdThere(
-//                                this.shepherd)) {// se la strada non ha recinti e il tuo pastore è li 
-//                            //trova la regione in cui andrà
-//                            Region endRegion = this.gameManager.getMap().getEndRegion(
-//                                    startRegion, throughStreet); //questa non dovrebbe mai fallire!
-//                            //spostala                        
-//                            startRegion.removeOvine(ovineToMove.getType());  //non fallisce perchè sopra ho controllato se c'erano delle pecore
-//                            endRegion.addOvine(new Ovine(type));
-//                            //informa
-//                            this.gameManager.getServer().sendTo(this.hashCode(),
-//                                    "Movimento di" + type.toString() + "effettuato!");
-//                        }
-//                    } else {
-//                        throw new NoOvineException(
-//                                "Non ci sono" + type.toString() + "nella regione selezionata.");
-//                    }
-//                } else {
-//                    throw new NoOvineException("La regione selezionata non è valida.");
-//                }
-//            } catch (MovementException ex) { //se non c'è l'ovino, o la strada o la regione
-//                //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
-//                Character choice = this.gameManager.getServer().talkTo(
-//                        this.hashCode(),
-//                        ex.getMessage() + " Riprovare(R) o Annullare(A)?").charAt(
-//                                0); //TODO vedi che qui c'è una getMessage da riempire 
-//                //TODO se vuole annullare non gli devo togliere l'azione
-//                switch (choice) {
-//                    case 'R':
-//                        break;
-//                    default: //se vuole annullare o se mette una roba a caso
-//                        throw new ActionCancelledException("Azione annullata");                        
-//                }//switch
-//            }//catch
-//        }//while
     /**
      * Chiede al giocatore quale pastore spostare e in che strada Se la mossa è
      * possibile muovo il pastore e metto il cancello Altrimenti richiedo o
