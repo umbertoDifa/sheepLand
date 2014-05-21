@@ -85,8 +85,7 @@ public class Map {
      * @param value Il valore della strada limitrofa che si cerca
      * @return La strada trovata, null altrimenti
      */
-    //TODO invece di ritornare null forse StreetNotFoundException? controlla gli usage
-    public Street getStreetByValue(Region region, int value) {
+    public Street getStreetByValue(Region region, int value) throws StreetNotFoundException {
         //salvo i nodi adiacenti alla regione
         ArrayList<Node> adjacentStreet = region.getNeighbourNodes();
         for (int i = 0; i < adjacentStreet.size(); i++) { //per ogni nodo            
@@ -99,7 +98,7 @@ public class Map {
             }
         }
         //se non hai trovato nessuna strada limitrofa con quel valore
-        return null;
+        throw new StreetNotFoundException("Non esiste una strada con valore" +Integer.toString(value)+" nella regione data" );
     }
 
     /**

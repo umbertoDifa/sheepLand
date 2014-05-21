@@ -1,4 +1,3 @@
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
@@ -23,7 +22,7 @@ public class BankTest {
     public void testGetCard() throws Exception {
         System.out.println("getCard");
         RegionType type = RegionType.COUNTRYSIDE; //creo una carta country
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(), GameConstants.NUM_FENCES.getValue()); //inizializzo una bank con 3 carte e 3 recinti
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),GameConstants.NUM_INITIAL_CARDS.getValue(), GameConstants.NUM_FENCES.getValue()); //inizializzo una bank con 3 carte e 3 recinti
         Card expResult = new Card(2, type); //creo una carta di valore 2 e tipo country
         instance.loadCard(expResult, RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());//la carico in corrispondenza di dove inizia il suo indice(2)
         try{
@@ -40,7 +39,7 @@ public class BankTest {
     public void testGetCardException() throws MissingCardException{
         System.out.println("getCard");
         RegionType type = RegionType.COUNTRYSIDE; //creo una carta country
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(), GameConstants.NUM_FENCES.getValue()); //inizializzo una bank con 3 carte e 3 recinti
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),GameConstants.NUM_INITIAL_CARDS.getValue(), GameConstants.NUM_FENCES.getValue()); //inizializzo una bank con 3 carte e 3 recinti
         Card expResult = new Card(2, type); //creo una carta di valore 2 e tipo country
         //instance.loadCard(expResult, RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());//la carico in corrispondenza di dove inizia il suo indice(2)
         

@@ -26,15 +26,17 @@ public class MapTest {
     @Test
     public void testSetUp() {
         System.out.println("setUp");
-        assertTrue(map.getRegions()[1].getNeighbourNodes().contains(map.getStreets()[0]));
+        //testo connessione tra regioni e strade
+        assertTrue(map.getRegions()[1].getNeighbourNodes().contains(map.getStreets()[10]));
         assertTrue(map.getRegions()[7].getNeighbourNodes().contains(map.getStreets()[7]));
-        assertTrue(map.getRegions()[10].getNeighbourNodes().contains(map.getStreets()[27]));
-        assertTrue(map.getRegions()[18].getNeighbourNodes().contains(map.getStreets()[41]));
-        assertTrue(map.getRegions()[14].getNeighbourNodes().contains(map.getStreets()[32]));
-        assertTrue(map.getRegions()[8].getNeighbourNodes().contains(map.getStreets()[12]));
-
-        assertTrue(map.getStreets()[0].getNeighbourNodes().contains(map.getRegions()[1]));
-        assertTrue(map.getStreets()[7].getNeighbourNodes().contains(map.getStreets()[8]));
+        assertFalse(map.getRegions()[10].getNeighbourNodes().contains(map.getStreets()[27]));
+        assertFalse(map.getRegions()[18].getNeighbourNodes().contains(map.getStreets()[41]));
+        assertTrue(map.getRegions()[14].getNeighbourNodes().contains(map.getStreets()[39]));
+        assertFalse(map.getRegions()[8].getNeighbourNodes().contains(map.getStreets()[12]));
+        
+        //testo connessione tra strade
+        assertTrue(map.getStreets()[0].getNeighbourNodes().contains(map.getRegions()[3]));
+        assertTrue(map.getStreets()[7].getNeighbourNodes().contains(map.getStreets()[6]));
         assertFalse(map.getStreets()[34].getNeighbourNodes().contains(map.getStreets()[6]));
 
     }

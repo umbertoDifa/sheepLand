@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -206,6 +207,8 @@ public class RegionTest {
             map.getStreetByValue(region2, 3).setFence(new Fence(false)); //prendo la strada con valore 3 e ci metto un recinto
         } catch (RegionNotFoundException ex) {
             fail("Regione2 non trovata, ma ti pare??");
+        } catch (StreetNotFoundException ex) {
+            fail(ex.getMessage());
         }
         //testo
         assertFalse(region2.isAllFenced());
@@ -229,6 +232,8 @@ public class RegionTest {
             assertTrue(region2.isAllFenced());
         } catch (RegionNotFoundException ex) {
                         fail("Regione non trovata, ma ti pare??");
+        } catch (StreetNotFoundException ex) {
+           fail(ex.getMessage());
         }
     }
 }

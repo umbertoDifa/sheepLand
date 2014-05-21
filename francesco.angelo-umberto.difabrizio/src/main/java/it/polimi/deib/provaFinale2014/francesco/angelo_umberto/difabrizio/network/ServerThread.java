@@ -4,6 +4,8 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contro
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -23,7 +25,7 @@ public class ServerThread implements Runnable {
             client.add(new Sclient(clientSocket)); //aggiungi ai client un nuovo client legato al rispettivo socket
         }
         this.gameManager = new GameManager(clientSockets.size(), this);
-        
+
     }
 
     public void run() {
@@ -48,31 +50,45 @@ public class ServerThread implements Runnable {
             clientPlayerMap.put(playersHashCode[i], client.get(i)); //inserisci la coppia hashcode del player - Sclient corrispondente
         }
     }
+
     /**
-     * Invia message e ottiene una stringa di risposta dal client 
-     * corrispondente all'hashCode
+     * Invia message e ottiene una stringa di risposta dal client corrispondente
+     * all'hashCode
+     *
      * @param hashCode
      * @param message
+     *
      * @return String
      */
     public String talkTo(int hashCode, String message) {
-        this.sendTo(hashCode,message);
+        this.sendTo(hashCode, message);
         return receiveFrom(hashCode);
     }
+
     /**
      * Invia una stringa message al client corrispondente all'hashCode
+     *
      * @param hashCode
-     * @param message 
+     * @param message
      */
     public void sendTo(int hashCode, String message) {
         clientPlayerMap.get(hashCode).send(message);
     }
+
     /**
      * Riceve una stringa dal client corrispondente all'hashcode
+     *
      * @param hashCode
+     *
      * @return String
      */
     public String receiveFrom(int hashCode) {
         return clientPlayerMap.get(hashCode).receive();
+    }
+
+    public void broadcastMessage(String message) {
+        for (Map.Entry pairs : clientPlayerMap.entrySet()) {//per ogni coppia di key,value
+            sendTo((Integer) pairs.getKey(), message);//TODO: vedi se funziona questo cast
+        }
     }
 }

@@ -20,6 +20,8 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -62,8 +64,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     /**
-     * Riempie l'arraylist dei player e riempie
-     * l'array dei rispettivi hashcode
+     * Riempie l'arraylist dei player e riempie l'array dei rispettivi hashcode
      *
      */
     private void setUpPlayers() {
@@ -212,7 +213,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         try {
             this.executeRounds();
         } catch (FinishedFencesException ex) {
-            this.broadcastMessage(
+            this.getServer().broadcastMessage(
                     "I recinti totali sono finiti, fine gioco e calcolo dei punteggi");
         } finally {//se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
             //TODO:decidere scelta fatta sopra
@@ -316,20 +317,16 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return map;
     }
 
-    private void broadcastMessage(String message) {
-        for (int i = 0; i < this.playersNumber; i++) {
-            this.server.sendTo(this.playersHashCode[i], message);
-        }
-    }
-
     private void moveSpecialAnimal(SpecialAnimal animal) { //TODO:rivedi un secondo
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
+
         //cerco la strada che dovrebbe attraversare
-        Street potentialWalkthroughStreet = this.map.getStreetByValue(
-                actualAnimalRegion,
-                Dice.getRandomValue());
+        Street potentialWalkthroughStreet;
         try {
+            potentialWalkthroughStreet = this.map.getStreetByValue(
+                    actualAnimalRegion,
+                    Dice.getRandomValue());
             if (potentialWalkthroughStreet != null) {//se esiste
                 Region endRegion = this.map.getEndRegion(actualAnimalRegion,
                         potentialWalkthroughStreet);
@@ -337,13 +334,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 animal.moveThrough(potentialWalkthroughStreet,
                         endRegion);
                 //tutto ok
-                this.broadcastMessage(animal.toString() + "mosso!");
+                this.getServer().broadcastMessage(animal.toString() + "mosso!");
             } else {
                 throw new CannotMoveAnimalException("La strada non esiste");
             }
 
         } catch (CannotMoveAnimalException ex) {
-            this.broadcastMessage(ex.getMessage());
+            this.getServer().broadcastMessage(ex.getMessage());
+        } catch (StreetNotFoundException ex) {
+            this.getServer().broadcastMessage(ex.getMessage());
         }
     }
 

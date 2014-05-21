@@ -3,10 +3,11 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -36,6 +37,7 @@ public class WolfTest {//TODO: tutti test da fare
     /**
      * Test of moveThrough method, of class Wolf.
      */
+    @Ignore
     @Test
     public void testMoveThrough() throws Exception {
         System.out.println("moveThrough");
@@ -50,6 +52,7 @@ public class WolfTest {//TODO: tutti test da fare
     /**
      * Test of toString method, of class Wolf.
      */
+    @Ignore
     @Test
     public void testToString() {
         System.out.println("toString");
