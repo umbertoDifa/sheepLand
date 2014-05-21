@@ -23,7 +23,7 @@ public class Bank {
         this.unusedFences = new Fence[numeFences];
         //creo le carte iniziali
         for (int i = 0; i < numInitialCard; i++) {//per tutte le carte iniziali da dare
-            
+
             //creo una carta con valore 0
             //e con tipo RegionType ciclicamente ovvero partendo dal primo tipo
             //fino all'ultimo, se le carte da distribuire sono più dei terreni
@@ -32,31 +32,32 @@ public class Bank {
                     RegionType.values()[i % numInitialCard]));
         }
     }
+
     /**
      * Ritorna una carta tra quelle iniziali e la rimuove da quelle disponibili
-     * @return Una carta il cui tipo è casuale ma unico nella lista 
+     *
+     * @return Una carta il cui tipo è casuale ma unico nella lista
      */
     //TODO: guarda che sta roba manda un ArrayOutOfBound se non ha carte quindi boh...margine di sicurezza?
     public Card getInitialCard() {
-       //crea oggetto random
-       Random random = new Random();
-       
-       //trova index casuale tra quelli disponibili
-       int index = random.nextInt(this.initialCards.size());
-       
-       //prendi la carta 
-       Card returnableCard = this.initialCards.get(index);
-       
-       //rimuovila dalla lista
-       this.initialCards.remove(index); 
-       return returnableCard; //ritornala
+        //crea oggetto random
+        Random random = new Random();
+
+        //trova index casuale tra quelli disponibili
+        int index = random.nextInt(this.initialCards.size());
+
+        //prendi la carta 
+        Card returnableCard = this.initialCards.get(index);
+
+        //rimuovila dalla lista
+        this.initialCards.remove(index);
+        return returnableCard; //ritornala
     }
-    
+
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
-     * la ritorna se esiste eliminandola da quelle disponibili
-     * altrimenti solleva un eccezione se le carte (di
-     * quel tipo) sono finite
+     * la ritorna se esiste eliminandola da quelle disponibili altrimenti
+     * solleva un eccezione se le carte (di quel tipo) sono finite
      *
      * @param type Tipo di carta voluto
      *
@@ -65,34 +66,53 @@ public class Bank {
      * @throws MissingCardException Se la carta non c'è
      */
     public Card getCard(RegionType type) throws MissingCardException {
-        String missingCardMessage = "Non ci sono più carte per il tipo " + type.toString(); //preparo un messaggio di errore
+        //salvo la carta da restituire
+        Card cardToReturn = this.findCard(type);
+        
+        //elimino il suo riferimento nell'array
+        removeCard(cardToReturn);
+        
+        //ritorno la carta
+        return cardToReturn;
+    }
+    /**
+     * Il metodo elimina una carta dall'array delle carte della banca ponendo 
+     * il suo riferimento a null. Non gestisce casi di ArrayOutOfBounds perche
+     * viene chiamata quando il controllo è stato già fatto da un'altra funzione
+     * tipicamente findCard
+     * @param deleteMe Carta da eliminare
+     */
+    private void removeCard(Card deleteMe) {
+        //per ogni carta
+        for (Card card : this.unusedCards) {
+            
+            //se la carta è quella da eliminare
+            if (card == deleteMe) {
+                
+                //impostala a null
+                card = null;
+            }
+        }
+    }
+
+    public int priceOfCard(RegionType type) throws MissingCardException {
+        //chiamo la find card e ritorno il prezzo
+        return this.findCard(type).getValue();
+    }
+
+    private Card findCard(RegionType type) throws MissingCardException {
         //l'algoritmo che segue a come idea di indicizzare l'array
         //le carte vengono caricate nell'array di quelle a disposizione della 
         //banca in maniera ordinata
+
         for (int i = type.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue();
                 i < (type.getIndex() + 1) * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
             if (this.unusedCards[i] != null) {
-                Card foundedCard = this.unusedCards[i];
-                this.unusedCards[i] = null;
-                return foundedCard;
+                return this.unusedCards[i];
             }
         }
-        throw new MissingCardException(missingCardMessage);
-    }
-    
-    public int priceOfCard(RegionType type) throws MissingCardException{
-        String missingCardMessage = "Non ci sono più carte per il tipo " + type.toString(); //preparo un messaggio di errore
-        //l'algoritmo che segue a come idea di indicizzare l'array
-        //le carte vengono caricate nell'array di quelle a disposizione della 
-        //banca in maniera ordinata
-        for (int i = type.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue();
-                i < (type.getIndex() + 1) * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
-            if (this.unusedCards[i] != null) {               
-                return this.unusedCards[i].getValue();
-            }
-        }
-        throw new MissingCardException(missingCardMessage);
-        
+        throw new MissingCardException(
+                "Non ci sono più carte per il tipo " + type.toString());
     }
 
     public Fence getFence() throws FinishedFencesException {
