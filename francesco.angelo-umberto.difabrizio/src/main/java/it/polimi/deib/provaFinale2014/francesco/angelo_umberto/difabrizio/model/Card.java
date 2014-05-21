@@ -7,7 +7,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 public class Card {
     private int value;
     private int marketValue;
-    private boolean initial; //TODO: magari lo toglieremo perchè per ora non lo usiamo
     
     private RegionType type;
     /**

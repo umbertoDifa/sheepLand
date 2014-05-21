@@ -36,7 +36,7 @@ public class Bank {
      * Ritorna una carta tra quelle iniziali e la rimuove da quelle disponibili
      * @return Una carta il cui tipo è casuale ma unico nella lista 
      */
-    //TODO: guarda che sta roba manda un ArrayOutOfBound se non ha carte quindi boh...
+    //TODO: guarda che sta roba manda un ArrayOutOfBound se non ha carte quindi boh...margine di sicurezza?
     public Card getInitialCard() {
        //crea oggetto random
        Random random = new Random();

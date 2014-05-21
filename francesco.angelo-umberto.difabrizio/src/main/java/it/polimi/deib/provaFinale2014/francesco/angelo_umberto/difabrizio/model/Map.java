@@ -33,11 +33,10 @@ public class Map {
         this.wolf = new Wolf();
     }
 
-    //TODO: compattare convertStringToStreet e convertStringTo Region in un metodo di Node?
     public Street convertStringToStreet(String streetId) throws StreetNotFoundException {
         int id = Integer.parseInt(streetId);
         if (id >= 0 && id < GameConstants.NUM_STREETS.getValue() &&
-                this.streets[Integer.parseInt(streetId)] != null) {//se l'id è nel range dell'array e quello che c'è dentro non è null
+                this.streets[id] != null) {//se l'id è nel range dell'array e quello che c'è dentro non è null
             return (Street) this.streets[id];
         } else {
             throw new StreetNotFoundException("Strada non esistente");
@@ -47,7 +46,7 @@ public class Map {
     public Region convertStringToRegion(String regionId) throws RegionNotFoundException {
         int id = Integer.parseInt(regionId);
         if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue() &&
-                this.regions[Integer.parseInt(regionId)] != null) {
+                this.regions[id] != null) {
             return (Region) this.regions[id];
         } else {
             throw new RegionNotFoundException("Regione non esistente");
@@ -361,11 +360,11 @@ public class Map {
 
     /**
      * Data una regione e una strada attraverso cui passare mi restituisce la
-     * regione in cui arrivo
+     * regione in cui arrivo.
      *
      * @param startRegion Regione di partenza
      * @param street Strada attraverso cui passare
-     * @return Regione di arrivo
+     * @return Regione di arrivo, null se non esiste
      */
     public Region getEndRegion(Region startRegion, Street street) {
         ArrayList<Node> neighbourRegions;
@@ -377,6 +376,6 @@ public class Map {
             }
         }
         //se non hai trovato nessun altra regione
-        return null; //TODO: non dovrebbe succedere mai giusto? Ammenocchè la mappa non si costruita male...
+        return null; //non dovrebbe succedere mai. Ammenocchè la mappa non si costruita male...
     }
 }
