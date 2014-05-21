@@ -29,5 +29,9 @@ public class Wallet {
     public void setAmount(int amount) {
         this.amount = amount;
     }
+    
+    public void pay(int prize){
+        this.amount -= prize; 
+    }
 
 }
