@@ -12,7 +12,9 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MovementException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -24,15 +26,13 @@ import java.util.Arrays;
 public class Player {
 
     //TODO: pensare modalità 2 giocatori, 2 shepherd ciascuno
-    private final ArrayList<Shepherd> shepherd = new ArrayList<Shepherd>();
+    private final Shepherd[] shepherd;
     private final GameManager gameManager;
     private final int numShepherd;
 
     public Player(GameManager gameManager, int numShepherd) {
         this.numShepherd = numShepherd;
-        for (int i = 0; i < numShepherd; i++) {
-            this.shepherd.add(new Shepherd());
-        }
+        this.shepherd = new Shepherd[numShepherd];
         this.gameManager = gameManager;
     }
 
@@ -40,16 +40,22 @@ public class Player {
      *
      * @return Il pastore del giocatore
      */
-    public ArrayList<Shepherd> getShepherd() {
-        return shepherd;
+    //TODO quando si fanno le chiamate a questa funzione assicurarsi di inserire un idice valido
+    public Shepherd getShepherd(int i) {
+        if (i >= 0 && i < this.numShepherd) {
+            return shepherd[i];
+        }
+        return null; //pastore non esistente!
     }
 
-    public void chooseAndMakeAction() throws ActionNotFoundException, ActionCancelledException {
+    public void chooseAndMakeAction() throws ActionNotFoundException,
+                                             ActionCancelledException,
+                                             FinishedFencesException {
 
         //crea array con le possibili scelte //TODO montone agnello
         String[] possibleActions = {"1- Sposta una pecora", "2-Sposta Montone", "3-Sposta agnello", "4- Sposta pastore",
-            "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
-            "8-Abbatti pecora"};
+                                    "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
+                                    "8-Abbatti pecora"};
 
         //raccogli la scelta trasformando la string in int
         int actionChoice = Integer.parseInt(this.gameManager.getServer().talkTo(
@@ -94,6 +100,7 @@ public class Player {
      * Se mossa non valida chiede e annullare o ripetere azione
      *
      * @param type
+     *
      * @throws ActionCancelledException
      */
     private void moveOvine(OvineType type) throws ActionCancelledException {
@@ -103,9 +110,11 @@ public class Player {
             try {
                 startRegion = this.gameManager.askAboutRegion(
                         this.hashCode(), "Da dove vuoi spostare l'ovino");  //chiedi regione di partenza
-                endRegion = this.gameManager.askAboutRegion(this.hashCode(), "in quale regione vuoi spostarlo?"); //e regione arrivo
+                endRegion = this.gameManager.askAboutRegion(this.hashCode(),
+                        "in quale regione vuoi spostarlo?"); //e regione arrivo
                 for (Street possibleStreet : this.getShepherdsStreets()) {   //per ogni strada occupata dai patori del giocatore
-                    if (startRegion.isNeighbour(possibleStreet) && possibleStreet.isNeighbour(endRegion)) { //se la strada confina con le due regioni
+                    if (startRegion.isNeighbour(possibleStreet) && possibleStreet.isNeighbour(
+                            endRegion)) { //se la strada confina con le due regioni
                         startRegion.removeOvine(type);     //rimuovi ovino del tipo specificato
                         endRegion.addOvine(new Ovine(type));     //e aggiungilo nella regione d'arrivo 
                         return;
@@ -113,7 +122,8 @@ public class Player {
                 }
                 throw new MovementException("Mossa non valida");
             } catch (MovementException ex) {
-                this.gameManager.askCancelOrRetry(this.hashCode(), ex.getMessage());
+                this.gameManager.askCancelOrRetry(this.hashCode(),
+                        ex.getMessage());
             }//catch
         }//while
     }
@@ -179,35 +189,60 @@ public class Player {
      *
      * @throws ActionCancelledException
      */
-    private void moveShepherd() throws ActionCancelledException {
+    private void moveShepherd() throws ActionCancelledException,
+                                       FinishedFencesException {
         String stringedStreet;
         Street startStreet;
         Street endStreet;
         int idShepherd = 0;
+        //Controllo sul numero dei pastori
         if (numShepherd > 0) {  //se c'è più di un pastore per giocatore
             do {
-                idShepherd = Integer.parseInt(this.gameManager.getServer().talkTo(
-                        this.hashCode(), "Quale pastore vuoi muovere?"));  //chiedi quale pastore muovere
-            } while (idShepherd > 0 && idShepherd < this.numShepherd);  //fintanto che non va bene l'id
+                idShepherd = Integer.parseInt(
+                        this.gameManager.getServer().talkTo(
+                                this.hashCode(), "Quale pastore vuoi muovere?"));  //chiedi quale pastore muovere
+                //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array
+                idShepherd--;
+            } while (idShepherd < 0 && idShepherd > this.numShepherd);  //fintanto che non va bene l'id
+        } else {
+            throw new ActionCancelledException("Ci sono zero pastori!");
         }
+
+        //mossa vera e propria
         while (true) {
             try {
-                startStreet = this.shepherd.get(idShepherd).getStreet();  //da strada partenza
-                stringedStreet = this.gameManager.getServer().talkTo(this.hashCode(),
+                startStreet = this.shepherd[idShepherd].getStreet();  //da strada partenza
+                stringedStreet = this.gameManager.getServer().talkTo(
+                        this.hashCode(),
                         "Inserire strada di destinzaione");  //chiedi strada di arrivo
-                endStreet = this.gameManager.getMap().convertStringToStreet(stringedStreet);  //convertila
-                //se confinano le strade di partenza e di arrivo e strada di arrivo libera
-                if (startStreet.isNeighbour(endStreet) && endStreet.isFree()) {
-                    this.shepherd.get(idShepherd).moveTo(endStreet);  //muovilo
+                endStreet = this.gameManager.getMap().convertStringToStreet(
+                        stringedStreet);  //convertila
+                if (endStreet.isFree()) {//se la strada di arrivo è libera
+                    if (startStreet.isNeighbour(endStreet)) {// se le strade sono confinanti
+                        this.shepherd[idShepherd].moveTo(endStreet);  //muovilo
+                        
+                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
+                        startStreet.setFence(this.gameManager.bank.getFence()); 
+                    } else {//se le strade non confinano
+                        //controlla che il pastore abbia i soldi per pagare il trasporto
+                        //eventualmente muovi
+                    }
+                } else {//se la strada è occupata
+                    //avvisa e richiedi cosa fare
+                    this.gameManager.askCancelOrRetry(this.hashCode(),
+                            "Strada già occupata");
                 }
-                startStreet.setFence(this.gameManager.bank.getFence()); //metti recinto
-            } catch (MovementException e) {
-                this.gameManager.askCancelOrRetry(this.hashCode(), "Mossa non valida");  //richiedi o cancella mossa
-            } catch (FinishedFencesException e) {
-                break; //TODO: da gestire meglio
+            } catch (StreetNotFoundException e) {//se la strada di arrivo non esiste
+                //informa e riprova o cancella mossa
+                this.gameManager.askCancelOrRetry(this.hashCode(),
+                        "Strada di arrivo non esistente ");
+
             }
         }
-    }
+
+    
+
+    
 
     private void buyLand() throws ActionCancelledException {
         ArrayList<RegionType> possibleRegionsType = new ArrayList<RegionType>();
@@ -218,7 +253,7 @@ public class Player {
         int amount = this.shepherd.get(0).getWallet().getAmount();
 
         for (Shepherd shepherd : this.getShepherd()) {  //per ogni pastore del giocatore
-            for (Node region: shepherd.getStreet().getNeighbourNodes()) {  //per ogni nodo confinante alla strada di quel pastore
+            for (Node region : shepherd.getStreet().getNeighbourNodes()) {  //per ogni nodo confinante alla strada di quel pastore
                 if (region instanceof Region) {  // se è una regione
                     endRegion = (Region) region;   // castala a tipo di regione
                     possibleRegionsType.add(endRegion.getType());  //aggiungila ai tipi di regione possibili
@@ -226,26 +261,30 @@ public class Player {
 
             }
         }
-        while(true){
-            try{
-                stringedTypeOfCard = this.gameManager.getServer().talkTo(this.hashCode(), "Quale tipo di carta vuoi comprare?");
+        while (true) {
+            try {
+                stringedTypeOfCard = this.gameManager.getServer().talkTo(
+                        this.hashCode(), "Quale tipo di carta vuoi comprare?");
                 //chiedi il tipo di carta desiderato e convertilo in RegionType
-                chosenTypeOfCard = RegionType.values()[Integer.parseInt(stringedTypeOfCard)];
+                chosenTypeOfCard = RegionType.values()[Integer.parseInt(
+                        stringedTypeOfCard)];
                 prize = this.gameManager.bank.getPrizeOf(chosenTypeOfCard);  //prendi prezzo della carta da banca //TODO: bank.getPrizeOf da implementare
-                if (possibleRegionsType.contains(chosenTypeOfCard)){   //se il tipo è contenuto nei tipi comprabili dal pastore
-                    if(amount>= prize){
-                        Card card = this.gameManager.bank.getCard(chosenTypeOfCard);
+                if (possibleRegionsType.contains(chosenTypeOfCard)) {   //se il tipo è contenuto nei tipi comprabili dal pastore
+                    if (amount >= prize) {
+                        Card card = this.gameManager.bank.getCard(
+                                chosenTypeOfCard);
                         this.shepherd.get(0).addCard(card);
-                        this.shepherd.get(0).getWallet().setAmount(amount-prize); 
+                        this.shepherd.get(0).getWallet().setAmount(
+                                amount - prize);
                         return;
                     }
                 }
-            }catch (MissingCardException e){ //TODO: gestire meglio eccezione
-                this.gameManager.askCancelOrRetry(this.hashCode(), "Tipo carta non valido");
+            } catch (MissingCardException e) { //TODO: gestire meglio eccezione
+                this.gameManager.askCancelOrRetry(this.hashCode(),
+                        "Tipo carta non valido");
             }
         }
     }
-    
 
     private void mateSheeps() {
         //TODO

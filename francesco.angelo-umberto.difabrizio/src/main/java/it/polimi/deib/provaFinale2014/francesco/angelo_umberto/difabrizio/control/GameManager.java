@@ -2,7 +2,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
@@ -21,8 +20,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -31,7 +28,6 @@ import java.util.logging.Logger;
  * @author francesco.angelo-umberto.difabrizio
  */
 public class GameManager {//TODO: pattern memento per ripristini?
-//TODO: dividere la classe fra GameSetupper e GameManager? è grossa...
 
     private final ServerThread server;
 
@@ -40,14 +36,14 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private final int playersNumber;
     private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
     private final int[] playersHashCode; //valore cached degli hash dei giocatori
-
+    private final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
 
     /**
      * Crea un GameManager
      *
      * @param playersNumber Numero dei giocatori di una partita
-     * @param server Thread che gestisce la partita
+     * @param server        Thread che gestisce la partita
      */
     public GameManager(int playersNumber, ServerThread server) {
         this.playersNumber = playersNumber;
@@ -57,6 +53,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.setUpPlayers(playersNumber); //setto arraylist giocatori e array hashcode giocatori
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
+        if (this.playersNumber <= ControlConstants.NUM_FEW_PLAYERS.getValue()) {
+            this.shepherd4player = ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue();
+        } else {
+            this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
+        }
     }
 
     /**
@@ -67,7 +68,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      */
     private void setUpPlayers(int numbPlayer) {
         for (int i = 0; i < playersNumber; i++) { //per ogni giocatore
-            players.add(new Player(this));       //lo aggiungo alla lista dei giocatori
+            players.add(new Player(this, this.shepherd4player));       //lo aggiungo alla lista dei giocatori
             playersHashCode[i] = players.get(i).hashCode();//salvo il suo hashcode
         }
     }
@@ -109,32 +110,42 @@ public class GameManager {//TODO: pattern memento per ripristini?
         Street chosenStreet = new Street(0); //HACK: creo cmq una strada con valore 0 così non ho errori 
         //perchè la variabile potrebbe essere null fuori dal while infatti tutti i controlli necessari li faccio
         //in askStreet e nelle funzioni da lei chiamate che mi ridanno una delle eccezioni che gestisco
-        for (int i = 0; i < this.playersNumber; i++) {
-            //ciclo che chiede la strada per un pastore ogni volta che questa risulta già occupata
-            while (true) {
-                try {   //prova a chiedere la strada
-                    chosenStreet = askStreet(i);    //se ho un valore di ritorno
-                    break;                          //brekka
-                } catch (StreetNotFoundException ex) {//se strada non trovata 
-                    this.server.sendTo(this.playersHashCode[i], ex.getMessage()); //invio msg strada non trovata e ricomincia loop
-                } catch (BusyStreetException e) {    //se la strada è occupata
-                    //manda il messaggio di errore al client e ricomincia il loop
-                    this.server.sendTo(this.playersHashCode[i], e.getMessage());
 
-                }
-            }//while
-            this.players.get(i).getShepherd().moveTo(chosenStreet); //sposta il pastore 
+        //ciclo che chiede la strada per un pastore ogni volta che questa risulta già occupata
+        int i;//indice giocatori
+
+        for (i = 0; i < this.playersNumber; i++) {//per ogni playerint 
+            int j;//indice pastori
+
+            for (j = 0; j < this.shepherd4player; j++) {//per ogni suo pastore
+                while (true) {
+                    try {   //prova a chiedere la strada per il j-esimo pastore
+                        chosenStreet = askStreet(i, j);    //se ho un valore di ritorno
+                        break;                          //brekka
+
+                    } catch (StreetNotFoundException ex) {//se strada non trovata 
+                        this.server.sendTo(this.playersHashCode[i],
+                                ex.getMessage()); //invio msg strada non trovata e ricomincia loop
+
+                    } catch (BusyStreetException e) {    //se la strada è occupata
+                        //manda il messaggio di errore al client e ricomincia il loop
+                        this.server.sendTo(this.playersHashCode[i],
+                                e.getMessage());
+                    }
+                }//while
+            }//for pastori
+            this.players.get(i).getShepherd(j).moveTo(chosenStreet); //sposta il pastore 
+
             //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
             //quelle del pastore corrispondente al mio player
-            //TODO: carte iniziali crearle o prenderle da banco?
-            this.players.get(i).getShepherd().addCard(new Card(0,
-                    RegionType.
-                    getRandomRegionType())); //aggiungi la carta
+            //aggiungi la carta prendendola dalle carte iniziali della banca
+            Card initialCard = this.bank.getInitialCard();
+            this.players.get(i).getShepherd(j).addCard(initialCard);
+
             //invia conferma riepilogativa
             this.server.sendTo(this.playersHashCode[i],
-                    "Pastore posizionato. Hai una carta terreno di tipo: " + RegionType.MOUNTAIN.
-                    toString());
-        }
+                    "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
+        }//for giocatori
 
     }
 
@@ -198,9 +209,16 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void playTheGame() {
-        this.executeRounds();
-        //this.calculatePoints();
-        //this.broadcastWinner();
+        try {
+            this.executeRounds();
+        } catch (FinishedFencesException ex) {
+            this.broadcastMessage(
+                    "I recinti totali sono finiti, fine gioco e calcolo dei punteggi");
+        } finally {//se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
+            //TODO:decidere scelta fatta sopra
+            //this.calculatePoints();
+            //this.broadcastWinner();
+        }
     }
 
     public void startGame() {
@@ -209,40 +227,41 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //gameFinished
     }
 
-    private void executeRounds() {
+    private void executeRounds() throws FinishedFencesException {
         int currentPlayer = this.firstPlayer;
         boolean lastRound = false;
+        //TODO dicutere il fine giro per la discordanza 11recinti 12recintni
+        //se non è l'ultimo giro o il giocatore non è l'ultimo del giro
+        while (!(lastRound && currentPlayer == this.firstPlayer)) {
+            //prova a fare un turno
+            lastRound = this.executeShift(currentPlayer);
 
-        while (!(lastRound && currentPlayer == this.firstPlayer)) {//se non è l'ultimo giro o il giocatore non è l'ultimo del giro
-            try { //prova a fare un turno
-                this.executeShift(currentPlayer);
-            } catch (FinishedFencesException e) { //se finiscono i recinti durante quel turno
-                //chiama l'ultimo giro
-                lastRound = true;
-            } finally {//comunque vada
-                //aggiorno il player che gioca 
-                currentPlayer++;
-                currentPlayer %= this.playersNumber; //conto in modulo playersNumber
-                //controllo se ho finito il giro                            
-                if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
-                    //1)avviare il market  
-                    this.startMarket();
-                    //2)muovo il lupo
-                    this.moveSpecialAnimal(this.map.getWolf());
-                }
+            //aggiorno il player che gioca 
+            currentPlayer++;
+            currentPlayer %= this.playersNumber; //conto in modulo playersNumber
+
+            //controllo se ho finito il giro                            
+            if (currentPlayer == this.firstPlayer) {//se il prossimo a giocare è il primo del giro
+                //1)avvio il market  
+                this.startMarket();
+                //2)muovo il lupo
+                this.moveSpecialAnimal(this.map.getWolf());
             }
         }//while
-        //fine round
     }
 
-    private void executeShift(int player) throws FinishedFencesException {
+    private boolean executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
+
+        //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
+
+        //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
             while (true) {
                 try {
                     this.players.get(i).chooseAndMakeAction(); //scegli l'azione e falla
-                    break; //se non arriva l'eccezione
+                    break; //se non arriva un l'eccezione passo alla prossima azione
                 } catch (ActionException ex) {
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
                     this.server.sendTo(playersHashCode[i], ex.getMessage());
@@ -250,16 +269,19 @@ public class GameManager {//TODO: pattern memento per ripristini?
             }
         }
         if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
-            throw new FinishedFencesException(noMoreFenceMessage); //occhio che questo è lanciato per ogni turno dell'ultimo giro
+            return true; //se sono finiti i recinti normali chiamo l'ultimo giro
         }
+        return false;   //se ci sono ancora recinti non chiamo l'ultimo giro
     }
 
-    private Street askStreet(int player) throws StreetNotFoundException,
+    private Street askStreet(int player, int shepherd) throws
+            StreetNotFoundException,
             BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
 
         String stringedStreet = this.server.talkTo(this.playersHashCode[player],
-                "In quale strada vuoi posizionare il pastore?"); //raccogli decisione
+                "In quale strada vuoi posizionare il pastore?" + Integer.toString(
+                        shepherd + 1)); //raccogli decisione
         //traducila in oggetto steet 
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
         if (!chosenStreet.isFree()) { //se la strada è occuapata
@@ -273,10 +295,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
      *
      * @param player
      * @param message
+     *
      * @return Regione corrispondente
+     *
      * @throws RegionNotFoundException
      */
-    protected Region askAboutRegion(int player, String message) throws RegionNotFoundException {
+    protected Region askAboutRegion(int player, String message) throws
+            RegionNotFoundException {
         Region chosenRegion;
         String stringedRegion = this.getServer().talkTo(this.hashCode(), message);
         chosenRegion = getMap().convertStringToRegion(stringedRegion);
@@ -337,11 +362,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
             playerThatBuys = (playerThatBuys + 1) % this.playersNumber;
         }
     }
-    
-    protected void askCancelOrRetry(int hashCode, String message) throws ActionCancelledException{
+
+    protected void askCancelOrRetry(int hashCode, String message) throws
+            ActionCancelledException {
         //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
         Character choice = this.getServer().talkTo(
-                hashCode(),message + " Riprovare(R) o Annullare(A)?").charAt(0); 
+                hashCode(), message + " Riprovare(R) o Annullare(A)?").charAt(0);
         //TODO vedi che qui c'è una getMessage da riempire 
         //TODO: se vuole annullare non gli devo togliere l'azione
         switch (choice) {
