@@ -12,6 +12,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
@@ -417,5 +418,19 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected int askAndThrowDice(int playerHashCode){
         this.getServer().talkTo(playerHashCode, "vuoi lanciare dado?");
         return Dice.getRandomValue();
+    }
+
+/**
+ * dato un pastore risale al giocatore
+ * @param shepherd
+ * @return player corrispondente al pastore
+ */
+    protected Player getPlayerByShepherd(Shepherd shepherd){
+        for(Player player: players){
+            for(int i=0; i<shepherd4player; i++)
+                if(player.getShepherd(i) == shepherd)
+                    return player;
+        }
+        return null;
     }
 }
