@@ -52,6 +52,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.server = server; //creo il collegamento all'univoco serverThread
         this.setUpPlayers(playersNumber); //setto arraylist giocatori e array hashcode giocatori
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
         if (this.playersNumber <= ControlConstants.NUM_FEW_PLAYERS.getValue()) {
             this.shepherd4player = ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue();

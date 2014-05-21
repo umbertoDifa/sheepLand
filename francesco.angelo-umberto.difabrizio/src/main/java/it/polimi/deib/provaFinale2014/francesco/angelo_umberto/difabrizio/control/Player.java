@@ -12,7 +12,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MovementException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
@@ -33,12 +32,16 @@ public class Player {
     public Player(GameManager gameManager, int numShepherd) {
         this.numShepherd = numShepherd;
         this.shepherd = new Shepherd[numShepherd];
+        //TODO condividere soldi e carte dei pastori
         this.gameManager = gameManager;
     }
 
     /**
+     * Dato un indice i, ritorna il pastore corrispondente a quell'indice
      *
-     * @return Il pastore del giocatore
+     * @param i Indice del pastore
+     *
+     * @return Un pastore del giocatore, null se non esiste l'iesmo pastore
      */
     //TODO quando si fanno le chiamate a questa funzione assicurarsi di inserire un idice valido
     public Shepherd getShepherd(int i) {
@@ -220,9 +223,9 @@ public class Player {
                 if (endStreet.isFree()) {//se la strada di arrivo è libera
                     if (startStreet.isNeighbour(endStreet)) {// se le strade sono confinanti
                         this.shepherd[idShepherd].moveTo(endStreet);  //muovilo
-                        
+
                         //metti recinto nella vecchia strada (lancia FinishedFencesException)
-                        startStreet.setFence(this.gameManager.bank.getFence()); 
+                        startStreet.setFence(this.gameManager.bank.getFence());
                     } else {//se le strade non confinano
                         //controlla che il pastore abbia i soldi per pagare il trasporto
                         //eventualmente muovi
@@ -239,20 +242,25 @@ public class Player {
 
             }
         }
-
-    
-
-    
+    }
 
     private void buyLand() throws ActionCancelledException {
+
+        //creo lista delle possibili regioni da comprare di un pastore
         ArrayList<RegionType> possibleRegionsType = new ArrayList<RegionType>();
+
         String stringedTypeOfCard;
         RegionType chosenTypeOfCard;
-        Region endRegion = null;
-        int prize;
-        int amount = this.shepherd.get(0).getWallet().getAmount();
+        Region endRegion;
+        int cardPrice;
 
-        for (Shepherd shepherd : this.getShepherd()) {  //per ogni pastore del giocatore
+        //Raccolgo le monete del primo giocatore usando quelle del suo primo pastore
+        //che sicuramente esiste e in quanto il wallet è condiviso da tutti
+        //i pastori di un giocatore
+        int shepherdMoney = this.shepherd[0].getWallet().getAmount();
+
+        //TODO questo è un metodo
+        for (Shepherd shepherd : this.shepherd) { //per ogni pastore del giocatore
             for (Node region : shepherd.getStreet().getNeighbourNodes()) {  //per ogni nodo confinante alla strada di quel pastore
                 if (region instanceof Region) {  // se è una regione
                     endRegion = (Region) region;   // castala a tipo di regione
@@ -263,25 +271,41 @@ public class Player {
         }
         while (true) {
             try {
+                //chiedi il tipo di carta desiderato            
                 stringedTypeOfCard = this.gameManager.getServer().talkTo(
                         this.hashCode(), "Quale tipo di carta vuoi comprare?");
-                //chiedi il tipo di carta desiderato e convertilo in RegionType
-                chosenTypeOfCard = RegionType.values()[Integer.parseInt(
-                        stringedTypeOfCard)];
-                prize = this.gameManager.bank.getPrizeOf(chosenTypeOfCard);  //prendi prezzo della carta da banca //TODO: bank.getPrizeOf da implementare
-                if (possibleRegionsType.contains(chosenTypeOfCard)) {   //se il tipo è contenuto nei tipi comprabili dal pastore
-                    if (amount >= prize) {
+
+                //convertilo in RegionType
+                chosenTypeOfCard = RegionType.valueOf(stringedTypeOfCard);
+
+                if (possibleRegionsType.contains(chosenTypeOfCard)) {   //se il tipo chiesto è contenuto nei tipi comprabili dal pastore
+                    //richiedi prezzo alla banca                    
+                    cardPrice = this.gameManager.bank.priceOfCard(
+                            chosenTypeOfCard);
+
+                    if (shepherdMoney >= cardPrice) {//se il pastore ha abbastanza soldi
+                        //recupero la carta dal banco
                         Card card = this.gameManager.bank.getCard(
                                 chosenTypeOfCard);
-                        this.shepherd.get(0).addCard(card);
-                        this.shepherd.get(0).getWallet().setAmount(
-                                amount - prize);
+                        //aggiorno i suoi soldi
+                        this.shepherd[0].getWallet().setAmount(
+                                shepherdMoney - cardPrice);
+
+                        //la do al pastore
+                        this.shepherd[0].addCard(card);
                         return;
+                    } else {//se non ha abbastanza soldi
+                        this.gameManager.askCancelOrRetry(this.hashCode(),
+                                "Non puoi comprare il territorio " + stringedTypeOfCard + "non hai abbastanza soldi");
                     }
+                } else {//se il tipo non è tra quelli accessibili                    
+                    this.gameManager.askCancelOrRetry(this.hashCode(),
+                            "Non puoi comprare il territorio, nessun tuo pastore confina con " + stringedTypeOfCard);
                 }
-            } catch (MissingCardException e) { //TODO: gestire meglio eccezione
+
+            } catch (MissingCardException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
-                        "Tipo carta non valido");
+                        "Il territorio richiesto non è disponibile");
             }
         }
     }
@@ -307,14 +331,16 @@ public class Player {
     }
 
     /**
-     * ritorna le strade occupate dai pastori del giocatore
+     * Ritorna le strade occupate dai pastori del giocatore
      *
      * @return
      */
     private Street[] getShepherdsStreets() {
+        //creo array grande come il numero dei pastori
         Street[] streets = new Street[numShepherd];
+               
         for (int i = 0; i < numShepherd; i++) {
-            streets[i] = this.shepherd.get(i).getStreet();
+            streets[i] = this.shepherd[i].getStreet();
         }
         return streets;
     }
