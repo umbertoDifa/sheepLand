@@ -14,6 +14,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MovementException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class Player {
                 this.mateSheepWith(OvineType.RAM);
                 break;
             case 8:
-                this.killSheep();
+                this.killOvine();
                 break;
             default:
                 throw new ActionNotFoundException(
@@ -336,24 +337,75 @@ public class Player {
         }
     }
 
-    private void killSheep() {
+    private void killOvine() {
         Region chosenRegion;
         int randomValue;
+        ArrayList<Shepherd> neighbourShepherds = new ArrayList<Shepherd>();
+        int sumToPay = 0;
+        String errorMessage = "";
+        OvineType chosenOvineType = null;
         
-        randomValue = this.gameManager.askAndThrowDice(this.hashCode());
+        randomValue = this.gameManager.askAndThrowDice(this.hashCode()); //lancia il dado
+        
+        //per ogni strada del giocatore
         for(Street street: this.getShepherdsStreets()){
-            if(street.getValue() == randomValue;)
-            //
-                
+            //se ha valore uguale al risultato del dado
+            if((street.getValue() == randomValue)){
+                try{
+                    //scegliere regione da attaccare
+                    chosenRegion = this.gameManager.askAboutRegion(this.hashCode(),
+                            "scegliere la regione da attaccare");
+                    
+                    //se ci sono animali
+                    if(!chosenRegion.getMyOvines().isEmpty()){
+                        //per ogni strada vicina alla strada del pastore
+                        for(Street nearStreet: street.getNeighbourStreets()){
+                            //se ha un pastore e non è dell'attaccante
+                            if((nearStreet.getShepherd() != null)&&!(this.ownsShepherd(nearStreet.getShepherd()))){
+                                //aggiungilo ai pastori vicini
+                                neighbourShepherds.add(nearStreet.getShepherd());
+                            }
+                        }
+                        //per ogni pastore vicino
+                        for(Shepherd neighbourShepherd: neighbourShepherds){
+                            //chiedi se lanciare al player corrispondente e lancia il dado
+                            randomValue = this.gameManager.askAndThrowDice(
+                                    this.gameManager.getPlayerByShepherd(neighbourShepherd).hashCode());
+                            //se ha fatto più di 5, 5 compreso
+                            if(randomValue>=5)
+                                //aggiorna valore da pagare
+                                sumToPay += 2;
+                        }
+                        //se può pagare
+                        if(this.getShepherd(0).getWallet().getAmount() >= sumToPay){
+                            this.getShepherd(0).getWallet().pay(sumToPay);
+                            while(true){
+                                //chiedi tipo d ovino
+                                this.gameManager.getServer().talkTo(this.hashCode(), "che tipo di ovino?");
+                                //se presente nella regione scelta
+                                try{
+                                    //rimuovilo
+                                    chosenRegion.removeOvine(chosenOvineType);
+                                }catch(NoOvineException ex){
+                                    //riprovare o annullare azione?
+                                    this.gameManager.askCancelOrRetry(this.hashCode(), 
+                                            chosenOvineType+"non presente");
+                                }
+                            }
+                        }else{
+                            errorMessage = "Non puoi pagare il silezio dei tuoi vicini.";
+                        }
+                    }else{
+                        errorMessage = "Non ci sono animali da abbattere in questa regione.";  
+                    }
+                }catch (RegionNotFoundException e){
+                    errorMessage = e.getMessage();
+                }catch (ActionCancelledException e){
+                    errorMessage = e.getMessage();
+                }
+            }
         }
-        
-        
-        try{
-            chosenRegion = this.gameManager.askAboutRegion(this.hashCode(), "scegliere la regione da attaccare");
-        }catch(RegionNotFoundException e){
-            
-        }
-        
+        errorMessage = "Non hai strade di quel valore";
     }
 
     public void sellCards() {
@@ -380,8 +432,16 @@ public class Player {
     }
 
     private boolean hasShepherdIn(Street street) {
-        for(Shepherd shepherd: this.shepherd){ //per ogni suo pastore
-            if(shepherd.getStreet().equals(street))
+        for(Shepherd possibleShepherd: this.shepherd){ //per ogni suo pastore
+            if(possibleShepherd.getStreet().equals(street))
+                return true;
+        }
+        return false;
+    }
+    
+    private boolean ownsShepherd(Shepherd sheepherd){
+        for(Shepherd myShepherd: this.shepherd){
+            if(myShepherd == sheepherd)
                 return true;
         }
         return false;
