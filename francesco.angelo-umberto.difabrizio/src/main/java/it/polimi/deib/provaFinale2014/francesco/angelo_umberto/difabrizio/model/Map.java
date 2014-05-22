@@ -35,8 +35,9 @@ public class Map {
 
     public Street convertStringToStreet(String streetId) throws StreetNotFoundException {
         int id = Integer.parseInt(streetId);
+        //se l'id è nel range dell'array e quello che c'è dentro non è null
         if (id >= 0 && id < GameConstants.NUM_STREETS.getValue() &&
-                this.streets[id] != null) {//se l'id è nel range dell'array e quello che c'è dentro non è null
+                this.streets[id] != null) {
             return (Street) this.streets[id];
         } else {
             throw new StreetNotFoundException("Strada non esistente");
@@ -87,12 +88,16 @@ public class Map {
     public Street getStreetByValue(Region region, int value) throws StreetNotFoundException {
         //salvo i nodi adiacenti alla regione
         ArrayList<Node> adjacentStreet = region.getNeighbourNodes();
-        for (int i = 0; i < adjacentStreet.size(); i++) { //per ogni nodo            
-            if (adjacentStreet.get(i) instanceof Street) { //se il nodo è una strada
-                Street tmpStreet = (Street) adjacentStreet.get(i);  //castalo a street
-                if (tmpStreet.getValue() == value)//se il valore è uguale a value
-                {
-                    return tmpStreet;//ritornala            
+        //per ogni nodo            
+        for (int i = 0; i < adjacentStreet.size(); i++) {
+            //se il nodo è una strada
+            if (adjacentStreet.get(i) instanceof Street) {
+                //castalo a street
+                Street tmpStreet = (Street) adjacentStreet.get(i);
+                //se il valore è uguale a value
+                if (tmpStreet.getValue() == value){
+                    //ritornala
+                    return tmpStreet;
                 }
             }
         }
@@ -370,12 +375,16 @@ public class Map {
         ArrayList<Node> neighbourRegions;
 
         neighbourRegions = street.getNeighbourNodes();
-        for (Node node : neighbourRegions) {           //per ogni nodo confinante alla strada
-            if (!node.equals(startRegion) && (node instanceof Region)) {   //
+        //per ogni nodo confinante alla strada
+        for (Node node : neighbourRegions) {
+            //se il nodo non è la regione di partenza e è una ragione
+            if (!node.equals(startRegion) && (node instanceof Region)) {
+                //ritornala
                 return (Region) node;
             }
         }
         //se non hai trovato nessun altra regione
-        return null; //non dovrebbe succedere mai. Ammenocchè la mappa non si costruita male...
+        //non dovrebbe succedere mai. Ammenocchè la mappa non si costruita male...
+        return null;
     }
 }
