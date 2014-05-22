@@ -19,7 +19,8 @@ public class BlackSheep extends SpecialAnimal {
             CannotMoveBlackSheepException {
         //se la strada è libera 
         if (street.isFree()) {
-            this.setAt(endRegion);//muovi la pecora nera
+            //muovi la pecora nera
+            this.setAt(endRegion);
         } else {
             throw new CannotMoveBlackSheepException(
                     "La pecora nera non può muoversi, strada occupata.");
