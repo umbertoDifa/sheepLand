@@ -18,6 +18,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
 import java.util.Random;
@@ -41,6 +42,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private final int[] playersHashCode; //valore cached degli hash dei giocatori
     private final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
+
+    /**
+     * Creo un logger per il sistema
+     */
+    private final static Logger logger = Logger.getLogger(
+            ServerManager.class.getName());
 
     /**
      * Crea un GameManager
@@ -81,12 +88,25 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * gli oggetti di una partita e avviarla
      */
     private void SetUpGame() {
+        logger.info("SetUpMap Avviato");
         this.setUpMap();
+        logger.info("SetUpAnimals Avviato");
+
         this.setUpAnimals();
+        logger.info("SetUpSheperds Avviato");
+
         this.setUpShepherds();
+        logger.info("SetUpCards Avviato");
+
         this.setUpCards();
+        logger.info("SetUpFences Avviato");
+
         this.setUpFences();
+        logger.info("SetUpShift Avviato");
+
         this.setUpShift();
+        logger.log(Level.INFO, "SetUpShift Terminato: il primo giocatore \u00e8 {0}", this.firstPlayer);
+
     }
 
     /**
@@ -122,7 +142,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             for (j = 0; j < this.shepherd4player; j++) {//per ogni suo pastore
                 while (true) {
                     try {   //prova a chiedere la strada per il j-esimo pastore
-                        chosenStreet = askStreet(i, this.playersHashCode[j]);    //se ho un valore di ritorno
+                        chosenStreet = askStreet(this.playersHashCode[i], j);    //se ho un valore di ritorno
                         break;                          //brekka
 
                     } catch (StreetNotFoundException ex) {//se strada non trovata 
@@ -135,18 +155,28 @@ public class GameManager {//TODO: pattern memento per ripristini?
                                 e.getMessage());
                     }
                 }//while
-            this.players.get(i).getShepherd(j).moveTo(chosenStreet); //sposta il pastore 
+                logger.log(Level.INFO,
+                        "Setto il pastore: {0} del giocatore: {1}",
+                        new Object[]{j, i});
+                
+                this.players.get(i).getShepherd(j).moveTo(chosenStreet); //sposta il pastore 
+                logger.info("Pastore settato");
+
+                 //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
+                //quelle del pastore corrispondente al mio player
+                //aggiungi la carta prendendola dalle carte iniziali della banca
+                logger.info("Prendo una carta dalla banca");
+                Card initialCard = this.bank.getInitialCard();
+
+                logger.info("Aggiungo la carta al pastore");                
+                this.players.get(i).getShepherd(j).addCard(initialCard);
+
+                logger.info("invio conferma");
+                //invia conferma riepilogativa
+                this.server.sendTo(this.playersHashCode[i],
+                        "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
             }//for pastori
 
-            //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
-            //quelle del pastore corrispondente al mio player
-            //aggiungi la carta prendendola dalle carte iniziali della banca
-            Card initialCard = this.bank.getInitialCard();
-            this.players.get(i).getShepherd(j).addCard(initialCard);
-
-            //invia conferma riepilogativa
-            this.server.sendTo(this.playersHashCode[i],
-                    "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
         }//for giocatori
 
     }
@@ -212,6 +242,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void playTheGame() {
         try {
+            logger.info("Avvio esecuzione giri");
             this.executeRounds();
         } catch (FinishedFencesException ex) {
             this.getServer().broadcastMessage(
@@ -224,7 +255,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     public void startGame() {
+        logger.info("SetUpGameAvviato");
         this.SetUpGame();
+        logger.info("SetUpGame Effettuato");
         this.playTheGame();
         //gameFinished
     }
@@ -236,6 +269,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //se non è l'ultimo giro o il giocatore non è l'ultimo del giro
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
+            logger.info("Avvio esecuzione turno");
             lastRound = this.executeShift(currentPlayer);
 
             //aggiorno il player che gioca 
@@ -255,13 +289,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private boolean executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
 
+        logger.info("Muovo pecora nera");
         //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
-
+        logger.info("pecora nera mossa");
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {//per il numero di azioni possibili per un turno
             while (true) {
                 try {
+                    logger.info("Avvio choose and make action");
                     this.players.get(player).chooseAndMakeAction(); //scegli l'azione e falla
                     break; //se non arriva un l'eccezione passo alla prossima azione
                 } catch (ActionException ex) {
@@ -277,24 +313,31 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     /**
-     * Chiede al giocatore corrispondente all playerHashCode,
-     * in quale strada posizionare il pastore il cui id è idShepherd
+     * Chiede al giocatore corrispondente all playerHashCode, in quale strada
+     * posizionare il pastore il cui id è idShepherd
+     *
      * @param playerHashCode
      * @param idShepherd
+     *
      * @return
+     *
      * @throws StreetNotFoundException se la strada non esiste
-     * @throws BusyStreetException se la strada è occupata
+     * @throws BusyStreetException     se la strada è occupata
      */
     protected Street askStreet(int playerHashCode, int idShepherd) throws
             StreetNotFoundException,
             BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
 
+        logger.info("Chiedo una strada in askStreet");
+
         String stringedStreet = this.server.talkTo(playerHashCode,
-                "In quale strada vuoi posizionare il pastore?" + Integer.toString(
-                        idShepherd + 1)); //raccogli decisione
+                "In quale strada vuoi posizionare il pastore " + Integer.toString(
+                        idShepherd + 1) + " ?"); //raccogli decisione
+        logger.info("Risposta sulla strada ottenuta");
         //traducila in oggetto steet 
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
+        logger.info("Conversione strada effettuata");
         if (!chosenStreet.isFree()) { //se la strada è occuapata
             throw new BusyStreetException(errorString); //solleva eccezione
         }
@@ -327,7 +370,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return map;
     }
 
-    private void moveSpecialAnimal(SpecialAnimal animal) { 
+    private void moveSpecialAnimal(SpecialAnimal animal) {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
 
@@ -337,15 +380,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
             potentialWalkthroughStreet = this.map.getStreetByValue(
                     actualAnimalRegion,
                     Dice.getRandomValue());
-            
+
             //calcola regione d'arrivo
             Region endRegion = this.map.getEndRegion(actualAnimalRegion,
                     potentialWalkthroughStreet);
-            
+
             //cerco di farlo passare (nel caso del lupo si occupa pure di farlo mangiare)
             animal.moveThrough(potentialWalkthroughStreet,
                     endRegion);
-            
+
             //tutto ok
             this.getServer().broadcastMessage(animal.toString() + "mosso!");
         } catch (CannotMoveAnimalException ex) {
@@ -384,52 +427,57 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 throw new ActionCancelledException("Azione annullata");
         }//switch
     }
-    
-    
+
     /**
-     * Chiede, mandandogli la stringa message, al giocatore corrispondente 
-     * all hashCode, qual'è l'id del pastore da muovere tra i suoi
-     * numShepherd pastori. Il metodo dev'essere invocato con numShepherd
-     * maggiore di zero.
+     * Chiede, mandandogli la stringa message, al giocatore corrispondente all
+     * hashCode, qual'è l'id del pastore da muovere tra i suoi numShepherd
+     * pastori. Il metodo dev'essere invocato con numShepherd maggiore di zero.
+     *
      * @param hashCode
      * @param numShepherd
      * @param message
+     *
      * @return id pastore scelto
      */
-    protected int askIdShepherd(int hashCode, int numShepherd, String message){
+    protected int askIdShepherd(int hashCode, int numShepherd, String message) {
         int idShepherd;
         do {
             //chiedi quale pastore muovere
             idShepherd = Integer.parseInt(this.getServer().talkTo(
-                        this.hashCode(), "Quale pastore vuoi muovere?"));
-            
+                    this.hashCode(), "Quale pastore vuoi muovere?"));
+
             //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array
             idShepherd--;
         } while (idShepherd < 0 && idShepherd > numShepherd);  //fintanto che non va bene l'id
         return idShepherd;
     }
-    
-/**
- * chiedo conferma per lanciare il dado al giocatore
- * corrispondente al playerHashCode. Ritorno sempre un valore random
- * @param playerHashCode
- * @return 
- */
-    protected int askAndThrowDice(int playerHashCode){
+
+    /**
+     * chiedo conferma per lanciare il dado al giocatore corrispondente al
+     * playerHashCode. Ritorno sempre un valore random
+     *
+     * @param playerHashCode
+     *
+     * @return
+     */
+    protected int askAndThrowDice(int playerHashCode) {
         this.getServer().talkTo(playerHashCode, "vuoi lanciare dado?");
         return Dice.getRandomValue();
     }
 
-/**
- * dato un pastore risale al giocatore
- * @param shepherd
- * @return player corrispondente al pastore
- */
-    protected Player getPlayerByShepherd(Shepherd shepherd){
-        for(Player player: players){
-            for(int i=0; i<shepherd4player; i++)
-                if(player.getShepherd(i) == shepherd)
+    /**
+     * dato un pastore risale al giocatore
+     *
+     * @param shepherd
+     *
+     * @return player corrispondente al pastore
+     */
+    protected Player getPlayerByShepherd(Shepherd shepherd) {
+        for (Player player : players) {
+            for (int i = 0; i < shepherd4player; i++)
+                if (player.getShepherd(i) == shepherd) {
                     return player;
+                }
         }
         return null;
     }

@@ -42,7 +42,6 @@ public class ServerThread implements Runnable {
         this.broadcastMessage("Partita avviata!");
         logger.info("Broadcast di benvenuto effettuato");
         this.startGame();
-        logger.info("Gioco avviato demandando al GameManger");
         ServerManager.activatedGames--; //un thread è appena terminato e con lui la partita
     }
 

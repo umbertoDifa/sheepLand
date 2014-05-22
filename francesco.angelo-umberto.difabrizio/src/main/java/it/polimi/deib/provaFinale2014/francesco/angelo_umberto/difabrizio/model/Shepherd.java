@@ -32,7 +32,11 @@ public class Shepherd {
      * @param street Strada su cui spostare il pastore
      */
     public void moveTo(Street street) {
+        //setto il pastore su street
         this.setStreet(street);
+        
+        //occupo la street
+        street.setShepherd(this);
     }
     /**
      * 

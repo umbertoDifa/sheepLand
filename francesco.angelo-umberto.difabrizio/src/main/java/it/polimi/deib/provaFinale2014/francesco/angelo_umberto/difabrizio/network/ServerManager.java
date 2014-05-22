@@ -35,7 +35,7 @@ public class ServerManager {
     private final int MILLISECONDS_IN_SECONDS = 1000;
 
     //costanti di default per i costruttori
-    private static final int DEFAULT_TIMEOUT_ACCEPT = 13;
+    private static final int DEFAULT_TIMEOUT_ACCEPT = 10;
     private static final int DEFAULT_TIMEOUT_REFRESH = 10;
     private static final int DEFAULT_MIN_CLIENTS = 2;
     private static final int DEFAULT_MAX_GAMES = 3;
