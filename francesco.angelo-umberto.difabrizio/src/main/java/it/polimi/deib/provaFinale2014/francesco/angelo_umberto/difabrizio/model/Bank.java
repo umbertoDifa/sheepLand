@@ -22,7 +22,8 @@ public class Bank {
         this.unusedCards = new Card[numCards];
         this.unusedFences = new Fence[numeFences];
         //creo le carte iniziali
-        for (int i = 0; i < numInitialCard; i++) {//per tutte le carte iniziali da dare
+        //per tutte le carte iniziali da dare
+        for (int i = 0; i < numInitialCard; i++) {
 
             //creo una carta con valore 0
             //e con tipo RegionType ciclicamente ovvero partendo dal primo tipo
@@ -119,12 +120,15 @@ public class Bank {
     }
 
     public Fence getFence() throws FinishedFencesException {
-        int position = this.numberOfUsedFence(); //questo valore avrà sempre senso per come è implementata la numberOfUsedFence
+        //questo valore avrà sempre senso per come è implementata la numberOfUsedFence
+        int position = this.numberOfUsedFence();
 
-        Fence returnableFence = unusedFences[this.numberOfUsedFence()]; //salva il recinto
+        //salva il recinto
+        Fence returnableFence = unusedFences[this.numberOfUsedFence()];
 
-        unusedFences[this.numberOfUsedFence()] = null; //eliminalo dall'array
-        return returnableFence;//ritorna il recinto
+        //eliminalo dall'array
+        unusedFences[this.numberOfUsedFence()] = null;
+        return returnableFence;
 
     }
 
@@ -153,7 +157,7 @@ public class Bank {
      * usate(del banco). Attenzione è necessario fornire una position > 0 e
      * minore della lunghezza totale dell'array.
      *
-     * @param card     Carta da caricare
+     * @param card Carta da caricare
      * @param position Posizione in cui caricarla
      */
     public void loadCard(Card card, int position) {
@@ -170,11 +174,13 @@ public class Bank {
      * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
     public int numberOfUsedFence() throws FinishedFencesException {
-        int i; //serve a contare quanti recinti sono stati dati
-        for (i = 0; i < unusedFences.length; i++) { //scorri l'array
-            if (unusedFences[i] != null) //al primo recinto disponibile               
-            {
-                return i;         //restituisci quanti ne sono stati dati        }            
+        int i;
+        //scorri l'array
+        for (i = 0; i < unusedFences.length; i++) {
+            //al primo recinto disponibile               
+            if (unusedFences[i] != null) {
+                //restituisci quanti ne sono stati dati
+                return i;
             }
         }
         throw new FinishedFencesException("I recinti sono terminati");
