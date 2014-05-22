@@ -27,8 +27,12 @@ public class ServerThread implements Runnable {
 
     public ServerThread(ArrayList<Socket> clientSockets) {
         logger.info("ServerThread creato");
-        for (Socket clientSocket : clientSockets) { //per ogni socket nella lista
-            client.add(new Sclient(clientSocket)); //aggiungi ai client un nuovo Sclient legato al rispettivo socket
+        
+        //per ogni socket nella lista
+        for (Socket clientSocket : clientSockets) { 
+            
+            //aggiungi ai client un nuovo Sclient legato al rispettivo socket
+            client.add(new Sclient(clientSocket)); 
         }
         logger.info("Creati " + client.size() + "client Sclient");
         logger.info("Sclient creati");
@@ -42,7 +46,9 @@ public class ServerThread implements Runnable {
         this.broadcastMessage("Partita avviata!");
         logger.info("Broadcast di benvenuto effettuato");
         this.startGame();
-        ServerManager.activatedGames--; //un thread è appena terminato e con lui la partita
+        
+        //un thread è appena terminato e con lui la partita
+        ServerManager.activatedGames--; 
     }
 
     /**
@@ -59,8 +65,12 @@ public class ServerThread implements Runnable {
      */
     public void setUpSocketPlayerMap(int[] playersHashCode) {
         logger.info("ci sono " + playersHashCode.length + " hashcode:");
-        for (int i = 0; i < playersHashCode.length; i++) {    //per ogni hashcode, quindi per ogni player
-            clientPlayerMap.put(playersHashCode[i], client.get(i)); //inserisci la coppia hashcode del player - Sclient corrispondente
+        
+        //per ogni hashcode, quindi per ogni player
+        for (int i = 0; i < playersHashCode.length; i++) {    
+            
+            //inserisci la coppia hashcode del player - Sclient corrispondente
+            clientPlayerMap.put(playersHashCode[i], client.get(i)); 
         }
     }
 
@@ -100,8 +110,12 @@ public class ServerThread implements Runnable {
     }
 
     public void broadcastMessage(String message) {
-        for (Map.Entry pairs : clientPlayerMap.entrySet()) {//per ogni coppia di key,value
-            sendTo((Integer) pairs.getKey(), message);//TODO: vedi se funziona questo cast
+        
+        //per ogni coppia di key,value
+        for (Map.Entry pairs : clientPlayerMap.entrySet()) {
+            
+            //TODO: vedi se funziona questo cast
+            sendTo((Integer) pairs.getKey(), message);
         }
     }
 }

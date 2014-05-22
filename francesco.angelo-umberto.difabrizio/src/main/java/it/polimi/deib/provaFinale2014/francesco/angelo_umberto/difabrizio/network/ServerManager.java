@@ -22,12 +22,11 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
-//    private final int SECONDS_BEFORE_IDLE_THREAD_SHUTDOWN = 10; 
-    //puramente indicativo, tanto ho messo threadcore = al massimo dei thread attivi
-    //serve solo con ThreadPoolExecutor
-//    private final int MAX_QUEUED_GAMES = 2; //serve solo per ThreadPoolExecutor
-    private final int secondsBeforeAcceptTimeout; //modifica qui per cambiare il timeout della accept per la connessione ad una partita
-    private final int secondsBeforeRefreshNumberOfGamesActive; //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
+    //modifica qui per cambiare il timeout della accept per la connessione ad una partita
+    private final int secondsBeforeAcceptTimeout;
+
+    //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
+    private final int secondsBeforeRefreshNumberOfGamesActive;
     private final int timeoutRefreshNumberOfGames;
     private final int timeoutAccept;
 
@@ -69,8 +68,8 @@ public class ServerManager {
     ConsoleHandler console = new ConsoleHandler();
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,
-                         int minClientsForGame, int acceptTimeout,
-                         int refreshTimeout) {
+            int minClientsForGame, int acceptTimeout,
+            int refreshTimeout) {
         this.maxNumberOfGames = maxGames;
         this.maxClientsForGame = maxClientsForGame;
         this.minClientsForGame = minClientsForGame;
@@ -86,12 +85,13 @@ public class ServerManager {
 //     
 //        //aggiungo la console al logger
 //        logger.addHandler(console);        
-        logger.setLevel(Level.INFO); //lui decide cosa loggare
+        //lui decide cosa loggare
+        logger.setLevel(Level.INFO);
 
     }
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,
-                         int minClientsForGame) {
+            int minClientsForGame) {
         this(port, maxGames, maxClientsForGame, minClientsForGame,
                 DEFAULT_TIMEOUT_ACCEPT, DEFAULT_TIMEOUT_REFRESH);
     }
@@ -110,11 +110,13 @@ public class ServerManager {
      */
     public void startServer() {
         ServerSocket serverSocket;
+
         //cerco di tirare su il server
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            System.err.println(e.getMessage()); // porta non disponibile
+            System.err.println(e.getMessage());
+            // porta non disponibile
             return;
         }
         logger.info("Serever pronto");
@@ -135,19 +137,23 @@ public class ServerManager {
 
             System.out.println("Partita numero " + activatedGames + " avviata.");
 
-        } else {//se non ci sono abbastanza giocatori
+        } else {
+            //se non ci sono abbastanza giocatori
             logger.info("Rifiuto Client, pochi giocatori.");
+
             //per tutti i client
             for (Socket client : clientSockets) {
                 PrintWriter toClient;
 
-                //provo ad avvisarli
                 try {
+                    //provo ad avvisarli
+
                     toClient = new PrintWriter(client.getOutputStream());
                     toClient.println(
                             "Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.");
                     toClient.flush();
                 } catch (IOException ex) {
+                    Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
                     //Il client a cui stavo per dire che non può giocare si è già disconnesso, stica.
                 }
 
@@ -200,12 +206,14 @@ public class ServerManager {
                         //avvio il gioco
                         startGame();
                     }
-                } else {//se le partite attivate sono il massimo
+                } else {
+                    //se le partite attivate sono il massimo
                     logger.info("Client rifiutato");
                     handleClientRejection(clientSockets.get(0));
                 }
             } catch (IOException ex) {
                 //casini col server
+                Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -230,11 +238,13 @@ public class ServerManager {
                 this.myThread.sleep(timeoutAccept);
 
                 logger.info("Timer finito");
+                
                 //se finisce avvio game
                 startGame();
 
             } catch (InterruptedException ex) {
                 //se blocco il timer io non succede niente, muori e basta.
+                Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -267,6 +277,7 @@ public class ServerManager {
         } catch (IOException ex) {
             //il client si è disconnesso prima di sapere che tanto non poteva 
             //giocare stica
+            Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
