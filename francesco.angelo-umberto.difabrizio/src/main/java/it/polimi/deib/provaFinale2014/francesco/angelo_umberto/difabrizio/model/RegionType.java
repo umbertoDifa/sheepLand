@@ -10,8 +10,10 @@ public enum RegionType {
 	MOUNTAIN(0), HILL(1), COUNTRYSIDE(2), PLAIN(3), LAKE(4), DESERT(5), SHEEPSBURG(6);
         
     private int index;
-    private static final int size = RegionType.values().length; //size dell'enum cached così non la ricalco ogni volta
-    private static final Random random = new Random(); //oggetto random cached
+    //size dell'enum cached così non la ricalco ogni volta
+    private static final int size = RegionType.values().length;
+    //oggetto random cached
+    private static final Random random = new Random();
 
     /**
      * Costruisce un tipo di regione corrispondente all'indice passato.
@@ -45,8 +47,10 @@ public enum RegionType {
      * @return Un tipo a caso di regione
      */
     public static RegionType getRandomRegionType() {
-        int choice = random.nextInt(size-1); //prendi un numero a caso appartenente al totale dei valori dell'enum
-        return RegionType.values()[choice]; //ritorno la region corrispondente
+        //prendi un numero a caso appartenente al totale dei valori dell'enum
+        int choice = random.nextInt(size-1);
+        //ritorno la region corrispondente
+        return RegionType.values()[choice];
     }
 
 }
