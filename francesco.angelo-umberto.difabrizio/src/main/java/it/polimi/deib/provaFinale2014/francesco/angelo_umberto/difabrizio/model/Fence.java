@@ -5,7 +5,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
  * @author Umberto
  */
 public class Fence {
-    private boolean finalFence;
+    private final boolean finalFence;
     /**
      * 
      * @return True se il recinto è finale, false altrimenti
