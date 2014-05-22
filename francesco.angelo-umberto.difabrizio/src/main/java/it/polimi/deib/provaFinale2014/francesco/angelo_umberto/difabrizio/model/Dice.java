@@ -19,4 +19,10 @@ public class Dice {
         //nextInt mi ritorna un numero tra 0 e 5, aggiungo 1 cosi diventa tra 1 e 6                                             
         return dice.nextInt(DICE_FACES) + 1;
     }
+    
+    /**
+     * Metto il costruttore privato per non permettere di istanziarlo
+     */
+    private Dice(){
+    }
 }
