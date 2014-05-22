@@ -17,19 +17,19 @@ public class Wolf extends SpecialAnimal {
      * regione secondo le regole del gioco. Inoltre se nella regione d'arrivo
      * esiste almeno una pecora il lupo la mangia.
      *
-     * @param street    Strada da attraversare
+     * @param street Strada da attraversare
      * @param endRegion Regione da raggiungere
      *
      * @throws CannotMoveWolfException Se la strada è sbarrata ma ce ne sono
-     *                                 altre aperte nella regione di partenza
-     *                                 del lupo
+     * altre aperte nella regione di partenza del lupo
      */
     @Override
     public void moveThrough(Street street, Region endRegion) throws
             CannotMoveWolfException {
 
         //cerco di far muover il lupo
-        if (!street.hasFence() || super.getMyRegion().isAllFenced()) {//se la strada non è sbarrata o tutta la regione è sbarrata
+        //se la strada non è sbarrata o tutta la regione è sbarrata
+        if (!street.hasFence() || super.getMyRegion().isAllFenced()) {
             this.setAt(endRegion);
         } else {
             //la strada è sbarrata ma altre sono libere
@@ -39,9 +39,14 @@ public class Wolf extends SpecialAnimal {
 
         //se la regione d'arrivo ha pecore mangiane una
         this.eatSheep(endRegion);
-        
+
     }
-    
+
+    /**
+     * se c è almeno una pecora, ne mangia una
+     *
+     * @param region
+     */
     private void eatSheep(Region region) {
         try {
             region.removeOvine(OvineType.SHEEP);
@@ -54,5 +59,5 @@ public class Wolf extends SpecialAnimal {
     public String toString() {
         return "Wolf";
     }
-    
+
 }
