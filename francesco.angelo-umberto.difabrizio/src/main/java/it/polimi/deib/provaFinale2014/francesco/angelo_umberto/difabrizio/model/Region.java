@@ -63,15 +63,20 @@ public class Region extends Node {
      */
     public boolean isAllFenced() {
         ArrayList<Node> endStreets = this.getNeighbourNodes();
-        for (Node s : endStreets) {           //per ogni strada limitrofa
-            if (s instanceof Street) {       //se è una strada
-                Street street = (Street) s; //casto a strada
-                if (!street.hasFence()) {    //ritorno false se non ha un recinto
+        //per ogni strada limitrofa
+        for (Node s : endStreets) {
+            //se è una strada
+            if (s instanceof Street) {
+                //casto a strada
+                Street street = (Street) s;
+                //ritorno false se non ha un recinto
+                if (!street.hasFence()) {
                     return false;
                 }
             }
         }
-        return true;                    //controllati tutti posso ritornare true
+        //controllati tutti posso ritornare true
+        return true;
     }
 
     /**
@@ -82,10 +87,12 @@ public class Region extends Node {
      */
     public void removeOvine(OvineType type) throws NoOvineException {
         //scorri la lista degli ovini fino a quando non trovi uno di quel tipo
-        for (int i = 0; i < this.myOvines.size(); i++) {//scorri la lista degli ovini
-            if (this.myOvines.get(i).getType() == type) //il primo ovino che trovi del tipo che ti interessa 
-            {
-                this.myOvines.remove(i);//rimuovilo
+        //scorri la lista degli ovini
+        for (int i = 0; i < this.myOvines.size(); i++) {
+            //il primo ovino che trovi del tipo che ti interessa 
+            if (this.myOvines.get(i).getType() == type){
+                //rimuovilo e ritorna
+                this.myOvines.remove(i);
                 return;
             }
         }
@@ -93,25 +100,44 @@ public class Region extends Node {
         throw new NoOvineException("Non c'è un ovino del tipo cercato.");
     }
     
+    /**
+     * 
+     * @param otherOvineType
+     * @return ritorna vero sse trova sia una pecora sia
+     * un ovino di tipo otherOvineType
+     */
     public boolean isPossibleMeetSheepWith(OvineType otherOvineType){
         boolean sheepFounded = false, otherOvineFounded = false;
         
+        //per tutti gli ovini nella regione o finchè non li trovi
         for(int i=0; (i< this.getMyOvines().size())||
-                (sheepFounded&&otherOvineFounded); i++){ //per tutti gli ovini nella regione o finchè non li trovi
-            if(this.getMyOvines().get(i).getType() == OvineType.SHEEP){ //se Sheep metti alza flag pecora
+                (sheepFounded&&otherOvineFounded); i++){
+            //se Sheep metti alza flag pecora
+            if(this.getMyOvines().get(i).getType() == OvineType.SHEEP){
                 sheepFounded = true;
-            }else if(this.getMyOvines().get(i).getType() == otherOvineType){ //se di otherType alza relativo flag
+            //se di otherType alza relativo flag
+            }else if(this.getMyOvines().get(i).getType() == otherOvineType){
                 otherOvineFounded = true;
             }
         }
+        //ritorna vero sse hai trovato sia una sheep che un ovine di tipo richiesto
         return (sheepFounded && otherOvineFounded);
     }
     
+    /**
+     * 
+     * @param thisOvineType
+     * @return vero sse la reigone ha un ovino di tipo thisOvineType
+     */
     public boolean hasOvine(OvineType thisOvineType){
+        //per ogni ovino nella regione
         for(Ovine ovine: this.getMyOvines()){
+            //se del tipo thisOvineType
             if(ovine.getType() == thisOvineType)
+                //ritorna vero
                 return true;
         }
+        //falso se li hai controllati tutti
         return false;
     }
 }
