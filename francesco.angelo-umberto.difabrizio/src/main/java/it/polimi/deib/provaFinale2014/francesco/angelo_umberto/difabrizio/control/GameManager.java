@@ -404,7 +404,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         try {
             potentialWalkthroughStreet = this.map.getStreetByValue(
                     actualAnimalRegion,
-                    Dice.getRandomValue());
+                    Dice.roll());
 
             //calcola regione d'arrivo
             Region endRegion = this.map.getEndRegion(actualAnimalRegion,
@@ -434,7 +434,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
         //lancia il dado per sapere il primo a comprare
         //il modulo serve ad essere sicuro che venga selezionato un player esistente
-        int playerThatBuys = Dice.getRandomValue() % this.playersNumber;
+        int playerThatBuys = Dice.roll() % this.playersNumber;
         //per ogni player 
         for (i = 0; i < this.playersNumber; i++) {
             //chiedi se vuole comprare           
@@ -493,7 +493,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      */
     protected int askAndThrowDice(int playerHashCode) {
         this.getServer().talkTo(playerHashCode, "vuoi lanciare dado?");
-        return Dice.getRandomValue();
+        return Dice.roll();
     }
 
     /**
