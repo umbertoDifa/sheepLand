@@ -52,6 +52,8 @@ public class Wolf extends SpecialAnimal {
             region.removeOvine(OvineType.SHEEP);
         } catch (NoOvineException ex) {
             //non la mangiare perchè non c'è
+            Logger.getLogger(Wolf.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

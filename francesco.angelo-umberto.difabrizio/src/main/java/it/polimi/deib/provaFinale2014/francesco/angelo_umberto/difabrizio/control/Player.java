@@ -21,6 +21,8 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.networ
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * Classe giocatore
  *
@@ -159,6 +161,8 @@ public class Player {
             } catch (MovementException ex) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         ex.getMessage());
+                Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
             }//catch
         }//while
     }
@@ -221,11 +225,15 @@ public class Player {
                 //se la strada è occupata avvisa e chiedi se cancellare o riprovare mossa
             } catch (BusyStreetException e) {
                 this.gameManager.askCancelOrRetry(idShepherd, "Strada occupata.");
+                Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, e.getMessage(), e);
 
                 //se la strada di arrivo non esiste informa e riprova o cancella mossa
             } catch (StreetNotFoundException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         "Strada di arrivo non esistente ");
+                Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -297,6 +305,8 @@ public class Player {
             } catch (MissingCardException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         "Il territorio richiesto non è disponibile");
+                Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -356,6 +366,8 @@ public class Player {
             }
         } catch (RegionNotFoundException ex) {
             errorMessage = ex.getMessage();
+            Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
         } finally {
             this.gameManager.askCancelOrRetry(this.hashCode(), errorMessage);
         }
@@ -416,6 +428,8 @@ public class Player {
                                     //riprovare o annullare azione?
                                     this.gameManager.askCancelOrRetry(this.hashCode(),
                                             chosenOvineType + "non presente");
+                                    Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
                                 }
                             }
                         } else {
@@ -426,8 +440,12 @@ public class Player {
                     }
                 } catch (RegionNotFoundException e) {
                     errorMessage = e.getMessage();
+                    Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, e.getMessage(), e);
                 } catch (ActionCancelledException e) {
                     errorMessage = e.getMessage();
+                    Logger.getLogger(Player.class.getName()).log(
+                            Level.SEVERE, e.getMessage(),e );
                 }
             }
         }

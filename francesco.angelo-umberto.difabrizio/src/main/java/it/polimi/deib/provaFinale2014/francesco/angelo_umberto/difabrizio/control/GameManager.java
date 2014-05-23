@@ -23,6 +23,8 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.networ
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -157,11 +159,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
                         //invio msg strada non trovata e ricomincia loop
                         this.server.sendTo(this.playersHashCode[i],
                                 ex.getMessage());
+                        Logger.getLogger(GameManager.class.getName()).log(
+                                Level.SEVERE, ex.getMessage(), ex);
                         //se la strada è occupata
                     } catch (BusyStreetException e) {
                         //manda il messaggio di errore al client e ricomincia il loop
                         this.server.sendTo(this.playersHashCode[i],
                                 e.getMessage());
+                        Logger.getLogger(GameManager.class.getName()).log(
+                                Level.SEVERE, e.getMessage(), e);
                     }
                 }//while
                 DebugLogger.println(
@@ -254,6 +260,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
         } catch (FinishedFencesException ex) {
             this.getServer().broadcastMessage(
                     "I recinti totali sono finiti, fine gioco e calcolo dei punteggi");
+            Logger.getLogger(GameManager.class.getName()).log(
+                    Level.SEVERE, ex.getMessage(), ex);
         } finally {
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
             //TODO:decidere scelta fatta sopra
@@ -316,6 +324,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 } catch (ActionException ex) {
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
                     this.server.sendTo(playersHashCode[player], ex.getMessage());
+                    Logger.getLogger(GameManager.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
                 }
             }
         }
@@ -412,9 +422,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
             this.getServer().broadcastMessage(animal.toString() + "mosso!");
         } catch (CannotMoveAnimalException ex) {
             this.getServer().broadcastMessage(ex.getMessage());
+            Logger.getLogger(GameManager.class.getName()).log(
+                    Level.SEVERE, ex.getMessage(), ex);
         } catch (StreetNotFoundException ex) {
             this.getServer().broadcastMessage(
                     ex.getMessage() + "Il lupo non si muove.");
+            Logger.getLogger(GameManager.class.getName()).log(
+                    Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

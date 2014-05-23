@@ -99,6 +99,8 @@ public class ServerManager {
         } catch (IOException e) {
             System.err.println(e.getMessage());
             // porta non disponibile
+            Logger.getLogger(ServerManager.class.getName()).log(
+                    Level.SEVERE, e.getMessage(), e);
             return;
         }
         DebugLogger.println("Server pronto");
@@ -136,7 +138,7 @@ public class ServerManager {
                     toClient.flush();
                 } catch (IOException ex) {
                     Logger.getLogger(ServerManager.class.getName()).log(
-                            Level.SEVERE, null, ex);
+                            Level.SEVERE, ex.getMessage(), ex);
                     //Il client a cui stavo per dire che non può giocare si è già disconnesso, stica.
                     //TODO giusto?
                 }
@@ -179,7 +181,7 @@ public class ServerManager {
 
                         //avvio il timer
                         timer.startTimer();
-                        DebugLogger.println("timer avviato");                        
+                        DebugLogger.println("timer avviato");
                     }
 
                     //se ho tutti i client per un game
@@ -197,8 +199,8 @@ public class ServerManager {
                 }
             } catch (IOException ex) {
                 //casini col server
-                Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE,
-                        null, ex);
+                Logger.getLogger(ServerManager.class.getName()).log(
+                        Level.SEVERE, ex.getMessage(), ex);
             }
         }
 
@@ -229,8 +231,8 @@ public class ServerManager {
 
             } catch (InterruptedException ex) {
                 //se blocco il timer io non succede niente, muori e basta.
-                Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE,
-                        null, ex);
+                Logger.getLogger(ServerManager.class.getName()).log(
+                        Level.SEVERE, ex.getMessage(), ex);
             }
         }
 
@@ -263,8 +265,8 @@ public class ServerManager {
         } catch (IOException ex) {
             //il client si è disconnesso prima di sapere che tanto non poteva 
             //giocare stica
-            Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE,
-                    null, ex);
+            Logger.getLogger(ServerManager.class.getName()).log(
+                    Level.SEVERE, ex.getMessage(), ex);
         }
 
     }

@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe del client visto dal server, contiene il socket e gli stream per
@@ -30,6 +32,8 @@ public class Sclient {
             //se fallisce la creazione di un canale di scambio dati
             System.err.println(ex.getMessage()); 
             //TODO: provalo
+            Logger.getLogger(ServerManager.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
