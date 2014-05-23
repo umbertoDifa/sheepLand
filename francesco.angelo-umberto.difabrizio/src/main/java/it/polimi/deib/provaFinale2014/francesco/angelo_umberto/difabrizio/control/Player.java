@@ -20,8 +20,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Logger;
-
 /**
  * Classe giocatore
  *
@@ -31,13 +29,7 @@ public class Player {
 
     private final Shepherd[] shepherd;
     private final GameManager gameManager;
-    private final int numShepherd;
-
-    /**
-     * Creo un logger per il sistema
-     */
-    private final static Logger logger = Logger.getLogger(
-            ServerManager.class.getName());
+    private final int numShepherd;  
 
     public Player(GameManager gameManager, int numShepherd) {
         this.numShepherd = numShepherd;
@@ -76,7 +68,7 @@ public class Player {
     //TODO warn: quando si fanno le chiamate a questa funzione assicurarsi di inserire un idice valido
     public Shepherd getShepherd(int i) {
         if (i >= 0 && i < this.numShepherd) {
-            logger.info("Pastore trovato");
+            DebugLogger.println("Pastore trovato");
             return shepherd[i];
         }
         //pastore non esistente!

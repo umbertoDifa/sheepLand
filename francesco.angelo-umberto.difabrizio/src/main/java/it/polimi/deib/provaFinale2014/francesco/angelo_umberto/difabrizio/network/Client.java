@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -21,12 +22,6 @@ public class Client {
     PrintWriter serverOut;
     Scanner stdIn; //tastiera
 
-    /**
-     * Creo un logger per il sistema
-     */
-    private final static Logger logger = Logger.getLogger(
-            ServerManager.class.getName());
-
     public Client(String ip, int port) {
         this.ip = ip;
         this.port = port;
@@ -39,7 +34,7 @@ public class Client {
         try {
             //creo socket server
             Socket socket = new Socket(ip, port);
-            logger.info("Connessione stabilita");
+            DebugLogger.println("Connessione stabilita");
             //System.out.println("Connessione stabilita");
 
             //creo scanner ingresso server
@@ -50,10 +45,10 @@ public class Client {
 
             //creo scanner da tastiera
             stdIn = new Scanner(System.in);
-            logger.info("canali di comunicazione impostati");
+            DebugLogger.println("canali di comunicazione impostati");
 
             //raccolgo saluto
-            logger.info(receiveString());
+            DebugLogger.println(receiveString());
             
             
             //setUpPastori//TODO caso più pastori                  
@@ -61,11 +56,12 @@ public class Client {
             
             //ricevi riepilogo pastore
             System.out.println(receiveString());
-            logger.info("Sono qui e poi muoio");
+            DebugLogger.println("Sono qui e poi muoio");
             
             
 
         } catch (IOException ex) {
+            //TODO gestire eccezione
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

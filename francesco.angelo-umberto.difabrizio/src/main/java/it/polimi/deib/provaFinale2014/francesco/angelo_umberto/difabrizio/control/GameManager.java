@@ -22,8 +22,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.networ
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
@@ -44,16 +42,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected final Bank bank;  //per permettere a player di usarlo
 
     /**
-     * Creo un logger per il sistema
-     */
-    private final static Logger logger = Logger.getLogger(
-            ServerManager.class.getName());
-
-    /**
      * Crea un GameManager
      *
      * @param playersNumber Numero dei giocatori di una partita
-     * @param server Thread che gestisce la partita
+     * @param server        Thread che gestisce la partita
      */
     public GameManager(int playersNumber, ServerThread server) {
         this.playersNumber = playersNumber;
@@ -95,24 +87,25 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * gli oggetti di una partita e avviarla
      */
     private void SetUpGame() {
-        logger.info("SetUpMap Avviato");
+        DebugLogger.println("SetUpMap Avviato");
         this.setUpMap();
-        logger.info("SetUpAnimals Avviato");
+        DebugLogger.println("SetUpAnimals Avviato");
 
         this.setUpAnimals();
-        logger.info("SetUpSheperds Avviato");
+        DebugLogger.println("SetUpSheperds Avviato");
 
         this.setUpShepherds();
-        logger.info("SetUpCards Avviato");
+        DebugLogger.println("SetUpCards Avviato");
 
         this.setUpCards();
-        logger.info("SetUpFences Avviato");
+        DebugLogger.println("SetUpFences Avviato");
 
         this.setUpFences();
-        logger.info("SetUpShift Avviato");
+        DebugLogger.println("SetUpShift Avviato");
 
         this.setUpShift();
-        logger.log(Level.INFO, "SetUpShift Terminato: il primo giocatore \u00e8 {0}", this.firstPlayer);
+        DebugLogger.println(
+                "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
 
     }
 
@@ -170,23 +163,23 @@ public class GameManager {//TODO: pattern memento per ripristini?
                                 e.getMessage());
                     }
                 }//while
-                logger.log(Level.INFO,
-                        "Setto il pastore: {0} del giocatore: {1}",
-                        new Object[]{j, i});
+                DebugLogger.println(
+                        "Setto il pastore: " + j + " del giocatore: " + i
+                );
                 //sposta il pastore 
                 this.players.get(i).getShepherd(j).moveTo(chosenStreet);
-                logger.info("Pastore settato");
+                DebugLogger.println("Pastore settato");
 
                 //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
                 //quelle del pastore corrispondente al mio player
                 //aggiungi la carta prendendola dalle carte iniziali della banca
-                logger.info("Prendo una carta dalla banca");
+                DebugLogger.println("Prendo una carta dalla banca");
                 Card initialCard = this.bank.getInitialCard();
 
-                logger.info("Aggiungo la carta al pastore");
+                DebugLogger.println("Aggiungo la carta al pastore");
                 this.players.get(i).getShepherd(j).addCard(initialCard);
 
-                logger.info("invio conferma");
+                DebugLogger.println("invio conferma");
                 //invia conferma riepilogativa
                 this.server.sendTo(this.playersHashCode[i],
                         "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
@@ -255,7 +248,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void playTheGame() {
         try {
-            logger.info("Avvio esecuzione giri");
+            DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
         } catch (FinishedFencesException ex) {
             this.getServer().broadcastMessage(
@@ -269,9 +262,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     public void startGame() {
-        logger.info("SetUpGameAvviato");
+        DebugLogger.println("SetUpGameAvviato");
         this.SetUpGame();
-        logger.info("SetUpGame Effettuato");
+        DebugLogger.println("SetUpGame Effettuato");
         this.playTheGame();
         //gameFinished
     }
@@ -283,7 +276,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //se non è l'ultimo giro o il giocatore non è l'ultimo del giro
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
-            logger.info("Avvio esecuzione turno");
+            DebugLogger.println("Avvio esecuzione turno");
             lastRound = this.executeShift(currentPlayer);
 
             //aggiorno il player che gioca 
@@ -305,16 +298,16 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private boolean executeShift(int player) throws FinishedFencesException {
         String noMoreFenceMessage = "Recinti Finiti!";
 
-        logger.info("Muovo pecora nera");
+        DebugLogger.println("Muovo pecora nera");
         //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
-        logger.info("pecora nera mossa");
+        DebugLogger.println("pecora nera mossa");
         //faccio fare le azioni al giocatore
         //per il numero di azioni possibili per un turno
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
             while (true) {
                 try {
-                    logger.info("Avvio choose and make action");
+                    DebugLogger.println("Avvio choose and make action");
                     //scegli l'azione e falla
                     this.players.get(player).chooseAndMakeAction();
                     //se non arriva un l'eccezione passo alla prossima azione
@@ -343,30 +336,30 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * @return
      *
      * @throws StreetNotFoundException se la strada non esiste
-     * @throws BusyStreetException se la strada è occupata
+     * @throws BusyStreetException     se la strada è occupata
      */
     protected Street askStreet(int playerHashCode, int idShepherd) throws
             StreetNotFoundException,
             BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
 
-        logger.info("Chiedo una strada in askStreet");
-        
+        DebugLogger.println("Chiedo una strada in askStreet");
+
         //raccogli decisione
         String stringedStreet = this.server.talkTo(playerHashCode,
                 "In quale strada vuoi posizionare il pastore " + Integer.toString(
                         idShepherd + 1) + " ?");
-        logger.info("Risposta sulla strada ottenuta");
+        DebugLogger.println("Risposta sulla strada ottenuta");
         //traducila in oggetto steet 
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
-        logger.info("Conversione strada effettuata");
+        DebugLogger.println("Conversione strada effettuata");
         //se la strada è occuapata
         if (!chosenStreet.isFree()) {
             throw new BusyStreetException(errorString);
             //solleva eccezione
         }
         //altrimenti ritorna la strada
-        return chosenStreet; 
+        return chosenStreet;
     }
 
     /**
