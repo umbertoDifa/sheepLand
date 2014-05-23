@@ -6,6 +6,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contro
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Convertible;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
@@ -16,9 +17,9 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,9 +98,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.setUpAnimals();
         DebugLogger.println("SetUpSheperds Avviato");
 
-        this.setUpShepherds();
-        DebugLogger.println("SetUpCards Avviato");
-
         this.setUpCards();
         DebugLogger.println("SetUpFences Avviato");
 
@@ -109,6 +107,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
         this.setUpShift();
         DebugLogger.println(
                 "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
+
+        this.broadcastInitialConditions();
+
+        this.setUpShepherds();
+        DebugLogger.println("SetUpCards Avviato");
 
     }
 
@@ -139,20 +142,22 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //perchè la variabile potrebbe essere null fuori dal while infatti tutti i controlli necessari li faccio
         //in askStreet e nelle funzioni da lei chiamate che mi ridanno una delle eccezioni che gestisco
 
-        //ciclo che chiede la strada per un pastore ogni volta che questa risulta già occupata
         int i;//indice giocatori
-
+        int j;//indice pastori
+        int currentPlayer;
         //per ogni playerint 
         for (i = 0; i < this.playersNumber; i++) {
-            //indice pastori
-            int j;
+            //setto il player corrente
+            currentPlayer = (firstPlayer + i) % playersNumber;
+
             //per ogni suo pastore
             for (j = 0; j < this.shepherd4player; j++) {
                 while (true) {
                     //prova a chiedere la strada per il j-esimo pastore
                     try {
                         //se ho un valore di ritorno
-                        chosenStreet = askStreet(this.playersHashCode[i], j);
+                        chosenStreet = askStreet(
+                                this.playersHashCode[currentPlayer], j);
                         break;
                         //se strada non trovata 
                     } catch (StreetNotFoundException ex) {
@@ -171,10 +176,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     }
                 }//while
                 DebugLogger.println(
-                        "Setto il pastore: " + j + " del giocatore: " + i
+                        "Setto il pastore: " + j + " del giocatore: " + currentPlayer
                 );
                 //sposta il pastore 
-                this.players.get(i).getShepherd(j).moveTo(chosenStreet);
+                this.players.get(currentPlayer).getShepherd(j).moveTo(
+                        chosenStreet);
                 DebugLogger.println("Pastore settato");
 
                 //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
@@ -184,12 +190,18 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 Card initialCard = this.bank.getInitialCard();
 
                 DebugLogger.println("Aggiungo la carta al pastore");
-                this.players.get(i).getShepherd(j).addCard(initialCard);
+                this.players.get(currentPlayer).getShepherd(j).addCard(
+                        initialCard);
 
                 DebugLogger.println("invio conferma");
-                //invia conferma riepilogativa
-                this.server.sendTo(this.playersHashCode[i],
+                //invia conferma riepilogativa all'utente
+                this.server.sendTo(this.playersHashCode[currentPlayer],
                         "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
+
+                //aggiorna gli altri
+                this.server.broadcastExcept(
+                        "Il giocatore " + currentPlayer + " ha posizionato il pastore nella strada " + this.map.getNodeIndex(
+                                chosenStreet), playersHashCode[currentPlayer]);
             }//for pastori
         }//for giocatori
     }
@@ -273,9 +285,18 @@ public class GameManager {//TODO: pattern memento per ripristini?
     public void startGame() {
         DebugLogger.println("SetUpGameAvviato");
         this.SetUpGame();
+
         DebugLogger.println("SetUpGame Effettuato");
         this.playTheGame();
         //gameFinished
+    }
+
+    private void broadcastInitialConditions() {
+        for (int i = 0; i < playersNumber; i++) {
+            this.server.sendTo(playersHashCode[i],
+                    "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
+                    + "; ogni giocatore ha :" + this.shepherd4player + "pastori. Il primo del turno è :" + firstPlayer);
+        }
     }
 
     private void executeRounds() throws FinishedFencesException {
@@ -310,6 +331,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
         DebugLogger.println("pecora nera mossa");
+        this.server.broadcastMessage(
+                "Pecora nera mossa in: " + this.map.getNodeIndex(
+                        this.map.getBlackSheep().getMyRegion()));
         //faccio fare le azioni al giocatore
         //per il numero di azioni possibili per un turno
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
@@ -373,6 +397,46 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     /**
+     * Fa la domanda al client per ottenere una risposta che viene convertita
+     * nell'oggetto corrispondente e restituita all'utente. Il metodo chiede di
+     * inserire il dato ogni volta che non è valido o finchè il client decide di
+     * annullare l'azione.
+     *
+     * @param playerHashCode Il client a cui domandare
+     * @param question       La domanda da fare
+     * @param converter      L'oggetto che convertirà la risposta in stringa nel
+     *                       rispettivo oggetto
+     *
+     * @return Oggetto chiesto NB da castare
+     *
+     * @throws ActionCancelledException Se il client non vuole più dare una
+     *                                  risposta
+     */
+    //TODO: forse da levare
+    private Object askUntilRight(int playerHashCode, String question,
+                                 Convertible converter) throws
+            ActionCancelledException {
+        while (true) {
+            try {
+                //chiedi informazione
+                String stringedStreet = this.server.talkTo(playerHashCode,
+                        question);
+
+                //ritorna informazione tradotta in oggetto
+                return converter.convert(stringedStreet);
+            } catch (NodeNotFoundException ex) {
+                //se informazione errata
+                Logger.getLogger(GameManager.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(),
+                        ex);
+
+                //chiedi se ci vuole riprovare
+                this.askCancelOrRetry(playerHashCode, ex.getMessage());
+            }
+        }
+    }
+
+    /**
      * Chiede al player inviandogli la stringa message un id regione
      *
      * @param playerHashCode
@@ -418,7 +482,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     endRegion);
 
             //tutto ok
-            this.getServer().broadcastMessage(animal.toString() + "mosso!");
         } catch (CannotMoveAnimalException ex) {
             this.getServer().broadcastMessage(ex.getMessage());
             Logger.getLogger(GameManager.class.getName()).log(
@@ -499,7 +562,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * @return
      */
     protected int askAndThrowDice(int playerHashCode) {
-        this.getServer().talkTo(playerHashCode, "vuoi lanciare dado?");
+        this.getServer().talkTo(playerHashCode,
+                "Premi un tasto per lanciare dado?");
+        //discard returned string e lancia il dado
         return Dice.roll();
     }
 

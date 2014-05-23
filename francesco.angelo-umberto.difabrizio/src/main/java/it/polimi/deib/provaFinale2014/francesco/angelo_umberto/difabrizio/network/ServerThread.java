@@ -19,15 +19,15 @@ public class ServerThread implements Runnable {
     private HashMap<Integer, Sclient> clientPlayerMap = new HashMap<Integer, Sclient>(); //mappa per tenere le coppie playerHash - playerSclient
 
     private final GameManager gameManager;
-    
+
     public ServerThread(List<Socket> clientSockets) {
         DebugLogger.println("ServerThread creato");
-        
+
         //per ogni socket nella lista
-        for (Socket clientSocket : clientSockets) { 
-            
+        for (Socket clientSocket : clientSockets) {
+
             //aggiungi ai client un nuovo Sclient legato al rispettivo socket
-            client.add(new Sclient(clientSocket)); 
+            client.add(new Sclient(clientSocket));
         }
         DebugLogger.println("Creati " + client.size() + "client Sclient");
         DebugLogger.println("Sclient creati");
@@ -40,17 +40,10 @@ public class ServerThread implements Runnable {
         DebugLogger.println("Inizo partita run ServerThread");
         this.broadcastMessage("Partita avviata!");
         DebugLogger.println("Broadcast di benvenuto effettuato");
-        this.startGame();
-        
-        //un thread è appena terminato e con lui la partita
-        ServerManager.activatedGames--; 
-    }
+        this.gameManager.startGame();
 
-    /**
-     * il serverThread avvia il gioco cedendo il controllo al GameManager
-     */
-    private void startGame() {
-        gameManager.startGame();
+        //un thread è appena terminato e con lui la partita
+        ServerManager.activatedGames--;
     }
 
     /**
@@ -60,12 +53,12 @@ public class ServerThread implements Runnable {
      */
     public void setUpSocketPlayerMap(int[] playersHashCode) {
         DebugLogger.println("ci sono " + playersHashCode.length + " hashcode:");
-        
+
         //per ogni hashcode, quindi per ogni player
-        for (int i = 0; i < playersHashCode.length; i++) {    
-            
+        for (int i = 0; i < playersHashCode.length; i++) {
+
             //inserisci la coppia hashcode del player - Sclient corrispondente
-            clientPlayerMap.put(playersHashCode[i], client.get(i)); 
+            clientPlayerMap.put(playersHashCode[i], client.get(i));
         }
     }
 
@@ -103,14 +96,34 @@ public class ServerThread implements Runnable {
     public String receiveFrom(int hashCode) {
         return clientPlayerMap.get(hashCode).receive();
     }
-
+    //TODO correggi gli usi di questa in broadcastExcept...o forse no
     public void broadcastMessage(String message) {
+        broadcastExcept(message, -1);
+    }
+
+    /**
+     * Broadcast un messaggio a tutti i player tranne quello indicato Se il
+     * player indicato vale -1 allora il messaggio viene inviato comunque a
+     * tutti i player
+     *
+     * @param message
+     * @param differentPlayer
+     */
+    public void broadcastExcept(String message, int differentPlayer) {
         
-        //per ogni coppia di key,value
-        for (Map.Entry pairs : clientPlayerMap.entrySet()) {
-            
-            //TODO: vedi se funziona questo cast
-            sendTo((Integer) pairs.getKey(), message);
+        if (differentPlayer == -1) {
+            //per ogni coppia di key,value
+            for (Map.Entry pairs : clientPlayerMap.entrySet()) {
+                sendTo((Integer) pairs.getKey(), message);
+            }
+        } else {
+            //a tutti tranne il diffeerentPlayer
+            for (Map.Entry pairs : clientPlayerMap.entrySet()) {
+                if ((Integer) pairs.getKey() != differentPlayer) {
+                    //TODO: vedi se funziona questo cast
+                    sendTo((Integer) pairs.getKey(), message);
+                }
+            }
         }
     }
 }

@@ -1,31 +1,33 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
+
 /**
- * Rappresenta la plancia, quindi conosce Strade e Regioni e come esse sono connesse.
- * Crea un grafo che connette Strade e Regioni. Conosce la posizione del lupo 
- * e della pecora nera.
- * E' fonadamentale considerare che l'array delle regioni è ordinato in base al tipo
- * di regione per permettere una ricerca attraverso indici. Ogni tipo di regione 
- * ha il suo spazio nell'array in cui inserire le proprie regioni.
- * E' fondamentale che l'indice dell'array delle strade corrisponde all'id di quella 
- * precisa strada nella mappa, secondo la convenzione documentata.
+ * Rappresenta la plancia, quindi conosce Strade e Regioni e come esse sono
+ * connesse. Crea un grafo che connette Strade e Regioni. Conosce la posizione
+ * del lupo e della pecora nera. E' fonadamentale considerare che l'array delle
+ * regioni è ordinato in base al tipo di regione per permettere una ricerca
+ * attraverso indici. Ogni tipo di regione ha il suo spazio nell'array in cui
+ * inserire le proprie regioni. E' fondamentale che l'indice dell'array delle
+ * strade corrisponde all'id di quella precisa strada nella mappa, secondo la
+ * convenzione documentata.
+ *
  * @author Umberto
  */
-public class Map {
+public class Map implements Convertible {
 
     private Node[] streets;
     private Node[] regions;
-    private BlackSheep blackSheep;
-    private Wolf wolf;
+    private final BlackSheep blackSheep;
+    private final Wolf wolf;
 
     /**
-     * Crea mappa e istanzia la grandezza dei due array di nodi, uno per le strade, uno per
-     * le regioni, secondo le dimensioni ufficiali del gioco. Instanzia anche
-     * una pecora nera e un lupo
+     * Crea mappa e istanzia la grandezza dei due array di nodi, uno per le
+     * strade, uno per le regioni, secondo le dimensioni ufficiali del gioco.
+     * Instanzia anche una pecora nera e un lupo
      */
     public Map() {
         this.streets = new Street[GameConstants.NUM_STREETS.getValue()];
@@ -34,21 +36,23 @@ public class Map {
         this.wolf = new Wolf();
     }
 
-    public Street convertStringToStreet(String streetId) throws StreetNotFoundException {
+    public Street convertStringToStreet(String streetId) throws
+            StreetNotFoundException {
         int id = Integer.parseInt(streetId);
         //se l'id è nel range dell'array e quello che c'è dentro non è null
-        if (id >= 0 && id < GameConstants.NUM_STREETS.getValue() &&
-                this.streets[id] != null) {
+        if (id >= 0 && id < GameConstants.NUM_STREETS.getValue()
+                && this.streets[id] != null) {
             return (Street) this.streets[id];
         } else {
             throw new StreetNotFoundException("Strada non esistente");
         }
     }
 
-    public Region convertStringToRegion(String regionId) throws RegionNotFoundException {
+    public Region convertStringToRegion(String regionId) throws
+            RegionNotFoundException {
         int id = Integer.parseInt(regionId);
-        if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue() &&
-                this.regions[id] != null) {
+        if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue()
+                && this.regions[id] != null) {
             return (Region) this.regions[id];
         } else {
             throw new RegionNotFoundException("Regione non esistente");
@@ -56,23 +60,70 @@ public class Map {
     }
 
     /**
-     * Crea nodi delle regioni e delle strade, li assegna a map,  e li
-     * collega fra di loro 
+     * Data una stringa il metodo riconosce se si tratta di una strada o una
+     * regione e conseguentemente restituisce un oggetto corrispondente alla
+     * strada o regione in questione. NB.chiaramente se necessario va castato a
+     * Street o Region
+     *
+     * @param stringToConvert Stringa da convertire in nodo Regione o Strada
+     *
+     * @return Un oggetto contenente una strada o la regione volute
+     *
+     * @throws RegionNotFoundException Se la regione che si cerca non esiste
+     * @throws StreetNotFoundException Se la Strada che si cerca non esiste
+     */
+    public Object convert(String stringToConvert) throws NodeNotFoundException {
+        //tokenizza stringa
+        String delimiter = "_";
+        String token[] = stringToConvert.split(delimiter);
+
+        //tipo di elemento richiesto
+        String typeOfNode = token[0];
+
+        //indice richiesto
+        int index = Integer.parseInt(token[1]);
+
+        //capisci se strada o regione
+        //TODO e se la lettera non è S o R? regex?
+        if (typeOfNode.equals("S")) {
+            //è una strada
+
+            if (index >= 0 && index < this.streets.length) {
+                return this.streets[index];
+            } else {
+                throw new StreetNotFoundException("Strada non esistente!");
+            }
+        } else {
+            //è una regione
+
+            if (index >= 0 && index < this.regions.length) {
+                return this.regions[index];
+            } else {
+                throw new RegionNotFoundException("Regione non esistente!");
+            }
+        }
+    }
+
+    /**
+     * Crea nodi delle regioni e delle strade, li assegna a map, e li collega
+     * fra di loro
      */
     public void setUp() {
         createRegions();
         createStreets();
         createLinks();
     }
+
     /**
-     * 
+     *
      * @return La pecora nera
      */
     public BlackSheep getBlackSheep() {
         return blackSheep;
     }
+
     /**
-     * 
+     *
      * @return Il lupo
      */
     public Wolf getWolf() {
@@ -80,13 +131,16 @@ public class Map {
     }
 
     /**
-     * Data una region e un value ritorna la strada limitrofa alla regione
-     * con quel preciso valore
+     * Data una region e un value ritorna la strada limitrofa alla regione con
+     * quel preciso valore
+     *
      * @param region La regione i cui confini devono essere controllati
-     * @param value Il valore della strada limitrofa che si cerca
+     * @param value  Il valore della strada limitrofa che si cerca
+     *
      * @return La strada trovata, null altrimenti
      */
-    public Street getStreetByValue(Region region, int value) throws StreetNotFoundException {
+    public Street getStreetByValue(Region region, int value) throws
+            StreetNotFoundException {
         //salvo i nodi adiacenti alla regione
         List<Node> adjacentStreet = region.getNeighbourNodes();
         //per ogni nodo            
@@ -96,14 +150,15 @@ public class Map {
                 //castalo a street
                 Street tmpStreet = (Street) adjacentStreet.get(i);
                 //se il valore è uguale a value
-                if (tmpStreet.getValue() == value){
+                if (tmpStreet.getValue() == value) {
                     //ritornala
                     return tmpStreet;
                 }
             }
         }
         //se non hai trovato nessuna strada limitrofa con quel valore
-        throw new StreetNotFoundException("Non esiste una strada con valore" +Integer.toString(value)+" nella regione" );
+        throw new StreetNotFoundException(
+                "Non esiste una strada con valore" + Integer.toString(value) + " nella regione");
     }
 
     /**
@@ -348,16 +403,17 @@ public class Map {
         }
         this.regions[j] = new Region(RegionType.SHEEPSBURG);
     }
+
     /**
-     * 
+     *
      * @return L'array delle strade nella mappa
      */
     public Street[] getStreets() {
         return (Street[]) streets;
     }
-    
+
     /**
-     * 
+     *
      * @return L'array delle regioni nella mappa
      */
     public Region[] getRegions() {
@@ -369,7 +425,8 @@ public class Map {
      * regione in cui arrivo.
      *
      * @param startRegion Regione di partenza
-     * @param street Strada attraverso cui passare
+     * @param street      Strada attraverso cui passare
+     *
      * @return Regione di arrivo, null se non esiste
      */
     public Region getEndRegion(Region startRegion, Street street) {
@@ -387,5 +444,30 @@ public class Map {
         //se non hai trovato nessun altra regione
         //non dovrebbe succedere mai. Ammenocchè la mappa non si costruita male...
         return null;
+    }
+
+    /**
+     * Dato un nodo della mappa ritorna il suo indice nel relativo array di 
+     * strade o regioni. Ritorna -1 se non lo trova
+     * @param node Regione o strada di cui conoscere l'indice
+     * @return L'indice cercato, -1 altrimenti
+     */
+    public int getNodeIndex(Node node) {
+        if (node instanceof Street) {
+            for (int i = 0; i < streets.length; i++) {
+                if (streets[i] == (Street)node) {
+                    return i;
+                }
+            }
+            return -1;
+        }else{
+            //è una regione
+            for (int i = 0; i < regions.length; i++) {
+                if (regions[i] == (Region)node) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 }
