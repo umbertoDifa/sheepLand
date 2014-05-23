@@ -1,13 +1,14 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rappresenta un nodo del grafo della mappa. Contiene la lista dei nodi vicini.
  * @author Francesco
  */
 public abstract class Node { 
-    private ArrayList<Node> neighbourNodes;
+    private List<Node> neighbourNodes;
 
     public Node() {
         this.neighbourNodes = new ArrayList<Node>();
@@ -32,7 +33,7 @@ public abstract class Node {
      * 
      * @return La lista dei nodi adiacenti che siano Regioni o Strade
      */
-    public ArrayList<Node> getNeighbourNodes() {
+    public List<Node> getNeighbourNodes() {
         return neighbourNodes;
     }
     
@@ -40,9 +41,9 @@ public abstract class Node {
      * 
      * @return la lista delle strade confinanti a quel nodo, null se vuota
      */
-    public ArrayList<Street> getNeighbourStreets() {
-        ArrayList<Node> possibleStreets = this.getNeighbourNodes();
-        ArrayList<Street> neighbourStreets = new ArrayList<Street>();
+    public List<Street> getNeighbourStreets() {
+        List<Node> possibleStreets = this.getNeighbourNodes();
+        List<Street> neighbourStreets = new ArrayList<Street>();
         
         for(Node node: possibleStreets){
             if((node instanceof Street))
@@ -55,9 +56,9 @@ public abstract class Node {
      * 
      * @return la lista delle regioni confinanti a quel nodo, null se vuota
      */
-    public ArrayList<Region> getNeighbourRegions() {
-        ArrayList<Node> possibleRegions = this.getNeighbourNodes();
-        ArrayList<Region> neighbourRegions = new ArrayList<Region>();
+    public List<Region> getNeighbourRegions() {
+        List<Node> possibleRegions = this.getNeighbourNodes();
+        List<Region> neighbourRegions = new ArrayList<Region>();
         
         for(Node node: possibleRegions){
             if((node instanceof Region))

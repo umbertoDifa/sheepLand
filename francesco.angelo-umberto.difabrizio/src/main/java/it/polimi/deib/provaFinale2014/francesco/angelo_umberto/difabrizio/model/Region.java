@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rappresenta una Regione. E' un nodo della mappa.
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 public class Region extends Node {
 
     final private RegionType type;
-    private ArrayList<Ovine> myOvines = new ArrayList<Ovine>();
+    private List<Ovine> myOvines = new ArrayList<Ovine>();
 
     /**
      * Costruisce una regione di tipo a caso fra i tipi di regione
@@ -43,7 +44,7 @@ public class Region extends Node {
      *
      * @return La lista degli ovini in una regione
      */
-    public ArrayList<Ovine> getMyOvines() {
+    public List<Ovine> getMyOvines() {
         return myOvines;
     }
 
@@ -62,7 +63,7 @@ public class Region extends Node {
      * @return True se e solo se tutte le strade sono recintate
      */
     public boolean isAllFenced() {
-        ArrayList<Node> endStreets = this.getNeighbourNodes();
+        List<Node> endStreets = this.getNeighbourNodes();
         //per ogni strada limitrofa
         for (Node s : endStreets) {
             //se è una strada

@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -54,7 +55,7 @@ public class ServerManager {
      */
     boolean timeout;
 
-    ArrayList<Socket> clientSockets = new ArrayList<Socket>();
+    List<Socket> clientSockets = new ArrayList<Socket>();
     ExecutorService executor = Executors.newCachedThreadPool();
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,

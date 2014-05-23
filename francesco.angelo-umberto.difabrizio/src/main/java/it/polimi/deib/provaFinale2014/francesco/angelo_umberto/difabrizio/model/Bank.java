@@ -40,7 +40,8 @@ public class Bank {
      *
      * @return Una carta il cui tipo è casuale ma unico nella lista
      */
-    //TODO: guarda che sta roba manda un ArrayOutOfBound se non ha carte quindi boh...margine di sicurezza?
+    //TODO: guarda che sta roba manda un IllegalArgumentException se alla random gli passo una size
+    //minore di 1 quindi boh...la gestiamo?
     public Card getInitialCard() {
         //crea oggetto random
         Random random = new Random();

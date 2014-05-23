@@ -4,6 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.*;
@@ -39,7 +40,7 @@ public class RegionTest {
         Region instance = new Region();
         Ovine ovine = new Ovine();
         instance.addOvine(ovine);
-        ArrayList<Ovine> result = instance.getMyOvines();
+        List<Ovine> result = instance.getMyOvines();
         assertSame(ovine, result.get(0));
     }
 
@@ -87,7 +88,7 @@ public class RegionTest {
         }
 
         //uso la getMyOvines per testare che siano stati inserirti nella regione
-        ArrayList<Ovine> myOvines = instance.getMyOvines();
+       List<Ovine> myOvines = instance.getMyOvines();
 
         //controllo che ci siano gli ovini cosi come li ho inseriti
         //controllo i lamb; 
@@ -183,7 +184,7 @@ public class RegionTest {
         Region region = new Region(); //la istanzio solo perchè altrimenti mi dice che potrebbe non essere stata instanziata
         try {
             region = map.convertStringToRegion(stringedRegion1); //converto l'id della stringa in regione
-            ArrayList<Node> neighbourNodes = region.getNeighbourNodes(); //prendo i suoi nodi vicini
+            List<Node> neighbourNodes = region.getNeighbourNodes(); //prendo i suoi nodi vicini
             for (Node nodo : neighbourNodes) {//per ogni nodo
                 if (nodo instanceof Street) {//se è una strada
                     Street street = (Street) nodo;

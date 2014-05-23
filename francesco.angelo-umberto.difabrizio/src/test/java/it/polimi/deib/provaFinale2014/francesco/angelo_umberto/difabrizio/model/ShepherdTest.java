@@ -2,6 +2,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -87,8 +88,8 @@ public class ShepherdTest {
     public void testGetMyCards() {
         System.out.println("getMyCards");
         Shepherd instance = new Shepherd();
-        ArrayList<Card> expResult = null;
-        ArrayList<Card> result = instance.getMyCards();
+        List<Card> expResult = null;
+        List<Card> result = instance.getMyCards();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -101,7 +102,7 @@ public class ShepherdTest {
     @Test
     public void testSetMyCards() {
         System.out.println("setMyCards");
-        ArrayList<Card> myCards = null;
+        List<Card> myCards = null;
         Shepherd instance = new Shepherd();
         instance.setMyCards(myCards);
         // TODO review the generated test code and remove the default call to fail.

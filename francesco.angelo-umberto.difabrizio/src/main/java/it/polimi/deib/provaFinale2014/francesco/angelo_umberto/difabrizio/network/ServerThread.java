@@ -5,6 +5,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contro
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,12 +15,12 @@ import java.util.Map;
  */
 public class ServerThread implements Runnable {
 
-    private final ArrayList<Sclient> client = new ArrayList<Sclient>();
+    private final List<Sclient> client = new ArrayList<Sclient>();
     private HashMap<Integer, Sclient> clientPlayerMap = new HashMap<Integer, Sclient>(); //mappa per tenere le coppie playerHash - playerSclient
 
     private final GameManager gameManager;
     
-    public ServerThread(ArrayList<Socket> clientSockets) {
+    public ServerThread(List<Socket> clientSockets) {
         DebugLogger.println("ServerThread creato");
         
         //per ogni socket nella lista

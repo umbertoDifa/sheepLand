@@ -21,6 +21,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -34,7 +35,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private final ServerThread server;
 
     private final Map map;
-    private ArrayList<Player> players = new ArrayList<Player>();
+    private List<Player> players = new ArrayList<Player>();
     private final int playersNumber;
     private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
     private final int[] playersHashCode; //valore cached degli hash dei giocatori

@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rappresenta il pastore di un giocatore. Gestisce il portafoglio e conosce in
@@ -12,7 +13,7 @@ public class Shepherd {
 
     private Street street;
     private Wallet wallet;
-    private ArrayList<Card> myCards = new ArrayList<Card>();
+    private List<Card> myCards = new ArrayList<Card>();
 
     public Shepherd() {
         wallet = new Wallet();
@@ -54,11 +55,11 @@ public class Shepherd {
         return street;
     }
 
-    public ArrayList<Card> getMyCards() {
+    public List<Card> getMyCards() {
         return myCards;
     }
 
-    public void setMyCards(ArrayList<Card> myCards) {
+    public void setMyCards(List<Card> myCards) {
         this.myCards = myCards;
     }
     

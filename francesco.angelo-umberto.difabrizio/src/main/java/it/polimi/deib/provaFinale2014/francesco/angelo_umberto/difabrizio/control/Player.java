@@ -20,6 +20,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 /**
  * Classe giocatore
  *
@@ -232,7 +233,7 @@ public class Player {
     private void buyLand() throws ActionCancelledException {
 
         //creo lista delle possibili regioni da comprare di un pastore
-        ArrayList<RegionType> possibleRegionsType = new ArrayList<RegionType>();
+        List<RegionType> possibleRegionsType = new ArrayList<RegionType>();
 
         String stringedTypeOfCard;
         RegionType chosenTypeOfCard;
@@ -302,7 +303,7 @@ public class Player {
 
     private void mateSheepWith(OvineType otherOvineType) throws ActionCancelledException {
         //TODO: ricontrollare e scomporre
-        ArrayList<Region> nearRegions = null;
+        List<Region> nearRegions = null;
         Region chosenRegion;
         int randomStreetValue;
         String errorMessage = "";
@@ -363,7 +364,7 @@ public class Player {
     private void killOvine() {
         Region chosenRegion;
         int randomValue;
-        ArrayList<Shepherd> neighbourShepherds = new ArrayList<Shepherd>();
+        List<Shepherd> neighbourShepherds = new ArrayList<Shepherd>();
         int sumToPay = 0;
         String errorMessage = "";
         OvineType chosenOvineType = null;

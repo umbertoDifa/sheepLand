@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 /**
  * Rappresenta la plancia, quindi conosce Strade e Regioni e come esse sono connesse.
  * Crea un grafo che connette Strade e Regioni. Conosce la posizione del lupo 
@@ -87,7 +88,7 @@ public class Map {
      */
     public Street getStreetByValue(Region region, int value) throws StreetNotFoundException {
         //salvo i nodi adiacenti alla regione
-        ArrayList<Node> adjacentStreet = region.getNeighbourNodes();
+        List<Node> adjacentStreet = region.getNeighbourNodes();
         //per ogni nodo            
         for (int i = 0; i < adjacentStreet.size(); i++) {
             //se il nodo è una strada
@@ -372,7 +373,7 @@ public class Map {
      * @return Regione di arrivo, null se non esiste
      */
     public Region getEndRegion(Region startRegion, Street street) {
-        ArrayList<Node> neighbourRegions;
+        List<Node> neighbourRegions;
 
         neighbourRegions = street.getNeighbourNodes();
         //per ogni nodo confinante alla strada
