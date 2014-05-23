@@ -103,15 +103,6 @@ public class BankTest {
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue()); //inizializzo una bank 
 
-//        RegionType type = RegionType.COUNTRYSIDE; //creo una carta country                
-//        
-//        Card expResult = new Card(2, type); //creo una carta di valore 2 e tipo country
-//        //non la carico
-//        //instance.loadCard(expResult, RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());//la carico in corrispondenza di dove inizia il suo indice(2)
-//
-//        //dovrebbe arrivare un eccezione
-//        Card result = instance.getCard(type);
-//        
         //aggiungo carte (riempio l'array)
         for (int i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
             instance.loadCard(new Card(i, RegionType.COUNTRYSIDE),
@@ -161,16 +152,55 @@ public class BankTest {
     /**
      * Test of getInitialCard method, of class Bank.
      */
-    @Ignore
     @Test
     public void testGetInitialCard() {
+        int i;
+        int j;
+        int cont = 0;
+
         System.out.println("getInitialCard");
-        Bank instance = null;
-        Card expResult = null;
-        Card result = instance.getInitialCard();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        //creo la banca
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+
+        //creo l'array che ospiterà i risultati
+        Card result[] = new Card[GameConstants.NUM_INITIAL_CARDS.getValue()];
+
+        //prendo le mie 6 carte iniziali 
+        for (i = 0; i < GameConstants.NUM_INITIAL_CARDS.getValue(); i++) {
+            result[i] = instance.getInitialCard();
+        }
+        //testo che siano tutte diverse tra di loro
+        for (i = 0; i < GameConstants.NUM_INITIAL_CARDS.getValue() - 1; i++) {
+            for (j = i + 1; j < GameConstants.NUM_INITIAL_CARDS.getValue(); j++) {
+                //carte diverse
+                assertNotSame(result[i], result[j]);
+                assertNotEquals(result[i], result[j]);
+
+                //tipo diverso
+                assertNotSame(result[i].getType(), result[j].getType());
+                assertNotEquals(result[i].getType(), result[j].getType());
+
+                //e non shepsburg
+                assertNotSame(result[i].getType(), RegionType.SHEEPSBURG);
+                assertNotSame(result[j].getType(), RegionType.SHEEPSBURG);
+                assertNotEquals(result[i].getType(), RegionType.SHEEPSBURG);
+                assertNotSame(result[j].getType(), RegionType.SHEEPSBURG);
+            }
+        }
+        //ne chiedo un'altra e mi becco l'exception arrayOutOfBounds
+        for (i = 0; i < 20; i++) {
+            try {
+                Card card = instance.getInitialCard();
+            } catch (IllegalArgumentException e) {
+                //la random del dado inizializzata con size() delle carte fallisce
+                cont++;
+            }
+        }
+
+        assertTrue(cont == 20);
     }
 
     /**

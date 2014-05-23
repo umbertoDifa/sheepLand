@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Random;
 public class Bank {
 
     private Card[] unusedCards;
-    private ArrayList<Card> initialCards = new ArrayList<Card>();
+    private List<Card> initialCards = new ArrayList<Card>();
     private Fence[] unusedFences; //TODO: magari inseriamo un margine di sicurezza? se mi arriva una FinishedFenceException 
     //mi si sputtana tutto
 
