@@ -305,7 +305,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private boolean executeShift(int player) throws FinishedFencesException {
-        String noMoreFenceMessage = "Recinti Finiti!";
 
         DebugLogger.println("Muovo pecora nera");
         //muovo la pecora nera

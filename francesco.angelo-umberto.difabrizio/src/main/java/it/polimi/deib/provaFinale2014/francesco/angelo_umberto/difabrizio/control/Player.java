@@ -176,7 +176,7 @@ public class Player {
      */
     private void moveShepherd() throws ActionCancelledException,
             FinishedFencesException {
-        String stringedStreet;
+
         Street startStreet;
         Street endStreet;
         int idShepherd = 0;
@@ -317,7 +317,6 @@ public class Player {
         Region chosenRegion;
         int randomStreetValue;
         String errorMessage = "";
-        boolean sheepFounded = false, otherOvineFounded = false;
 
         //per ogni pastore del giocatore
         for (Shepherd shepherdPlayer : this.shepherd) {

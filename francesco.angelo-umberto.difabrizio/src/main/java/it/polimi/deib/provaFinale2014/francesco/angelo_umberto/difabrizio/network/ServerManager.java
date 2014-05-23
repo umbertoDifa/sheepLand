@@ -27,7 +27,6 @@ public class ServerManager {
 
     //modifica qui per cambiare la frequenza con cui viene controllata quante partite sono attive
     private final int secondsBeforeRefreshNumberOfGamesActive;
-    private final int timeoutRefreshNumberOfGames;
     private final int timeoutAccept;
 
     //constanti generiche
@@ -67,7 +66,6 @@ public class ServerManager {
         this.secondsBeforeRefreshNumberOfGamesActive = refreshTimeout;
         this.secondsBeforeAcceptTimeout = acceptTimeout;
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
-        this.timeoutRefreshNumberOfGames = secondsBeforeRefreshNumberOfGamesActive * MILLISECONDS_IN_SECONDS;
         //setta la porta del server 
         this.port = port;
     }
@@ -171,7 +169,7 @@ public class ServerManager {
                 clientSockets.add(serverSocket.accept());
 
                 //se non ho attivato tutte le partite
-                if (this.activatedGames < maxNumberOfGames) {
+                if (ServerManager.activatedGames < maxNumberOfGames) {
                     DebugLogger.println("Client accettato");
                     //se è il primo client
                     if (clientSockets.size() == 1) {
