@@ -84,6 +84,7 @@ public class Region extends Node {
      * Rimuove dagli ovini di una regione quello che gli passo
      *
      * @param type Tipo di ovino da cercare
+     *
      * @throws NoOvineException Se l'ovino di quel tipo non c'è
      */
     public void removeOvine(OvineType type) throws NoOvineException {
@@ -91,7 +92,7 @@ public class Region extends Node {
         //scorri la lista degli ovini
         for (int i = 0; i < this.myOvines.size(); i++) {
             //il primo ovino che trovi del tipo che ti interessa 
-            if (this.myOvines.get(i).getType() == type){
+            if (this.myOvines.get(i).getType() == type) {
                 //rimuovilo e ritorna
                 this.myOvines.remove(i);
                 return;
@@ -100,43 +101,59 @@ public class Region extends Node {
         //se non lo trovi
         throw new NoOvineException("Non c'è un ovino del tipo cercato.");
     }
-    
+
     /**
-     * 
-     * @param otherOvineType
-     * @return ritorna vero sse trova sia una pecora sia
-     * un ovino di tipo otherOvineType
+     *
+     * @param mateType
+     *
+     * @return ritorna vero sse trova sia una pecora sia un ovino di tipo
+     *         mateType
      */
-    public boolean isPossibleToMeetSheepWith(OvineType otherOvineType){
-        boolean sheepFounded = false, otherOvineFounded = false;
+    public boolean isPossibleToMeetSheepWith(OvineType mateType) {
+        //piouttosto che fare due for preferisco farne uno è 
+        //fermarmi quando ho almeno due pecore è un altro tipo
+        //poi controllo se ho trovato quello che mi serviva.
+        //Anche se questo significa raggiungere la fini della lista
+        //degli ovini anche quando in realtà avrei già trovato la coppia
+        //sapendo che comunque gli ovini in una regione non saranno mai tantissimi
+        //lo preferisco piuttosto che duplicare il for
+
+        int foundedSheep = 0;
+        int foundedMate = 0;
+
+        int sheepToFind = 2;
+        int mateToFind = 1;
         
-        //per tutti gli ovini nella regione o finchè non li trovi
-        for(int i=0; (i< this.getMyOvines().size())||
-                (sheepFounded&&otherOvineFounded); i++){
-            //se Sheep metti alza flag pecora
-            if(this.getMyOvines().get(i).getType() == OvineType.SHEEP){
-                sheepFounded = true;
-            //se di otherType alza relativo flag
-            }else if(this.getMyOvines().get(i).getType() == otherOvineType){
-                otherOvineFounded = true;
+        for (int i = 0; i < this.getMyOvines().size()
+                && (foundedMate < mateToFind || foundedSheep < sheepToFind); i++) {
+            if (this.getMyOvines().get(i).getType() == OvineType.SHEEP) {
+                foundedSheep++;
+            } else if (this.getMyOvines().get(i).getType() == mateType) {
+                foundedMate++;
             }
         }
-        //ritorna vero sse hai trovato sia una sheep che un ovine di tipo richiesto
-        return (sheepFounded && otherOvineFounded);
+
+        if (mateType == OvineType.SHEEP) {
+            return foundedSheep >= sheepToFind;
+        }
+        return foundedMate >= mateToFind && foundedSheep >= 1;
+
     }
-    
+
     /**
-     * 
+     *
      * @param thisOvineType
+     *
      * @return vero sse la reigone ha un ovino di tipo thisOvineType
      */
-    public boolean hasOvine(OvineType thisOvineType){
+    public boolean hasOvine(OvineType thisOvineType) {
         //per ogni ovino nella regione
-        for(Ovine ovine: this.getMyOvines()){
+        for (Ovine ovine : this.getMyOvines()) {
             //se del tipo thisOvineType
-            if(ovine.getType() == thisOvineType)
-                //ritorna vero
+            if (ovine.getType() == thisOvineType) //ritorna vero
+            {
                 return true;
+            }
         }
         //falso se li hai controllati tutti
         return false;

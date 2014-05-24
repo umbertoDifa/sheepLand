@@ -3,10 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -88,7 +85,7 @@ public class RegionTest {
         }
 
         //uso la getMyOvines per testare che siano stati inserirti nella regione
-       List<Ovine> myOvines = instance.getMyOvines();
+        List<Ovine> myOvines = instance.getMyOvines();
 
         //controllo che ci siano gli ovini cosi come li ho inseriti
         //controllo i lamb; 
@@ -222,19 +219,122 @@ public class RegionTest {
             fail("Regione3 non trovata, ma ti pare??");
         }
         assertFalse(region3.isAllFenced());
-        
+
         try {
             //test super compatto
             assertFalse(map.convertStringToRegion("15").isAllFenced());
             assertFalse(map.convertStringToRegion("9").isAllFenced());
             assertFalse(map.convertStringToRegion("11").isAllFenced());
-                       
+
             map.getStreetByValue(region2, 1).setFence(new Fence(false));
             assertTrue(region2.isAllFenced());
         } catch (RegionNotFoundException ex) {
-                        fail("Regione non trovata, ma ti pare??");
+            fail("Regione non trovata, ma ti pare??");
         } catch (StreetNotFoundException ex) {
-           fail(ex.getMessage());
+            fail(ex.getMessage());
         }
+    }
+
+    /**
+     * Test of addOvine method, of class Region.
+     */
+    @Test
+    public void testAddOvine() {
+        System.out.println("addOvine");
+        Ovine ovine = new Ovine(OvineType.RAM);
+        Region instance = new Region();
+        instance.addOvine(ovine);
+
+        assertSame(ovine, instance.getMyOvines().get(0));
+    }
+
+    /**
+     * Test of removeOvine method, of class Region.
+     *
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testRemoveOvine() throws Exception {
+        System.out.println("removeOvine");
+        Ovine ovine = new Ovine(OvineType.RAM);
+        Region instance = new Region();
+        instance.addOvine(ovine);
+
+        assertSame(ovine, instance.getMyOvines().get(0));
+
+        //tolgo l'unico ram
+        instance.removeOvine(OvineType.RAM);
+
+        for (int i = 0; i < 100; i++) {
+            try {
+                instance.removeOvine(OvineType.getRandomOvineType());
+                fail("Non è possibile recuperare degli ovini che non ci sono");
+            } catch (NoOvineException e) {
+                // ho tolto l'unico ram dalla regione, qualsiasi ovino chiedo fallirà
+            }
+        }
+
+    }
+
+    /**
+     * Test of isPossibleToMeetSheepWith method, of class Region.
+     * @throws NoOvineException
+     */
+    @Test
+    public void testIsPossibleToMeetSheepWith() throws NoOvineException {
+        System.out.println("isPossibleToMeetSheepWith");
+
+        OvineType otherOvineType = OvineType.SHEEP;
+        Region instance = new Region();
+
+        //metto nella regione una sola pecora
+        instance.addOvine(new Ovine(OvineType.SHEEP));
+
+        boolean expResult = false;
+        boolean result = instance.isPossibleToMeetSheepWith(otherOvineType);
+        assertEquals(expResult, result);
+
+        //aggiungo un altra pecora
+        instance.addOvine(new Ovine(OvineType.SHEEP));
+        result = instance.isPossibleToMeetSheepWith(otherOvineType);
+        assertTrue(result);
+
+        assertFalse(instance.isPossibleToMeetSheepWith(OvineType.RAM));
+
+        //aggiungo un ram
+        instance.addOvine(new Ovine(OvineType.RAM));
+        assertTrue(instance.isPossibleToMeetSheepWith(OvineType.RAM));
+
+        //tolgo una pecora
+        instance.removeOvine(OvineType.SHEEP);
+        assertTrue(instance.isPossibleToMeetSheepWith(OvineType.RAM));
+
+        //tolgo l'ultima pecora
+        instance.removeOvine(OvineType.SHEEP);
+        assertFalse(instance.isPossibleToMeetSheepWith(OvineType.RAM));
+
+        //aggiungo una pecora
+        instance.addOvine(new Ovine(OvineType.SHEEP));
+        assertTrue(instance.isPossibleToMeetSheepWith(OvineType.RAM));
+
+    }
+
+    /**
+     * Test of hasOvine method, of class Region.
+     */
+
+    @Test
+    public void testHasOvine() {
+        System.out.println("hasOvine");
+        OvineType thisOvineType = OvineType.LAMB;
+        Region instance = new Region();
+        boolean expResult = false;
+        boolean result = instance.hasOvine(thisOvineType);
+        assertEquals(expResult, result);
+        
+        //aggiungo un lamb e vedo che dice
+        instance.addOvine(new Ovine(OvineType.LAMB));
+        
+        assertTrue(instance.hasOvine(thisOvineType));
     }
 }
