@@ -26,14 +26,6 @@ public class BlackSheep extends SpecialAnimal {
                     "La pecora nera non può muoversi, strada occupata.");
     
         }
-    }
-    /**
-     * 
-     * @return La stringa "Blacksheep"
-     */
-    @Override
-    public String toString() {
-    return "Blacksheep";
-    }
+    }   
     
 }

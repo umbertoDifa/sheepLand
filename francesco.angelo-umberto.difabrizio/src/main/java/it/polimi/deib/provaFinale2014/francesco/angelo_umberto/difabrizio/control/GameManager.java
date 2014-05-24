@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveAnimalException;
@@ -124,11 +125,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
         int SHEEPSBURG_ID = 18;
         //recupera l'array delle regioni
         Region[] region = this.map.getRegions();
-        //per ogni regione
-        for (Region reg : region) {
+
+        //per ogni regione tranne shepsburg
+        for (int i = 0; i < region.length - 1; i++) {
             //aggiungi un ovino (a caso)          
-            reg.addOvine(new Ovine());
+            region[i].addOvine(new Ovine());
         }
+
         //posiziono lupo e pecora nera a sheepsburg
         map.getBlackSheep().setAt(map.getRegions()[SHEEPSBURG_ID]);
         map.getWolf().setAt(map.getRegions()[SHEEPSBURG_ID]);
@@ -246,11 +249,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
-   /**
-    * Inserisce le carte nella banca, lo stesso numero per ogni regione,
-    * nell'ordine in cui sono le enum della RegionType così da poter
-    * usare una ricerca indicizzata per trovarle in seguito
-    */
+    /**
+     * Inserisce le carte nella banca, lo stesso numero per ogni regione,
+     * nell'ordine in cui sono le enum della RegionType così da poter usare una
+     * ricerca indicizzata per trovarle in seguito
+     */
     private void setUpCards() {
         //per ogni tipo di regione - sheepsburg 
         int i;

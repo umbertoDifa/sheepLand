@@ -11,6 +11,8 @@ import static org.junit.Assert.*;
  */
 public class BankTest {
 
+    Bank instance;
+
     public BankTest() {
     }
 
@@ -24,6 +26,10 @@ public class BankTest {
 
     @Before
     public void setUp() throws Exception {
+        //inizializzo una bank con le costanti del gioco
+        instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
     }
 
     @After
@@ -42,11 +48,6 @@ public class BankTest {
         int i, j;
         //creo una carta country
         RegionType type = RegionType.COUNTRYSIDE;
-
-        //inizializzo una bank con le costanti del gioco
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //aggiungo carte (riempio l'array)
         for (i = 0; i < RegionType.values().length - 1; i++) {
@@ -74,11 +75,6 @@ public class BankTest {
         int i, j;
         //creo una carta country
         RegionType type = RegionType.COUNTRYSIDE;
-
-        //inizializzo una bank con le costanti del gioco
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //aggiungo carte (riempio l'array)
         for (i = 0; i < RegionType.values().length - 1; i++) {
@@ -123,11 +119,6 @@ public class BankTest {
         int cont = 0;
 
         System.out.println("getInitialCard");
-
-        //creo la banca
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //creo l'array che ospiterà i risultati
         Card result[] = new Card[GameConstants.NUM_INITIAL_CARDS.getValue()];
@@ -175,10 +166,6 @@ public class BankTest {
         System.out.println("getFence");
         int i;
 
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
-
         //carico tutte le fence
         for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
             instance.loadFence(i);
@@ -197,10 +184,6 @@ public class BankTest {
     public void testLoadFence() throws FinishedFencesException {
         System.out.println("loadFence");
         int i;
-
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //carico tutte le fence
         for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
@@ -223,10 +206,6 @@ public class BankTest {
     public void testLoadFinalFence() throws FinishedFencesException {
         System.out.println("loadFinalFence");
         int i;
-
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //carico metà fence non finali
         for (i = 0; i < GameConstants.NUM_FENCES.getValue() / 2; i++) {
@@ -259,9 +238,7 @@ public class BankTest {
     public void testLoadCard() {
         System.out.println("loadCard");
         //creo una banca
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
+
         Card card1 = new Card(2, RegionType.HILL);
 
         instance.loadCard(card1);
@@ -275,10 +252,6 @@ public class BankTest {
     public void testNumberOfUsedFence() throws Exception {
         int i;
         int exceptionCounter = 0;
-        //creo una banca
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //carico tutte le fence
         for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
@@ -341,10 +314,6 @@ public class BankTest {
         System.out.println("priceOfCard");
         int i, j, sum = 0;
         int exCounter = 0;
-        //creo una banca
-        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
-                GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue());
 
         //aggiungo carte (riempio l'array)
         for (i = 0; i < RegionType.values().length - 1; i++) {
@@ -374,7 +343,6 @@ public class BankTest {
         assertTrue(
                 sum == 10 * (RegionType.values().length - 2));
 
-         
         //verifico exception per ogni tipo
         for (i = 0, exCounter = 0; i < 100; i++) {
             try {

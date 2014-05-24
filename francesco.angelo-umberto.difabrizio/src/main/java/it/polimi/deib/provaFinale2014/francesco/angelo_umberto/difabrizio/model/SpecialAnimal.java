@@ -42,12 +42,6 @@ public abstract class SpecialAnimal {
      */
     public void setMyRegion(Region myRegion) {
         this.myRegion = myRegion;
-    }
-    /**
-     * 
-     * @return Stringa del nome dell'animale
-     */
-    @Override
-    public abstract String toString();
+    }       
 
 }
