@@ -32,6 +32,9 @@ public class Card {
     public Card(int value, RegionType type) {
         this.value = value;
         this.type = type;
+        
+        //inizialmente il valore di mercato è settato al valore della carta
+        this.marketValue = this.value;
     }
     /**
      * Setta il valore della carta a value
