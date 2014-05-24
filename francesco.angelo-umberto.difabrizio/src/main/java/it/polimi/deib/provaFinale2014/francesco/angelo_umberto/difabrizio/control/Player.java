@@ -279,7 +279,7 @@ public class Player {
                 //se il tipo chiesto è contenuto nei tipi comprabili dal pastore
                 if (possibleRegionsType.contains(chosenTypeOfCard)) {
                     //richiedi prezzo alla banca                    
-                    cardPrice = this.gameManager.bank.priceOfCard(
+                    cardPrice = this.gameManager.bank.getPriceOfCard(
                             chosenTypeOfCard);
                     //se il pastore ha abbastanza soldi
                     if (shepherdMoney >= cardPrice) {

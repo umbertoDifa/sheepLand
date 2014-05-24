@@ -246,21 +246,22 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
-    /**
-     * Crea le carte di tutti i tipi necessari da caricare nel banco
-     */
+   /**
+    * Inserisce le carte nella banca, lo stesso numero per ogni regione,
+    * nell'ordine in cui sono le enum della RegionType così da poter
+    * usare una ricerca indicizzata per trovarle in seguito
+    */
     private void setUpCards() {
-        //per ogni tipo di regione - sheepsburg  
-        for (int i = 0; i < RegionType.values().length - 1; i++) {
+        //per ogni tipo di regione - sheepsburg 
+        int i;
+        int j;
+        for (i = 0; i < RegionType.values().length - 1; i++) {
             //per tante quante sono le carte di ogni tipo
-            for (int j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
+            for (j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
                 //crea una carta col valore giusto( j crescente da 0 al max) e tipo giusto(dipendente da i) 
                 Card cardToAdd = new Card(j, RegionType.values()[i]);
-                //calcola la posizione a cui aggiungerla(fondamentale per la getCard che
-                //usa una politica basata sugli indici)
-                int position = (i * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue()) + j;
                 //caricala
-                bank.loadCard(cardToAdd, position);
+                bank.loadCard(cardToAdd);
             }
         }
     }

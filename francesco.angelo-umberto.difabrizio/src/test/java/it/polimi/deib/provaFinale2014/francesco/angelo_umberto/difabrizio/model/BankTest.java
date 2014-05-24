@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -38,7 +39,7 @@ public class BankTest {
     @Test
     public void testGetCard() throws Exception {
         System.out.println("getCard");
-
+        int i, j;
         //creo una carta country
         RegionType type = RegionType.COUNTRYSIDE;
 
@@ -47,44 +48,16 @@ public class BankTest {
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
 
-        //creo una carta di valore 2 e tipo country
-        Card expResult = new Card(2, type);
-
-        //la carico in corrispondenza di dove inizia il suo indice(2)
-        instance.loadCard(expResult,
-                RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());
-
-        //controllo che la get ritorni la stessa carta
-        try {
-            Card result = instance.getCard(type);
-            assertSame("Card aggiunta == carta ricevuta", expResult, result);
-        } catch (MissingCardException e) {
-            fail("get Card solleva eccezione quando provo a prelevare " + e.getMessage()
-                    + "una carte di un tipo presente fra le cards");
-        }
-
         //aggiungo carte (riempio l'array)
-        for (int i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
-            instance.loadCard(new Card(i, RegionType.COUNTRYSIDE),
-                    RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.DESERT),
-                    RegionType.DESERT.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.HILL),
-                    RegionType.HILL.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.LAKE),
-                    RegionType.LAKE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.MOUNTAIN),
-                    RegionType.MOUNTAIN.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.PLAIN),
-                    RegionType.PLAIN.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
+        for (i = 0; i < RegionType.values().length - 1; i++) {
+            for (j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
+                Card cardToAdd = new Card(j, RegionType.values()[i]);
+                //caricala
+                instance.loadCard(cardToAdd);
+            }
         }
         //chiedo 5 carte di ogni tipo
-        for (int i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
+        for (i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
             instance.getCard(RegionType.COUNTRYSIDE);
             instance.getCard(RegionType.PLAIN);
             instance.getCard(RegionType.DESERT);
@@ -98,34 +71,25 @@ public class BankTest {
     @Test(expected = MissingCardException.class)
     public void testGetCardException() throws MissingCardException {
         System.out.println("getCard");
+        int i, j;
+        //creo una carta country
+        RegionType type = RegionType.COUNTRYSIDE;
 
+        //inizializzo una bank con le costanti del gioco
         Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
-                GameConstants.NUM_FENCES.getValue()); //inizializzo una bank 
+                GameConstants.NUM_FENCES.getValue());
 
         //aggiungo carte (riempio l'array)
-        for (int i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
-            instance.loadCard(new Card(i, RegionType.COUNTRYSIDE),
-                    RegionType.COUNTRYSIDE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.DESERT),
-                    RegionType.DESERT.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.HILL),
-                    RegionType.HILL.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.LAKE),
-                    RegionType.LAKE.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.MOUNTAIN),
-                    RegionType.MOUNTAIN.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
-
-            instance.loadCard(new Card(i, RegionType.PLAIN),
-                    RegionType.PLAIN.getIndex() * GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() + i);
+        for (i = 0; i < RegionType.values().length - 1; i++) {
+            for (j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
+                Card cardToAdd = new Card(j, RegionType.values()[i]);
+                //caricala
+                instance.loadCard(cardToAdd);
+            }
         }
-
         //chiedo 5 carte di ogni tipo
-        for (int i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
+        for (i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
             instance.getCard(RegionType.COUNTRYSIDE);
             instance.getCard(RegionType.PLAIN);
             instance.getCard(RegionType.DESERT);
@@ -136,7 +100,7 @@ public class BankTest {
 
         //chiedo una carta a caso, qualsiasi genererà un ecception
         int count = 0;
-        for (int i = 0; i < 100; i++) {
+        for (i = 0; i < 100; i++) {
             try {
                 instance.getCard(RegionType.getRandomRegionType());
             } catch (MissingCardException ex) {
@@ -204,92 +168,223 @@ public class BankTest {
     }
 
     /**
-     * Test of priceOfCard method, of class Bank.
-     */
-    @Ignore
-    @Test
-    public void testPriceOfCard() throws Exception {
-        System.out.println("priceOfCard");
-        RegionType type = null;
-        Bank instance = null;
-        int expResult = 0;
-        int result = instance.priceOfCard(type);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of getFence method, of class Bank.
      */
-    @Ignore
     @Test
     public void testGetFence() throws Exception {
         System.out.println("getFence");
-        Bank instance = null;
-        Fence expResult = null;
-        Fence result = instance.getFence();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int i;
+
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+
+        //carico tutte le fence
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.loadFence(i);
+        }
+
+        instance.getFence();
     }
 
     /**
      * Test of loadFence method, of class Bank.
+     *
+     * @throws
+     * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
-    @Ignore
     @Test
-    public void testLoadFence() {
+    public void testLoadFence() throws FinishedFencesException {
         System.out.println("loadFence");
-        int position = 0;
-        Bank instance = null;
-        instance.loadFence(position);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int i;
+
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+
+        //carico tutte le fence
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.loadFence(i);
+        }
+
+        //le tolgo tutte
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.getFence();
+        }
     }
 
     /**
      * Test of loadFinalFence method, of class Bank.
+     *
+     * @throws
+     * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
-    @Ignore
-    @Test
-    public void testLoadFinalFence() {
+    @Test(expected = FinishedFencesException.class)
+    public void testLoadFinalFence() throws FinishedFencesException {
         System.out.println("loadFinalFence");
-        int position = 0;
-        Bank instance = null;
-        instance.loadFinalFence(position);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int i;
+
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+
+        //carico metà fence non finali
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue() / 2; i++) {
+            instance.loadFence(i);
+        }
+
+        //carico fence finali
+        for (i = GameConstants.NUM_FENCES.getValue() / 2; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.loadFinalFence(i);
+        }
+
+        //prendo la prima metà non finali
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue() / 2; i++) {
+            assertFalse(instance.getFence().isFinal());
+        }
+
+        //prendo la seconda metà finale
+        for (i = GameConstants.NUM_FENCES.getValue() / 2; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            assertTrue(instance.getFence().isFinal());
+        }
+
+        //chiedo un altra fence per avere l'eccezione
+        instance.getFence();
     }
 
     /**
      * Test of loadCard method, of class Bank.
      */
-    @Ignore
     @Test
     public void testLoadCard() {
         System.out.println("loadCard");
-        Card card = null;
-        int position = 0;
-        Bank instance = null;
-        instance.loadCard(card, position);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //creo una banca
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+        Card card1 = new Card(2, RegionType.HILL);
+
+        instance.loadCard(card1);
+
     }
 
     /**
-     * Test of numberOfUsedFence method, of class Bank.
+     * Test of numberOfUsedFence method, getFence e loadFence, of class Bank.
      */
-    @Ignore
     @Test
     public void testNumberOfUsedFence() throws Exception {
-        System.out.println("numberOfUsedFence");
-        Bank instance = null;
-        int expResult = 0;
-        int result = instance.numberOfUsedFence();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int i;
+        int exceptionCounter = 0;
+        //creo una banca
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+
+        //carico tutte le fence
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.loadFence(i);
+        }
+        //testo che ci siano tutte le fence
+        assertTrue(instance.numberOfUsedFence() == 0);
+
+        //ne prendo la metà e le butto
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue() / 2; i++) {
+            instance.getFence();
+        }
+        //testo che siano la metà
+        assertTrue(
+                instance.numberOfUsedFence() == GameConstants.NUM_FENCES.getValue() / 2);
+
+        //le finisco
+        for (i = GameConstants.NUM_FENCES.getValue() / 2; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.getFence();
+        }
+        //testo l'eccezione
+        try {
+            instance.getFence();
+        } catch (FinishedFencesException ex) {
+            exceptionCounter++;
+        }
+        assertTrue(exceptionCounter == 1);
+
+        //le carico tutte 
+        for (i = 0; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.loadFence(i);
+        }
+        assertTrue(instance.numberOfUsedFence() == 0);
+
+        //ne uso 3
+        for (i = 0; i < 3; i++) {
+            instance.getFence();
+        }
+        //testo 3
+        assertTrue(instance.numberOfUsedFence() == 3);
+
+        //le toglo tutte
+        for (i = 3; i < GameConstants.NUM_FENCES.getValue(); i++) {
+            instance.getFence();
+        }
+        //testo l'eccezione
+        try {
+            instance.getFence();
+        } catch (FinishedFencesException ex) {
+            exceptionCounter++;
+        }
+        assertTrue(exceptionCounter == 2);
+    }
+
+    /**
+     * Test of getPriceOfCard method, of class Bank.
+     */
+    @Test
+    public void testPriceOfCard() throws Exception {
+        System.out.println("priceOfCard");
+        int i, j, sum = 0;
+        int exCounter = 0;
+        //creo una banca
+        Bank instance = new Bank(GameConstants.NUM_CARDS.getValue(),
+                GameConstants.NUM_INITIAL_CARDS.getValue(),
+                GameConstants.NUM_FENCES.getValue());
+
+        //aggiungo carte (riempio l'array)
+        for (i = 0; i < RegionType.values().length - 1; i++) {
+            for (j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
+                Card cardToAdd = new Card(j, RegionType.values()[i]);
+                //caricala
+                instance.loadCard(cardToAdd);
+            }
+        }
+
+        //chiedo tutte le carte di un tipo e per ognuna verifico che il prezzo
+        //sia giusto
+        for (i = 0; i < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); i++) {
+            assertTrue(instance.getPriceOfCard(RegionType.LAKE) == i);
+            instance.getCard(RegionType.LAKE);
+        }
+        //chiedo tutte le carte sommando i prezzi
+        for (i = 0; i < RegionType.values().length - 1; i++) {
+            for (j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
+                if (RegionType.values()[i] != RegionType.LAKE) {
+                    sum += instance.getPriceOfCard(RegionType.values()[i]);
+                    instance.getCard(RegionType.values()[i]);
+                }
+            }
+        }
+        //verifico che sia giusto
+        assertTrue(
+                sum == 10 * (RegionType.values().length - 2));
+
+         
+        //verifico exception per ogni tipo
+        for (i = 0, exCounter = 0; i < 100; i++) {
+            try {
+                instance.getPriceOfCard(RegionType.getRandomRegionType());
+            } catch (MissingCardException ex) {
+                exCounter++;
+            }
+        }
+        //verifico exception
+        assertTrue(exCounter == 100);
     }
 
 }

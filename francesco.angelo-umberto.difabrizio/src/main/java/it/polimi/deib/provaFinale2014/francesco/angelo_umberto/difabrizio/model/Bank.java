@@ -19,6 +19,15 @@ public class Bank {
     private Fence[] unusedFences; //TODO: magari inseriamo un margine di sicurezza? se mi arriva una FinishedFenceException 
     //mi si sputtana tutto
 
+    /**
+     * Costruisce un banco settando il numero di carte da vendere, il numero di
+     * carte da distribuire ai giocatori all'inizio del gioco e il numero di
+     * recinti totali disponibili
+     *
+     * @param numCards       Carte del banco da vendere
+     * @param numInitialCard Carte da distribuire all'inizio del gioco
+     * @param numeFences     Numero di recinti totali(finali + non finali)
+     */
     public Bank(int numCards, int numInitialCard, int numeFences) {
         this.unusedCards = new Card[numCards];
         this.unusedFences = new Fence[numeFences];
@@ -101,7 +110,7 @@ public class Bank {
         }
     }
 
-    public int priceOfCard(RegionType type) throws MissingCardException {
+    public int getPriceOfCard(RegionType type) throws MissingCardException {
         //chiamo la find card e ritorno il prezzo
         return this.findCard(type).getValue();
     }
@@ -155,15 +164,21 @@ public class Bank {
     }
 
     /**
-     * Riceve una card e la posiziona dove richiesto nell'array delle carte non
-     * usate(del banco). Attenzione è necessario fornire una position > 0 e
-     * minore della lunghezza totale dell'array.
+     * Riceve una card e la posiziona nel primo posto vuoto delle carte non
+     * usate(del banco). Il metodo se necessario inserisce anche un carta con
+     * tipo shepsburg. Se si cerca di inserire più carte di quelle che l'array
+     * può contenere si verificherà un errore. Il metodo non mi permettere di
+     * caricare in una specifica posizione, nel caso questo sia voluto è
+     * necessario riempire nell'ordine voluto l'array
      *
      * @param card Carta da caricare
-     * @param position Posizione in cui caricarla
      */
-    public void loadCard(Card card, int position) {
-        unusedCards[position] = card;
+    public void loadCard(Card card) {
+        for (int i = 0; i < GameConstants.NUM_CARDS.getValue(); i++)
+            if (unusedCards[i] == null) {
+                unusedCards[i] = card;
+                return;
+            }
     }
 
     /**
