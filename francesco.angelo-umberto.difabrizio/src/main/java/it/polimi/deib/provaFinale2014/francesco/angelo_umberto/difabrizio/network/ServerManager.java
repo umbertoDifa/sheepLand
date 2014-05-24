@@ -68,6 +68,9 @@ public class ServerManager {
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
         //setta la porta del server 
         this.port = port;
+        
+        //decidi cosa fare dei log delle exception
+        DebugLogger.turnOffExceptionLog();
     }
 
     public ServerManager(int port, int maxGames, int maxClientsForGame,

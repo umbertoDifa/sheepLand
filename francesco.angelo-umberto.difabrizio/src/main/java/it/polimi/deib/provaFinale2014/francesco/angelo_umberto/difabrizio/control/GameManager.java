@@ -3,11 +3,10 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.CannotMoveAnimalException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Convertible;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
@@ -28,6 +27,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//TODO: importantissimo settare il parent handler di ogni logger!
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
  * dei giocatori.
@@ -201,11 +201,19 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 this.server.sendTo(this.playersHashCode[currentPlayer],
                         "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
 
-                //aggiorna gli altri
-                this.server.broadcastExcept(
-                        "Il giocatore " + currentPlayer + " ha posizionato il pastore nella strada " + this.map.getNodeIndex(
-                                chosenStreet), playersHashCode[currentPlayer]);
-            }//for pastori
+                try {
+                    //aggiorna gli altri
+                    this.server.broadcastExcept(
+                            "Il giocatore " + currentPlayer + " ha posizionato il pastore nella strada " + this.map.getNodeIndex(
+                                    chosenStreet),
+                            playersHashCode[currentPlayer]);
+                } catch (NodeNotFoundException ex) {
+                    //è impossibile che la strada non esista perchè è stata appena convertita...
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                }
+            }
         }//for giocatori
     }
 
@@ -324,7 +332,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 //1)avvio il market  
                 this.startMarket();
                 //2)muovo il lupo
-                this.moveSpecialAnimal(this.map.getWolf());
+                try {
+                    this.moveSpecialAnimal(this.map.getWolf());
+                } catch (CannotMoveAnimalException e) {
+                    this.server.broadcastMessage(
+                            "Il lupo non si muove perchè " + e.getMessage());
+                }
             }
         }//while
     }
@@ -332,12 +345,21 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private boolean executeShift(int player) throws FinishedFencesException {
 
         DebugLogger.println("Muovo pecora nera");
-        //muovo la pecora nera
-        this.moveSpecialAnimal(this.map.getBlackSheep());
-        DebugLogger.println("pecora nera mossa");
-        this.server.broadcastMessage(
-                "Pecora nera mossa in: " + this.map.getNodeIndex(
-                        this.map.getBlackSheep().getMyRegion()));
+        try {
+            //muovo la pecora nera
+            this.moveSpecialAnimal(this.map.getBlackSheep());
+            DebugLogger.println("pecora nera mossa");
+            this.server.broadcastMessage(
+                    "Pecora nera mossa in: " + this.map.getNodeIndex(
+                            this.map.getBlackSheep().getMyRegion()));
+        } catch (CannotMoveAnimalException e) {
+            this.server.broadcastMessage(
+                    "La pecora nera non si muove perchè " + e.getMessage());
+        } catch (NodeNotFoundException ex) {
+            //non può verificarsi perchè se la pecora si muove allora il nodo esiste
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+        }
         //faccio fare le azioni al giocatore
         //per il numero di azioni possibili per un turno
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
@@ -401,46 +423,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     /**
-     * Fa la domanda al client per ottenere una risposta che viene convertita
-     * nell'oggetto corrispondente e restituita all'utente. Il metodo chiede di
-     * inserire il dato ogni volta che non è valido o finchè il client decide di
-     * annullare l'azione.
-     *
-     * @param playerHashCode Il client a cui domandare
-     * @param question       La domanda da fare
-     * @param converter      L'oggetto che convertirà la risposta in stringa nel
-     *                       rispettivo oggetto
-     *
-     * @return Oggetto chiesto NB da castare
-     *
-     * @throws ActionCancelledException Se il client non vuole più dare una
-     *                                  risposta
-     */
-    //TODO: forse da levare
-    private Object askUntilRight(int playerHashCode, String question,
-                                 Convertible converter) throws
-            ActionCancelledException {
-        while (true) {
-            try {
-                //chiedi informazione
-                String stringedStreet = this.server.talkTo(playerHashCode,
-                        question);
-
-                //ritorna informazione tradotta in oggetto
-                return converter.convert(stringedStreet);
-            } catch (NodeNotFoundException ex) {
-                //se informazione errata
-                Logger.getLogger(GameManager.class.getName()).log(Level.SEVERE,
-                        ex.getMessage(),
-                        ex);
-
-                //chiedi se ci vuole riprovare
-                this.askCancelOrRetry(playerHashCode, ex.getMessage());
-            }
-        }
-    }
-
-    /**
      * Chiede al player inviandogli la stringa message un id regione
      *
      * @param playerHashCode
@@ -466,7 +448,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return map;
     }
 
-    private void moveSpecialAnimal(SpecialAnimal animal) {
+    private void moveSpecialAnimal(SpecialAnimal animal) throws
+            CannotMoveAnimalException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
 
@@ -486,15 +469,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     endRegion);
 
             //tutto ok
-        } catch (CannotMoveAnimalException ex) {
-            this.getServer().broadcastMessage(ex.getMessage());
-            Logger.getLogger(GameManager.class.getName()).log(
-                    Level.SEVERE, ex.getMessage(), ex);
         } catch (StreetNotFoundException ex) {
-            this.getServer().broadcastMessage(
-                    ex.getMessage() + "Il lupo non si muove.");
-            Logger.getLogger(GameManager.class.getName()).log(
-                    Level.SEVERE, ex.getMessage(), ex);
+            throw new CannotMoveAnimalException(
+                    "La strada designata dal dado non esiste");
+        } catch (RegionNotFoundException ex) {
+            throw new CannotMoveAnimalException(
+                    "La regione di arrivo non esiste");
         }
     }
 

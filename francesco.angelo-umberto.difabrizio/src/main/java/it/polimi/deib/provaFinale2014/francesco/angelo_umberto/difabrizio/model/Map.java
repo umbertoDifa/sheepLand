@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Umberto
  */
-public class Map implements Convertible {
+public class Map {
 
     private Node[] streets;
     private Node[] regions;
@@ -38,71 +38,36 @@ public class Map implements Convertible {
 
     public Street convertStringToStreet(String streetId) throws
             StreetNotFoundException {
-        int id = Integer.parseInt(streetId);
-        //se l'id è nel range dell'array e quello che c'è dentro non è null
-        if (id >= 0 && id < GameConstants.NUM_STREETS.getValue()
-                && this.streets[id] != null) {
-            return (Street) this.streets[id];
+        if (streetId.matches("\\d{1,2}")) {
+            int id = Integer.parseInt(streetId);
+            //se l'id è nel range dell'array e quello che c'è dentro non è null
+            if (id >= 0 && id < GameConstants.NUM_STREETS.getValue()
+                    && this.streets[id] != null) {
+                return (Street) this.streets[id];
+            } else {
+                throw new StreetNotFoundException("Strada non esistente");
+            }
         } else {
-            throw new StreetNotFoundException("Strada non esistente");
+            throw new StreetNotFoundException(
+                    "La stringa inserita non identifica una strada, prego inserire l'id della strada.");
         }
     }
 
     public Region convertStringToRegion(String regionId) throws
             RegionNotFoundException {
-        int id = Integer.parseInt(regionId);
-        if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue()
-                && this.regions[id] != null) {
-            return (Region) this.regions[id];
-        } else {
-            throw new RegionNotFoundException("Regione non esistente");
-        }
-    }
-
-    /**
-     * Data una stringa il metodo riconosce se si tratta di una strada o una
-     * regione e conseguentemente restituisce un oggetto corrispondente alla
-     * strada o regione in questione. NB.chiaramente se necessario va castato a
-     * Street o Region
-     *
-     * @param stringToConvert Stringa da convertire in nodo Regione o Strada
-     *
-     * @return Un oggetto contenente una strada o la regione volute
-     *
-     * @throws RegionNotFoundException Se la regione che si cerca non esiste
-     * @throws StreetNotFoundException Se la Strada che si cerca non esiste
-     */
-    public Object convert(String stringToConvert) throws NodeNotFoundException {
-        //tokenizza stringa
-        String delimiter = "_";
-        String token[] = stringToConvert.split(delimiter);
-
-        //tipo di elemento richiesto
-        String typeOfNode = token[0];
-
-        //indice richiesto
-        int index = Integer.parseInt(token[1]);
-
-        //capisci se strada o regione
-        //TODO e se la lettera non è S o R? regex?
-        if (typeOfNode.equals("S")) {
-            //è una strada
-
-            if (index >= 0 && index < this.streets.length) {
-                return this.streets[index];
+        if (regionId.matches("\\d{1,2}")) {
+            int id = Integer.parseInt(regionId);
+            if (id >= 0 && id < GameConstants.NUM_REGIONS.getValue()
+                    && this.regions[id] != null) {
+                return (Region) this.regions[id];
             } else {
-                throw new StreetNotFoundException("Strada non esistente!");
+                throw new RegionNotFoundException("Regione non esistente");
             }
         } else {
-            //è una regione
-
-            if (index >= 0 && index < this.regions.length) {
-                return this.regions[index];
-            } else {
-                throw new RegionNotFoundException("Regione non esistente!");
-            }
+            throw new RegionNotFoundException(
+                    "La stringa inserita non identifica una regione, prego inserire l'id della regione.");
         }
-    }
+    }  
 
     /**
      * Crea nodi delle regioni e delle strade, li assegna a map, e li collega
@@ -138,17 +103,18 @@ public class Map implements Convertible {
      * @param value  Il valore della strada limitrofa che si cerca
      *
      * @return La strada trovata, null altrimenti
+     *
+     * @throws StreetNotFoundException
      */
     public Street getStreetByValue(Region region, int value) throws
             StreetNotFoundException {
         //salvo i nodi adiacenti alla regione
         List<Node> adjacentStreet = region.getNeighbourNodes();
-        //per ogni nodo            
-        for (int i = 0; i < adjacentStreet.size(); i++) {
+        for (Node adjacent : adjacentStreet) {
             //se il nodo è una strada
-            if (adjacentStreet.get(i) instanceof Street) {
+            if (adjacent instanceof Street) {
                 //castalo a street
-                Street tmpStreet = (Street) adjacentStreet.get(i);
+                Street tmpStreet = (Street) adjacent;
                 //se il valore è uguale a value
                 if (tmpStreet.getValue() == value) {
                     //ritornala
@@ -427,47 +393,70 @@ public class Map implements Convertible {
      * @param startRegion Regione di partenza
      * @param street      Strada attraverso cui passare
      *
-     * @return Regione di arrivo, null se non esiste
+     * @return Regione di arrivo
+     *
+     * @throws RegionNotFoundException Se la reigone di partenza e quella di
+     *                                 arrivo non confinano o se non esiste una
+     *                                 regione d'arrivo passando per la strada
+     *                                 street
      */
-    public Region getEndRegion(Region startRegion, Street street) {
+    public Region getEndRegion(Region startRegion, Street street) throws
+            RegionNotFoundException {
         List<Node> neighbourRegions;
 
-        neighbourRegions = street.getNeighbourNodes();
-        //per ogni nodo confinante alla strada
-        for (Node node : neighbourRegions) {
-            //se il nodo non è la regione di partenza e è una ragione
-            if (!node.equals(startRegion) && (node instanceof Region)) {
-                //ritornala
-                return (Region) node;
+        //se la regione di partenza e la strada confinano
+        if (startRegion.isNeighbour(street)) {
+
+            neighbourRegions = street.getNeighbourNodes();
+            //per ogni nodo confinante alla strada
+            for (Node node : neighbourRegions) {
+                //se il nodo non è la regione di partenza e è una ragione
+                if ((node instanceof Region) && !node.equals(startRegion)) {
+                    //ritornala
+                    return (Region) node;
+                }
             }
+            //se non hai trovato nessun altra regione
+            //non dovrebbe succedere mai. Ammenocchè la mappa non si costruita male...
+            throw new RegionNotFoundException(
+                    "Non è possibile raggiungere nessuna regione con questo percorso");
+        } else {
+            throw new RegionNotFoundException(
+                    "Impossibile procedere, la regione e la strada non confinano");
         }
-        //se non hai trovato nessun altra regione
-        //non dovrebbe succedere mai. Ammenocchè la mappa non si costruita male...
-        return null;
     }
 
     /**
-     * Dato un nodo della mappa ritorna il suo indice nel relativo array di 
+     * Dato un nodo della mappa ritorna il suo indice nel relativo array di
      * strade o regioni. Ritorna -1 se non lo trova
+     *
      * @param node Regione o strada di cui conoscere l'indice
-     * @return L'indice cercato, -1 altrimenti
+     *
+     * @return L'indice cercato
+     *
+     * @throws NodeNotFoundException Se la regione o la strada cercate non
+     *                               esistono
      */
-    public int getNodeIndex(Node node) {
+    //TODO: vale la pena questa exception? io gli passo un nodo quindi di 
+    //sicuro esisterà...però come buona pratica...
+    public int getNodeIndex(Node node) throws NodeNotFoundException {
         if (node instanceof Street) {
             for (int i = 0; i < streets.length; i++) {
-                if (streets[i] == (Street)node) {
+                if (streets[i] == (Street) node) {
                     return i;
                 }
             }
-            return -1;
-        }else{
+
+        } else {
             //è una regione
             for (int i = 0; i < regions.length; i++) {
-                if (regions[i] == (Region)node) {
+                if (regions[i] == (Region) node) {
                     return i;
                 }
             }
-            return -1;
+
         }
+
+        throw new NodeNotFoundException("Il nodo cercato non esiste");
     }
 }

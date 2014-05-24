@@ -107,7 +107,7 @@ public class Region extends Node {
      * @return ritorna vero sse trova sia una pecora sia
      * un ovino di tipo otherOvineType
      */
-    public boolean isPossibleMeetSheepWith(OvineType otherOvineType){
+    public boolean isPossibleToMeetSheepWith(OvineType otherOvineType){
         boolean sheepFounded = false, otherOvineFounded = false;
         
         //per tutti gli ovini nella regione o finchè non li trovi

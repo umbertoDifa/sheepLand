@@ -4,7 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.MissingCardException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Node;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
@@ -338,7 +338,7 @@ public class Player {
             //se regione è fra le regioni vicine
             if ((nearRegions != null) && nearRegions.contains(chosenRegion)) {
                 //controlla che nella regione sia possibile accoppiare Sheep con otherOvine
-                if (chosenRegion.isPossibleMeetSheepWith(otherOvineType)) {
+                if (chosenRegion.isPossibleToMeetSheepWith(otherOvineType)) {
                     //per ogni strada confinante alla regione scelta
                     for (Street street : chosenRegion.getNeighbourStreets()) {
                         //se ha valore uguale a quello del dado e sopra c'è un suo pastore
