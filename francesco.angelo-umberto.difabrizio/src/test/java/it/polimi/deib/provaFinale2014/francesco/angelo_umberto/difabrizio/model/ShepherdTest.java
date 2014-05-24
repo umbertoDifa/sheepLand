@@ -1,6 +1,6 @@
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -16,116 +16,138 @@ import org.junit.Test;
  * @author Umberto
  */
 public class ShepherdTest {
-    
+
+    Map map;
+
     public ShepherdTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
+        map = new Map();
+        map.setUp();
     }
-    
+
     @After
     public void tearDown() {
     }
 
     /**
      * Test of moveTo method, of class Shepherd.
+     *
+     * @throws StreetNotFoundException
      */
-    @Ignore
     @Test
-    public void testMoveTo() {
+    public void testMoveTo() throws StreetNotFoundException {
         System.out.println("moveTo");
-        Street street = null;
+        Street street = map.convertStringToStreet("25");
         Shepherd instance = new Shepherd();
         instance.moveTo(street);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertSame(instance.getStreet(), street);
     }
 
     /**
      * Test of getWallet method, of class Shepherd.
      */
-    @Ignore
     @Test
     public void testGetWallet() {
         System.out.println("getWallet");
         Shepherd instance = new Shepherd();
-        Wallet expResult = null;
+
         Wallet result = instance.getWallet();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(
+                result.getAmount() == GameConstants.INITIAL_WALLET_AMMOUNT.getValue());
+
     }
 
     /**
      * Test of getStreet method, of class Shepherd.
+     *
+     * @throws StreetNotFoundException
      */
-    @Ignore
     @Test
-    public void testGetStreet() {
+    public void testGetStreet() throws StreetNotFoundException {
         System.out.println("getStreet");
         Shepherd instance = new Shepherd();
-        Street expResult = null;
+        instance.moveTo(map.convertStringToStreet("13"));
         Street result = instance.getStreet();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(map.getStreets()[13], result);
+
     }
 
     /**
      * Test of getMyCards method, of class Shepherd.
      */
-    @Ignore
     @Test
     public void testGetMyCards() {
         System.out.println("getMyCards");
         Shepherd instance = new Shepherd();
-        List<Card> expResult = null;
+
+        Card card1 = new Card(1, RegionType.HILL);
+        Card card2 = new Card(3, RegionType.COUNTRYSIDE);
+        Card card3 = new Card(0, RegionType.HILL);
+        List<Card> expectedCards = new ArrayList<Card>();
+        expectedCards.add(card3);
+        expectedCards.add(card2);
+        expectedCards.add(card1);
+
+        instance.addCard(card1);
+        instance.addCard(card2);
+        instance.addCard(card3);
+
         List<Card> result = instance.getMyCards();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        expectedCards.removeAll(result);
+
+        assertTrue(expectedCards.isEmpty());
+
     }
 
     /**
      * Test of setMyCards method, of class Shepherd.
      */
-    @Ignore
     @Test
     public void testSetMyCards() {
         System.out.println("setMyCards");
-        List<Card> myCards = null;
+        List<Card> myCards = new ArrayList<Card>();
         Shepherd instance = new Shepherd();
+
+        Card card1 = new Card(1, RegionType.HILL);
+        Card card2 = new Card(3, RegionType.COUNTRYSIDE);
+        Card card3 = new Card(0, RegionType.HILL);
+
+        myCards.add(card3);
+        myCards.add(card2);
+        myCards.add(card1);
+
         instance.setMyCards(myCards);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertSame(instance.getMyCards(), myCards);
     }
 
     /**
      * Test of addCard method, of class Shepherd.
      */
-    
     @Test
     public void testAddCard() {
         System.out.println("addCard");
-        
+
         //creo una carta a caso
         Card card = new Card(0, RegionType.HILL);
-        
+
         //creo un pastore      
         Shepherd instance = new Shepherd();
-        
+
         //aggiungo una carta
         instance.addCard(card);
-        
+
         //verifico che la carta ci sia
         assertSame(card, instance.getMyCards().get(0));
     }
@@ -133,29 +155,44 @@ public class ShepherdTest {
     /**
      * Test of removeCard method, of class Shepherd.
      */
-    @Ignore
     @Test
     public void testRemoveCard() {
         System.out.println("removeCard");
-        Card card = null;
+
         Shepherd instance = new Shepherd();
-        instance.removeCard(card);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        Card card1 = new Card(1, RegionType.HILL);
+        Card card2 = new Card(3, RegionType.COUNTRYSIDE);
+        Card card3 = new Card(0, RegionType.HILL);
+
+        instance.addCard(card1);
+        instance.addCard(card2);
+        instance.addCard(card3);
+
+        assertTrue(instance.getMyCards().size() == 3);
+
+        instance.removeCard(card3);
+        instance.removeCard(card2);
+        instance.removeCard(card1);
+
+        assertTrue(instance.getMyCards().isEmpty());
     }
 
     /**
      * Test of setWallet method, of class Shepherd.
      */
-    @Ignore
     @Test
     public void testSetWallet() {
         System.out.println("setWallet");
-        Wallet wallet = null;
+        Wallet wallet = new Wallet();
+        wallet.setAmount(15);
+
         Shepherd instance = new Shepherd();
+
         instance.setWallet(wallet);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        assertTrue(instance.getWallet().getAmount() == 15);
+
     }
-    
+
 }

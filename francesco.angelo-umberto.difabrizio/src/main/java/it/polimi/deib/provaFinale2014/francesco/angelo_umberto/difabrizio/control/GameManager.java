@@ -167,14 +167,14 @@ public class GameManager {//TODO: pattern memento per ripristini?
                         //invio msg strada non trovata e ricomincia loop
                         this.server.sendTo(this.playersHashCode[i],
                                 ex.getMessage());
-                        Logger.getLogger(GameManager.class.getName()).log(
+                        Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, ex.getMessage(), ex);
                         //se la strada è occupata
                     } catch (BusyStreetException e) {
                         //manda il messaggio di errore al client e ricomincia il loop
                         this.server.sendTo(this.playersHashCode[i],
                                 e.getMessage());
-                        Logger.getLogger(GameManager.class.getName()).log(
+                        Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, e.getMessage(), e);
                     }
                 }//while
@@ -284,7 +284,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         } catch (FinishedFencesException ex) {
             this.getServer().broadcastMessage(
                     "I recinti totali sono finiti, fine gioco e calcolo dei punteggi");
-            Logger.getLogger(GameManager.class.getName()).log(
+            Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
@@ -337,6 +337,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 } catch (CannotMoveAnimalException e) {
                     this.server.broadcastMessage(
                             "Il lupo non si muove perchè " + e.getMessage());
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                    Level.SEVERE, e.getMessage(), e);
                 }
             }
         }//while
@@ -355,6 +357,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
         } catch (CannotMoveAnimalException e) {
             this.server.broadcastMessage(
                     "La pecora nera non si muove perchè " + e.getMessage());
+            Logger.getLogger(DebugLogger.class.getName()).log(
+                    Level.SEVERE, e.getMessage(), e);
         } catch (NodeNotFoundException ex) {
             //non può verificarsi perchè se la pecora si muove allora il nodo esiste
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -373,7 +377,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 } catch (ActionException ex) {
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
                     this.server.sendTo(playersHashCode[player], ex.getMessage());
-                    Logger.getLogger(GameManager.class.getName()).log(
+                    Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE, ex.getMessage(), ex);
                 }
             }
