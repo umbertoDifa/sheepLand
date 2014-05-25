@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  * Classe giocatore
  *
@@ -32,7 +33,7 @@ public class Player {
 
     private final Shepherd[] shepherd;
     private final GameManager gameManager;
-    private final int numShepherd;  
+    private final int numShepherd;
 
     public Player(GameManager gameManager, int numShepherd) {
         this.numShepherd = numShepherd;
@@ -77,21 +78,39 @@ public class Player {
         //pastore non esistente!
         return null;
     }
-
+    //TODO informa altri dopo ogni mossa
     public void chooseAndMakeAction() throws ActionNotFoundException,
-            ActionCancelledException,
-            FinishedFencesException {
+                                             ActionCancelledException,
+                                             FinishedFencesException {
 
         //crea array con le possibili scelte 
         String[] possibleActions = {"1- Sposta una pecora", "2-Sposta Montone", "3-Sposta agnello", "4- Sposta pastore",
-            "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
-            "8-Abbatti pecora"};
+                                    "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
+                                    "8-Abbatti pecora"};
 
-        //raccogli la scelta trasformando la string in int
-        int actionChoice = Integer.parseInt(this.gameManager.getServer().talkTo(
+        //raccogli la scelta
+        String stringedChoice = (this.gameManager.getServer().talkTo(
                 this.hashCode(),
                 "Scegli l'azione da fare tra:" + Arrays.toString(possibleActions)));
-        //TODO: chissa se funziona sta roba sopra 
+        //controlla correttezza
+        //se la stringa è un numero
+        int actionChoice;
+        try {
+            actionChoice = Integer.parseInt(stringedChoice);
+        } catch (NumberFormatException e) {
+            throw new ActionNotFoundException(
+                    "Azione non esistente prego riporvare.");
+        }
+
+        //se il numero è nel range delle azioni possibili
+        if (!(actionChoice > 0 && actionChoice <= possibleActions.length)) {
+            throw new ActionNotFoundException(
+                    "Azione non esistente prego riporvare.");
+        }
+
+        this.gameManager.getServer().sendTo(this.hashCode(), "Scelta valida!");
+
+        DebugLogger.println("Scelta: " + actionChoice);
         switch (actionChoice) {
             case 1:
                 this.moveOvine(OvineType.SHEEP);
@@ -121,6 +140,7 @@ public class Player {
                 throw new ActionNotFoundException(
                         "Azione non esistente.Prego inserire una scelta valida.");
         }
+
     }
 
     /**
@@ -140,30 +160,41 @@ public class Player {
             try {
                 //chiedi regione di partenza
                 startRegion = this.gameManager.askAboutRegion(
-                        this.hashCode(), "Da dove vuoi spostare l'ovino");
+                        this.hashCode(), "Da dove vuoi spostare l'ovino?");
                 //e regione arrivo
                 endRegion = this.gameManager.askAboutRegion(this.hashCode(),
-                        "in quale regione vuoi spostarlo?");
+                        "In quale regione vuoi spostarlo?");
                 //per ogni strada occupata dai patori del giocatore
                 for (Street possibleStreet : this.getShepherdsStreets()) {
                     //se le regioni confinano con la strada
                     if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
                             possibleStreet)) {
                         //rimuovi ovino del tipo specificato
+                        DebugLogger.println("Rimuovo ovino");
                         startRegion.removeOvine(type);
                         //e aggiungilo nella regione d'arrivo
                         endRegion.addOvine(new Ovine(type));
+                        this.gameManager.getServer().sendTo(this.hashCode(),
+                                "Mossa avvenuta con successo!");
                         return;
                     }
                 }
-                throw new MovementException(
-                        "Mossa non valida, nessun ovino presente nella regione di partenza.");
-            } catch (MovementException ex) {
+                //le regioni non confinano col pastore 
+                this.gameManager.getServer().sendTo(this.hashCode(),
+                        "Non è possibile effettuare la mossa! "
+                        + "Le regioni indicate non confinano col tuo pastore");
+
+            } catch (RegionNotFoundException e) {
+                Logger.getLogger(DebugLogger.class.getName()).log(
+                        Level.SEVERE, e.getMessage(), e);
                 this.gameManager.askCancelOrRetry(this.hashCode(),
-                        ex.getMessage());
-                Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
-            }//catch
+                        e.getMessage());
+            } catch (NoOvineException e) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        e.getMessage(), e);
+                this.gameManager.getServer().sendTo(this.hashCode(),
+                        "Non è possibile effettuare la mossa! Non ci sono " + type);
+            }
         }//while
     }
 
@@ -175,7 +206,7 @@ public class Player {
      * @throws ActionCancelledException
      */
     private void moveShepherd() throws ActionCancelledException,
-            FinishedFencesException {
+                                       FinishedFencesException {
 
         Street startStreet;
         Street endStreet;
@@ -204,7 +235,8 @@ public class Player {
                 startStreet = shepherdToMove.getStreet();
 
                 //chiedi strada arrivo (lancia StreetNotFoundException,BusyStreetException)
-                endStreet = this.gameManager.askStreet(this.hashCode(), idShepherd);
+                endStreet = this.gameManager.askStreet(this.hashCode(),
+                        idShepherd);
                 // se le strade sono confinanti
                 if (startStreet.isNeighbour(endStreet)) {
                     //muovilo
@@ -220,20 +252,21 @@ public class Player {
 
                     //se non puoi pagare, chiedi se cancellare o riprovare mossa
                 } else {
-                    this.gameManager.askCancelOrRetry(idShepherd, "Strada irraggiungibile.");
+                    this.gameManager.askCancelOrRetry(idShepherd,
+                            "Strada irraggiungibile.");
                 }
                 //se la strada è occupata avvisa e chiedi se cancellare o riprovare mossa
             } catch (BusyStreetException e) {
                 this.gameManager.askCancelOrRetry(idShepherd, "Strada occupata.");
                 Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, e.getMessage(), e);
+                        Level.SEVERE, e.getMessage(), e);
 
                 //se la strada di arrivo non esiste informa e riprova o cancella mossa
             } catch (StreetNotFoundException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         "Strada di arrivo non esistente ");
                 Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, e.getMessage(), e);
+                        Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -284,7 +317,8 @@ public class Player {
                     //se il pastore ha abbastanza soldi
                     if (shepherdMoney >= cardPrice) {
                         //recupero la carta dal banco
-                        Card card = this.gameManager.bank.getCard(chosenTypeOfCard);
+                        Card card = this.gameManager.bank.getCard(
+                                chosenTypeOfCard);
                         //aggiorno i suoi soldi
                         this.shepherd[0].getWallet().pay(cardPrice);
 
@@ -306,12 +340,13 @@ public class Player {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         "Il territorio richiesto non è disponibile");
                 Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, e.getMessage(), e);
+                        Level.SEVERE, e.getMessage(), e);
             }
         }
     }
 
-    private void mateSheepWith(OvineType otherOvineType) throws ActionCancelledException {
+    private void mateSheepWith(OvineType otherOvineType) throws
+            ActionCancelledException {
         //TODO: ricontrollare e scomporre
         List<Region> nearRegions = null;
         Region chosenRegion;
@@ -341,7 +376,8 @@ public class Player {
                     //per ogni strada confinante alla regione scelta
                     for (Street street : chosenRegion.getNeighbourStreets()) {
                         //se ha valore uguale a quello del dado e sopra c'è un suo pastore
-                        if (street.getValue() == randomStreetValue && this.hasShepherdIn(street)) {
+                        if (street.getValue() == randomStreetValue && this.hasShepherdIn(
+                                street)) {
                             //aggiungi ovino e esci dal ciclo
                             if (otherOvineType == otherOvineType.SHEEP) {
                                 chosenRegion.addOvine(new Ovine(OvineType.SHEEP));
@@ -366,7 +402,7 @@ public class Player {
         } catch (RegionNotFoundException ex) {
             errorMessage = ex.getMessage();
             Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
+                    Level.SEVERE, ex.getMessage(), ex);
         } finally {
             this.gameManager.askCancelOrRetry(this.hashCode(), errorMessage);
         }
@@ -389,7 +425,8 @@ public class Player {
             if ((street.getValue() == randomValue)) {
                 try {
                     //scegliere regione da attaccare
-                    chosenRegion = this.gameManager.askAboutRegion(this.hashCode(),
+                    chosenRegion = this.gameManager.askAboutRegion(
+                            this.hashCode(),
                             "scegliere la regione da attaccare");
 
                     //se ci sono animali
@@ -397,7 +434,8 @@ public class Player {
                         //per ogni strada vicina alla strada del pastore
                         for (Street nearStreet : street.getNeighbourStreets()) {
                             //se ha un pastore e non è dell'attaccante
-                            if ((nearStreet.getShepherd() != null) && !(this.ownsShepherd(nearStreet.getShepherd()))) {
+                            if ((nearStreet.getShepherd() != null) && !(this.ownsShepherd(
+                                    nearStreet.getShepherd()))) {
                                 //aggiungilo ai pastori vicini
                                 neighbourShepherds.add(nearStreet.getShepherd());
                             }
@@ -406,7 +444,8 @@ public class Player {
                         for (Shepherd neighbourShepherd : neighbourShepherds) {
                             //chiedi se lanciare al player corrispondente e lancia il dado
                             randomValue = this.gameManager.askAndThrowDice(
-                                    this.gameManager.getPlayerByShepherd(neighbourShepherd).hashCode());
+                                    this.gameManager.getPlayerByShepherd(
+                                            neighbourShepherd).hashCode());
                             //se ha fatto più di 5, 5 compreso
                             if (randomValue >= 5) {
                                 //aggiorna valore da pagare
@@ -418,17 +457,19 @@ public class Player {
                             this.getShepherd(0).getWallet().pay(sumToPay);
                             while (true) {
                                 //chiedi tipo d ovino
-                                this.gameManager.getServer().talkTo(this.hashCode(), "che tipo di ovino?");
+                                this.gameManager.getServer().talkTo(
+                                        this.hashCode(), "che tipo di ovino?");
                                 //se presente nella regione scelta
                                 try {
                                     //rimuovilo
                                     chosenRegion.removeOvine(chosenOvineType);
                                 } catch (NoOvineException ex) {
                                     //riprovare o annullare azione?
-                                    this.gameManager.askCancelOrRetry(this.hashCode(),
+                                    this.gameManager.askCancelOrRetry(
+                                            this.hashCode(),
                                             chosenOvineType + "non presente");
                                     Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
+                                            Level.SEVERE, ex.getMessage(), ex);
                                 }
                             }
                         } else {
@@ -444,7 +485,7 @@ public class Player {
                 } catch (ActionCancelledException e) {
                     errorMessage = e.getMessage();
                     Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, e.getMessage(),e );
+                            Level.SEVERE, e.getMessage(), e);
                 }
             }
         }
@@ -461,6 +502,7 @@ public class Player {
 
     /**
      * Ritorna le strade occupate dai pastori del giocatore
+     *
      * @return
      */
     private Street[] getShepherdsStreets() {
@@ -476,6 +518,7 @@ public class Player {
     /**
      *
      * @param street
+     *
      * @return vero se il giocatore ha un pastore nella strada passata
      */
     private boolean hasShepherdIn(Street street) {
@@ -491,6 +534,7 @@ public class Player {
     /**
      *
      * @param sheepherd
+     *
      * @return ritorna vero se il pastore è del giocatore
      */
     private boolean ownsShepherd(Shepherd sheepherd) {

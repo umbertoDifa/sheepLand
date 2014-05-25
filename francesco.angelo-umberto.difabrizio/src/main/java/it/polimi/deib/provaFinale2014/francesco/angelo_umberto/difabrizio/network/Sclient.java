@@ -54,7 +54,7 @@ public class Sclient {
      *
      * @return la stringa ricevuta dal client
      */
-    public String receive() throws NoSuchElementException, IllegalStateException {
+    public String receive() {
         //TODO:gestisci queste eccez
         String answer = fromClient.nextLine();
         return answer;

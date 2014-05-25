@@ -165,14 +165,14 @@ public class GameManager {//TODO: pattern memento per ripristini?
                         //se strada non trovata 
                     } catch (StreetNotFoundException ex) {
                         //invio msg strada non trovata e ricomincia loop
-                        this.server.sendTo(this.playersHashCode[i],
+                        this.server.sendTo(this.playersHashCode[currentPlayer],
                                 ex.getMessage());
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, ex.getMessage(), ex);
                         //se la strada è occupata
                     } catch (BusyStreetException e) {
                         //manda il messaggio di errore al client e ricomincia il loop
-                        this.server.sendTo(this.playersHashCode[i],
+                        this.server.sendTo(this.playersHashCode[currentPlayer],
                                 e.getMessage());
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, e.getMessage(), e);
@@ -204,7 +204,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 try {
                     //aggiorna gli altri
                     this.server.broadcastExcept(
-                            "Il giocatore " + currentPlayer + " ha posizionato il pastore nella strada " + this.map.getNodeIndex(
+                            "Il giocatore " + currentPlayer + " ha posizionato il pastore " + j + " nella strada " + this.map.getNodeIndex(
                                     chosenStreet),
                             playersHashCode[currentPlayer]);
                 } catch (NodeNotFoundException ex) {
@@ -278,6 +278,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void playTheGame() {
+        this.server.broadcastMessage("Inizia il gioco!");
         try {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
@@ -307,7 +308,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
         for (int i = 0; i < playersNumber; i++) {
             this.server.sendTo(playersHashCode[i],
                     "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
-                    + "; ogni giocatore ha :" + this.shepherd4player + "pastori. Il primo del turno è :" + firstPlayer);
+                    + "; ogni giocatore ha :" + this.shepherd4player
+                    + "pastori. Il primo del turno è :" + firstPlayer
+                    + ". Ogni giocatore ha :" + GameConstants.NUM_ACTIONS.getValue() + " azioni.");
         }
     }
 
@@ -338,25 +341,25 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     this.server.broadcastMessage(
                             "Il lupo non si muove perchè " + e.getMessage());
                     Logger.getLogger(DebugLogger.class.getName()).log(
-                    Level.SEVERE, e.getMessage(), e);
+                            Level.SEVERE, e.getMessage(), e);
                 }
             }
         }//while
     }
 
     private boolean executeShift(int player) throws FinishedFencesException {
-
+        //TODO: timer shift? cos' un giocatore non può metterci più di un toto
+        //a fare le sue azioni
         DebugLogger.println("Muovo pecora nera");
         try {
             //muovo la pecora nera
             this.moveSpecialAnimal(this.map.getBlackSheep());
             DebugLogger.println("pecora nera mossa");
             this.server.broadcastMessage(
-                    "Pecora nera mossa in: " + this.map.getNodeIndex(
+                    "La Pecora nera si è mossa in: " + this.map.getNodeIndex(
                             this.map.getBlackSheep().getMyRegion()));
         } catch (CannotMoveAnimalException e) {
-            this.server.broadcastMessage(
-                    "La pecora nera non si muove perchè " + e.getMessage());
+            this.server.broadcastMessage(e.getMessage());
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, e.getMessage(), e);
         } catch (NodeNotFoundException ex) {
@@ -375,6 +378,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     //se non arriva un l'eccezione passo alla prossima azione
                     break;
                 } catch (ActionException ex) {
+                    DebugLogger.println("Gestisco ActionCancelledException");
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
                     this.server.sendTo(playersHashCode[player], ex.getMessage());
                     Logger.getLogger(DebugLogger.class.getName()).log(
@@ -441,6 +445,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         Region chosenRegion;
         String stringedRegion = this.getServer().talkTo(playerHashCode, message);
         chosenRegion = getMap().convertStringToRegion(stringedRegion);
+        this.server.sendTo(playerHashCode, "regione ok");
         return chosenRegion;
     }
 
@@ -502,18 +507,20 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
-    protected void askCancelOrRetry(int hashCode, String message) throws
+    protected void askCancelOrRetry(int playerHashCode, String message) throws
             ActionCancelledException {
         //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
+        DebugLogger.println("AskOrRetry avviato");
         Character choice = this.getServer().talkTo(
-                hashCode(), message + " Riprovare(R) o Annullare(A)?").charAt(0);
+                playerHashCode, message + " Riprovare(R) o Annullare(A)?").charAt(0);
         switch (choice) {
             //se vuole riprovare
             case 'R':
+                this.getServer().sendTo(playerHashCode, "Riprova.");
                 break;
-            //se vuole annullare o se mette una roba a caso
-            default:
-                throw new ActionCancelledException("Azione annullata");
+            //se vuole annullare 
+            default:                
+                throw new ActionCancelledException("Abort.");
         }//switch
     }
 

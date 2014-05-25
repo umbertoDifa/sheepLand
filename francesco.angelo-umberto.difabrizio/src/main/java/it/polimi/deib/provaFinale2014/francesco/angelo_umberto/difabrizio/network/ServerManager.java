@@ -54,6 +54,7 @@ public class ServerManager {
      */
     boolean timeout;
 
+    ServerSocket serverSocket;
     List<Socket> clientSockets = new ArrayList<Socket>();
     ExecutorService executor = Executors.newCachedThreadPool();
 
@@ -68,7 +69,7 @@ public class ServerManager {
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
         //setta la porta del server 
         this.port = port;
-        
+
         //decidi cosa fare dei log delle exception
         DebugLogger.turnOffExceptionLog();
     }
@@ -92,7 +93,6 @@ public class ServerManager {
      * connessioni
      */
     public void startServer() {
-        ServerSocket serverSocket;
 
         //cerco di tirare su il server
         try {
@@ -100,13 +100,13 @@ public class ServerManager {
         } catch (IOException e) {
             System.err.println(e.getMessage());
             // porta non disponibile
-            Logger.getLogger(ServerManager.class.getName()).log(
-                    Level.SEVERE, e.getMessage(), e);
+            Logger.getLogger(DebugLogger.class.getName()).log(
+                    Level.SEVERE, "Impossibile creare il serverSocket "+e.getMessage(), e);
             return;
         }
         DebugLogger.println("Server pronto");
         //System.out.println("Server pronto");
-        this.handleClientRequest(serverSocket);
+        this.handleClientRequest();
     }
 
     private void startGame() {
@@ -132,13 +132,12 @@ public class ServerManager {
 
                 try {
                     //provo ad avvisarli
-
                     toClient = new PrintWriter(client.getOutputStream());
                     toClient.println(
                             "Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.");
                     toClient.flush();
                 } catch (IOException ex) {
-                    Logger.getLogger(ServerManager.class.getName()).log(
+                    Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE, ex.getMessage(), ex);
                     //Il client a cui stavo per dire che non può giocare si è già disconnesso, stica.
                     //TODO giusto?
@@ -162,7 +161,7 @@ public class ServerManager {
      * @param serverSocket
      */
     //TODO chiedere il doppio processo con il problema del kill simultaneo
-    private void handleClientRequest(ServerSocket serverSocket) {
+    private void handleClientRequest() {
         //creo un timer
         Timer timer = new Timer();
 
@@ -200,7 +199,7 @@ public class ServerManager {
                 }
             } catch (IOException ex) {
                 //casini col server
-                Logger.getLogger(ServerManager.class.getName()).log(
+                Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
             }
         }
@@ -232,7 +231,7 @@ public class ServerManager {
 
             } catch (InterruptedException ex) {
                 //se blocco il timer io non succede niente, muori e basta.
-                Logger.getLogger(ServerManager.class.getName()).log(
+                Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
             }
         }
@@ -266,7 +265,7 @@ public class ServerManager {
         } catch (IOException ex) {
             //il client si è disconnesso prima di sapere che tanto non poteva 
             //giocare stica
-            Logger.getLogger(ServerManager.class.getName()).log(
+            Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         }
 

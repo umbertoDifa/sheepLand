@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,6 +29,10 @@ public class Client {
     private int me;
     private int firstPlayer;
     private int shepherds4player;
+    private int playersToWaitBefore;
+    private int playersToWaitAfter;
+    private int numberOfAction;
+
     int i;
 
     public Client(String ip, int port) {
@@ -39,6 +44,7 @@ public class Client {
         //TODO: importante! verficare cosa succede se un client si connette e si disconnette subito!
         //viene contato nell'accept del server ma poi a conti fatti non ci sarà!
         //TODO e se disconnette il server?
+        //TODO: se un player inserisce delle cose metre sta giocando un'altro? flush stdin prima di iniziare?
         try {
             //creo socket server
             Socket socket = new Socket(ip, port);
@@ -68,20 +74,37 @@ public class Client {
             this.me = Character.getNumericValue(token[2].charAt(0));
             this.shepherds4player = Character.getNumericValue(token[3].charAt(0));
             this.firstPlayer = Character.getNumericValue(token[4].charAt(0));
+            this.numberOfAction = Character.getNumericValue(token[5].charAt(0));
+
+            playersToWaitBefore = (((me - firstPlayer) + 2 * numberOfPlayers) % numberOfPlayers) * shepherds4player;
+            playersToWaitAfter = (numberOfPlayers - playersToWaitBefore - 1) * shepherds4player;
+
             DebugLogger.println(
-                    numberOfPlayers + " " + me + " " + shepherds4player + " " + firstPlayer);
+                    numberOfPlayers + " " + me + " " + shepherds4player + " "
+                    + firstPlayer + " " + numberOfAction);
 
             //setUpPastori
             setUpSheperds();
 
+            //ricevi Inizio gioco
+            System.out.println(receiveString());
+
             //ricevi info pecora nera
             System.out.println(receiveString());
 
-            DebugLogger.println("Sono qui e poi muoio");
+            //fai il tuo turno
+            this.executeShift();
 
         } catch (IOException ex) {
-            //TODO gestire eccezione
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            //Si verifica se porta sbagliata
+            //o se il server non risponde entro un timeout
+            //o se il server è spento
+            System.err.println(
+                    "Ci scusiamo, il server è momentaneamente non disponibile.\n"
+                    + "La preghiamo di verificare la porta e l'indirizzo ip.");
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(),
+                    ex);
         }
     }
 
@@ -98,32 +121,60 @@ public class Client {
         //stampo a video la stringa
         System.out.println(receiveString());
 
-        //raccolgo la risposta dell'utente e la invio
+        //raccolgo la risposta dell'utente e la invio        
         sendString(stdIn.nextLine());
-    }
-
-    public static void main(String[] args) {
-        Client client = new Client("127.0.0.1", 5050);
-        client.startClient();
     }
 
     private void putShepherds() {
         for (i = 0; i < shepherds4player; i++) {
-            while (true) {
-                //posiziono il pastore
-                talkTo();
+            try {
+                makeChoiceUntil("posizionato");
+            } catch (ActionCancelledException ex) {
+                //non si può annullare questa operazione,
+                //anche se l'utente ci prova il contatore dei pastori
+                //viene decrementato così che gli venga chiesto
+                //di posizionare lo stesso pastore.
+                i--;
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        null,
+                        ex);
+            }
+        }
+    }
 
-                //ricevo la risposta
-                String answer = receiveString();
-                System.out.println(answer);
-                if (answer.contains("posizionato")) {
-                    //tutto ok
-                    break;
-                } else {
-                    //occuapta o non esistente
+    /**
+     * It takes a question from the server, grab the user answer and send it
+     * back. If the server likes the answer, it sends a string that contains the
+     * word acceptString so that the client knows that everything went ok. If
+     * the answer does not contain the acceptString the client tries to send a
+     * new answer and so on till the user string fits the server standards.
+     *
+     * @param acceptString Word to receive to understand that the comunication
+     *                     went ok.
+     */
+    private void makeChoiceUntil(String acceptString) throws
+            ActionCancelledException {
+        String answer;
+        while (true) {
+            //rispondo alla domanda
+            talkTo();
+
+            //ricevo la risposta
+            answer = receiveString();
+            DebugLogger.println(answer);
+            if (answer.contains(acceptString)) {
+                //tutto ok
+                return;
+            } else if (answer.contains("Riprovare(R) o Annullare(A)")) {
+                sendString(stdIn.nextLine());
+                answer = receiveString();
+                DebugLogger.println(answer);
+                if (answer.contains("Abort")) {
+                    throw new ActionCancelledException("Azione annullata.");
                 }
             }
         }
+
     }
 
     /**
@@ -138,25 +189,57 @@ public class Client {
     }
 
     private void setUpSheperds() {
-        int playersToWaitBefore = ((me - firstPlayer) + 2 * numberOfPlayers) % numberOfPlayers;
-        int playersToWaitAfter = numberOfPlayers - playersToWaitBefore - 1;
-        
-        if (me == firstPlayer) {
-            //putShepherds
-            this.putShepherds();
 
-            //getInfoOtherSheperds
-            this.refreshInfo(numberOfPlayers - 1);
+        //getInfoOthersSheperds
+        this.refreshInfo(playersToWaitBefore);
 
-        } else {
-            //getInfoOthersSheperds
-            this.refreshInfo(playersToWaitBefore);
+        //putSheperds
+        this.putShepherds();
 
-            //putSheperds
-            this.putShepherds();
+        //getInfoOthersSheperds
+        this.refreshInfo(playersToWaitAfter);
+    }
 
-            //getInfoOthersSheperds
-            this.refreshInfo(playersToWaitAfter);
+    private void executeShift() {
+        String result;
+
+        //getInfoOthersSheperds
+        this.refreshInfo(playersToWaitBefore);
+
+        for (i = 0; i < numberOfAction; i++) {
+            while (true) {
+                try {
+                    //scegli un azione
+                    DebugLogger.println("Inizio mossa");
+                    makeChoiceUntil("Scelta valida");
+
+                    //eseguo l'azione corrispondente
+                    makeChoiceUntil("regione ok");
+                    makeChoiceUntil("regione ok");
+
+                    //get result
+                    result = receiveString();
+                    System.out.println(result);
+                    if (result.contains("successo")) {
+                        DebugLogger.println("mossa terminata");
+                        break;
+                    }
+                } catch (ActionCancelledException ex) {
+                    DebugLogger.println("Gestisco ActionCancelledException");
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                }
+            }
         }
+
+        //getInfoOthersSheperds
+        this.refreshInfo(playersToWaitAfter);
+
+    }
+
+    public static void main(String[] args) {
+        Client client = new Client("127.0.0.1", 5050);
+        client.startClient();
     }
 }
