@@ -36,14 +36,14 @@ import java.util.logging.Logger;
  */
 public class GameManager {//TODO: pattern memento per ripristini?
 
-    private final ServerThread server;
+    protected final ServerThread server;
 
     private final Map map;
     private List<Player> players = new ArrayList<Player>();
     private final int playersNumber;
     private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
     private final int[] playersHashCode; //valore cached degli hash dei giocatori
-    private final int shepherd4player;
+    protected final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
 
     /**
@@ -81,7 +81,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //per ogni giocatore
         for (int i = 0; i < playersNumber; i++) {
             //lo aggiungo alla lista dei giocatori
-            players.add(new Player(this, this.shepherd4player));
+            players.add(new Player(this));
             //salvo il suo hashcode
             playersHashCode[i] = players.get(i).hashCode();
         }
@@ -182,7 +182,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                         "Setto il pastore: " + j + " del giocatore: " + currentPlayer
                 );
                 //sposta il pastore 
-                this.players.get(currentPlayer).getShepherd(j).moveTo(
+                this.players.get(currentPlayer).shepherd[j].moveTo(
                         chosenStreet);
                 DebugLogger.println("Pastore settato");
 
@@ -193,7 +193,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 Card initialCard = this.bank.getInitialCard();
 
                 DebugLogger.println("Aggiungo la carta al pastore");
-                this.players.get(currentPlayer).getShepherd(j).addCard(
+                this.players.get(currentPlayer).shepherd[j].addCard(
                         initialCard);
 
                 DebugLogger.println("invio conferma");
@@ -283,7 +283,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
         } catch (FinishedFencesException ex) {
-            this.getServer().broadcastMessage(
+            this.server.broadcastMessage(
                     "I recinti totali sono finiti, fine gioco e calcolo dei punteggi");
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
@@ -443,19 +443,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected Region askAboutRegion(int playerHashCode, String message) throws
             RegionNotFoundException {
         Region chosenRegion;
-        String stringedRegion = this.getServer().talkTo(playerHashCode, message);
-        chosenRegion = getMap().convertStringToRegion(stringedRegion);
+        String stringedRegion = this.server.talkTo(playerHashCode, message);
+        chosenRegion = map.convertStringToRegion(stringedRegion);
         this.server.sendTo(playerHashCode, "regione ok");
         return chosenRegion;
-    }
-
-    public ServerThread getServer() {
-        return server;
-    }
-
-    public Map getMap() {
-        return map;
-    }
+    }  
+  
+    
+    //TODO piuttosto che fare mappa e server private e fornire i getter
+    //forse è meglio che siano private
 
     private void moveSpecialAnimal(SpecialAnimal animal) throws
             CannotMoveAnimalException {
@@ -511,12 +507,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
             ActionCancelledException {
         //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
         DebugLogger.println("AskOrRetry avviato");
-        Character choice = this.getServer().talkTo(
+        Character choice = server.talkTo(
                 playerHashCode, message + " Riprovare(R) o Annullare(A)?").charAt(0);
         switch (choice) {
             //se vuole riprovare
             case 'R':
-                this.getServer().sendTo(playerHashCode, "Riprova.");
+                this.server.sendTo(playerHashCode, "Riprova.");
                 break;
             //se vuole annullare 
             default:                
@@ -539,7 +535,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         int idShepherd;
         do {
             //chiedi quale pastore muovere
-            idShepherd = Integer.parseInt(this.getServer().talkTo(
+            idShepherd = Integer.parseInt(this.server.talkTo(
                     this.hashCode(), "Quale pastore vuoi muovere?"));
 
             //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array
@@ -557,7 +553,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * @return
      */
     protected int askAndThrowDice(int playerHashCode) {
-        this.getServer().talkTo(playerHashCode,
+        this.server.talkTo(playerHashCode,
                 "Premi un tasto per lanciare dado?");
         //discard returned string e lancia il dado
         return Dice.roll();
@@ -573,7 +569,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected Player getPlayerByShepherd(Shepherd shepherd) {
         for (Player player : players) {
             for (int i = 0; i < shepherd4player; i++) {
-                if (player.getShepherd(i) == shepherd) {
+                if (player.shepherd[i] == shepherd) {
                     return player;
                 }
             }

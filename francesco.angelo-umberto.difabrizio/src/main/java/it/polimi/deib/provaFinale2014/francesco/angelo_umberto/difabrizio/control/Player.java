@@ -14,12 +14,10 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MovementException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,16 +29,14 @@ import java.util.logging.Logger;
  */
 public class Player {
 
-    private final Shepherd[] shepherd;
+    protected final Shepherd[] shepherd;
     private final GameManager gameManager;
-    private final int numShepherd;
 
-    public Player(GameManager gameManager, int numShepherd) {
-        this.numShepherd = numShepherd;
-        this.shepherd = new Shepherd[numShepherd];
+    public Player(GameManager gameManager) {
 
+        this.shepherd = new Shepherd[gameManager.shepherd4player];
         //creo i pastori necessari
-        for (int i = 0; i < numShepherd; i++) {
+        for (int i = 0; i < gameManager.shepherd4player; i++) {
             this.shepherd[i] = new Shepherd();
         }
 
@@ -52,7 +48,7 @@ public class Player {
     private void setUpSheperdSharing(Shepherd mainShepherd) {
 
         //per ogni pastore tranne il (for inizia da 1)
-        for (int i = 1; i < this.numShepherd; i++) {
+        for (int i = 1; i < gameManager.shepherd4player; i++) {
 
             //condividi il portafoglio
             this.shepherd[i].setWallet(mainShepherd.getWallet());
@@ -62,53 +58,63 @@ public class Player {
         }
     }
 
-    /**
-     * Dato un indice i, ritorna il pastore corrispondente a quell'indice
-     *
-     * @param i Indice del pastore
-     *
-     * @return Un pastore del giocatore, null se non esiste l'iesmo pastore
-     */
-    //TODO warn: quando si fanno le chiamate a questa funzione assicurarsi di inserire un idice valido
-    public Shepherd getShepherd(int i) {
-        if (i >= 0 && i < this.numShepherd) {
-            DebugLogger.println("Pastore trovato");
-            return shepherd[i];
-        }
-        //pastore non esistente!
-        return null;
-    }
-    //TODO informa altri dopo ogni mossa
     public void chooseAndMakeAction() throws ActionNotFoundException,
                                              ActionCancelledException,
                                              FinishedFencesException {
 
-        //crea array con le possibili scelte 
-        String[] possibleActions = {"1- Sposta una pecora", "2-Sposta Montone", "3-Sposta agnello", "4- Sposta pastore",
-                                    "5-Compra terreno", "6-Accoppia pecore", "7-Accoppia montone e pecora",
-                                    "8-Abbatti pecora"};
+        //crea lista con le possibili scelte         
+        List<String> possibleAction = new ArrayList<String>();
+
+        //crea una lista con i numeri delle possibili scelte
+        List<Integer> allowedActions = new ArrayList<Integer>();
+
+        //aggiungi movimento ovini se possibile
+        int i = 1;
+        for (OvineType type : OvineType.values()) {
+            if (canMoveOvine(type)) {
+                possibleAction.add(i + "- Sposta " + type);
+                allowedActions.add(i);
+            }
+            i++;
+        }
+
+        possibleAction.add("4- Sposta pastore");
+        allowedActions.add(4);
+
+        //aggiungi acquisto carta se possibile
+        if (canBuyCard()) {
+            possibleAction.add("5-Compra terreno");
+            allowedActions.add(5);
+        }
+
+        possibleAction.add("6-Accoppia pecore");
+        possibleAction.add("7-Accoppia montone e pecora");
+        possibleAction.add("8-Abbatti pecora");
+        allowedActions.add(6);
+        allowedActions.add(7);
+        allowedActions.add(8);
 
         //raccogli la scelta
-        String stringedChoice = (this.gameManager.getServer().talkTo(
-                this.hashCode(),
-                "Scegli l'azione da fare tra:" + Arrays.toString(possibleActions)));
-        //controlla correttezza
-        //se la stringa è un numero
+        String stringedChoice = (this.gameManager.server.talkTo(
+                this.hashCode(), "Scegli l'azione da fare tra:" + possibleAction));
+
+        //controlla correttezza        
         int actionChoice;
         try {
+            //se la stringa è un numero
             actionChoice = Integer.parseInt(stringedChoice);
+
+            //se il numero è contenuto in quelli possibili
+            if (!allowedActions.contains(actionChoice)) {
+                throw new ActionNotFoundException(
+                        "L'azione non è permessa in questa fase di gioco");
+            }
         } catch (NumberFormatException e) {
             throw new ActionNotFoundException(
                     "Azione non esistente prego riporvare.");
         }
 
-        //se il numero è nel range delle azioni possibili
-        if (!(actionChoice > 0 && actionChoice <= possibleActions.length)) {
-            throw new ActionNotFoundException(
-                    "Azione non esistente prego riporvare.");
-        }
-
-        this.gameManager.getServer().sendTo(this.hashCode(), "Scelta valida!");
+        this.gameManager.server.sendTo(this.hashCode(), "Scelta valida!");
 
         DebugLogger.println("Scelta: " + actionChoice);
         switch (actionChoice) {
@@ -143,6 +149,40 @@ public class Player {
 
     }
 
+    private boolean canMoveOvine(OvineType ovine) {
+
+        for (Region region : getShepherdsRegion()) {
+            //se in almeno una c'è almeno un ovino di quel tipo
+            if (region.hasOvine(ovine)) {
+                return true;
+            }
+        }
+
+        //nessun ovino di quel tipo trovato nelle regioni adiacenti al pastore
+        return false;
+    }
+
+    private boolean canBuyCard() {
+        int price;
+        int shepherdMoney = this.shepherd[0].getWallet().getAmount();
+
+        //trova le regioni confinanti ai pastori
+        for (Region region : getShepherdsRegion()) {
+            try {
+                //prendi il prezzo della carta per ogni regione
+                price = this.gameManager.bank.getPriceOfCard(region.getType());
+                if (price < shepherdMoney) {
+                    return true;
+                }
+            } catch (MissingCardException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+            }
+
+        }
+        return false;
+    }
+
     /**
      * chiede le regioni di partenza e di arrivo dell'ovino del tipo
      * specificato, lo rimuove dalla regione, lo aggiunge nella regione da dove
@@ -174,13 +214,13 @@ public class Player {
                         startRegion.removeOvine(type);
                         //e aggiungilo nella regione d'arrivo
                         endRegion.addOvine(new Ovine(type));
-                        this.gameManager.getServer().sendTo(this.hashCode(),
+                        this.gameManager.server.sendTo(this.hashCode(),
                                 "Mossa avvenuta con successo!");
                         return;
                     }
                 }
                 //le regioni non confinano col pastore 
-                this.gameManager.getServer().sendTo(this.hashCode(),
+                this.gameManager.server.sendTo(this.hashCode(),
                         "Non è possibile effettuare la mossa! "
                         + "Le regioni indicate non confinano col tuo pastore");
 
@@ -192,7 +232,7 @@ public class Player {
             } catch (NoOvineException e) {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         e.getMessage(), e);
-                this.gameManager.getServer().sendTo(this.hashCode(),
+                this.gameManager.server.sendTo(this.hashCode(),
                         "Non è possibile effettuare la mossa! Non ci sono " + type);
             }
         }//while
@@ -215,16 +255,16 @@ public class Player {
         //Controllo sul numero dei pastori
 
         //se c'è più di un pastore per giocatore
-        if (numShepherd > 1) {
+        if (gameManager.shepherd4player > 1) {
 
             //chiedi al giocatore l'id del pastore da muovere
             idShepherd = this.gameManager.askIdShepherd(this.hashCode(),
-                    numShepherd, "Quale pastore vuoi muovere?");
+                    gameManager.shepherd4player, "Quale pastore vuoi muovere?");
             //prendi shepherd corrispondente
             shepherdToMove = this.shepherd[idShepherd];
 
             //lancia eccezione se non ci sono pastori
-        } else if (numShepherd < 0) {
+        } else if (gameManager.shepherd4player < 0) {
             throw new ActionCancelledException("Nessun pastore da muovere.");
         }
 
@@ -304,7 +344,7 @@ public class Player {
         while (true) {
             try {
                 //chiedi il tipo di carta desiderato            
-                stringedTypeOfCard = this.gameManager.getServer().talkTo(
+                stringedTypeOfCard = this.gameManager.server.talkTo(
                         this.hashCode(), "Quale tipo di carta vuoi comprare?");
 
                 //convertilo in RegionType
@@ -453,11 +493,11 @@ public class Player {
                             }
                         }
                         //se può pagare
-                        if (this.getShepherd(0).getWallet().getAmount() >= sumToPay) {
-                            this.getShepherd(0).getWallet().pay(sumToPay);
+                        if (this.shepherd[0].getWallet().getAmount() >= sumToPay) {
+                            this.shepherd[0].getWallet().pay(sumToPay);
                             while (true) {
                                 //chiedi tipo d ovino
-                                this.gameManager.getServer().talkTo(
+                                this.gameManager.server.talkTo(
                                         this.hashCode(), "che tipo di ovino?");
                                 //se presente nella regione scelta
                                 try {
@@ -505,14 +545,23 @@ public class Player {
      *
      * @return
      */
-    private Street[] getShepherdsStreets() {
-        //creo array grande come il numero dei pastori
-        Street[] streets = new Street[numShepherd];
+    private List<Street> getShepherdsStreets() {
+        //creo lista che accoglierà le strada
+        List<Street> streets = new ArrayList<Street>();
 
-        for (int i = 0; i < numShepherd; i++) {
-            streets[i] = this.shepherd[i].getStreet();
+        for (int i = 0; i < gameManager.shepherd4player; i++) {
+            streets.add(this.shepherd[i].getStreet());
         }
         return streets;
+    }
+
+    private List<Region> getShepherdsRegion() {
+        List<Region> regions = new ArrayList<Region>();
+
+        for (Street street : getShepherdsStreets()) {
+            regions.addAll(street.getNeighbourRegions());
+        }
+        return regions;
     }
 
     /**
