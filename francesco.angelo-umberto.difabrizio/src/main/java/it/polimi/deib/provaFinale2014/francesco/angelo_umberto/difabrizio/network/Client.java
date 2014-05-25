@@ -33,7 +33,8 @@ public class Client {
     private int playersToWaitAfter;
     private int numberOfAction;
 
-    int i;
+    private int i;
+    private boolean actionCompleted;
 
     public Client(String ip, int port) {
         this.ip = ip;
@@ -164,14 +165,17 @@ public class Client {
             DebugLogger.println(answer);
             if (answer.contains(acceptString)) {
                 //tutto ok
+                actionCompleted = true;
                 return;
             } else if (answer.contains("Riprovare(R) o Annullare(A)")) {
+                actionCompleted = false;
                 sendString(stdIn.nextLine());
                 answer = receiveString();
                 DebugLogger.println(answer);
                 if (answer.contains("Abort")) {
                     throw new ActionCancelledException("Azione annullata.");
                 }
+                break;
             }
         }
 
@@ -207,30 +211,7 @@ public class Client {
         this.refreshInfo(playersToWaitBefore);
 
         for (i = 0; i < numberOfAction; i++) {
-            while (true) {
-                try {
-                    //scegli un azione
-                    DebugLogger.println("Inizio mossa");
-                    makeChoiceUntil("Scelta valida");
 
-                    //eseguo l'azione corrispondente
-                    makeChoiceUntil("regione ok");
-                    makeChoiceUntil("regione ok");
-
-                    //get result
-                    result = receiveString();
-                    System.out.println(result);
-                    if (result.contains("successo")) {
-                        DebugLogger.println("mossa terminata");
-                        break;
-                    }
-                } catch (ActionCancelledException ex) {
-                    DebugLogger.println("Gestisco ActionCancelledException");
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                }
-            }
         }
 
         //getInfoOthersSheperds

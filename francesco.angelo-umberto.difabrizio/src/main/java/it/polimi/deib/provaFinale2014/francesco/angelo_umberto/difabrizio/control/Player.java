@@ -15,6 +15,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
@@ -31,6 +32,20 @@ public class Player {
 
     protected final Shepherd[] shepherd;
     private final GameManager gameManager;
+    private Region oldRegion;
+    private Region newRegion;
+
+    /**
+     * Lista di azioni che un player può fare, si aggiorna ad ogni azione del
+     * turno
+     */
+    private List<String> possibleAction;
+
+    /**
+     * Lista degli interi che designano le azioni fattibili in un turno,
+     * corrispondenti alle possibleAction
+     */
+    private List<Integer> allowedActions;
 
     public Player(GameManager gameManager) {
 
@@ -39,10 +54,10 @@ public class Player {
         for (int i = 0; i < gameManager.shepherd4player; i++) {
             this.shepherd[i] = new Shepherd();
         }
-
+        this.gameManager = gameManager;
         //condivido le risorse del primo pastore con tutti gli altri
         this.setUpSheperdSharing(this.shepherd[0]);
-        this.gameManager = gameManager;
+        
     }
 
     private void setUpSheperdSharing(Shepherd mainShepherd) {
@@ -58,15 +73,121 @@ public class Player {
         }
     }
 
+    /**
+     * Invita il player a fare una mossa tra quelle che gli sono permesse. Ne
+     * può scegliere al massimo una.
+     *
+     * @throws ActionNotFoundException  Se l'azione chiesta non esiste
+     * @throws ActionCancelledException Se il player ha deciso di non fare più
+     *                                  l'azione
+     * @throws FinishedFencesException  Se non ci sono più recinti da inserire
+     *                                  quando si muovono i pastori
+     */
     public void chooseAndMakeAction() throws ActionNotFoundException,
                                              ActionCancelledException,
-                                             FinishedFencesException {
+                                             FinishedFencesException
+                                              {
 
+        try {
+            createActionList();
+            
+            //raccogli la scelta
+            String stringedChoice = (this.gameManager.server.talkTo(
+                    this.hashCode(), "Scegli l'azione da fare tra:" + possibleAction));
+            
+            isChoiceOk(stringedChoice);
+            
+            int actionChoice = Integer.parseInt(stringedChoice);
+            
+            this.gameManager.server.sendTo(this.hashCode(), "Scelta valida!");
+            
+            DebugLogger.println("Scelta: " + actionChoice);
+            switch (actionChoice) {
+                case 1:
+                    this.moveOvine(OvineType.SHEEP);
+                    gameManager.server.broadcastExcept(
+                            "Il giocatore ha spostato una pecora da " + gameManager.map.getNodeIndex(
+                                    oldRegion) + " a " + gameManager.map.getNodeIndex(
+                                            newRegion), this.hashCode());
+                    break;
+                case 2:
+                    this.moveOvine(OvineType.RAM);
+                    gameManager.server.broadcastExcept(
+                            "Il giocatore ha spostato un montone da " + gameManager.map.getNodeIndex(
+                                    oldRegion) + " a " + gameManager.map.getNodeIndex(
+                                            newRegion), this.hashCode());
+                    break;
+                case 3:
+                    this.moveOvine(OvineType.LAMB);
+                    gameManager.server.broadcastExcept(
+                            "Il giocatore ha spostato un agnello da " + gameManager.map.getNodeIndex(
+                                    oldRegion) + " a " + gameManager.map.getNodeIndex(
+                                            newRegion), this.hashCode());
+                    break;
+                case 4:
+                    this.moveShepherd();
+                    break;
+                case 5:
+                    this.buyLand();
+                    break;
+                case 6:
+                    this.mateSheepWith(OvineType.SHEEP);
+                    break;
+                case 7:
+                    this.mateSheepWith(OvineType.RAM);
+                    break;
+                case 8:
+                    this.killOvine();
+                    break;
+                default:
+                    throw new ActionNotFoundException(
+                            "Azione non esistente.Prego inserire una scelta valida.");
+            }
+        } catch (NodeNotFoundException ex) {
+            //Non potrà mai succedere perchè se la mossa è stata compiuta le regioni
+            //esistono
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    /**
+     * Checks that the received string matches the expected pattern.
+     *
+     * @param stringedChoice String to check
+     *
+     * @return Returns true if it does, an exception if it does not.
+     *
+     * @throws ActionNotFoundException If string does not match the expected
+     *                                 pattern
+     */
+    private boolean isChoiceOk(String stringedChoice) throws
+            ActionNotFoundException {
+
+        int actionChoice;
+        try {
+            //se la stringa è un numero
+            actionChoice = Integer.parseInt(stringedChoice);
+
+            //se il numero è contenuto in quelli possibili
+            if (!allowedActions.contains(actionChoice)) {
+                throw new ActionNotFoundException(
+                        "L'azione non è permessa in questa fase di gioco");
+            }
+            return true;
+        } catch (NumberFormatException e) {
+            throw new ActionNotFoundException(
+                    "Azione non esistente prego riporvare.");
+        }
+
+    }
+
+    private void createActionList() {
         //crea lista con le possibili scelte         
-        List<String> possibleAction = new ArrayList<String>();
+        possibleAction = new ArrayList<String>();
 
         //crea una lista con i numeri delle possibili scelte
-        List<Integer> allowedActions = new ArrayList<Integer>();
+        allowedActions = new ArrayList<Integer>();
 
         //aggiungi movimento ovini se possibile
         int i = 1;
@@ -93,60 +214,6 @@ public class Player {
         allowedActions.add(6);
         allowedActions.add(7);
         allowedActions.add(8);
-
-        //raccogli la scelta
-        String stringedChoice = (this.gameManager.server.talkTo(
-                this.hashCode(), "Scegli l'azione da fare tra:" + possibleAction));
-
-        //controlla correttezza        
-        int actionChoice;
-        try {
-            //se la stringa è un numero
-            actionChoice = Integer.parseInt(stringedChoice);
-
-            //se il numero è contenuto in quelli possibili
-            if (!allowedActions.contains(actionChoice)) {
-                throw new ActionNotFoundException(
-                        "L'azione non è permessa in questa fase di gioco");
-            }
-        } catch (NumberFormatException e) {
-            throw new ActionNotFoundException(
-                    "Azione non esistente prego riporvare.");
-        }
-
-        this.gameManager.server.sendTo(this.hashCode(), "Scelta valida!");
-
-        DebugLogger.println("Scelta: " + actionChoice);
-        switch (actionChoice) {
-            case 1:
-                this.moveOvine(OvineType.SHEEP);
-                break;
-            case 2:
-                this.moveOvine(OvineType.RAM);
-                break;
-            case 3:
-                this.moveOvine(OvineType.LAMB);
-                break;
-            case 4:
-                this.moveShepherd();
-                break;
-            case 5:
-                this.buyLand();
-                break;
-            case 6:
-                this.mateSheepWith(OvineType.SHEEP);
-                break;
-            case 7:
-                this.mateSheepWith(OvineType.RAM);
-                break;
-            case 8:
-                this.killOvine();
-                break;
-            default:
-                throw new ActionNotFoundException(
-                        "Azione non esistente.Prego inserire una scelta valida.");
-        }
-
     }
 
     private boolean canMoveOvine(OvineType ovine) {
@@ -216,6 +283,11 @@ public class Player {
                         endRegion.addOvine(new Ovine(type));
                         this.gameManager.server.sendTo(this.hashCode(),
                                 "Mossa avvenuta con successo!");
+
+                        //setto le variabili oldRegion e newRegion per informare 
+                        //gli altri player
+                        this.oldRegion = startRegion;
+                        this.newRegion = endRegion;
                         return;
                     }
                 }

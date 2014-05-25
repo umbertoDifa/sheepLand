@@ -38,7 +38,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     protected final ServerThread server;
 
-    private final Map map;
+    protected final Map map;
     private List<Player> players = new ArrayList<Player>();
     private final int playersNumber;
     private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
