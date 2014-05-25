@@ -30,8 +30,18 @@ public class Wallet {
         this.amount = amount;
     }
     
-    public void pay(int prize){
-        this.amount -= prize; 
+    /**
+     * Il pastore paga un certo price che viene detratto dal suo portafoglio
+     * NB. attenzione il metodo non controlla se il pastore può permettersi di
+     * pagare
+     * @param price 
+     */
+    
+    //TODO si potrebbe includere il controllo sui soldi disponibili in questo metodo
+    //che se non può pagare restituisce un exception piuttosto che gestire ogni volta
+    //le if-else sul pagamento
+    public void pay(int price){
+        this.amount -= price; 
     }
 
 }
