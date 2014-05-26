@@ -62,7 +62,7 @@ public class Client {
             stdIn = new Scanner(System.in);
             DebugLogger.println("Canali di comunicazione impostati");
 
-            //raccolgo saluto
+            //raccolgo saluto TODO: potrei raccogliere un rifiuto, aggiustare
             System.out.println(receiveString());
 
             //raccolgo inforamzioni di base sulla partita
