@@ -64,7 +64,7 @@ public class ShepherdTest {
 
         Wallet result = instance.getWallet();
         assertTrue(
-                result.getAmount() == GameConstants.INITIAL_WALLET_AMMOUNT.getValue());
+                result.getAmount() == GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
     }
 

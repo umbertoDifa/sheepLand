@@ -18,6 +18,10 @@ public class Shepherd {
     public Shepherd() {
         wallet = new Wallet();
     }
+    
+    public Shepherd(int walletAmount){
+        wallet = new Wallet(walletAmount);
+    }
 
     /**
      * Modifica la strada che occupa il pastore. privato in quanto è invocato da

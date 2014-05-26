@@ -9,8 +9,12 @@ public class Wallet {
 
     private int amount;
 
-    public Wallet() {
-        amount = GameConstants.INITIAL_WALLET_AMMOUNT.getValue();
+    public Wallet(int amount){
+        this.amount = amount;
+    }
+    
+     public Wallet() {
+        this(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
     }
 
     /**

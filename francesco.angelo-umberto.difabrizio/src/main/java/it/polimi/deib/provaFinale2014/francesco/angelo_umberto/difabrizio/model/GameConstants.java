@@ -7,6 +7,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 public enum GameConstants {
     /**
      * Carte comprabili dai giocatori al banco
+     *//**
+     * Carte comprabili dai giocatori al banco
      */
     NUM_CARDS(30),
     /**
@@ -43,9 +45,14 @@ public enum GameConstants {
      */
     NUM_ACTIONS(3), 
     /**
-     * Valore iniziale del portafoglio
+     * Valore iniziale del portafoglio quando i giocatori sono più
+     * del minimo
      */
-    INITIAL_WALLET_AMMOUNT(20);
+    STANDARD_WALLET_AMMOUNT(20),
+    /**
+     * Il valore del portafoglio quando ci sono pochi giocatori
+     */
+    LOW_PLAYER_WALLET_AMMOUNT(30);
     
     private final int value;
     

@@ -6,7 +6,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contro
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Node;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
@@ -55,7 +55,14 @@ public class Player {
         this.shepherd = new Shepherd[gameManager.shepherd4player];
         //creo i pastori necessari
         for (int i = 0; i < gameManager.shepherd4player; i++) {
-            this.shepherd[i] = new Shepherd();
+            //se i pastori sono meno del caso con pochi giocatori
+            if (gameManager.shepherd4player < ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue()) {
+                //creo un pastore con soldi standard
+                this.shepherd[i] = new Shepherd();
+            } else {
+                //creo un pastore con più soldi
+                this.shepherd[i] = new Shepherd(GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
+            }
         }
         this.gameManager = gameManager;
         //condivido le risorse del primo pastore con tutti gli altri
