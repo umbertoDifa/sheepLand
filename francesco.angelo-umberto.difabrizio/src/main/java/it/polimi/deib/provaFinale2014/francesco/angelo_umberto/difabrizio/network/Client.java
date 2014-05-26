@@ -77,8 +77,8 @@ public class Client {
             this.firstPlayer = Character.getNumericValue(token[4].charAt(0));
             this.numberOfAction = Character.getNumericValue(token[5].charAt(0));
 
-            playersToWaitBefore = (((me - firstPlayer) + 2 * numberOfPlayers) % numberOfPlayers) * shepherds4player;
-            playersToWaitAfter = (numberOfPlayers - playersToWaitBefore - 1) * shepherds4player;
+            playersToWaitBefore = (((me - firstPlayer) + 2 * numberOfPlayers) % numberOfPlayers);
+            playersToWaitAfter = (numberOfPlayers - playersToWaitBefore - 1);
 
             DebugLogger.println(
                     numberOfPlayers + " " + me + " " + shepherds4player + " "
@@ -90,8 +90,8 @@ public class Client {
             //ricevi Inizio gioco
             System.out.println(receiveString());
 
-            //fai il tuo turno
-            this.executeShift();
+            //inizia i giri            
+            this.executeRound();
 
         } catch (IOException ex) {
             //Si verifica se porta sbagliata
@@ -125,18 +125,7 @@ public class Client {
 
     private void putShepherds() {
         for (i = 0; i < shepherds4player; i++) {
-            try {
-                makeChoiceUntil("posizionato");
-            } catch (ActionCancelledException ex) {
-                //non si può annullare questa operazione,
-                //anche se l'utente ci prova il contatore dei pastori
-                //viene decrementato così che gli venga chiesto
-                //di posizionare lo stesso pastore.
-                i--;
-                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        null,
-                        ex);
-            }
+            makeChoiceUntil("posizionato");
         }
     }
 
@@ -150,32 +139,21 @@ public class Client {
      * @param acceptString Word to receive to understand that the comunication
      *                     went ok.
      */
-    private void makeChoiceUntil(String acceptString) throws
-            ActionCancelledException {
-        String answer;
+    private void makeChoiceUntil(String acceptString) {
         while (true) {
-            //rispondo alla domanda
-            talkTo();
+            String result;
+            DebugLogger.println("rispondo scelta:");
 
-            //ricevo la risposta
-            answer = receiveString();
-            DebugLogger.println(answer);
-            if (answer.contains(acceptString)) {
-                //tutto ok
-                actionCompleted = true;
-                return;
-            } else if (answer.contains("Riprovare(R) o Annullare(A)")) {
-                actionCompleted = false;
-                sendString(stdIn.nextLine());
-                answer = receiveString();
-                DebugLogger.println(answer);
-                if (answer.contains("Abort")) {
-                    throw new ActionCancelledException("Azione annullata.");
-                }
+            //scelgo azione
+            talkTo();
+            //ricevo ok o err
+            result = receiveString();
+            DebugLogger.println("Ricevuta " + result);
+            if (result.contains(acceptString)) {
                 break;
             }
+            //errore
         }
-
     }
 
     /**
@@ -192,72 +170,40 @@ public class Client {
     private void setUpSheperds() {
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitBefore);
+        this.refreshInfo(playersToWaitBefore * shepherds4player);
 
         //putSheperds
         this.putShepherds();
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitAfter);
+        this.refreshInfo(playersToWaitAfter * shepherds4player);
     }
 
     private void executeShift() {
         String result;
-        //TODO correggi pecora nera
-        //ricevi info pecora nera
-        System.out.println(receiveString());
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitBefore * numberOfAction);
+        //ogni giocatore ha 3 azioni più la
+        //mossa della pecora nera
+        this.refreshInfo(playersToWaitBefore * (numberOfAction + 1));
         DebugLogger.println("refreshInfo terminata");
 
-        //ricevi info pecora nera
+        //ricevi info mia pecora nera
         System.out.println(receiveString());
 
         for (i = 0; i < numberOfAction; i++) {
             while (true) {
                 DebugLogger.println("Inizio azione");
 
-                while (true) {
-                    DebugLogger.println("rispondo scelta azione");
+                //scelta azione
+                makeChoiceUntil("ok");
 
-                    //scelgo azione
-                    talkTo();
-                    //ricevo ok o err
-                    result = receiveString();
-                    DebugLogger.println("Ricevuta " + result);
-                    if (result.contains("ok")) {
-                        break;
-                    }
-                    //errore
-                }
+                //prima risposta
+                makeChoiceUntil("ok");
 
-                while (true) {
-                    DebugLogger.println("rispondo prima regione");
+                //seconda risposta
+                makeChoiceUntil("ok");
 
-                    //rispondo prima domanda
-                    talkTo();
-
-                    result = receiveString();
-                    DebugLogger.println("Ricevuta " + result);
-
-                    if (result.contains("ok")) {
-                        break;
-                    }
-                }
-                while (true) {
-                    DebugLogger.println("rispondo seconda regione");
-
-                    //rispondo seconda domanda
-                    talkTo();
-
-                    result = receiveString();
-                    DebugLogger.println("Ricevuta " + result);
-
-                    if (result.contains("ok")) {
-                        break;
-                    }
-                }
                 //ricevo verdetto
                 DebugLogger.println("ricevo verdetto");
 
@@ -272,8 +218,16 @@ public class Client {
         }
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitAfter * numberOfAction);
+        this.refreshInfo(playersToWaitAfter * (numberOfAction + 1));
+    }
 
+    private void executeRound() {
+        while (true) {
+            executeShift();
+
+            //controlla lupo
+            System.out.println(receiveString());
+        }
     }
 
     public static void main(String[] args) {

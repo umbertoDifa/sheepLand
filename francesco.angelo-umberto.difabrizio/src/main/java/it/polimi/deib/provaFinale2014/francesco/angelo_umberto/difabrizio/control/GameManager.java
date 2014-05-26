@@ -42,6 +42,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     private List<Player> players = new ArrayList<Player>();
     private final int playersNumber;
     private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
+    protected int currentPlayer;
     private final int[] playersHashCode; //valore cached degli hash dei giocatori
     protected final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
@@ -147,7 +148,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         int i;//indice giocatori
         int j;//indice pastori
-        int currentPlayer;
+
         //per ogni playerint 
         for (i = 0; i < this.playersNumber; i++) {
             //setto il player corrente
@@ -315,7 +316,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void executeRounds() throws FinishedFencesException {
-        int currentPlayer = this.firstPlayer;
+        currentPlayer = this.firstPlayer;
         boolean lastRound = false;
         //TODO dicutere il fine giro per la discordanza 11recinti 12recintni
         //se non è l'ultimo giro o il giocatore non è l'ultimo del giro
@@ -333,15 +334,27 @@ public class GameManager {//TODO: pattern memento per ripristini?
             //se il prossimo a giocare è il primo del giro
             if (currentPlayer == this.firstPlayer) {
                 //1)avvio il market  
-                this.startMarket();
+                //FIXME this.startMarket();
                 //2)muovo il lupo
                 try {
+                    DebugLogger.println("muovo lupo");
                     this.moveSpecialAnimal(this.map.getWolf());
+                    this.server.broadcastMessage(
+                            "Il lupo si è mosso in: " + this.map.getNodeIndex(
+                                    this.map.getWolf().getMyRegion()));
                 } catch (CannotMoveAnimalException e) {
+                    DebugLogger.println(
+                            "il lupo non si muove perchè " + e.getMessage());
+
                     this.server.broadcastMessage(
                             "Il lupo non si muove perchè " + e.getMessage());
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE, e.getMessage(), e);
+                } catch (NodeNotFoundException ex) {
+                    //non può verificarsi in questa occasione
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            null, ex);
                 }
             }
         }//while
@@ -431,6 +444,65 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return chosenStreet;
     }
 
+//    protected Shepherd chooseShepherdToMove() throws ActionCancelledException {
+//        //se c'è più di un pastore per giocatore
+//        if (shepherd4player > 1) {
+//
+//            //chiedi al giocatore l'id del pastore da muovere
+//            players.get(currentPlayer).idShepherdToMove = this.askIdShepherd(this.hashCode(),
+//                    shepherd4player);
+//            //prendi shepherd corrispondente
+//            return players.get(currentPlayer).shepherd[players.get(currentPlayer).idShepherdToMove];
+//
+//            //lancia eccezione se non ci sono pastori
+//        } else if (shepherd4player < 0) {
+//            throw new ActionCancelledException("Nessun pastore da muovere.");
+//        }
+//        //esattamente un pastore
+//
+//        return players.get(currentPlayer).shepherd[0];
+//    }
+    /**
+     * Chiede, mandandogli la stringa message, al giocatore corrispondente all
+     * hashCode, qual'è l'id del pastore da muovere tra i suoi numShepherd
+     * pastori. Il metodo dev'essere invocato con numShepherd maggiore di zero.
+     *
+     * @param hashCode
+     * @param numShepherd
+     *
+     * @return id pastore scelto
+     */
+    protected int askIdShepherd(int hashCode) {
+        int idShepherd;
+        String errorMessage;
+
+        DebugLogger.println("chiedo id pastore da muovere");
+        while (true) {
+            try {
+                //chiedi quale pastore muovere
+                idShepherd = Integer.parseInt(this.server.talkTo(
+                        hashCode, "Quale pastore vuoi muovere?"));
+
+                //se l'id è valido
+                if (idShepherd > 0 && idShepherd <= shepherd4player) {
+                    this.server.sendTo(hashCode, "pastore selezionato ok");
+                    break;
+                }
+                errorMessage = "Non esiste il pastore chiesto, prego riprovare.";
+
+            } catch (NumberFormatException e) {
+                Logger.getLogger(DebugLogger.class.getName()).log(
+                        Level.SEVERE, e.getMessage(), e);
+                errorMessage = "La stringa inserita non identifica un pastore, prego riprovare.";
+            }
+
+            this.server.sendTo(hashCode, errorMessage);
+        }
+
+        //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array                   
+        return --idShepherd;
+    }
+
     /**
      * Chiede al player inviandogli la stringa message un id regione
      *
@@ -446,7 +518,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
         Region chosenRegion;
         String stringedRegion = this.server.talkTo(playerHashCode, message);
         chosenRegion = map.convertStringToRegion(stringedRegion);
+        DebugLogger.println("regione ok");
         this.server.sendTo(playerHashCode, "regione ok");
+
         return chosenRegion;
     }
 
@@ -518,30 +592,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
             default:
                 throw new ActionCancelledException("Abort.");
         }//switch
-    }
-
-    /**
-     * Chiede, mandandogli la stringa message, al giocatore corrispondente all
-     * hashCode, qual'è l'id del pastore da muovere tra i suoi numShepherd
-     * pastori. Il metodo dev'essere invocato con numShepherd maggiore di zero.
-     *
-     * @param hashCode
-     * @param numShepherd
-     * @param message
-     *
-     * @return id pastore scelto
-     */
-    protected int askIdShepherd(int hashCode, int numShepherd, String message) {
-        int idShepherd;
-        do {
-            //chiedi quale pastore muovere
-            idShepherd = Integer.parseInt(this.server.talkTo(
-                    this.hashCode(), "Quale pastore vuoi muovere?"));
-
-            //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array
-            idShepherd--;
-        } while (idShepherd < 0 && idShepherd > numShepherd);  //fintanto che non va bene l'id
-        return idShepherd;
     }
 
     /**
