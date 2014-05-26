@@ -57,7 +57,7 @@ public class Player {
         this.gameManager = gameManager;
         //condivido le risorse del primo pastore con tutti gli altri
         this.setUpSheperdSharing(this.shepherd[0]);
-        
+
     }
 
     private void setUpSheperdSharing(Shepherd mainShepherd) {
@@ -85,22 +85,22 @@ public class Player {
      */
     public void chooseAndMakeAction() throws ActionNotFoundException,
                                              ActionCancelledException,
-                                             FinishedFencesException
-                                              {
+                                             FinishedFencesException {
 
         try {
             createActionList();
-            
+
             //raccogli la scelta
             String stringedChoice = (this.gameManager.server.talkTo(
-                    this.hashCode(), "Scegli l'azione da fare tra:" + possibleAction));
-            
+                    this.hashCode(),
+                    "Scegli l'azione da fare tra:" + possibleAction));
+
             isChoiceOk(stringedChoice);
-            
+
             int actionChoice = Integer.parseInt(stringedChoice);
-            
-            this.gameManager.server.sendTo(this.hashCode(), "Scelta valida!");
-            
+
+            this.gameManager.server.sendTo(this.hashCode(), "ok!");
+
             DebugLogger.println("Scelta: " + actionChoice);
             switch (actionChoice) {
                 case 1:
@@ -108,21 +108,21 @@ public class Player {
                     gameManager.server.broadcastExcept(
                             "Il giocatore ha spostato una pecora da " + gameManager.map.getNodeIndex(
                                     oldRegion) + " a " + gameManager.map.getNodeIndex(
-                                            newRegion), this.hashCode());
+                                    newRegion), this.hashCode());
                     break;
                 case 2:
                     this.moveOvine(OvineType.RAM);
                     gameManager.server.broadcastExcept(
                             "Il giocatore ha spostato un montone da " + gameManager.map.getNodeIndex(
                                     oldRegion) + " a " + gameManager.map.getNodeIndex(
-                                            newRegion), this.hashCode());
+                                    newRegion), this.hashCode());
                     break;
                 case 3:
                     this.moveOvine(OvineType.LAMB);
                     gameManager.server.broadcastExcept(
                             "Il giocatore ha spostato un agnello da " + gameManager.map.getNodeIndex(
                                     oldRegion) + " a " + gameManager.map.getNodeIndex(
-                                            newRegion), this.hashCode());
+                                    newRegion), this.hashCode());
                     break;
                 case 4:
                     this.moveShepherd();
@@ -139,14 +139,12 @@ public class Player {
                 case 8:
                     this.killOvine();
                     break;
-                default:
-                    throw new ActionNotFoundException(
-                            "Azione non esistente.Prego inserire una scelta valida.");
             }
         } catch (NodeNotFoundException ex) {
             //Non potrà mai succedere perchè se la mossa è stata compiuta le regioni
             //esistono
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, null,
+                    ex);
         }
 
     }
@@ -264,50 +262,74 @@ public class Player {
         Region startRegion;
         Region endRegion;
         while (true) {
-            try {
-                //chiedi regione di partenza
-                startRegion = this.gameManager.askAboutRegion(
-                        this.hashCode(), "Da dove vuoi spostare l'ovino?");
-                //e regione arrivo
-                endRegion = this.gameManager.askAboutRegion(this.hashCode(),
-                        "In quale regione vuoi spostarlo?");
-                //per ogni strada occupata dai patori del giocatore
-                for (Street possibleStreet : this.getShepherdsStreets()) {
-                    //se le regioni confinano con la strada
-                    if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
-                            possibleStreet)) {
-                        //rimuovi ovino del tipo specificato
-                        DebugLogger.println("Rimuovo ovino");
-                        startRegion.removeOvine(type);
-                        //e aggiungilo nella regione d'arrivo
-                        endRegion.addOvine(new Ovine(type));
-                        this.gameManager.server.sendTo(this.hashCode(),
-                                "Mossa avvenuta con successo!");
+            while (true) {
+                try {
+                    DebugLogger.println("Chiedo prima regione");
+                    //chiedi regione di partenza
+                    startRegion = this.gameManager.askAboutRegion(
+                            this.hashCode(), "Da dove vuoi spostare l'ovino?");
+                    break;
+                } catch (RegionNotFoundException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                    this.gameManager.server.sendTo(this.hashCode(),
+                            ex.getMessage());
 
-                        //setto le variabili oldRegion e newRegion per informare 
-                        //gli altri player
-                        this.oldRegion = startRegion;
-                        this.newRegion = endRegion;
-                        return;
-                    }
                 }
-                //le regioni non confinano col pastore 
-                this.gameManager.server.sendTo(this.hashCode(),
-                        "Non è possibile effettuare la mossa! "
-                        + "Le regioni indicate non confinano col tuo pastore");
-
-            } catch (RegionNotFoundException e) {
-                Logger.getLogger(DebugLogger.class.getName()).log(
-                        Level.SEVERE, e.getMessage(), e);
-                this.gameManager.askCancelOrRetry(this.hashCode(),
-                        e.getMessage());
-            } catch (NoOvineException e) {
-                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        e.getMessage(), e);
-                this.gameManager.server.sendTo(this.hashCode(),
-                        "Non è possibile effettuare la mossa! Non ci sono " + type);
             }
-        }//while
+            while (true) {
+                try {
+                    DebugLogger.println("Chiedo seconda regione");
+
+                    //e regione arrivo
+                    endRegion = this.gameManager.askAboutRegion(this.hashCode(),
+                            "In quale regione vuoi spostarlo?");
+                    break;
+                } catch (RegionNotFoundException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                    this.gameManager.server.sendTo(this.hashCode(),
+                            ex.getMessage());
+
+                }
+            }
+            //per ogni strada occupata dai patori del giocatore
+            for (Street possibleStreet : this.getShepherdsStreets()) {
+                //se le regioni confinano con la strada
+                if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
+                        possibleStreet) && startRegion != endRegion) {
+                    //rimuovi ovino del tipo specificato
+                    DebugLogger.println("Rimuovo ovino");
+                    try {
+                        startRegion.removeOvine(type);
+                    } catch (NoOvineException ex) {
+                        Logger.getLogger(DebugLogger.class.getName()).log(
+                                Level.SEVERE,
+                                ex.getMessage(), ex);
+                        DebugLogger.println("Nessun ovino annullo azione");
+
+                        throw new ActionCancelledException(ex.getMessage());
+                    }
+                    //e aggiungilo nella regione d'arrivo
+                    endRegion.addOvine(new Ovine(type));
+                    this.gameManager.server.sendTo(this.hashCode(),
+                            "Mossa avvenuta con successo!");
+
+                    //setto le variabili oldRegion e newRegion per informare 
+                    //gli altri player
+                    this.oldRegion = startRegion;
+                    this.newRegion = endRegion;
+                    return;
+                }
+            }
+            //le regioni non confinano col pastore 
+            throw new ActionCancelledException(
+                    "Non è possibile effettuare la mossa! "
+                    + "Le regioni indicate non confinano col tuo pastore");
+
+        }
     }
 
     /**
@@ -370,15 +392,19 @@ public class Player {
                 //se la strada è occupata avvisa e chiedi se cancellare o riprovare mossa
             } catch (BusyStreetException e) {
                 this.gameManager.askCancelOrRetry(idShepherd, "Strada occupata.");
-                Logger.getLogger(Player.class.getName()).log(
-                        Level.SEVERE, e.getMessage(), e);
+                Logger
+                        .getLogger(Player.class
+                                .getName()).log(
+                                Level.SEVERE, e.getMessage(), e);
 
                 //se la strada di arrivo non esiste informa e riprova o cancella mossa
             } catch (StreetNotFoundException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         "Strada di arrivo non esistente ");
-                Logger.getLogger(Player.class.getName()).log(
-                        Level.SEVERE, e.getMessage(), e);
+                Logger
+                        .getLogger(Player.class
+                                .getName()).log(
+                                Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -451,8 +477,10 @@ public class Player {
             } catch (MissingCardException e) {
                 this.gameManager.askCancelOrRetry(this.hashCode(),
                         "Il territorio richiesto non è disponibile");
-                Logger.getLogger(Player.class.getName()).log(
-                        Level.SEVERE, e.getMessage(), e);
+                Logger
+                        .getLogger(Player.class
+                                .getName()).log(
+                                Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -513,8 +541,10 @@ public class Player {
             }
         } catch (RegionNotFoundException ex) {
             errorMessage = ex.getMessage();
-            Logger.getLogger(Player.class.getName()).log(
-                    Level.SEVERE, ex.getMessage(), ex);
+            Logger
+                    .getLogger(Player.class
+                            .getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
         } finally {
             this.gameManager.askCancelOrRetry(this.hashCode(), errorMessage);
         }
@@ -580,8 +610,11 @@ public class Player {
                                     this.gameManager.askCancelOrRetry(
                                             this.hashCode(),
                                             chosenOvineType + "non presente");
-                                    Logger.getLogger(Player.class.getName()).log(
-                                            Level.SEVERE, ex.getMessage(), ex);
+                                    Logger
+                                            .getLogger(Player.class
+                                                    .getName()).log(
+                                                    Level.SEVERE,
+                                                    ex.getMessage(), ex);
                                 }
                             }
                         } else {
@@ -592,12 +625,16 @@ public class Player {
                     }
                 } catch (RegionNotFoundException e) {
                     errorMessage = e.getMessage();
-                    Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, e.getMessage(), e);
+                    Logger
+                            .getLogger(Player.class
+                                    .getName()).log(
+                                    Level.SEVERE, e.getMessage(), e);
                 } catch (ActionCancelledException e) {
                     errorMessage = e.getMessage();
-                    Logger.getLogger(Player.class.getName()).log(
-                            Level.SEVERE, e.getMessage(), e);
+                    Logger
+                            .getLogger(Player.class
+                                    .getName()).log(
+                                    Level.SEVERE, e.getMessage(), e);
                 }
             }
         }

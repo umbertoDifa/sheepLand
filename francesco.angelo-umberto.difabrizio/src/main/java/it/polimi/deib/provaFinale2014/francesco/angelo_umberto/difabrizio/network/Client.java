@@ -90,9 +90,6 @@ public class Client {
             //ricevi Inizio gioco
             System.out.println(receiveString());
 
-            //ricevi info pecora nera
-            System.out.println(receiveString());
-
             //fai il tuo turno
             this.executeShift();
 
@@ -206,16 +203,76 @@ public class Client {
 
     private void executeShift() {
         String result;
+        //TODO correggi pecora nera
+        //ricevi info pecora nera
+        System.out.println(receiveString());
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitBefore);
+        this.refreshInfo(playersToWaitBefore * numberOfAction);
+        DebugLogger.println("refreshInfo terminata");
+
+        //ricevi info pecora nera
+        System.out.println(receiveString());
 
         for (i = 0; i < numberOfAction; i++) {
+            while (true) {
+                DebugLogger.println("Inizio azione");
+
+                while (true) {
+                    DebugLogger.println("rispondo scelta azione");
+
+                    //scelgo azione
+                    talkTo();
+                    //ricevo ok o err
+                    result = receiveString();
+                    DebugLogger.println("Ricevuta " + result);
+                    if (result.contains("ok")) {
+                        break;
+                    }
+                    //errore
+                }
+
+                while (true) {
+                    DebugLogger.println("rispondo prima regione");
+
+                    //rispondo prima domanda
+                    talkTo();
+
+                    result = receiveString();
+                    DebugLogger.println("Ricevuta " + result);
+
+                    if (result.contains("ok")) {
+                        break;
+                    }
+                }
+                while (true) {
+                    DebugLogger.println("rispondo seconda regione");
+
+                    //rispondo seconda domanda
+                    talkTo();
+
+                    result = receiveString();
+                    DebugLogger.println("Ricevuta " + result);
+
+                    if (result.contains("ok")) {
+                        break;
+                    }
+                }
+                //ricevo verdetto
+                DebugLogger.println("ricevo verdetto");
+
+                result = receiveString();
+                DebugLogger.println("Ricevuta " + result);
+
+                if (result.contains("successo")) {
+                    break;
+                }
+            }
 
         }
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitAfter);
+        this.refreshInfo(playersToWaitAfter * numberOfAction);
 
     }
 

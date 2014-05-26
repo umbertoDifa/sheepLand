@@ -380,7 +380,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 } catch (ActionException ex) {
                     DebugLogger.println("Gestisco ActionCancelledException");
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
-                    this.server.sendTo(playersHashCode[player], ex.getMessage());
+                    this.server.sendTo(playersHashCode[player],
+                            "err:" + ex.getMessage());
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE, ex.getMessage(), ex);
                 }
@@ -447,12 +448,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
         chosenRegion = map.convertStringToRegion(stringedRegion);
         this.server.sendTo(playerHashCode, "regione ok");
         return chosenRegion;
-    }  
-  
-    
+    }
+
     //TODO piuttosto che fare mappa e server private e fornire i getter
     //forse è meglio che siano private
-
     private void moveSpecialAnimal(SpecialAnimal animal) throws
             CannotMoveAnimalException {
         //salvo la regione in cui si trova l'animale
@@ -508,14 +507,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
         DebugLogger.println("AskOrRetry avviato");
         Character choice = server.talkTo(
-                playerHashCode, message + " Riprovare(R) o Annullare(A)?").charAt(0);
+                playerHashCode, message + " Riprovare(R) o Annullare(A)?").charAt(
+                        0);
         switch (choice) {
             //se vuole riprovare
             case 'R':
                 this.server.sendTo(playerHashCode, "Riprova.");
                 break;
             //se vuole annullare 
-            default:                
+            default:
                 throw new ActionCancelledException("Abort.");
         }//switch
     }
