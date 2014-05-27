@@ -14,13 +14,13 @@ public class Shepherd {
     private Street street;
     private Wallet wallet;
     private List<Card> myCards = new ArrayList<Card>();
-
-    public Shepherd() {
-        wallet = new Wallet();
-    }
     
     public Shepherd(int walletAmount){
         wallet = new Wallet(walletAmount);
+    }
+    
+    public Shepherd(Wallet wallet){
+        this.wallet = wallet;
     }
 
     /**
@@ -84,6 +84,15 @@ public class Shepherd {
     
     public void setWallet(Wallet wallet){
         this.wallet = wallet;
+    }
+    
+    public boolean ifPossiblePay(int price) {
+        //se puoi pagare
+        if (wallet.getAmount() >= price) {
+            wallet.setAmount(wallet.getAmount() - price);
+            return true;
+        }
+        return false;
     }
 
 }

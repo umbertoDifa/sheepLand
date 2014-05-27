@@ -1,4 +1,3 @@
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import org.junit.After;
@@ -13,22 +12,22 @@ import static org.junit.Assert.*;
  * @author Umberto
  */
 public class WalletTest {
-    
+
     public WalletTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -43,7 +42,7 @@ public class WalletTest {
         int expResult = GameConstants.STANDARD_WALLET_AMMOUNT.getValue();
         int result = instance.getAmount();
         assertEquals(expResult, result);
-      
+
     }
 
     /**
@@ -58,17 +57,4 @@ public class WalletTest {
         assertTrue(instance.getAmount() == 0);
     }
 
-    /**
-     * Test of pay method, of class Wallet.
-     */
-    @Test
-    public void testPay() {
-        System.out.println("pay");
-        int price = 9;
-        Wallet instance = new Wallet();
-        instance.pay(price);
-        
-        assertTrue(instance.getAmount() == GameConstants.STANDARD_WALLET_AMMOUNT.getValue() - price);
-    }
-    
 }

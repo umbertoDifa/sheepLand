@@ -102,24 +102,18 @@ public class Map {
      * @param region La regione i cui confini devono essere controllati
      * @param value  Il valore della strada limitrofa che si cerca
      *
-     * @return La strada trovata, null altrimenti
+     * @return La strada trovata
      *
      * @throws StreetNotFoundException
      */
     public Street getStreetByValue(Region region, int value) throws
             StreetNotFoundException {
-        //salvo i nodi adiacenti alla regione
-        List<Node> adjacentStreet = region.getNeighbourNodes();
-        for (Node adjacent : adjacentStreet) {
-            //se il nodo è una strada
-            if (adjacent instanceof Street) {
-                //castalo a street
-                Street tmpStreet = (Street) adjacent;
-                //se il valore è uguale a value
-                if (tmpStreet.getValue() == value) {
-                    //ritornala
-                    return tmpStreet;
-                }
+        //per ogni strada adiacente alla regione
+        for (Street street : region.getNeighbourStreets()) {
+            //se il valore è uguale a value
+            if (street.getValue() == value) {
+                //ritornala
+                return street;
             }
         }
         //se non hai trovato nessuna strada limitrofa con quel valore

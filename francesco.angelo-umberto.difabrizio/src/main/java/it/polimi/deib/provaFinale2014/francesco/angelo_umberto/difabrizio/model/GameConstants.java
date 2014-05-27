@@ -52,7 +52,13 @@ public enum GameConstants {
     /**
      * Il valore del portafoglio quando ci sono pochi giocatori
      */
-    LOW_PLAYER_WALLET_AMMOUNT(30);
+    LOW_PLAYER_WALLET_AMMOUNT(30),
+    
+    /**
+     * Il prezzo da pagare per far muovere un pastore su una strada
+     * non adiacente a quella di partenza
+     */
+    PRICE_FOR_SHEPHERD_JUMP(1);
     
     private final int value;
     

@@ -51,51 +51,35 @@ public class Player {
     private List<Integer> allowedActions;
 
     public Player(GameManager gameManager) {
+        this.gameManager = gameManager;
 
         this.shepherd = new Shepherd[gameManager.shepherd4player];
-        //creo i pastori necessari
-        for (int i = 0; i < gameManager.shepherd4player; i++) {
-            //se i pastori sono meno del caso con pochi giocatori
-            if (gameManager.shepherd4player < ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue()) {
-                //creo un pastore con soldi standard
-                this.shepherd[i] = new Shepherd();
-            } else {
-                //creo un pastore con più soldi
-                this.shepherd[i] = new Shepherd(GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
-            }
+
+        if (gameManager.shepherd4player >= ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue()) {
+            this.shepherd[0] = new Shepherd(GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
+        } else {
+            this.shepherd[0] = new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         }
-        this.gameManager = gameManager;
-        //condivido le risorse del primo pastore con tutti gli altri
-        this.setUpSheperdSharing(this.shepherd[0]);
 
-    }
-
-    private void setUpSheperdSharing(Shepherd mainShepherd) {
-
-        //per ogni pastore tranne il (for inizia da 1)
         for (int i = 1; i < gameManager.shepherd4player; i++) {
-
-            //condividi il portafoglio
-            this.shepherd[i].setWallet(mainShepherd.getWallet());
-
-            //condividi le carte
-            this.shepherd[i].setMyCards(mainShepherd.getMyCards());
+            this.shepherd[i] = new Shepherd(this.shepherd[0].getWallet());
         }
+
     }
 
     /**
      * Invita il player a fare una mossa tra quelle che gli sono permesse. Ne
      * può scegliere al massimo una.
      *
-     * @throws ActionNotFoundException  Se l'azione chiesta non esiste
+     * @throws ActionNotFoundException Se l'azione chiesta non esiste
      * @throws ActionCancelledException Se il player ha deciso di non fare più
-     *                                  l'azione
-     * @throws FinishedFencesException  Se non ci sono più recinti da inserire
-     *                                  quando si muovono i pastori
+     * l'azione
+     * @throws FinishedFencesException Se non ci sono più recinti da inserire
+     * quando si muovono i pastori
      */
     public void chooseAndMakeAction() throws ActionNotFoundException,
-                                             ActionCancelledException,
-                                             FinishedFencesException {
+            ActionCancelledException,
+            FinishedFencesException {
 
         try {
             createActionList();
@@ -172,7 +156,7 @@ public class Player {
      * @return Returns true if it does, an exception if it does not.
      *
      * @throws ActionNotFoundException If string does not match the expected
-     *                                 pattern
+     * pattern
      */
     private boolean isChoiceOk(String stringedChoice) throws
             ActionNotFoundException {
@@ -359,7 +343,7 @@ public class Player {
      * @throws ActionCancelledException
      */
     private void moveShepherd() throws ActionCancelledException,
-                                       FinishedFencesException {
+            FinishedFencesException {
 
         Street startStreet;
         Street endStreet;
@@ -389,9 +373,7 @@ public class Player {
                                 "Mossa avvenuta con successo");
                         break;
                         //se le strade non confinano e puoi pagare
-                    } else if (currentShepherd.getWallet().getAmount() > 1) {
-                        //paga
-                        currentShepherd.getWallet().pay(1);
+                    } else if (currentShepherd.ifPossiblePay(GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
                         DebugLogger.println("Pagamento effettuato");
                         currentShepherd.moveTo(endStreet);
 
@@ -435,11 +417,6 @@ public class Player {
         Region endRegion;
         int cardPrice;
 
-        //Raccolgo le monete del primo giocatore usando quelle del suo primo pastore
-        //che sicuramente esiste e in quanto il wallet è condiviso da tutti
-        //i pastori di un giocatore
-        int shepherdMoney = this.shepherd[0].getWallet().getAmount();
-
         //per ogni regione confinante con i pastori del giocatore
         for (Region region : getShepherdsRegion()) {
             //aggiungila ai tipi di regione possibili
@@ -460,12 +437,10 @@ public class Player {
                     cardPrice = this.gameManager.bank.getPriceOfCard(
                             chosenTypeOfCard);
                     //se il pastore ha abbastanza soldi
-                    if (shepherdMoney >= cardPrice) {
+                    if (shepherd[0].ifPossiblePay(cardPrice)) {
                         //recupero la carta dal banco
                         Card card = this.gameManager.bank.getCard(
                                 chosenTypeOfCard);
-                        //aggiorno i suoi soldi
-                        this.shepherd[0].getWallet().pay(cardPrice);
 
                         //la do al pastore
                         this.shepherd[0].addCard(card);
@@ -601,9 +576,8 @@ public class Player {
                                 sumToPay += 2;
                             }
                         }
-                        //se può pagare
-                        if (this.shepherd[0].getWallet().getAmount() >= sumToPay) {
-                            this.shepherd[0].getWallet().pay(sumToPay);
+                        //se può pagare il silenzio
+                        if (this.shepherd[0].ifPossiblePay(sumToPay)) {
                             while (true) {
                                 //chiedi tipo d ovino
                                 this.gameManager.server.talkTo(

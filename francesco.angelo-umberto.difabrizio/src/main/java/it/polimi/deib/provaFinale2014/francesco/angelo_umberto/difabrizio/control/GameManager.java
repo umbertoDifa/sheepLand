@@ -323,6 +323,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
+            //TODO: spostare mossa pecora nera e controllo recinti?
             lastRound = this.executeShift(currentPlayer);
 
             //aggiorno il player che gioca 

@@ -54,9 +54,8 @@ public class Wolf extends SpecialAnimal {
          */
         private void eatOvine(Region region) {
             try {
-                OvineType type = OvineType.getRandomOvineType();
-                DebugLogger.println("Tentativo di mangiare un tipo: " + type);
-                region.removeOvine(type);
+                DebugLogger.println("Tentativo di mangiare un tipo: " + OvineType.SHEEP);
+                region.removeOvine(OvineType.SHEEP);
 
             } catch (NoOvineException ex) {
                 //non la mangiare perchè non c'è                
