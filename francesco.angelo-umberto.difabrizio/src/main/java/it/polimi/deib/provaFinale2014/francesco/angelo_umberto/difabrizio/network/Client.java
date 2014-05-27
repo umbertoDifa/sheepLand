@@ -1,6 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,7 +33,6 @@ public class Client {
     private int numberOfAction;
 
     private int i;
-    private boolean actionCompleted;
 
     public Client(String ip, int port) {
         this.ip = ip;
@@ -49,8 +47,7 @@ public class Client {
         try {
             //creo socket server
             Socket socket = new Socket(ip, port);
-            DebugLogger.println("Connessione stabilita");
-            //System.out.println("Connessione stabilita");
+            System.out.println("Connessione stabilita");
 
             //creo scanner ingresso server
             serverIn = new Scanner(socket.getInputStream());
@@ -85,11 +82,9 @@ public class Client {
                     + firstPlayer + " " + numberOfAction);
 
             //setUpPastori
-            setUpSheperds();
-
-            //ricevi Inizio gioco
-            System.out.println(receiveString());
-
+            setUpSheperds();          
+            
+            DebugLogger.println("Entro in execute Rounds");
             //inizia i giri            
             this.executeRound();
 
@@ -166,30 +161,32 @@ public class Client {
             System.out.println(receiveString());
         }
     }
+    private void refreshInfoUntil(String acceptString) {
+        String receivedString;
+        
+        while(true){
+            receivedString = receiveString();
+            System.out.println(receivedString);
+            if(receivedString.contains(acceptString)){
+                break;
+            }
+        }
+    }
 
     private void setUpSheperds() {
 
         //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitBefore * shepherds4player);
-
+        this.refreshInfoUntil("E' il tuo turno");
         //putSheperds
         this.putShepherds();
-
-        //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitAfter * shepherds4player);
     }
 
     private void executeShift() {
         String result;
 
         //getInfoOthersSheperds
-        //ogni giocatore ha 3 azioni più la
-        //mossa della pecora nera
-        this.refreshInfo(playersToWaitBefore * (numberOfAction + 1));
+        refreshInfoUntil("E' il tuo turno");
         DebugLogger.println("refreshInfo terminata");
-
-        //ricevi info mia pecora nera
-        System.out.println(receiveString());
 
         for (i = 0; i < numberOfAction; i++) {
             while (true) {
@@ -215,18 +212,12 @@ public class Client {
                 }
             }
 
-        }
-
-        //getInfoOthersSheperds
-        this.refreshInfo(playersToWaitAfter * (numberOfAction + 1));
+        }       
     }
 
     private void executeRound() {
         while (true) {
-            executeShift();
-
-            //controlla lupo
-            System.out.println(receiveString());
+            executeShift();           
         }
     }
 

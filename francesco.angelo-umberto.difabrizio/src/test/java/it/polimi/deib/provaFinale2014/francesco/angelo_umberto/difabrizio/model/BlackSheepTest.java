@@ -13,26 +13,26 @@ import static org.junit.Assert.*;
  * @author Umberto
  */
 public class BlackSheepTest {
-
+    
     Map map;
-
+    
     public BlackSheepTest() {
     }
-
+    
     @BeforeClass
     public static void setUpClass() {
     }
-
+    
     @AfterClass
     public static void tearDownClass() {
     }
-
+    
     @Before
     public void setUp() {
         map = new Map();
         map.setUp();
     }
-
+    
     @After
     public void tearDown() {
     }
@@ -82,13 +82,14 @@ public class BlackSheepTest {
         } catch (CannotMoveBlackSheepException e) {
             //tutto ok
         }
-
+        
         map.getBlackSheep().moveThrough(map.convertStringToStreet("9"),
                 map.convertStringToRegion("7"));
 
         //setto un pastore
-        map.getStreets()[2].setShepherd(new Shepherd());
-
+        map.getStreets()[2].setShepherd(new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
+        
         try {
             map.getBlackSheep().moveThrough(map.convertStringToStreet("2"),
                     map.convertStringToRegion("4"));
@@ -96,10 +97,10 @@ public class BlackSheepTest {
         } catch (CannotMoveBlackSheepException e) {
             //tutto ok
         }
-
+        
         assertSame(map.getBlackSheep().getMyRegion(), map.convertStringToRegion(
                 "7"));
-
+        
     }
-
+    
 }

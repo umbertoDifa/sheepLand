@@ -154,6 +154,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
             //setto il player corrente
             currentPlayer = (firstPlayer + i) % playersNumber;
 
+            //sveglia il currentPlayer 
+            server.sendTo(playersHashCode[currentPlayer], "E' il tuo turno");
+            DebugLogger.println("E' il turno inviato shepherds");
+
             //per ogni suo pastore
             for (j = 0; j < this.shepherd4player; j++) {
                 while (true) {
@@ -381,8 +385,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
         }
+
+        //sveglia il client
+        server.sendTo(playersHashCode[player], "E' il tuo turno");
+        DebugLogger.println("E' il tuo turno inviato");
+
         //faccio fare le azioni al giocatore
-        //per il numero di azioni possibili per un turno
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
             while (true) {
                 try {

@@ -38,7 +38,7 @@ public class WalletTest {
     @Test
     public void testGetAmount() {
         System.out.println("getAmount");
-        Wallet instance = new Wallet();
+        Wallet instance = new Wallet(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         int expResult = GameConstants.STANDARD_WALLET_AMMOUNT.getValue();
         int result = instance.getAmount();
         assertEquals(expResult, result);
@@ -52,7 +52,7 @@ public class WalletTest {
     public void testSetAmount() {
         System.out.println("setAmount");
         int amount = 0;
-        Wallet instance = new Wallet();
+        Wallet instance = new Wallet(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         instance.setAmount(amount);
         assertTrue(instance.getAmount() == 0);
     }

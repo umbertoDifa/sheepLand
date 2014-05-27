@@ -39,7 +39,7 @@ public class Wolf extends SpecialAnimal {
             } else {
                 //la strada è sbarrata ma altre sono libere
                 throw new CannotMoveWolfException(
-                        "La strada è sbarrata il lupo non può passare");
+                        "La strada è sbarrata ");
             }
 
             //se la regione d'arrivo ha pecore mangiane una

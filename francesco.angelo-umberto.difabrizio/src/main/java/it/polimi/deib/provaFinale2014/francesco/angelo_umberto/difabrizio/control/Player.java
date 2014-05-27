@@ -56,9 +56,11 @@ public class Player {
         this.shepherd = new Shepherd[gameManager.shepherd4player];
 
         if (gameManager.shepherd4player >= ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue()) {
-            this.shepherd[0] = new Shepherd(GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
+            this.shepherd[0] = new Shepherd(
+                    GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
         } else {
-            this.shepherd[0] = new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
+            this.shepherd[0] = new Shepherd(
+                    GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         }
 
         for (int i = 1; i < gameManager.shepherd4player; i++) {
@@ -71,15 +73,15 @@ public class Player {
      * Invita il player a fare una mossa tra quelle che gli sono permesse. Ne
      * può scegliere al massimo una.
      *
-     * @throws ActionNotFoundException Se l'azione chiesta non esiste
+     * @throws ActionNotFoundException  Se l'azione chiesta non esiste
      * @throws ActionCancelledException Se il player ha deciso di non fare più
-     * l'azione
-     * @throws FinishedFencesException Se non ci sono più recinti da inserire
-     * quando si muovono i pastori
+     *                                  l'azione
+     * @throws FinishedFencesException  Se non ci sono più recinti da inserire
+     *                                  quando si muovono i pastori
      */
     public void chooseAndMakeAction() throws ActionNotFoundException,
-            ActionCancelledException,
-            FinishedFencesException {
+                                             ActionCancelledException,
+                                             FinishedFencesException {
 
         try {
             createActionList();
@@ -156,7 +158,7 @@ public class Player {
      * @return Returns true if it does, an exception if it does not.
      *
      * @throws ActionNotFoundException If string does not match the expected
-     * pattern
+     *                                 pattern
      */
     private boolean isChoiceOk(String stringedChoice) throws
             ActionNotFoundException {
@@ -343,7 +345,7 @@ public class Player {
      * @throws ActionCancelledException
      */
     private void moveShepherd() throws ActionCancelledException,
-            FinishedFencesException {
+                                       FinishedFencesException {
 
         Street startStreet;
         Street endStreet;
@@ -373,7 +375,8 @@ public class Player {
                                 "Mossa avvenuta con successo");
                         break;
                         //se le strade non confinano e puoi pagare
-                    } else if (currentShepherd.ifPossiblePay(GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
+                    } else if (currentShepherd.ifPossiblePay(
+                            GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
                         DebugLogger.println("Pagamento effettuato");
                         currentShepherd.moveTo(endStreet);
 

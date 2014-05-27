@@ -49,7 +49,8 @@ public class ShepherdTest {
     public void testMoveTo() throws StreetNotFoundException {
         System.out.println("moveTo");
         Street street = map.convertStringToStreet("25");
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         instance.moveTo(street);
         assertSame(instance.getStreet(), street);
     }
@@ -60,7 +61,8 @@ public class ShepherdTest {
     @Test
     public void testGetWallet() {
         System.out.println("getWallet");
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         Wallet result = instance.getWallet();
         assertTrue(
@@ -76,7 +78,8 @@ public class ShepherdTest {
     @Test
     public void testGetStreet() throws StreetNotFoundException {
         System.out.println("getStreet");
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         instance.moveTo(map.convertStringToStreet("13"));
         Street result = instance.getStreet();
         assertEquals(map.getStreets()[13], result);
@@ -89,7 +92,8 @@ public class ShepherdTest {
     @Test
     public void testGetMyCards() {
         System.out.println("getMyCards");
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         Card card1 = new Card(1, RegionType.HILL);
         Card card2 = new Card(3, RegionType.COUNTRYSIDE);
@@ -117,7 +121,8 @@ public class ShepherdTest {
     public void testSetMyCards() {
         System.out.println("setMyCards");
         List<Card> myCards = new ArrayList<Card>();
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         Card card1 = new Card(1, RegionType.HILL);
         Card card2 = new Card(3, RegionType.COUNTRYSIDE);
@@ -143,7 +148,8 @@ public class ShepherdTest {
         Card card = new Card(0, RegionType.HILL);
 
         //creo un pastore      
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         //aggiungo una carta
         instance.addCard(card);
@@ -159,7 +165,8 @@ public class ShepherdTest {
     public void testRemoveCard() {
         System.out.println("removeCard");
 
-        Shepherd instance = new Shepherd();
+        Shepherd instance = new Shepherd(
+                GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         Card card1 = new Card(1, RegionType.HILL);
         Card card2 = new Card(3, RegionType.COUNTRYSIDE);
@@ -176,23 +183,6 @@ public class ShepherdTest {
         instance.removeCard(card1);
 
         assertTrue(instance.getMyCards().isEmpty());
-    }
-
-    /**
-     * Test of setWallet method, of class Shepherd.
-     */
-    @Test
-    public void testSetWallet() {
-        System.out.println("setWallet");
-        Wallet wallet = new Wallet();
-        wallet.setAmount(15);
-
-        Shepherd instance = new Shepherd();
-
-        instance.setWallet(wallet);
-
-        assertTrue(instance.getWallet().getAmount() == 15);
-
     }
 
 }

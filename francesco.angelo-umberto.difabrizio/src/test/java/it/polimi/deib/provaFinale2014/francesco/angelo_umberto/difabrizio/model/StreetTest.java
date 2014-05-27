@@ -91,7 +91,7 @@ public class StreetTest {
         assertFalse(instance.hasShepherd());
 
         //aggiungo un pastore
-        instance.setShepherd(new Shepherd());
+        instance.setShepherd(new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
 
         //testo che abbia un pastore
         assertTrue(instance.hasShepherd());
@@ -103,7 +103,7 @@ public class StreetTest {
         assertFalse(instance.hasShepherd());
         //lo riaggiungo
 
-        instance.setShepherd(new Shepherd());
+        instance.setShepherd(new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
 
         //testo
         assertTrue(instance.hasShepherd());
@@ -155,7 +155,7 @@ public class StreetTest {
         assertTrue(instance2.isFree());
 
         //aggiungo un pastore
-        instance2.setShepherd(new Shepherd());
+        instance2.setShepherd(new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
 
         //testo is free
         assertFalse(instance2.isFree());
@@ -167,7 +167,7 @@ public class StreetTest {
         assertTrue(instance2.isFree());
 
         //riaggiungo un pastore
-        instance2.setShepherd(new Shepherd());
+        instance2.setShepherd(new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
 
         //aggiungo una fence
         instance2.setFence(new Fence(true));
@@ -182,13 +182,13 @@ public class StreetTest {
         assertFalse(instance2.isFree());
 
         //riaggiungo un pastore
-        instance2.setShepherd(new Shepherd());
+        instance2.setShepherd(new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
 
         //testo is free
         assertFalse(instance2.isFree());
 
         //aggiungo un pastore alla prima
-        instance.setShepherd(new Shepherd());
+        instance.setShepherd(new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
 
         //testo il free
         assertFalse(instance.isFree());
@@ -213,7 +213,7 @@ public class StreetTest {
     @Test
     public void testSetShepherd() {
         System.out.println("setShepherd");
-        Shepherd shepherd = new Shepherd();
+        Shepherd shepherd = new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         Street instance = new Street(2);
 
@@ -221,7 +221,7 @@ public class StreetTest {
 
         assertSame(shepherd, instance.getShepherd());
 
-        Shepherd sph2 = new Shepherd();
+        Shepherd sph2 = new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
 
         instance.setShepherd(sph2);
 
@@ -235,7 +235,7 @@ public class StreetTest {
     public void testGetShepherd() {
         System.out.println("getShepherd");
         Street instance = new Street(4);
-        Shepherd expResult = new Shepherd();
+        Shepherd expResult = new Shepherd(GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         instance.setShepherd(expResult);
         Shepherd result = instance.getShepherd();
         assertEquals(expResult, result);

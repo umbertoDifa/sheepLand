@@ -82,10 +82,6 @@ public class Shepherd {
         this.myCards.remove(card);
     }
     
-    public void setWallet(Wallet wallet){
-        this.wallet = wallet;
-    }
-    
     public boolean ifPossiblePay(int price) {
         //se puoi pagare
         if (wallet.getAmount() >= price) {
