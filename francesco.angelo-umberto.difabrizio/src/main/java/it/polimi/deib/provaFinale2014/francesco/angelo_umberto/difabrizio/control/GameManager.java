@@ -289,9 +289,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void playTheGame() {
         int[][] classification = new int[2][playersNumber];
-        int maxPoint = 0;
-        int tmp1;
-        int tmp2;
         int numOfWinners = 1;
         this.server.broadcastMessage("Inizia il gioco!");
         try {
@@ -304,22 +301,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
-            //stilo la classifica
+            //stilo la classifica in ordine decrescente
             classification = this.calculatePoints();
-            //ordino la classifica
-            for (int i = 0; i < playersNumber; i++) {
-                for (int j = i; j < playersNumber; j++) {
-                    if (classification[1][i] < classification[1][j]) {
-                        tmp1 = classification[0][i];
-                        tmp2 = classification[1][i];
-                        classification[0][i] = classification[0][j];
-                        classification[1][i] = classification[1][j];
-                        classification[0][j] = tmp1;
-                        classification[1][j] = tmp2;
-                    }
-                }
-            }
-            
+
             //calcolo quanti sono al primo posto a parimerito
             while (classification[1][numOfWinners] == classification[1][numOfWinners + 1]) {
                 numOfWinners++;
@@ -678,22 +662,39 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private int[][] calculatePoints() {
-        int[][] points = new int[2][playersNumber];
+        int[][] classification = new int[2][playersNumber];
+        int tmp1, tmp2;
         //per ogni giocatore
         int i = 0;
         for (Player player : players) {
             //per ogni tipo di regione
-            points[0][i] = i;
+            classification[0][i] = i;
             for (RegionType type : RegionType.values()) {
                 //aggiungo al suo punteggio num di pecore in quel tipo di regione per num di carte di quel tipo
-                points[1][i] += player.shepherd[0].numOfMyCardsOfType(type) * map.numOfOvineIn(type);
+                classification[1][i] += player.shepherd[0].numOfMyCardsOfType(type) * map.numOfOvineIn(type);
             }
             i++;
         }
-        return points;
+
+        //ordino la classifica
+        for (int j = 0; j < playersNumber; j++) {
+            for (int k = j; k < playersNumber; k++) {
+                if (classification[1][j] < classification[1][k]) {
+                    tmp1 = classification[0][j];
+                    tmp2 = classification[1][j];
+                    classification[0][j] = classification[0][k];
+                    classification[1][j] = classification[1][k];
+                    classification[0][k] = tmp1;
+                    classification[1][k] = tmp2;
+                }
+            }
+        }
+
+        return classification;
     }
 
     private String printResults(int[][] classification) {
+        int tmp1, tmp2;
         String result = "";
         for (int i = 0; i < playersNumber; i++) {
             result += i + "posto: player" + classification[0][i] + "con" + classification[1][i];
