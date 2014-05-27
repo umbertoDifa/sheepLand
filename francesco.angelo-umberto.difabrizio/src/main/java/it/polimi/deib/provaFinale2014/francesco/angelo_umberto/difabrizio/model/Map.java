@@ -67,7 +67,7 @@ public class Map {
             throw new RegionNotFoundException(
                     "La stringa inserita non identifica una regione, prego inserire l'id della regione.");
         }
-    }  
+    }
 
     /**
      * Crea nodi delle regioni e delle strade, li assegna a map, e li collega
@@ -100,7 +100,7 @@ public class Map {
      * quel preciso valore
      *
      * @param region La regione i cui confini devono essere controllati
-     * @param value  Il valore della strada limitrofa che si cerca
+     * @param value Il valore della strada limitrofa che si cerca
      *
      * @return La strada trovata
      *
@@ -385,14 +385,13 @@ public class Map {
      * regione in cui arrivo.
      *
      * @param startRegion Regione di partenza
-     * @param street      Strada attraverso cui passare
+     * @param street Strada attraverso cui passare
      *
      * @return Regione di arrivo
      *
      * @throws RegionNotFoundException Se la reigone di partenza e quella di
-     *                                 arrivo non confinano o se non esiste una
-     *                                 regione d'arrivo passando per la strada
-     *                                 street
+     * arrivo non confinano o se non esiste una regione d'arrivo passando per la
+     * strada street
      */
     public Region getEndRegion(Region startRegion, Street street) throws
             RegionNotFoundException {
@@ -429,7 +428,7 @@ public class Map {
      * @return L'indice cercato
      *
      * @throws NodeNotFoundException Se la regione o la strada cercate non
-     *                               esistono
+     * esistono
      */
     //TODO: vale la pena questa exception? io gli passo un nodo quindi di 
     //sicuro esisterà...però come buona pratica...
@@ -452,5 +451,18 @@ public class Map {
         }
 
         throw new NodeNotFoundException("Il nodo cercato non esiste");
+    }
+
+    public int numOfOvineIn(RegionType type) {
+        int sum = 0;
+        for (Node region : regions) {
+            if (region instanceof Region) {
+                Region r = (Region) region;
+                if (r.getType() == type) {
+                    sum++;
+                }
+            }
+        }
+        return sum;
     }
 }

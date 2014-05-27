@@ -51,7 +51,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Crea un GameManager
      *
      * @param playersNumber Numero dei giocatori di una partita
-     * @param server        Thread che gestisce la partita
+     * @param server Thread che gestisce la partita
      */
     public GameManager(int playersNumber, ServerThread server) {
         this.playersNumber = playersNumber;
@@ -198,7 +198,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 Card initialCard = this.bank.getInitialCard();
 
                 DebugLogger.println("Aggiungo la carta al pastore");
-                this.players.get(currentPlayer).shepherd[j].addCard(
+                this.players.get(currentPlayer).shepherd[0].addCard(
                         initialCard);
 
                 DebugLogger.println("invio conferma");
@@ -283,6 +283,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void playTheGame() {
+        int[] classification = new int[playersNumber];
         this.server.broadcastMessage("Inizia il gioco!");
         try {
             DebugLogger.println("Avvio esecuzione giri");
@@ -294,8 +295,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
-            //TODO:decidere scelta fatta sopra
-            //this.calculatePoints();
+            classification = this.calculatePoints();
+            for(int result: classification){
+                
+            }              
             //this.broadcastWinner();
         }
     }
@@ -427,7 +430,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * @return
      *
      * @throws StreetNotFoundException se la strada non esiste
-     * @throws BusyStreetException     se la strada è occupata
+     * @throws BusyStreetException se la strada è occupata
      */
     protected Street askStreet(int playerHashCode, int idShepherd) throws
             StreetNotFoundException,
@@ -634,5 +637,20 @@ public class GameManager {//TODO: pattern memento per ripristini?
             }
         }
         return null;
+    }
+
+    private int[] calculatePoints() {
+        int[] points = new int[playersNumber];
+        //per ogni giocatore
+        int i = 0;
+        for (Player player : players) {
+            //per ogni tipo di regione
+            for (RegionType type : RegionType.values()) {
+                //aggiungo al suo punteggio num di pecore in quel tipo di regione per num di carte di quel tipo
+                points[i] += player.shepherd[0].numOfMyCardsOfType(type) * map.numOfOvineIn(type);
+            }
+            i++;
+        }
+        return points;
     }
 }

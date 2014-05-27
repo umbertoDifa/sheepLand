@@ -12,15 +12,29 @@ import java.util.List;
 public class Shepherd {
 
     private Street street;
-    private Wallet wallet;
-    private List<Card> myCards = new ArrayList<Card>();
+    private final Wallet wallet;
+    private List<Card> myCards;
     
+    /**
+     * create shepherd with a wallet with a specified amount
+     * and istanciate his list of cards
+     * @param walletAmount 
+     */
     public Shepherd(int walletAmount){
         wallet = new Wallet(walletAmount);
+        myCards = new ArrayList<Card>();
     }
     
-    public Shepherd(Wallet wallet){
+    /**
+     * create shepherd and connect it with a precise wallet
+     * and a precise list of cards. It's used to share cards and wallet
+     * of others shepherds
+     * @param wallet 
+     * @param cards 
+     */
+    public Shepherd(Wallet wallet, List<Card> cards){
         this.wallet = wallet;
+        this.myCards = cards;
     }
 
     /**
@@ -61,6 +75,16 @@ public class Shepherd {
 
     public List<Card> getMyCards() {
         return myCards;
+    }
+    
+    public int numOfMyCardsOfType(RegionType chosenType){
+        int sum = 0;
+        for(Card card: this.myCards){
+            if(card.getType() == chosenType){
+                sum++;
+            }
+        }
+        return sum;
     }
 
     public void setMyCards(List<Card> myCards) {
