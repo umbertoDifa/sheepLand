@@ -454,15 +454,18 @@ public class Map {
     }
 
     public int numOfOvineIn(RegionType type) {
-        int sum = 0;
+        int numOvines = 0;
+        //per ogni regione
         for (Node region : regions) {
             if (region instanceof Region) {
                 Region r = (Region) region;
+                //se del tipo giusto
                 if (r.getType() == type) {
-                    sum++;
+                    //aggiorna numOvines con num di ovini di quella regione
+                    numOvines += r.getMyOvines().size();
                 }
             }
         }
-        return sum;
+        return numOvines;
     }
 }
