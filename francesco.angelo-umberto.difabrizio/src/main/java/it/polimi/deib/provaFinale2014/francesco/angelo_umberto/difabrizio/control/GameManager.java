@@ -1,9 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
@@ -17,11 +15,16 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -183,6 +186,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                                 Level.SEVERE, e.getMessage(), e);
                     }
                 }//while
+                this.server.sendTo(this.playersHashCode[currentPlayer],
+                        "Pastore accettato");
                 DebugLogger.println(
                         "Setto il pastore: " + j + " del giocatore: " + currentPlayer
                 );
@@ -283,7 +288,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void playTheGame() {
-        int[] classification = new int[playersNumber];
+        int[][] classification = new int[2][playersNumber];
+        int numOfWinners = 1;
         this.server.broadcastMessage("Inizia il gioco!");
         try {
             DebugLogger.println("Avvio esecuzione giri");
@@ -295,11 +301,27 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
+            //stilo la classifica in ordine decrescente
             classification = this.calculatePoints();
-            for(int result: classification){
-                
-            }              
-            //this.broadcastWinner();
+
+            //calcolo quanti sono al primo posto a parimerito
+            while (classification[1][numOfWinners] == classification[1][numOfWinners + 1]) {
+                numOfWinners++;
+            }
+
+            int i;
+            //per tutti i vincitori
+            for (i = 0; i < numOfWinners; i++) {
+                this.server.sendTo(this.playersHashCode[classification[0][i]],
+                        "hai vinto! con" + classification[1][i]);
+            }
+            //per tutti gli altri
+            for (; i < playersNumber; i++) {
+                this.server.sendTo(this.playersHashCode[classification[0][i]],
+                        "hai perso! con" + classification[1][i]);
+            }
+
+            this.server.broadcastMessage(printResults(classification));
         }
     }
 
@@ -639,18 +661,44 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return null;
     }
 
-    private int[] calculatePoints() {
-        int[] points = new int[playersNumber];
+    private int[][] calculatePoints() {
+        int[][] classification = new int[2][playersNumber];
+        int tmp1, tmp2;
         //per ogni giocatore
         int i = 0;
         for (Player player : players) {
             //per ogni tipo di regione
+            classification[0][i] = i;
             for (RegionType type : RegionType.values()) {
                 //aggiungo al suo punteggio num di pecore in quel tipo di regione per num di carte di quel tipo
-                points[i] += player.shepherd[0].numOfMyCardsOfType(type) * map.numOfOvineIn(type);
+                classification[1][i] += player.shepherd[0].numOfMyCardsOfType(type) * map.numOfOvineIn(type);
             }
             i++;
         }
-        return points;
+
+        //ordino la classifica
+        for (int j = 0; j < playersNumber; j++) {
+            for (int k = j; k < playersNumber; k++) {
+                if (classification[1][j] < classification[1][k]) {
+                    tmp1 = classification[0][j];
+                    tmp2 = classification[1][j];
+                    classification[0][j] = classification[0][k];
+                    classification[1][j] = classification[1][k];
+                    classification[0][k] = tmp1;
+                    classification[1][k] = tmp2;
+                }
+            }
+        }
+
+        return classification;
+    }
+
+    private String printResults(int[][] classification) {
+        int tmp1, tmp2;
+        String result = "";
+        for (int i = 0; i < playersNumber; i++) {
+            result += i + "posto: player" + classification[0][i] + "con" + classification[1][i];
+        }
+        return result;
     }
 }
