@@ -63,8 +63,10 @@ public class Player {
                     GameConstants.STANDARD_WALLET_AMMOUNT.getValue());
         }
 
+        //setUp shepherds sharing cards and wallet    
         for (int i = 1; i < gameManager.shepherd4player; i++) {
-            this.shepherd[i] = new Shepherd(this.shepherd[0].getWallet());
+            this.shepherd[i] = new Shepherd(this.shepherd[0].getWallet(),
+                    this.shepherd[0].getMyCards());
         }
 
     }
@@ -95,7 +97,7 @@ public class Player {
 
             int actionChoice = Integer.parseInt(stringedChoice);
 
-            this.gameManager.server.sendTo(this.hashCode(), "ok!");
+            this.gameManager.server.sendTo(this.hashCode(), "Scelta valida");
 
             DebugLogger.println("Scelta: " + actionChoice);
             switch (actionChoice) {
@@ -417,7 +419,6 @@ public class Player {
 
         String stringedTypeOfCard;
         RegionType chosenTypeOfCard;
-        Region endRegion;
         int cardPrice;
 
         //per ogni regione confinante con i pastori del giocatore
@@ -426,48 +427,59 @@ public class Player {
             possibleRegionsType.add(region.getType());
         }
 
-        while (true) {
-            try {
+        try {
+            while (true) {
                 //chiedi il tipo di carta desiderato            
                 stringedTypeOfCard = this.gameManager.server.talkTo(
-                        this.hashCode(), "Quale tipo di carta vuoi comprare?");
+                        this.hashCode(),
+                        "Quale tipo di carta vuoi comprare?\n" + possibleRegionsType);
 
-                //convertilo in RegionType
-                chosenTypeOfCard = RegionType.valueOf(stringedTypeOfCard);
-                //se il tipo chiesto è contenuto nei tipi comprabili dal pastore
-                if (possibleRegionsType.contains(chosenTypeOfCard)) {
-                    //richiedi prezzo alla banca                    
-                    cardPrice = this.gameManager.bank.getPriceOfCard(
-                            chosenTypeOfCard);
-                    //se il pastore ha abbastanza soldi
-                    if (shepherd[0].ifPossiblePay(cardPrice)) {
-                        //recupero la carta dal banco
-                        Card card = this.gameManager.bank.getCard(
-                                chosenTypeOfCard);
-
-                        //la do al pastore
-                        this.shepherd[0].addCard(card);
-                        return;
-                        //se non ha abbastanza soldi  //TODO: accorpare creando stringa errorMessage da passare a askCancel or Retry alla fine
-                    } else {
-                        this.gameManager.askCancelOrRetry(this.hashCode(),
-                                "Non puoi comprare il territorio " + stringedTypeOfCard + "non hai abbastanza soldi");
+                //se la stringa coincide con uno dei tipi di regione possibili
+                boolean typeFound = false;
+                for (RegionType type : possibleRegionsType) {
+                    if (type.name().equalsIgnoreCase(stringedTypeOfCard)) {
+                        typeFound = true;
+                        break;
                     }
-                    //se il tipo non è tra quelli accessibili
-                } else {
-                    this.gameManager.askCancelOrRetry(this.hashCode(),
-                            "Non puoi comprare il territorio, nessun tuo pastore confina con " + stringedTypeOfCard);
                 }
-
-            } catch (MissingCardException e) {
-                this.gameManager.askCancelOrRetry(this.hashCode(),
-                        "Il territorio richiesto non è disponibile");
-                Logger
-                        .getLogger(Player.class
-                                .getName()).log(
-                                Level.SEVERE, e.getMessage(), e);
+                //TODO: boh sta roba
+                if (typeFound) {
+                    break;
+                }
+                gameManager.server.sendTo(this.hashCode(),
+                        "Non puoi comprare un terreno che non confina con il tuo pastore");
             }
+            //convertilo in RegionType
+            chosenTypeOfCard = RegionType.valueOf(stringedTypeOfCard);
+
+            //richiedi prezzo alla banca                    
+            cardPrice = this.gameManager.bank.getPriceOfCard(
+                    chosenTypeOfCard);
+
+            //se il pastore ha abbastanza soldi paga
+            if (shepherd[0].ifPossiblePay(cardPrice)) {
+
+                //recupero la carta dal banco
+                Card card = this.gameManager.bank.getCard(
+                        chosenTypeOfCard);
+
+                //la do al pastore
+                this.shepherd[0].addCard(card);
+                return;
+            } else {
+                //se non ha abbastanza soldi
+                gameManager.server.sendTo(this.hashCode(),
+                        "Non puoi comprare il territorio " + stringedTypeOfCard + "non hai abbastanza soldi");
+            }
+            //se il tipo non è tra quelli accessibili
+
+        } catch (MissingCardException e) {
+            gameManager.server.sendTo(this.hashCode(),
+                    "Il territorio richiesto non è disponibile");
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE, e.getMessage(), e);
         }
+
     }
 
     private void mateSheepWith(OvineType otherOvineType) throws

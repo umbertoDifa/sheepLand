@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class DebugLogger {
 
     private static final boolean DEBUG = true;
-    public static final boolean PARENT_HANDLERS_ON = true;
+    private static final boolean PARENT_HANDLERS_ON = true;
     
     
             

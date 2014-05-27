@@ -82,8 +82,8 @@ public class Client {
                     + firstPlayer + " " + numberOfAction);
 
             //setUpPastori
-            setUpSheperds();          
-            
+            setUpSheperds();
+
             DebugLogger.println("Entro in execute Rounds");
             //inizia i giri            
             this.executeRound();
@@ -141,9 +141,10 @@ public class Client {
 
             //scelgo azione
             talkTo();
+
             //ricevo ok o err
             result = receiveString();
-            DebugLogger.println("Ricevuta " + result);
+            DebugLogger.println("Ricevuta: " + result);
             if (result.contains(acceptString)) {
                 break;
             }
@@ -161,13 +162,14 @@ public class Client {
             System.out.println(receiveString());
         }
     }
+
     private void refreshInfoUntil(String acceptString) {
         String receivedString;
-        
-        while(true){
+
+        while (true) {
             receivedString = receiveString();
             System.out.println(receivedString);
-            if(receivedString.contains(acceptString)){
+            if (receivedString.contains(acceptString)) {
                 break;
             }
         }
@@ -189,35 +191,19 @@ public class Client {
         DebugLogger.println("refreshInfo terminata");
 
         for (i = 0; i < numberOfAction; i++) {
-            while (true) {
-                DebugLogger.println("Inizio azione");
 
-                //scelta azione
-                makeChoiceUntil("ok");
+            DebugLogger.println("Inizio azione");
 
-                //prima risposta
-                makeChoiceUntil("ok");
-
-                //seconda risposta
-                makeChoiceUntil("ok");
-
-                //ricevo verdetto
-                DebugLogger.println("ricevo verdetto");
-
-                result = receiveString();
-                DebugLogger.println("Ricevuta " + result);
-
-                if (result.contains("successo")) {
-                    break;
-                }
-            }
-
-        }       
+            //scelta azione
+            makeChoiceUntil("successo");
+            
+            DebugLogger.println("Azione completata!");
+        }
     }
 
     private void executeRound() {
         while (true) {
-            executeShift();           
+            executeShift();
         }
     }
 
