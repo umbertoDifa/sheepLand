@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -125,7 +126,7 @@ public class ServerManager {
      * Creates a serverSocket for the server and starts the clientHandling by
      * calling handleClientRequest
      */
-    public void startServer() {
+    public void startServerSocket() {
 
         //cerco di tirare su il server
         try {
@@ -221,8 +222,8 @@ public class ServerManager {
     }
 
     /**
-     * Rejects clients when the number it isn't sufficient to start a game
-     * or the server is full
+     * Rejects clients when the number it isn't sufficient to start a game or
+     * the server is full
      */
     private void handleClientRejection(String message) {
         DebugLogger.println("Rifiuto Client.");
@@ -248,10 +249,14 @@ public class ServerManager {
         //svuoto array socket
         clientSockets.clear();
     }
-    
+
+    public void startRMI() {
+        
+    }
+
     /**
-     * The timer that starts when the first client of a game 
-     * connects to the server
+     * The timer that starts when the first client of a game connects to the
+     * server
      */
     private class Timer implements Runnable {
 
@@ -289,13 +294,42 @@ public class ServerManager {
         }
 
     }
-    
+
     /**
      * Main method, creates a serverMangager and starts it
-     * @param args 
+     *
+     * @param args
      */
     public static void main(String[] args) {
+        //creo un server su una certa porta
         ServerManager server = new ServerManager(5050);
-        server.startServer();
+        String answer;
+        int choice;
+
+        Scanner stdIn = new Scanner(System.in);
+        boolean stringValid = false;
+
+        while (!stringValid) {
+            try {
+                System.out.println(
+                        "Scegli connessione:\n1- Socket\n2- RMI");
+                answer = stdIn.nextLine();
+                choice = Integer.parseInt(answer);
+
+                if (choice == 1) {
+                    server.startServerSocket();
+                    stringValid = true;
+                } else if (choice == 2) {
+                    server.startRMI();
+                    stringValid = true;
+                } else {
+                    System.out.println("La scelta inserita non è valida\n");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Scelta non valida\n");
+
+            }
+        }
+        System.out.println("Server spento.");
     }
 }

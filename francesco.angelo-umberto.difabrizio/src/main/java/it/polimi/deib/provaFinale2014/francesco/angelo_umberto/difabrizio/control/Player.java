@@ -458,13 +458,18 @@ public class Player {
 
             //se il pastore ha abbastanza soldi paga
             if (shepherd[0].ifPossiblePay(cardPrice)) {
-
+                //carta scquistabile
+                gameManager.server.sendTo(this.hashCode(), "Carta acquistabile");
+                
                 //recupero la carta dal banco
                 Card card = this.gameManager.bank.getCard(
                         chosenTypeOfCard);
 
                 //la do al pastore
                 this.shepherd[0].addCard(card);
+                
+                //lo informo
+                //TODO
                 return;
             } else {
                 //se non ha abbastanza soldi

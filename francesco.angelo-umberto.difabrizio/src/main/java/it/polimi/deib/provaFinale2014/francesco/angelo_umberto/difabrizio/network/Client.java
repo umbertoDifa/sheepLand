@@ -135,20 +135,20 @@ public class Client {
      *                     went ok.
      */
     private void makeChoiceUntil(String acceptString) {
+        String result;
+
         while (true) {
-            String result;
-            DebugLogger.println("rispondo scelta:");
-
-            //scelgo azione
-            talkTo();
-
-            //ricevo ok o err
             result = receiveString();
             DebugLogger.println("Ricevuta: " + result);
+            
             if (result.contains(acceptString)) {
                 break;
+            } else {
+                DebugLogger.println("rispondo scelta:");
+                sendString(stdIn.nextLine());
+                result = receiveString();
+                DebugLogger.println("Ricevuta: " + result);
             }
-            //errore
         }
     }
 
@@ -196,7 +196,7 @@ public class Client {
 
             //scelta azione
             makeChoiceUntil("successo");
-            
+
             DebugLogger.println("Azione completata!");
         }
     }
