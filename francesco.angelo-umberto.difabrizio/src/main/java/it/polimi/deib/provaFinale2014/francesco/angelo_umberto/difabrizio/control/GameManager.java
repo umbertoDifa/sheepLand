@@ -56,20 +56,25 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         //salvo i loro nomi in un array
         this.clientNickNames = clientNickNames.toArray(new String[playersNumber]);
-        //TODO check
+
         //creo la mappa univoca del gioco
         this.map = new Map();
+
         //creo il collegamento all'univoco serverThread
         this.server = server;
+
+        //creo la banca
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
+
+        //setto il pastore principale
         if (this.playersNumber <= ControlConstants.NUM_FEW_PLAYERS.getValue()) {
             this.shepherd4player = ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue();
         } else {
             this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
         }
-        //setto arraylist giocatori e array hashcode giocatori
+        //setto arraylist dei giocatori 
         this.setUpPlayers();
     }
 
@@ -274,6 +279,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
+    //TODO modularizzare
     private void playTheGame() {
         int[][] classification = new int[2][playersNumber];
         int numOfWinners = 1;
@@ -287,6 +293,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
+            //TODO:broadcast fine gioco
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
             //stilo la classifica in ordine decrescente
             classification = this.calculatePoints();
@@ -322,6 +329,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void broadcastInitialConditions() {
+        //LandData landData = this.map.createLandData();
+        //GameData gameData = this.createGameData();
+        //add cards
+        //CompleteDataTransfer data = createDataTransfer();
+        //server.broadcastInitialConditon(data)
         for (int i = 0; i < playersNumber; i++) {
             this.server.sendTo(clientNickNames[i],
                     "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
@@ -330,6 +342,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     + ". Ogni giocatore ha :" + GameConstants.NUM_ACTIONS.getValue() + " azioni.");
         }
     }
+    
+    
 
     private void executeRounds() throws FinishedFencesException {
         currentPlayer = this.firstPlayer;
@@ -422,12 +436,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 }
             }
         }
-        if (this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()) {
-            //se sono finiti i recinti normali chiamo l'ultimo giro
-            return true;
-        }
-        //se ci sono ancora recinti non chiamo l'ultimo giro
-        return false;
+        //se sono finiti i recinti normali chiamo l'ultimo giro
+        return this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue();
     }
 
     /**
@@ -603,7 +613,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * chiedo conferma per lanciare il dado al giocatore corrispondente al
      * playerHashCode. Ritorno sempre un valore random
      *
-     * @param playerHashCode
+     * @param playerNickName
      *
      * @return
      */

@@ -219,7 +219,7 @@ public class ServerManager implements ServerRmi {
                     "Avvio il gioco con " + clientNickNames.size() + " giocatori");
 
             //avvio il thread per gestire la partita
-            executor.submit(new ServerThread(clientNickNames));
+            executor.submit(new ServerThread(clientNickNames, new SocketTrasmission()));
 
             //aumento i giochi attivi
             activatedGames++;

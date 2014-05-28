@@ -15,22 +15,23 @@ import java.util.Map;
  */
 public class ServerThread implements Runnable {
 
-    private final List<SocketClientProxy> client = new ArrayList<SocketClientProxy>();
-    private HashMap<Integer, SocketClientProxy> clientPlayerMap = new HashMap<Integer, SocketClientProxy>(); //mappa per tenere le coppie playerHash - playerSclient
-
+    private final TrasmissionController trasmissionController;
     private final GameManager gameManager;
 
-    public ServerThread(List<String> clientNickNames) {
+    public ServerThread(List<String> clientNickNames, TrasmissionController trasmissionController) {
         DebugLogger.println("ServerThread creato");
 
         this.gameManager = new GameManager(clientNickNames, this);
         DebugLogger.println("GameManger creato");
+        
+        this.trasmissionController = trasmissionController;
 
     }
 
     public void run() {
         DebugLogger.println("Inizo partita run ServerThread");
         this.broadcastMessage("Partita avviata!");
+       
         DebugLogger.println("Broadcast di benvenuto effettuato");
         this.gameManager.startGame();
 
@@ -39,6 +40,10 @@ public class ServerThread implements Runnable {
         ServerManager.activatedGames--;
     }
 
+    
+    public void broadcastInitialCondition(){
+        trasmissionController.broadcastInitialCondition();
+    }
     /**
      * Invia message e ottiene una stringa di risposta dal client corrispondente
      * all'hashCode

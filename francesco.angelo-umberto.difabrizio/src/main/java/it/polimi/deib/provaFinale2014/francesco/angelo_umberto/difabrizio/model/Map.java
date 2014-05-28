@@ -4,6 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.List;
+import javafx.scene.input.KeyCode;
 
 /**
  * Rappresenta la plancia, quindi conosce Strade e Regioni e come esse sono
@@ -100,7 +101,7 @@ public class Map {
      * quel preciso valore
      *
      * @param region La regione i cui confini devono essere controllati
-     * @param value Il valore della strada limitrofa che si cerca
+     * @param value  Il valore della strada limitrofa che si cerca
      *
      * @return La strada trovata
      *
@@ -385,13 +386,14 @@ public class Map {
      * regione in cui arrivo.
      *
      * @param startRegion Regione di partenza
-     * @param street Strada attraverso cui passare
+     * @param street      Strada attraverso cui passare
      *
      * @return Regione di arrivo
      *
      * @throws RegionNotFoundException Se la reigone di partenza e quella di
-     * arrivo non confinano o se non esiste una regione d'arrivo passando per la
-     * strada street
+     *                                 arrivo non confinano o se non esiste una
+     *                                 regione d'arrivo passando per la strada
+     *                                 street
      */
     public Region getEndRegion(Region startRegion, Street street) throws
             RegionNotFoundException {
@@ -428,7 +430,7 @@ public class Map {
      * @return L'indice cercato
      *
      * @throws NodeNotFoundException Se la regione o la strada cercate non
-     * esistono
+     *                               esistono
      */
     //TODO: vale la pena questa exception? io gli passo un nodo quindi di 
     //sicuro esisterà...però come buona pratica...
@@ -468,4 +470,44 @@ public class Map {
         }
         return numOvines;
     }
+
+//    public LandData createLandData() {
+//        int i;
+//        LandData landData = new LandData();
+//
+//        landData.clean();
+//
+//        //per ogni regione
+//        for (i = 0; i < GameConstants.NUM_REGIONS.getValue(); i++) {
+//            //creo il RegionData
+//            RegionData regionData = new RegionData();
+//
+//            Region region = (Region) regions[i];
+//            //per ogni ovino di quella regione aggiorno il RegionData
+//            for (Ovine ovine : region.getMyOvines()) {
+//                if (ovine.getType() == OvineType.SHEEP) {
+//                    regionData.addSheep();
+//                } else if (ovine.getType() == OvineType.RAM) {
+//                    regionData.addRam();
+//                } else {
+//                    regionData.addLamb();
+//                }
+//            }
+//
+//            landData.addRegion(regionData);//TODO funziona?
+//        }
+//        
+//        //per ogni strada
+//        for(i = 0; i < GameConstants.NUM_STREETS.getValue(); i++){
+//            StreetData streetData = new StreetData();
+//            
+//            Street street = (Street) streets[i];
+//            if(street.hasFence()){
+//                streetData.putFence();
+//            }else if(street.hasShepherd()){
+//                streetData.setShepherd(null);
+//            }
+//        }
+//    }
+
 }
