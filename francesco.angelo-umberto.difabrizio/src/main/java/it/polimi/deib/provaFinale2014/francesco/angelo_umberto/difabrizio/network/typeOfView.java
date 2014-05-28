@@ -6,6 +6,7 @@ import java.util.List;
  *
  * @author Umberto
  */
+//TODO: refactor
 public interface typeOfView {
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
@@ -19,7 +20,7 @@ public interface typeOfView {
 
     public void refereshCurrentPlayer(String currenPlayer);
 
-    public void refereshCards(List<String> myCards);
+    public void refereshCards(String[] myCards);
 
     public void refreshBlackSheep(int regionIndex);
 
@@ -27,7 +28,7 @@ public interface typeOfView {
 
     public void setUpShepherds();
 
-    public void chooseAction();
+    public int chooseAction(int[] avaibleActions, String[] avaibleStringedActions);
 
     public void moveOvine();
 
@@ -47,5 +48,10 @@ public interface typeOfView {
     public void killOvine();
 
     public void refreshKillOvine(int regionIndex);
-
+    
+    public String askNickName();
+    
+    public int askIdShepherd();
+    
+    public int askStreet();
 }

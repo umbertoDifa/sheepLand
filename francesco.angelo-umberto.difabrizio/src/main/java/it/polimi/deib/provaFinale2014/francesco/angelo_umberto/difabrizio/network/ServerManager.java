@@ -324,7 +324,7 @@ public class ServerManager implements ServerRmi {
 
     }
 
-    public int connect(ClientRmi client, String nickName) throws RemoteException {
+    public boolean connect(ClientRmi client, String nickName) throws RemoteException {
 
         //se il client che tenta di connettersi non esiste
         if (!NickClientRmiMap.containsKey(nickName)) {
@@ -351,7 +351,7 @@ public class ServerManager implements ServerRmi {
                 //TODO disconnect client
             }
         }
-        return 0;//FIXME!!
+        return false;//FIXME!!
     }
 
     /**
