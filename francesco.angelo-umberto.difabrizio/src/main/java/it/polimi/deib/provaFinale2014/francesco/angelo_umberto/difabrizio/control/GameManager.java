@@ -324,6 +324,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         DebugLogger.println("SetUpGame Effettuato");
         this.playTheGame();
+        
         //gameFinished
     }
 
