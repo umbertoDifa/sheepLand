@@ -21,6 +21,8 @@ public class ClientRmi implements RemoteClientRmi {
     private int port;
     private String nameServer;
     private typeOfView view;
+    private ServerRmi serverRmi;
+    private PlayerRemote playerRemote;
 
     public ClientRmi(String ip, int port, String nameServer, typeOfView view, String nickName) {
         this.nickName = nickName;
@@ -35,7 +37,7 @@ public class ClientRmi implements RemoteClientRmi {
             Registry registry = LocateRegistry.getRegistry(ip, port);
 
             //cerco l'oggetto nel registry
-            ServerRmi serverRmi = (ServerRmi) registry.lookup(
+            serverRmi = (ServerRmi) registry.lookup(
                     nameServer);
             
             boolean nickOk;
@@ -72,7 +74,7 @@ public class ClientRmi implements RemoteClientRmi {
         view.refereshCurrentPlayer(currenPlayer);
     }
 
-    public void refereshCards(List<String> myCards) {
+    public void refereshCards(String[] myCards) {
         view.refereshCards(myCards);
     }
 
@@ -85,7 +87,10 @@ public class ClientRmi implements RemoteClientRmi {
     }
 
     public void setUpShepherds() {
-        view.
+        view.askIdShepherd();
+        view.askRegion();
+        
+                
     }
 
     public void chooseAction() {
@@ -127,6 +132,14 @@ public class ClientRmi implements RemoteClientRmi {
 
     public void refreshKillOvine(int regionIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refereshCards(List<String> myCards) throws RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void connectPlayerRemote(PlayerRemote playerRemote) {
+        this.playerRemote = playerRemote;
     }
 
 }

@@ -52,5 +52,7 @@ public interface RemoteClientRmi extends Remote {
     public void killOvine() throws RemoteException;
 
     public void refreshKillOvine(int regionIndex) throws RemoteException;
+    
+    public void connectRmiTrasmission(RmiTrasmission rmiTrasmission);
 
 }
