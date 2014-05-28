@@ -22,9 +22,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -43,23 +40,23 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
+    private String clientNickNames[];
     private final int playersNumber;
-    private int firstPlayer; //rappresenterà il segnalino indicante il primo giocatore del giro
+    /**
+     * rappresenterà il segnalino indicante il primo giocatore del giro
+     */
+    private int firstPlayer;
     protected int currentPlayer;
-    private final int[] playersHashCode; //valore cached degli hash dei giocatori
     protected final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
 
-    /**
-     * Crea un GameManager
-     *
-     * @param playersNumber Numero dei giocatori di una partita
-     * @param server Thread che gestisce la partita
-     */
-    public GameManager(int playersNumber, ServerThread server) {
-        this.playersNumber = playersNumber;
-        //creo un array della dimensione del numero dei player
-        this.playersHashCode = new int[playersNumber];
+    public GameManager(List<String> clientNickNames, ServerThread server) {
+        //salvo il numero di player
+        this.playersNumber = clientNickNames.size();
+
+        //salvo i loro nomi in un array
+        this.clientNickNames = clientNickNames.toArray(new String[playersNumber]);
+        //TODO check
         //creo la mappa univoca del gioco
         this.map = new Map();
         //creo il collegamento all'univoco serverThread
@@ -74,7 +71,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
         //setto arraylist giocatori e array hashcode giocatori
         this.setUpPlayers();
-        this.setUpSocketPlayerMap();
     }
 
     /**
@@ -85,9 +81,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //per ogni giocatore
         for (int i = 0; i < playersNumber; i++) {
             //lo aggiungo alla lista dei giocatori
-            players.add(new Player(this));
-            //salvo il suo hashcode
-            playersHashCode[i] = players.get(i).hashCode();
+            players.add(new Player(this, clientNickNames[i]));
         }
     }
 
@@ -158,7 +152,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             currentPlayer = (firstPlayer + i) % playersNumber;
 
             //sveglia il currentPlayer 
-            server.sendTo(playersHashCode[currentPlayer], "E' il tuo turno");
+            server.sendTo(clientNickNames[currentPlayer], "E' il tuo turno");
             DebugLogger.println("E' il turno inviato shepherds");
 
             //per ogni suo pastore
@@ -168,25 +162,25 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     try {
                         //se ho un valore di ritorno
                         chosenStreet = askStreet(
-                                this.playersHashCode[currentPlayer], j);
+                                clientNickNames[currentPlayer], j);
                         break;
                         //se strada non trovata 
                     } catch (StreetNotFoundException ex) {
                         //invio msg strada non trovata e ricomincia loop
-                        this.server.sendTo(this.playersHashCode[currentPlayer],
+                        this.server.sendTo(clientNickNames[currentPlayer],
                                 ex.getMessage());
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, ex.getMessage(), ex);
                         //se la strada è occupata
                     } catch (BusyStreetException e) {
                         //manda il messaggio di errore al client e ricomincia il loop
-                        this.server.sendTo(this.playersHashCode[currentPlayer],
+                        this.server.sendTo(clientNickNames[currentPlayer],
                                 e.getMessage());
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, e.getMessage(), e);
                     }
                 }//while
-                this.server.sendTo(this.playersHashCode[currentPlayer],
+                this.server.sendTo(clientNickNames[currentPlayer],
                         "Pastore accettato");
                 DebugLogger.println(
                         "Setto il pastore: " + j + " del giocatore: " + currentPlayer
@@ -208,7 +202,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
                 DebugLogger.println("invio conferma");
                 //invia conferma riepilogativa all'utente
-                this.server.sendTo(this.playersHashCode[currentPlayer],
+                this.server.sendTo(clientNickNames[currentPlayer],
                         "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
 
                 try {
@@ -216,7 +210,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     this.server.broadcastExcept(
                             "Il giocatore " + currentPlayer + " ha posizionato il pastore " + j + " nella strada " + this.map.getNodeIndex(
                                     chosenStreet),
-                            playersHashCode[currentPlayer]);
+                            clientNickNames[currentPlayer]);
                 } catch (NodeNotFoundException ex) {
                     //è impossibile che la strada non esista perchè è stata appena convertita...
                     Logger.getLogger(DebugLogger.class.getName()).log(
@@ -239,13 +233,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
      */
     private void setUpMap() {
         this.map.setUp();
-    }
-
-    /**
-     * chiama l'omonimo metodo del serverThread
-     */
-    private void setUpSocketPlayerMap() {
-        this.server.setUpSocketPlayerMap(playersHashCode);
     }
 
     /**
@@ -312,12 +299,12 @@ public class GameManager {//TODO: pattern memento per ripristini?
             int i;
             //per tutti i vincitori
             for (i = 0; i < numOfWinners; i++) {
-                this.server.sendTo(this.playersHashCode[classification[0][i]],
+                this.server.sendTo(clientNickNames[classification[0][i]],
                         "hai vinto! con" + classification[1][i]);
             }
             //per tutti gli altri
             for (; i < playersNumber; i++) {
-                this.server.sendTo(this.playersHashCode[classification[0][i]],
+                this.server.sendTo(clientNickNames[classification[0][i]],
                         "hai perso! con" + classification[1][i]);
             }
 
@@ -336,7 +323,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
     private void broadcastInitialConditions() {
         for (int i = 0; i < playersNumber; i++) {
-            this.server.sendTo(playersHashCode[i],
+            this.server.sendTo(clientNickNames[i],
                     "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
                     + "; ogni giocatore ha :" + this.shepherd4player
                     + "pastori. Il primo del turno è :" + firstPlayer
@@ -384,7 +371,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     //non può verificarsi in questa occasione
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
-                            null, ex);
+                            ex.getMessage(), ex);
                 }
             }
         }//while
@@ -404,15 +391,16 @@ public class GameManager {//TODO: pattern memento per ripristini?
         } catch (CannotMoveAnimalException e) {
             this.server.broadcastMessage(e.getMessage());
             Logger.getLogger(DebugLogger.class.getName()).log(
-                    Level.SEVERE, e.getMessage(), e);
+                    Level.SEVERE,
+                    "La pecora non si muove perchè: " + e.getMessage(), e);
         } catch (NodeNotFoundException ex) {
             //non può verificarsi perchè se la pecora si muove allora il nodo esiste
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+                    "La pecora non si muove perchè: " + ex.getMessage(), ex);
         }
 
         //sveglia il client
-        server.sendTo(playersHashCode[player], "E' il tuo turno");
+        server.sendTo(clientNickNames[player], "E' il tuo turno");
         DebugLogger.println("E' il tuo turno inviato");
 
         //faccio fare le azioni al giocatore
@@ -427,7 +415,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 } catch (ActionException ex) {
                     DebugLogger.println("Gestisco ActionCancelledException");
                     //avvisa e riavvia la procedura di scelta dell'i-esima azione
-                    this.server.sendTo(playersHashCode[player],
+                    this.server.sendTo(clientNickNames[player],
                             "err:" + ex.getMessage());
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE, ex.getMessage(), ex);
@@ -446,15 +434,15 @@ public class GameManager {//TODO: pattern memento per ripristini?
      * Chiede al giocatore corrispondente all playerHashCode, in quale strada
      * posizionare il pastore il cui id è idShepherd
      *
-     * @param playerHashCode
+     * @param playerName
      * @param idShepherd
      *
      * @return
      *
      * @throws StreetNotFoundException se la strada non esiste
-     * @throws BusyStreetException se la strada è occupata
+     * @throws BusyStreetException     se la strada è occupata
      */
-    protected Street askStreet(int playerHashCode, int idShepherd) throws
+    protected Street askStreet(String playerName, int idShepherd) throws
             StreetNotFoundException,
             BusyStreetException {
         String errorString = "Strada già occupata, prego riprovare:";
@@ -462,7 +450,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         DebugLogger.println("Chiedo una strada in askStreet");
 
         //raccogli decisione
-        String stringedStreet = this.server.talkTo(playerHashCode,
+        String stringedStreet = this.server.talkTo(playerName,
                 "In quale strada vuoi posizionare il pastore " + Integer.toString(
                         idShepherd + 1) + " ?");
         DebugLogger.println("Risposta sulla strada ottenuta");
@@ -478,35 +466,16 @@ public class GameManager {//TODO: pattern memento per ripristini?
         return chosenStreet;
     }
 
-//    protected Shepherd chooseShepherdToMove() throws ActionCancelledException {
-//        //se c'è più di un pastore per giocatore
-//        if (shepherd4player > 1) {
-//
-//            //chiedi al giocatore l'id del pastore da muovere
-//            players.get(currentPlayer).idShepherdToMove = this.askIdShepherd(this.hashCode(),
-//                    shepherd4player);
-//            //prendi shepherd corrispondente
-//            return players.get(currentPlayer).shepherd[players.get(currentPlayer).idShepherdToMove];
-//
-//            //lancia eccezione se non ci sono pastori
-//        } else if (shepherd4player < 0) {
-//            throw new ActionCancelledException("Nessun pastore da muovere.");
-//        }
-//        //esattamente un pastore
-//
-//        return players.get(currentPlayer).shepherd[0];
-//    }
     /**
      * Chiede, mandandogli la stringa message, al giocatore corrispondente all
      * hashCode, qual'è l'id del pastore da muovere tra i suoi numShepherd
      * pastori. Il metodo dev'essere invocato con numShepherd maggiore di zero.
      *
-     * @param hashCode
-     * @param numShepherd
+     * @param playerNickName
      *
      * @return id pastore scelto
      */
-    protected int askIdShepherd(int hashCode) {
+    protected int askIdShepherd(String playerNickName) {
         int idShepherd;
         String errorMessage;
 
@@ -515,11 +484,11 @@ public class GameManager {//TODO: pattern memento per ripristini?
             try {
                 //chiedi quale pastore muovere
                 idShepherd = Integer.parseInt(this.server.talkTo(
-                        hashCode, "Quale pastore vuoi muovere?"));
+                        playerNickName, "Quale pastore vuoi muovere?"));
 
                 //se l'id è valido
                 if (idShepherd > 0 && idShepherd <= shepherd4player) {
-                    this.server.sendTo(hashCode, "pastore selezionato ok");
+                    this.server.sendTo(playerNickName, "pastore selezionato ok");
                     break;
                 }
                 errorMessage = "Non esiste il pastore chiesto, prego riprovare.";
@@ -530,7 +499,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                 errorMessage = "La stringa inserita non identifica un pastore, prego riprovare.";
             }
 
-            this.server.sendTo(hashCode, errorMessage);
+            this.server.sendTo(playerNickName, errorMessage);
         }
 
         //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array                   
@@ -540,20 +509,21 @@ public class GameManager {//TODO: pattern memento per ripristini?
     /**
      * Chiede al player inviandogli la stringa message un id regione
      *
-     * @param playerHashCode
+     * @param playerNickName
      * @param message
      *
      * @return Regione corrispondente
      *
      * @throws RegionNotFoundException
      */
-    protected Region askAboutRegion(int playerHashCode, String message) throws
+    protected Region askAboutRegion(String playerNickName, String message)
+            throws
             RegionNotFoundException {
         Region chosenRegion;
-        String stringedRegion = this.server.talkTo(playerHashCode, message);
+        String stringedRegion = this.server.talkTo(playerNickName, message);
         chosenRegion = map.convertStringToRegion(stringedRegion);
         DebugLogger.println("regione ok");
-        this.server.sendTo(playerHashCode, "regione ok");
+        this.server.sendTo(playerNickName, "regione ok");
 
         return chosenRegion;
     }
@@ -583,7 +553,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             //tutto ok
         } catch (StreetNotFoundException ex) {
             throw new CannotMoveAnimalException(
-                    "La strada designata dal dado non esiste");
+                    "La strada indicata dal dado non esiste");
         } catch (RegionNotFoundException ex) {
             throw new CannotMoveAnimalException(
                     "La regione di arrivo non esiste");
@@ -610,17 +580,18 @@ public class GameManager {//TODO: pattern memento per ripristini?
         }
     }
 
-    protected void askCancelOrRetry(int playerHashCode, String message) throws
+    protected void askCancelOrRetry(String playerNickName, String message)
+            throws
             ActionCancelledException {
         //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
         DebugLogger.println("AskOrRetry avviato");
         Character choice = server.talkTo(
-                playerHashCode, message + " Riprovare(R) o Annullare(A)?").charAt(
+                playerNickName, message + " Riprovare(R) o Annullare(A)?").charAt(
                         0);
         switch (choice) {
             //se vuole riprovare
             case 'R':
-                this.server.sendTo(playerHashCode, "Riprova.");
+                this.server.sendTo(playerNickName, "Riprova.");
                 break;
             //se vuole annullare 
             default:
@@ -636,8 +607,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
      *
      * @return
      */
-    protected int askAndThrowDice(int playerHashCode) {
-        this.server.talkTo(playerHashCode,
+    protected int askAndThrowDice(String playerNickName) {
+        this.server.talkTo(playerNickName,
                 "Premi un tasto per lanciare dado?");
         //discard returned string e lancia il dado
         return Dice.roll();
@@ -671,7 +642,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
             classification[0][i] = i;
             for (RegionType type : RegionType.values()) {
                 //aggiungo al suo punteggio num di pecore in quel tipo di regione per num di carte di quel tipo
-                classification[1][i] += player.shepherd[0].numOfMyCardsOfType(type) * map.numOfOvineIn(type);
+                classification[1][i] += player.shepherd[0].numOfMyCardsOfType(
+                        type) * map.numOfOvineIn(type);
             }
             i++;
         }
@@ -694,7 +666,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private String printResults(int[][] classification) {
-        int tmp1, tmp2;
         String result = "";
         for (int i = 0; i < playersNumber; i++) {
             result += i + "posto: player" + classification[0][i] + "con" + classification[1][i];

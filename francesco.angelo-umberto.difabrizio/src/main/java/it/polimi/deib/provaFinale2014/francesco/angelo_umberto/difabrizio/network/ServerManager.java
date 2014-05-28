@@ -5,8 +5,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,18 +26,19 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class ServerManager {
+public class ServerManager implements ServerRmi {
 
     /**
      * It contains the seconds that the timeout waits before interrupting the
-     * process that waits for client's connections
+     * process that waits for client's connections, it's set up by the
+     * constructor.
      */
-    private final int secondsBeforeAcceptTimeout;
+    private int secondsBeforeAcceptTimeout;
 
     /**
      * Timeout in milliseconds for the client's connections
      */
-    private final int timeoutAccept;
+    private int timeoutAccept;
 
     //constanti generiche
     private final int MILLISECONDS_IN_SECONDS = 1000;
@@ -44,7 +51,7 @@ public class ServerManager {
     /**
      * The default minimum number of clients for a game
      */
-    private static final int DEFAULT_MIN_CLIENTS = 2;
+    private static final int DEFAULT_MIN_CLIENTS_FOR_GAME = 2;
     /**
      * The default maximum number of clients for a game
      */
@@ -56,31 +63,53 @@ public class ServerManager {
 
     //variabili
     /**
-     * Connection port of the server
+     * Connection port of the server (rmi or socket)
      */
     private final int port;
+    /**
+     * Server name of the rmi server
+     */
+    private String serverName;
+    private static boolean rmi;
+    
     private final int maxNumberOfGames;
     private final int maxClientsForGame;
+    
     private final int minClientsForGame;
     /**
      * It represents the number of active games. Since it's static it can be
      * modified by any thread which decrements it before dying
      */
-    static int activatedGames = 0;
-
+    protected static int activatedGames = 0;
+    /**
+     * The number of players waiting for a mach to start during an rmi
+     * connection
+     */
+    private int numberOfPlayers;
+    /**
+     * Thread timer
+     */
+    private Timer timer = new Timer();
     /**
      * The socket of the server
      */
-    ServerSocket serverSocket;
-
+    private ServerSocket serverSocket;
     /**
-     * The list of clients connecting to a certain game
+     * Lista dei nickNames dei client che sono in coda per iniziare una partita
      */
-    List<Socket> clientSockets = new ArrayList<Socket>();
+    private List<String> clientNickNames = new ArrayList<String>();
+    /**
+     * The client trying to connect
+     */
+    private Socket clientSocket;
     /**
      * Executes the threads which manage the games
      */
     ExecutorService executor = Executors.newCachedThreadPool();
+    
+    protected static HashMap<String, RmiClientProxy> NickClientRmiMap = new HashMap<String, RmiClientProxy>();
+    protected static HashMap<String, SocketClientProxy> NickSocketMap = new HashMap<String, SocketClientProxy>();
+    //TODO usare la riga sopra
 
     /**
      * It construct a server manager at a certain port, with a maximum and
@@ -107,19 +136,33 @@ public class ServerManager {
         //decidi cosa fare dei log delle exception
         DebugLogger.turnOffExceptionLog();
     }
-
+    
     public ServerManager(int port, int maxGames, int maxClientsForGame,
                          int minClientsForGame) {
         this(port, maxGames, maxClientsForGame, minClientsForGame,
                 DEFAULT_TIMEOUT_ACCEPT);
     }
-
+    
     public ServerManager(int port, int maxGames, int maxClientsForGame) {
-        this(port, maxGames, maxClientsForGame, DEFAULT_MIN_CLIENTS);
+        this(port, maxGames, maxClientsForGame, DEFAULT_MIN_CLIENTS_FOR_GAME);
     }
-
+    
     public ServerManager(int port) { //default constructor
         this(port, DEFAULT_MAX_GAMES, DEFAULT_MAX_CLIENTS_FOR_GAME);
+    }
+    
+    public ServerManager(String serverName, int port) {
+        this(serverName, port, DEFAULT_MIN_CLIENTS_FOR_GAME,
+                DEFAULT_MAX_CLIENTS_FOR_GAME, DEFAULT_MAX_GAMES);
+    }
+    
+    public ServerManager(String serverName, int port, int minClientsForGame,
+                         int maxClientsForGame, int maxGames) {
+        this.port = port;
+        this.serverName = serverName;
+        this.maxClientsForGame = maxClientsForGame;
+        this.minClientsForGame = minClientsForGame;
+        this.maxNumberOfGames = maxGames;
     }
 
     /**
@@ -143,22 +186,44 @@ public class ServerManager {
         //System.out.println("Server pronto");
         this.handleClientRequest();
     }
+    
+    public void startRMI() {
+        try {
+            //Creo una versione remota
+            ServerRmi stub = (ServerRmi) UnicastRemoteObject.exportObject(this,
+                    0);
+
+            //Setto i player che aspettano di iniziare una partita a 0
+            numberOfPlayers = 0;
+            //Creo registro rmi nel quale caricare la mia istanza del server
+            Registry registry = LocateRegistry.createRegistry(port);
+
+            //Faccio il bind della mia istanza remota con un nome specifico
+            registry.rebind(serverName, stub);
+            
+            System.out.println("ServerRmi caricato.");
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+        }
+        
+    }
 
     /**
      * Checks that there are enough clients for a game and starts it
      */
-    private void startGame() {
+    private void startSocketGame() {
         //se ci sono abbastanza  giocatori
-        if (this.clientSockets.size() >= minClientsForGame) {
+        if (this.clientNickNames.size() >= minClientsForGame) {
             DebugLogger.println(
-                    "Avvio il gioco con " + clientSockets.size() + " giocatori");
+                    "Avvio il gioco con " + clientNickNames.size() + " giocatori");
 
             //avvio il thread per gestire la partita
-            executor.submit(new ServerThread(clientSockets));
+            executor.submit(new ServerThread(clientNickNames));
 
             //aumento i giochi attivi
             activatedGames++;
-
+            
             System.out.println("Partita numero " + activatedGames + " avviata.");
         } else {
             //se non ci sono abbastanza giocatori
@@ -167,7 +232,15 @@ public class ServerManager {
         }
 
         //comunque vada svuota la lista dei socket
-        clientSockets.clear();
+        clientNickNames.clear();
+    }
+    
+    private void startRmiGame() {
+        if (numberOfPlayers >= minClientsForGame) {
+            DebugLogger.println(
+                    "Avvio il gioco con " + numberOfPlayers + " giocatori");
+            
+        }
     }
 
     /**
@@ -177,48 +250,100 @@ public class ServerManager {
      * rejects every client calling handleClientRejection
      */
     private void handleClientRequest() {
-        //creo un timer
-        Timer timer = new Timer();
-
+        
         while (true) {
             try {
                 //accetto un client
-                clientSockets.add(serverSocket.accept());
+                clientSocket = serverSocket.accept();
 
                 //se non ho attivato tutte le partite
                 if (ServerManager.activatedGames < maxNumberOfGames) {
-                    DebugLogger.println("Client accettato");
-                    //se è il primo client
-                    if (clientSockets.size() == 1) {
+                    DebugLogger.println("Chiedo nick");
+                    
+                    if (isNewPlayer()) {
+                        DebugLogger.println("Client accettato");
 
-                        //ne creo un altro
-                        timer = new Timer();
+                        //se è il primo client
+                        if (clientNickNames.size() == 1) {
+                            timer = new Timer();
 
-                        //avvio il timer
-                        timer.startTimer();
-                        DebugLogger.println("timer avviato");
-                    }
+                            //avvio il timer
+                            timer.startTimer();
+                            DebugLogger.println("timer avviato");
+                        } else if (clientNickNames.size() == maxClientsForGame) {
+                            //se ho tutti i client per un game
+                            timer.stopTimer();
 
-                    //se ho tutti i client per un game
-                    if (clientSockets.size() == maxClientsForGame) {
-                        //fermo il timer
-                        timer.stopTimer();
-
-                        //avvio il gioco
-                        startGame();
+                            //avvio il gioco
+                            startSocketGame();
+                        }
+                    } else {
+                        //TODO handle reconnection
                     }
                 } else {
                     //se le partite attivate sono il massimo
                     DebugLogger.println("Client rifiutato");
-                    handleClientRejection("Il server è pieno, riprova più tardi");
+                    handleClientRejection(
+                            "Il server è pieno, riprova più tardi");
                 }
+                
             } catch (IOException ex) {
                 //casini col server
                 Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
             }
         }
-
+        
+    }
+    
+    private boolean isNewPlayer() throws IOException {
+        
+        Scanner fromClient = new Scanner(clientSocket.getInputStream());
+        PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream());
+        
+        toClient.println("Inserisci il tuo nickName: ");
+        toClient.flush();
+        
+        String nickName = fromClient.nextLine();
+        if (NickSocketMap.containsKey(nickName)) {
+            DebugLogger.println("NickName alredy in use");
+            return false;
+        } else {
+            //aggiungilo alla map
+            NickSocketMap.put(nickName, new SocketClientProxy(clientSocket));
+            //aggiungilo ai client in connessione
+            clientNickNames.add(nickName);
+            DebugLogger.println("nickName " + nickName + "added");
+            return true;
+        }
+        
+    }
+    
+    public int connect(ClientRmi client, String nickName) throws RemoteException {
+        
+        numberOfPlayers++;
+        //se il client che tenta di connettersi non esiste
+        if (!NickClientRmiMap.containsKey(nickName)) {
+            //se ci sono partite da poter avviare
+            if (activatedGames < maxNumberOfGames) {
+                //se è il primo player
+                if (numberOfPlayers == 1) {
+                    timer = new Timer();
+                    timer.startTimer();
+                    DebugLogger.println("timer avviato");
+                    
+                } else if (numberOfPlayers == maxClientsForGame) {
+                    //se non è il primo
+                    timer.stopTimer();
+                    startRmiGame();
+                }
+                //TODO
+                //comunque vada lo mappo
+//                NickClientRmiMap.put(nickName, new RmiClientProxy(,
+//                        client, port))
+            }
+        }
+        return 0;//FIXME!!
     }
 
     /**
@@ -229,29 +354,15 @@ public class ServerManager {
         DebugLogger.println("Rifiuto Client.");
 
         //per tutti i client
-        for (Socket client : clientSockets) {
-            PrintWriter toClient;
+        for (Map.Entry pairs : NickSocketMap.entrySet()) {
 
-            try {
-                //provo ad avvisarli
-                toClient = new PrintWriter(client.getOutputStream());
-                toClient.println(message);
-                toClient.flush();
-                //TODO: questa close fa crashare il client che la riceve...
-                toClient.close();
-            } catch (IOException ex) {
-                Logger.getLogger(DebugLogger.class.getName()).log(
-                        Level.SEVERE, ex.getMessage(), ex);
-                //Il client a cui stavo per dire che non può giocare si è già disconnesso, stica.
-                //TODO giusto?
-            }
+            //provo ad avvisarli
+            SocketClientProxy client = (SocketClientProxy) pairs.getValue();
+            client.send(message);
+            
         }
         //svuoto array socket
-        clientSockets.clear();
-    }
-
-    public void startRMI() {
-        
+        clientNickNames.clear();
     }
 
     /**
@@ -259,40 +370,44 @@ public class ServerManager {
      * server
      */
     private class Timer implements Runnable {
-
+        
         private final Thread myThread;
-
+        
         public Timer() {
             this.myThread = new Thread(this);
         }
-
+        
         public void startTimer() {
             this.myThread.start();
         }
-
+        
         public void run() {
             try {
                 //avvio il timer
 
                 this.myThread.sleep(timeoutAccept);
-
+                
                 DebugLogger.println("Timer finito");
 
                 //se finisce avvio game
-                startGame();
+                if (rmi) {
+                    startRmiGame();
+                } else {
+                    startSocketGame();
+                }
             } catch (InterruptedException ex) {
                 //se blocco il timer io non succede niente, muori e basta.
                 Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
             }
         }
-
+        
         public void stopTimer() {
             this.myThread.interrupt();
             DebugLogger.println("Timer fermato");
-
+            
         }
-
+        
     }
 
     /**
@@ -302,32 +417,38 @@ public class ServerManager {
      */
     public static void main(String[] args) {
         //creo un server su una certa porta
-        ServerManager server = new ServerManager(5050);
+        ServerManager server;
         String answer;
         int choice;
-
+        int port = 5050;
+        String serverName = "sheepland";
+        
         Scanner stdIn = new Scanner(System.in);
         boolean stringValid = false;
-
+        
         while (!stringValid) {
             try {
                 System.out.println(
                         "Scegli connessione:\n1- Socket\n2- RMI");
                 answer = stdIn.nextLine();
                 choice = Integer.parseInt(answer);
-
+                
                 if (choice == 1) {
+                    stringValid = true;
+                    rmi = false;
+                    server = new ServerManager(port);
                     server.startServerSocket();
-                    stringValid = true;
                 } else if (choice == 2) {
-                    server.startRMI();
                     stringValid = true;
+                    rmi = true;
+                    server = new ServerManager(serverName, port);
+                    server.startRMI();
                 } else {
                     System.out.println("La scelta inserita non è valida\n");
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Scelta non valida\n");
-
+                
             }
         }
         System.out.println("Server spento.");

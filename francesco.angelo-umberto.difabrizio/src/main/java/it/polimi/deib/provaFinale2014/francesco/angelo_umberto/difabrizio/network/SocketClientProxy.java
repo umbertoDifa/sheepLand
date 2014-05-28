@@ -3,7 +3,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,13 +13,17 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class Sclient {
+public class SocketClientProxy {
 
     private final Socket socket;
     private Scanner fromClient;
     private PrintWriter toClient;
-
-    public Sclient(Socket socket) {
+    /**
+     * Online offline TODO: usarlo per gestire riconnessioni
+     */
+    private int status;
+    
+    public SocketClientProxy(Socket socket) {
         this.socket = socket;
         try {
             //inizializzo stream out

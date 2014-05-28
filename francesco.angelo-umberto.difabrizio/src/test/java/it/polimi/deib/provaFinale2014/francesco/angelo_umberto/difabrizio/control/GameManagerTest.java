@@ -1,4 +1,3 @@
-
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
@@ -17,22 +16,22 @@ import org.junit.Test;
  * @author Umberto
  */
 public class GameManagerTest {
-    
+
     public GameManagerTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -57,14 +56,8 @@ public class GameManagerTest {
     @Test
     public void testAskStreet() throws Exception {
         System.out.println("askStreet");
-        int playerHashCode = 0;
-        int idShepherd = 0;
-        GameManager instance = null;
-        Street expResult = null;
-        Street result = instance.askStreet(playerHashCode, idShepherd);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String playerHashCode;
+
     }
 
     /**
@@ -77,8 +70,6 @@ public class GameManagerTest {
         int hashCode = 0;
         GameManager instance = null;
         int expResult = 0;
-        int result = instance.askIdShepherd(hashCode);
-        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -94,8 +85,6 @@ public class GameManagerTest {
         String message = "";
         GameManager instance = null;
         Region expResult = null;
-        Region result = instance.askAboutRegion(playerHashCode, message);
-        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -110,7 +99,6 @@ public class GameManagerTest {
         int playerHashCode = 0;
         String message = "";
         GameManager instance = null;
-        instance.askCancelOrRetry(playerHashCode, message);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -125,8 +113,6 @@ public class GameManagerTest {
         int playerHashCode = 0;
         GameManager instance = null;
         int expResult = 0;
-        int result = instance.askAndThrowDice(playerHashCode);
-        assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -146,5 +132,5 @@ public class GameManagerTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
-    
+
 }

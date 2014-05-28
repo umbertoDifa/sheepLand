@@ -28,8 +28,7 @@ public class Client {
     private int me;
     private int firstPlayer;
     private int shepherds4player;
-    private int playersToWaitBefore;
-    private int playersToWaitAfter;
+
     private int numberOfAction;
 
     private int i;
@@ -59,6 +58,14 @@ public class Client {
             stdIn = new Scanner(System.in);
             DebugLogger.println("Canali di comunicazione impostati");
 
+            
+            //ricevo richiesta nick
+            System.out.println(receiveString());
+            
+            //rispondo nick
+            sendString(stdIn.nextLine());
+            
+            
             //raccolgo saluto TODO: potrei raccogliere un rifiuto, aggiustare
             System.out.println(receiveString());
 
@@ -73,9 +80,6 @@ public class Client {
             this.shepherds4player = Character.getNumericValue(token[3].charAt(0));
             this.firstPlayer = Character.getNumericValue(token[4].charAt(0));
             this.numberOfAction = Character.getNumericValue(token[5].charAt(0));
-
-            playersToWaitBefore = (((me - firstPlayer) + 2 * numberOfPlayers) % numberOfPlayers);
-            playersToWaitAfter = (numberOfPlayers - playersToWaitBefore - 1);
 
             DebugLogger.println(
                     numberOfPlayers + " " + me + " " + shepherds4player + " "
@@ -140,7 +144,7 @@ public class Client {
         while (true) {
             result = receiveString();
             DebugLogger.println("Ricevuta: " + result);
-            
+
             if (result.contains(acceptString)) {
                 break;
             } else {

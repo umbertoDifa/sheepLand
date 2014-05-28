@@ -15,23 +15,15 @@ import java.util.Map;
  */
 public class ServerThread implements Runnable {
 
-    private final List<Sclient> client = new ArrayList<Sclient>();
-    private HashMap<Integer, Sclient> clientPlayerMap = new HashMap<Integer, Sclient>(); //mappa per tenere le coppie playerHash - playerSclient
+    private final List<SocketClientProxy> client = new ArrayList<SocketClientProxy>();
+    private HashMap<Integer, SocketClientProxy> clientPlayerMap = new HashMap<Integer, SocketClientProxy>(); //mappa per tenere le coppie playerHash - playerSclient
 
     private final GameManager gameManager;
 
-    public ServerThread(List<Socket> clientSockets) {
+    public ServerThread(List<String> clientNickNames) {
         DebugLogger.println("ServerThread creato");
 
-        //per ogni socket nella lista
-        for (Socket clientSocket : clientSockets) {
-
-            //aggiungi ai client un nuovo Sclient legato al rispettivo socket
-            client.add(new Sclient(clientSocket));
-        }
-        DebugLogger.println("Creati " + client.size() + "client Sclient");
-        DebugLogger.println("Sclient creati");
-        this.gameManager = new GameManager(clientSockets.size(), this);
+        this.gameManager = new GameManager(clientNickNames, this);
         DebugLogger.println("GameManger creato");
 
     }
@@ -43,62 +35,49 @@ public class ServerThread implements Runnable {
         this.gameManager.startGame();
 
         //un thread è appena terminato e con lui la partita
+        //TODO eliminare tutti i clients di quella tabella dalla partita
         ServerManager.activatedGames--;
-    }
-
-    /**
-     * preso un array di hashcode dei player li mappa sui rispettivi sClient
-     *
-     * @param playersHashCode
-     */
-    public void setUpSocketPlayerMap(int[] playersHashCode) {
-        DebugLogger.println("ci sono " + playersHashCode.length + " hashcode:");
-
-        //per ogni hashcode, quindi per ogni player
-        for (int i = 0; i < playersHashCode.length; i++) {
-
-            //inserisci la coppia hashcode del player - Sclient corrispondente
-            clientPlayerMap.put(playersHashCode[i], client.get(i));
-        }
     }
 
     /**
      * Invia message e ottiene una stringa di risposta dal client corrispondente
      * all'hashCode
      *
-     * @param hashCode
+     * @param playerNickName
      * @param message
      *
      * @return String
      */
-    public String talkTo(int hashCode, String message) {
-        this.sendTo(hashCode, message);
-        return receiveFrom(hashCode);
+    public String talkTo(String playerNickName, String message) {
+        this.sendTo(playerNickName, message);
+        return receiveFrom(playerNickName);
     }
 
     /**
      * Invia una stringa message al client corrispondente all'hashCode
      *
-     * @param hashCode
+     * @param playerNickName
      * @param message
      */
-    public void sendTo(int hashCode, String message) {
-        clientPlayerMap.get(hashCode).send(message);
+    public void sendTo(String playerNickName, String message) {
+        ServerManager.NickSocketMap.get(playerNickName).send(message);
     }
 
     /**
      * Riceve una stringa dal client corrispondente all'hashcode
      *
-     * @param hashCode
+     *
+     * @param playerNickName
      *
      * @return String
      */
-    public String receiveFrom(int hashCode) {
-        return clientPlayerMap.get(hashCode).receive();
+    public String receiveFrom(String playerNickName) {
+        return ServerManager.NickSocketMap.get(playerNickName).receive();
     }
+
     //TODO correggi gli usi di questa in broadcastExcept...o forse no
     public void broadcastMessage(String message) {
-        broadcastExcept(message, -1);
+        broadcastExcept(message, null);
     }
 
     /**
@@ -109,19 +88,20 @@ public class ServerThread implements Runnable {
      * @param message
      * @param differentPlayer
      */
-    public void broadcastExcept(String message, int differentPlayer) {
-        
-        if (differentPlayer == -1) {
+    public void broadcastExcept(String message, String differentPlayer) {
+
+        if (differentPlayer == null) {
             //per ogni coppia di key,value
-            for (Map.Entry pairs : clientPlayerMap.entrySet()) {
-                sendTo((Integer) pairs.getKey(), message);
+            for (Map.Entry pairs : ServerManager.NickSocketMap.entrySet()) {
+                sendTo((String) pairs.getKey(), message);
             }
         } else {
-            //a tutti tranne il diffeerentPlayer
-            for (Map.Entry pairs : clientPlayerMap.entrySet()) {
-                if ((Integer) pairs.getKey() != differentPlayer) {
-                    //TODO: vedi se funziona questo cast
-                    sendTo((Integer) pairs.getKey(), message);
+            //a tutti tranne il differentPlayer
+            String name;
+            for (Map.Entry pairs : ServerManager.NickSocketMap.entrySet()) {
+                name = (String) pairs.getKey();
+                if (!name.equals(differentPlayer)) {
+                    sendTo((String) pairs.getKey(), message);
                 }
             }
         }
