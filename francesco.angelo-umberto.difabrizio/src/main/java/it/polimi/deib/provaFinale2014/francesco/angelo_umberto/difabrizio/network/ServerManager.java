@@ -71,10 +71,10 @@ public class ServerManager implements ServerRmi {
      */
     private String serverName;
     private static boolean rmi;
-    
+
     private final int maxNumberOfGames;
     private final int maxClientsForGame;
-    
+
     private final int minClientsForGame;
     /**
      * It represents the number of active games. Since it's static it can be
@@ -106,7 +106,7 @@ public class ServerManager implements ServerRmi {
      * Executes the threads which manage the games
      */
     ExecutorService executor = Executors.newCachedThreadPool();
-    
+
     protected static HashMap<String, RmiClientProxy> NickClientRmiMap = new HashMap<String, RmiClientProxy>();
     protected static HashMap<String, SocketClientProxy> NickSocketMap = new HashMap<String, SocketClientProxy>();
     //TODO usare la riga sopra
@@ -136,26 +136,26 @@ public class ServerManager implements ServerRmi {
         //decidi cosa fare dei log delle exception
         DebugLogger.turnOffExceptionLog();
     }
-    
+
     public ServerManager(int port, int maxGames, int maxClientsForGame,
                          int minClientsForGame) {
         this(port, maxGames, maxClientsForGame, minClientsForGame,
                 DEFAULT_TIMEOUT_ACCEPT);
     }
-    
+
     public ServerManager(int port, int maxGames, int maxClientsForGame) {
         this(port, maxGames, maxClientsForGame, DEFAULT_MIN_CLIENTS_FOR_GAME);
     }
-    
+
     public ServerManager(int port) { //default constructor
         this(port, DEFAULT_MAX_GAMES, DEFAULT_MAX_CLIENTS_FOR_GAME);
     }
-    
+
     public ServerManager(String serverName, int port) {
         this(serverName, port, DEFAULT_MIN_CLIENTS_FOR_GAME,
                 DEFAULT_MAX_CLIENTS_FOR_GAME, DEFAULT_MAX_GAMES);
     }
-    
+
     public ServerManager(String serverName, int port, int minClientsForGame,
                          int maxClientsForGame, int maxGames) {
         this.port = port;
@@ -186,7 +186,7 @@ public class ServerManager implements ServerRmi {
         //System.out.println("Server pronto");
         this.handleClientRequest();
     }
-    
+
     public void startRMI() {
         try {
             //Creo una versione remota
@@ -200,13 +200,13 @@ public class ServerManager implements ServerRmi {
 
             //Faccio il bind della mia istanza remota con un nome specifico
             registry.rebind(serverName, stub);
-            
+
             System.out.println("ServerRmi caricato.");
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
         }
-        
+
     }
 
     /**
@@ -219,11 +219,12 @@ public class ServerManager implements ServerRmi {
                     "Avvio il gioco con " + clientNickNames.size() + " giocatori");
 
             //avvio il thread per gestire la partita
-            executor.submit(new ServerThread(clientNickNames, new SocketTrasmission()));
+            executor.submit(new ServerThread(clientNickNames,
+                    new SocketTrasmission()));
 
             //aumento i giochi attivi
             activatedGames++;
-            
+
             System.out.println("Partita numero " + activatedGames + " avviata.");
         } else {
             //se non ci sono abbastanza giocatori
@@ -234,12 +235,15 @@ public class ServerManager implements ServerRmi {
         //comunque vada svuota la lista dei socket
         clientNickNames.clear();
     }
-    
+
     private void startRmiGame() {
         if (numberOfPlayers >= minClientsForGame) {
             DebugLogger.println(
                     "Avvio il gioco con " + numberOfPlayers + " giocatori");
-            
+            executor.submit(new ServerThread(clientNickNames,
+                    new RmiTrasmission()));
+        }else{
+        //TODO reject
         }
     }
 
@@ -250,7 +254,7 @@ public class ServerManager implements ServerRmi {
      * rejects every client calling handleClientRejection
      */
     private void handleClientRequest() {
-        
+
         while (true) {
             try {
                 //accetto un client
@@ -259,7 +263,7 @@ public class ServerManager implements ServerRmi {
                 //se non ho attivato tutte le partite
                 if (ServerManager.activatedGames < maxNumberOfGames) {
                     DebugLogger.println("Chiedo nick");
-                    
+
                     if (isNewPlayer()) {
                         DebugLogger.println("Client accettato");
 
@@ -286,25 +290,26 @@ public class ServerManager implements ServerRmi {
                     handleClientRejection(
                             "Il server è pieno, riprova più tardi");
                 }
-                
+
             } catch (IOException ex) {
                 //casini col server
                 Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
             }
         }
-        
+
     }
-    
+
     private boolean isNewPlayer() throws IOException {
-        
+
         Scanner fromClient = new Scanner(clientSocket.getInputStream());
         PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream());
-        
+
         toClient.println("Inserisci il tuo nickName: ");
         toClient.flush();
-        
+
         String nickName = fromClient.nextLine();
+
         if (NickSocketMap.containsKey(nickName)) {
             DebugLogger.println("NickName alredy in use");
             return false;
@@ -316,31 +321,34 @@ public class ServerManager implements ServerRmi {
             DebugLogger.println("nickName " + nickName + "added");
             return true;
         }
-        
+
     }
-    
+
     public int connect(ClientRmi client, String nickName) throws RemoteException {
-        
-        numberOfPlayers++;
+
         //se il client che tenta di connettersi non esiste
         if (!NickClientRmiMap.containsKey(nickName)) {
+
             //se ci sono partite da poter avviare
             if (activatedGames < maxNumberOfGames) {
+                numberOfPlayers++;
+                clientNickNames.add(nickName);
+                NickClientRmiMap.put(nickName, new RmiClientProxy(client));
                 //se è il primo player
                 if (numberOfPlayers == 1) {
                     timer = new Timer();
                     timer.startTimer();
                     DebugLogger.println("timer avviato");
-                    
+
                 } else if (numberOfPlayers == maxClientsForGame) {
                     //se non è il primo
                     timer.stopTimer();
                     startRmiGame();
                 }
-                //TODO
+
                 //comunque vada lo mappo
-//                NickClientRmiMap.put(nickName, new RmiClientProxy(,
-//                        client, port))
+            } else {
+                //TODO disconnect client
             }
         }
         return 0;//FIXME!!
@@ -359,7 +367,7 @@ public class ServerManager implements ServerRmi {
             //provo ad avvisarli
             SocketClientProxy client = (SocketClientProxy) pairs.getValue();
             client.send(message);
-            
+
         }
         //svuoto array socket
         clientNickNames.clear();
@@ -370,23 +378,23 @@ public class ServerManager implements ServerRmi {
      * server
      */
     private class Timer implements Runnable {
-        
+
         private final Thread myThread;
-        
+
         public Timer() {
             this.myThread = new Thread(this);
         }
-        
+
         public void startTimer() {
             this.myThread.start();
         }
-        
+
         public void run() {
             try {
                 //avvio il timer
 
                 this.myThread.sleep(timeoutAccept);
-                
+
                 DebugLogger.println("Timer finito");
 
                 //se finisce avvio game
@@ -401,13 +409,22 @@ public class ServerManager implements ServerRmi {
                         Level.SEVERE, ex.getMessage(), ex);
             }
         }
-        
+
         public void stopTimer() {
             this.myThread.interrupt();
             DebugLogger.println("Timer fermato");
-            
+
         }
-        
+
+    }
+
+    protected boolean removeNickName(String nickToRemove) {
+        if (NickSocketMap.containsKey(nickToRemove)) {
+            NickSocketMap.remove(nickToRemove);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -422,17 +439,17 @@ public class ServerManager implements ServerRmi {
         int choice;
         int port = 5050;
         String serverName = "sheepland";
-        
+
         Scanner stdIn = new Scanner(System.in);
         boolean stringValid = false;
-        
+
         while (!stringValid) {
             try {
                 System.out.println(
                         "Scegli connessione:\n1- Socket\n2- RMI");
                 answer = stdIn.nextLine();
                 choice = Integer.parseInt(answer);
-                
+
                 if (choice == 1) {
                     stringValid = true;
                     rmi = false;
@@ -448,17 +465,10 @@ public class ServerManager implements ServerRmi {
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Scelta non valida\n");
-                
+
             }
         }
         System.out.println("Server spento.");
     }
-    
-    protected boolean removeNickName(String nickToRemove){
-        if(NickSocketMap.containsKey(nickToRemove)){
-            NickSocketMap.remove(nickToRemove);
-            return true;
-        }else
-            return false;
-    }            
+
 }

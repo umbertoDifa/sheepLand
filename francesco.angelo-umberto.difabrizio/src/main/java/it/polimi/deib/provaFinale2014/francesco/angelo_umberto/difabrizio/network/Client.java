@@ -4,6 +4,10 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,13 +36,14 @@ public class Client {
     private int numberOfAction;
 
     private int i;
+    private static boolean rmi;
 
     public Client(String ip, int port) {
         this.ip = ip;
         this.port = port;
     }
 
-    public void startClient() {
+    public void startSocketClient() {
         //TODO: importante! verficare cosa succede se un client si connette e si disconnette subito!
         //viene contato nell'accept del server ma poi a conti fatti non ci sarà!
         //TODO e se disconnette il server?
@@ -58,40 +63,71 @@ public class Client {
             stdIn = new Scanner(System.in);
             DebugLogger.println("Canali di comunicazione impostati");
 
-            
             //ricevo richiesta nick
             System.out.println(receiveString());
-            
+
             //rispondo nick
             sendString(stdIn.nextLine());
-            
-            
-            //raccolgo saluto TODO: potrei raccogliere un rifiuto, aggiustare
-            System.out.println(receiveString());
 
-            //raccolgo inforamzioni di base sulla partita
-            String gameInfo = receiveString();
-            System.out.println(gameInfo);
-            String delimiter = ":";
-            String token[] = gameInfo.split(delimiter);
+            while (true) {
+                String received = receiveString();
 
-            this.numberOfPlayers = Character.getNumericValue(token[1].charAt(0));
-            this.me = Character.getNumericValue(token[2].charAt(0));
-            this.shepherds4player = Character.getNumericValue(token[3].charAt(0));
-            this.firstPlayer = Character.getNumericValue(token[4].charAt(0));
-            this.numberOfAction = Character.getNumericValue(token[5].charAt(0));
+                if (received.equals("RefreshRegion")) {
 
-            DebugLogger.println(
-                    numberOfPlayers + " " + me + " " + shepherds4player + " "
-                    + firstPlayer + " " + numberOfAction);
+                } else if (received.equals("RefreshStreet")) {
 
-            //setUpPastori
-            setUpSheperds();
+                } else if (received.equals("RefereshGameParameters")) {
 
-            DebugLogger.println("Entro in execute Rounds");
-            //inizia i giri            
-            this.executeRound();
+                } else if (received.equals("RefereshCurrentPlayer")) {
 
+                } else if (received.equals("RefereshCards")) {
+
+                } else if (received.equals("RefreshBlackSheep")) {
+
+                } else if (received.equals("RefreshWolf")) {
+
+                } else if (received.equals("SetUpShepherds")) {
+
+                } else if (received.equals("ChooseAction")) {
+
+                } else if (received.equals("MoveOvine")) {
+
+                } else if (received.equals("MoveShepherd")) {
+
+                } else if (received.equals("BuyLand")) {
+
+                } else if (received.equals("MateSheepWith")) {
+
+                } else if (received.equals("KillOvine")) {
+
+                }
+            }
+
+//            //raccolgo saluto TODO: potrei raccogliere un rifiuto, aggiustare
+//            System.out.println(receiveString());
+//
+//            //raccolgo inforamzioni di base sulla partita
+//            String gameInfo = receiveString();
+//            System.out.println(gameInfo);
+//            String delimiter = ":";
+//            String token[] = gameInfo.split(delimiter);
+//
+//            this.numberOfPlayers = Character.getNumericValue(token[1].charAt(0));
+//            this.me = Character.getNumericValue(token[2].charAt(0));
+//            this.shepherds4player = Character.getNumericValue(token[3].charAt(0));
+//            this.firstPlayer = Character.getNumericValue(token[4].charAt(0));
+//            this.numberOfAction = Character.getNumericValue(token[5].charAt(0));
+//
+//            DebugLogger.println(
+//                    numberOfPlayers + " " + me + " " + shepherds4player + " "
+//                    + firstPlayer + " " + numberOfAction);
+//
+//            //setUpPastori
+//            setUpSheperds();
+//
+//            DebugLogger.println("Entro in execute Rounds");
+//            //inizia i giri            
+//            this.executeRound();
         } catch (IOException ex) {
             //Si verifica se porta sbagliata
             //o se il server non risponde entro un timeout
@@ -102,6 +138,29 @@ public class Client {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(),
                     ex);
+        }
+    }
+
+    private void startRmiClient() {
+
+        try {
+            Registry registry = LocateRegistry.getRegistry(ip, port);
+
+            //cerco l'oggetto nel registry
+            ServerRmi serverRmi = (ServerRmi) registry.lookup(
+                    "sheepland");
+
+            Scanner stdIn = new Scanner(System.in);
+            System.out.println("Inserisci il tuo nickName");
+            String nickName = stdIn.nextLine();
+
+            //serverRmi.connect(this, nickName);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "StartRmiClient" + ex.getMessage(), ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "Il server non è ancora bounded " + ex.getMessage(), ex);
         }
     }
 
@@ -213,6 +272,57 @@ public class Client {
 
     public static void main(String[] args) {
         Client client = new Client("127.0.0.1", 5050);
-        client.startClient();
+
+        Scanner stdIn = new Scanner(System.in);
+        boolean stringValid = false;
+        String answer;
+        int choice;
+
+        while (!stringValid) {
+            try {
+                System.out.println(
+                        "Scegli connessione:\n1- Socket\n2- RMI");
+                answer = stdIn.nextLine();
+                choice = Integer.parseInt(answer);
+
+                if (choice == 1) {
+                    stringValid = true;
+                    rmi = false;
+                    System.out.println(
+                            "Scegli interfaccia:\n1- CLC\n2- GUI");
+                    answer = stdIn.nextLine();
+                    choice = Integer.parseInt(answer);
+                    if (choice == 1) {
+                        ClientSocket clientSocket = new ClientSocket("127.0.0.1",
+                                5050, new CommandLineView());
+                    } else if (choice == 2) {
+                        ClientSocket clientSocket = new ClientSocket("127.0.0.1",
+                                5050, new GuiView());
+                    }
+                } else if (choice == 2) {
+                    stringValid = true;
+                    rmi = true;
+                    System.out.println(
+                            "Scegli interfaccia:\n1- CLC\n2- GUI");
+                    answer = stdIn.nextLine();
+                    choice = Integer.parseInt(answer);
+                    if (choice == 1) {
+                        ClientRmi clientRmi = new ClientRmi("127.0.0.1",
+                                5050, new CommandLineView());
+                    } else if (choice == 2) {
+                        ClientRmi clientRmi = new ClientRmi("127.0.0.1",
+                                5050, new GuiView());
+                    }
+
+                } else {
+                    System.out.println("La scelta inserita non è valida\n");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Scelta non valida\n");
+
+            }
+        }
+        System.out.println("Server spento.");
     }
+
 }

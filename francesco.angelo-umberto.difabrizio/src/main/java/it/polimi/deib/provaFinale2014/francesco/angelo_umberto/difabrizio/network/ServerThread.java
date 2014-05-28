@@ -42,6 +42,9 @@ public class ServerThread implements Runnable {
         ServerManager.activatedGames--;
     }
 
+    public void broadcastRegion(){
+        trasmissionController.broadcastRegion();
+    }
     
     public void broadcastInitialCondition(){
         trasmissionController.broadcastInitialCondition();

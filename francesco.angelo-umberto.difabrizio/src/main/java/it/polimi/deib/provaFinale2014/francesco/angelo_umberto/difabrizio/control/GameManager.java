@@ -328,11 +328,26 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void broadcastInitialConditions() {
-        //LandData landData = this.map.createLandData();
+        //LandData RegionData = this.map.createRegionData();
+        
         //GameData gameData = this.createGameData();
         //add cards
         //CompleteDataTransfer data = createDataTransfer();
         //server.broadcastInitialConditon(data)
+        
+        //informiamo animali regioni
+//        for(Region region: map.getRegions()){
+//            for(Ovine ovine : region.getMyOvines()){
+//                server.broadcastRegion(indexRegione, tipoOvino, numeroDIovino);
+//            }
+//        }
+        //informiamo pastori strade 
+        
+        //informiamo numerodi player, numero di pastori, il primo giocatore
+        
+        //a secnoda del player le carte
+        
+        
         for (int i = 0; i < playersNumber; i++) {
             this.server.sendTo(clientNickNames[i],
                     "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i

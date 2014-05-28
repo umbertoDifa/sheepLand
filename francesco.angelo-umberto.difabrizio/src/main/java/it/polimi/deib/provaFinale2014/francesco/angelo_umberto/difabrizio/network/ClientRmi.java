@@ -5,7 +5,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
  *
  * @author Umberto
  */
-public interface ClientRmi {
-    
-    
+public class ClientRmi extends RemoteClientRmi{
+
+   
 }
