@@ -39,7 +39,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected final ServerThread server;
 
     protected final Map map;
-    private List<Player> players = new ArrayList<Player>();
+    private List<PlayerImp> players = new ArrayList<PlayerImp>();
     private String clientNickNames[];
     private final int playersNumber;
     /**
@@ -81,7 +81,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //per ogni giocatore
         for (int i = 0; i < playersNumber; i++) {
             //lo aggiungo alla lista dei giocatori
-            players.add(new Player(this, clientNickNames[i]));
+            players.add(new PlayerImp(this, clientNickNames[i]));
         }
     }
 
@@ -621,8 +621,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
      *
      * @return player corrispondente al pastore
      */
-    protected Player getPlayerByShepherd(Shepherd shepherd) {
-        for (Player player : players) {
+    protected PlayerImp getPlayerByShepherd(Shepherd shepherd) {
+        for (PlayerImp player : players) {
             for (int i = 0; i < shepherd4player; i++) {
                 if (player.shepherd[i] == shepherd) {
                     return player;
@@ -637,7 +637,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         int tmp1, tmp2;
         //per ogni giocatore
         int i = 0;
-        for (Player player : players) {
+        for (PlayerImp player : players) {
             //per ogni tipo di regione
             classification[0][i] = i;
             for (RegionType type : RegionType.values()) {
