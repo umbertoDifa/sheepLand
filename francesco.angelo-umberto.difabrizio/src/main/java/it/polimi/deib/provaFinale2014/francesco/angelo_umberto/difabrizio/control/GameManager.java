@@ -293,7 +293,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
-            //TODO:broadcast fine gioco
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
             //stilo la classifica in ordine decrescente
             classification = this.calculatePoints();

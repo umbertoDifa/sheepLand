@@ -35,6 +35,8 @@ public class ServerThread implements Runnable {
         DebugLogger.println("Broadcast di benvenuto effettuato");
         this.gameManager.startGame();
 
+        this.broadcastMessage("Disconnessione.");
+        
         //un thread è appena terminato e con lui la partita
         //TODO eliminare tutti i clients di quella tabella dalla partita
         ServerManager.activatedGames--;
@@ -111,4 +113,6 @@ public class ServerThread implements Runnable {
             }
         }
     }
+    
+    
 }

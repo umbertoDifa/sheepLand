@@ -453,4 +453,12 @@ public class ServerManager implements ServerRmi {
         }
         System.out.println("Server spento.");
     }
+    
+    protected boolean removeNickName(String nickToRemove){
+        if(NickSocketMap.containsKey(nickToRemove)){
+            NickSocketMap.remove(nickToRemove);
+            return true;
+        }else
+            return false;
+    }            
 }
