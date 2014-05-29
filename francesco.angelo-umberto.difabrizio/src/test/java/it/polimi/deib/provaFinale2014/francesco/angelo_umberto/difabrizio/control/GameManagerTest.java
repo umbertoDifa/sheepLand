@@ -126,8 +126,8 @@ public class GameManagerTest {
         System.out.println("getPlayerByShepherd");
         Shepherd shepherd = null;
         GameManager instance = null;
-        PlayerImp expResult = null;
-        PlayerImp result = instance.getPlayerByShepherd(shepherd);
+        Player expResult = null;
+        Player result = instance.getPlayerByShepherd(shepherd);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

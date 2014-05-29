@@ -14,5 +14,7 @@ public interface TrasmissionController {
 
     public int askRegion();
 
-    public int askStreet();
+    public String askStreet(String nickName, int idShepherd);
+    
+    public void sendTo(String nickName, String message);
 }

@@ -164,7 +164,7 @@ public class ClientSocket {
         token = received.split(",");
         String nameOfActions = receiveString();
         
-        view.chooseAction();
+        view.chooseAction(avaibleActions, token);
     }
 
     public void moveOvine() {

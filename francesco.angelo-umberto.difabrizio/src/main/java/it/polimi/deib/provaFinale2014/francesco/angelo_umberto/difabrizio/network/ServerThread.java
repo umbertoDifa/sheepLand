@@ -22,7 +22,7 @@ public class ServerThread implements Runnable {
         DebugLogger.println("GameManger creato");
         
         this.trasmissionController = trasmissionController;
-
+        
     }
 
     public void run() {
@@ -39,6 +39,11 @@ public class ServerThread implements Runnable {
         ServerManager.activatedGames--;
     }
 
+    public TrasmissionController getTrasmissionController() {
+        return trasmissionController;
+    }
+    
+    
     public void broadcastRegion(){
         trasmissionController.broadcastRegion();
     }

@@ -39,7 +39,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected final ServerThread server;
 
     protected final Map map;
-    private List<PlayerImp> players = new ArrayList<PlayerImp>();
+    private List<Player> players = new ArrayList<Player>();
     private String clientNickNames[];
     private final int playersNumber;
     /**
@@ -75,7 +75,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
             this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
         }
         //setto arraylist dei giocatori 
-        this.setUpPlayers();
+        this.setUpPlayers();                
     }
 
     /**
@@ -86,7 +86,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //per ogni giocatore
         for (int i = 0; i < playersNumber; i++) {
             //lo aggiungo alla lista dei giocatori
-            players.add(new PlayerImp(this, clientNickNames[i]));
+            players.add(new Player(this, clientNickNames[i]));
         }
     }
 
@@ -154,11 +154,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //per ogni playerint 
         for (i = 0; i < this.playersNumber; i++) {
             //setto il player corrente
-            currentPlayer = (firstPlayer + i) % playersNumber;
-
-            //sveglia il currentPlayer 
-            server.sendTo(clientNickNames[currentPlayer], "E' il tuo turno");
-            DebugLogger.println("E' il turno inviato shepherds");
+            currentPlayer = (firstPlayer + i) % playersNumber;           
 
             //per ogni suo pastore
             for (j = 0; j < this.shepherd4player; j++) {
@@ -166,20 +162,21 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     //prova a chiedere la strada per il j-esimo pastore
                     try {
                         //se ho un valore di ritorno
-                        chosenStreet = askStreet(
+                        String stringedStreet = server.getTrasmissionController().askStreet(
                                 clientNickNames[currentPlayer], j);
+                        chosenStreet = checkStreet(stringedStreet);
                         break;
                         //se strada non trovata 
                     } catch (StreetNotFoundException ex) {
                         //invio msg strada non trovata e ricomincia loop
-                        this.server.sendTo(clientNickNames[currentPlayer],
+                        server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
                                 ex.getMessage());
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, ex.getMessage(), ex);
                         //se la strada è occupata
                     } catch (BusyStreetException e) {
                         //manda il messaggio di errore al client e ricomincia il loop
-                        this.server.sendTo(clientNickNames[currentPlayer],
+                       server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
                                 e.getMessage());
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE, e.getMessage(), e);
@@ -324,18 +321,17 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         DebugLogger.println("SetUpGame Effettuato");
         this.playTheGame();
-        
+
         //gameFinished
     }
 
     private void broadcastInitialConditions() {
         //LandData RegionData = this.map.createRegionData();
-        
+
         //GameData gameData = this.createGameData();
         //add cards
         //CompleteDataTransfer data = createDataTransfer();
         //server.broadcastInitialConditon(data)
-        
         //informiamo animali regioni
 //        for(Region region: map.getRegions()){
 //            for(Ovine ovine : region.getMyOvines()){
@@ -343,12 +339,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
 //            }
 //        }
         //informiamo pastori strade 
-        
         //informiamo numerodi player, numero di pastori, il primo giocatore
-        
         //a secnoda del player le carte
-        
-        
         for (int i = 0; i < playersNumber; i++) {
             this.server.sendTo(clientNickNames[i],
                     "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
@@ -357,8 +349,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
                     + ". Ogni giocatore ha :" + GameConstants.NUM_ACTIONS.getValue() + " azioni.");
         }
     }
-    
-    
 
     private void executeRounds() throws FinishedFencesException {
         currentPlayer = this.firstPlayer;
@@ -485,6 +475,19 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //se la strada è occuapata
         if (!chosenStreet.isFree()) {
             throw new BusyStreetException(errorString);
+            //solleva eccezione
+        }
+        //altrimenti ritorna la strada
+        return chosenStreet;
+    }
+
+    private Street checkStreet(String stringedStreet) throws
+            StreetNotFoundException, BusyStreetException {
+        Street chosenStreet = map.convertStringToStreet(stringedStreet);
+        DebugLogger.println("Conversione strada effettuata");
+        //se la strada è occuapata
+        if (!chosenStreet.isFree()) {
+            throw new BusyStreetException("Strada occupata");
             //solleva eccezione
         }
         //altrimenti ritorna la strada
@@ -646,8 +649,8 @@ public class GameManager {//TODO: pattern memento per ripristini?
      *
      * @return player corrispondente al pastore
      */
-    protected PlayerImp getPlayerByShepherd(Shepherd shepherd) {
-        for (PlayerImp player : players) {
+    protected Player getPlayerByShepherd(Shepherd shepherd) {
+        for (Player player : players) {
             for (int i = 0; i < shepherd4player; i++) {
                 if (player.shepherd[i] == shepherd) {
                     return player;
@@ -662,7 +665,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         int tmp1, tmp2;
         //per ogni giocatore
         int i = 0;
-        for (PlayerImp player : players) {
+        for (Player player : players) {
             //per ogni tipo di regione
             classification[0][i] = i;
             for (RegionType type : RegionType.values()) {
