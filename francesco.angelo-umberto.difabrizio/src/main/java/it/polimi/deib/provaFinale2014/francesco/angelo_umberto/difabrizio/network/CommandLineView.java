@@ -1,10 +1,12 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import java.io.InputStream;
 import java.io.PrintStream;
 
 public class CommandLineView implements typeOfView {
 
     private final PrintStream stdOut = System.out;
+    private final InputStream stdIn = System.in;
 
     public CommandLineView() {
 
@@ -101,7 +103,7 @@ public class CommandLineView implements typeOfView {
             stringToPrint += String.valueOf(avaibleActions[i])+"- "+ avaibleActions[i];
         }
         stdOut.println("inserire azione tra " + stringToPrint);
-        //TODO:
+        
     }
 
     public int askIdShepherd() {

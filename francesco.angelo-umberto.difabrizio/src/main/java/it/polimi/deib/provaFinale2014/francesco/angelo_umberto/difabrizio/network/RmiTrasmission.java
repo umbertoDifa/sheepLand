@@ -21,5 +21,7 @@ public class RmiTrasmission implements TrasmissionController {
     public void broadcastRegion() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    public void setUpShepherd()
 
 }
