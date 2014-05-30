@@ -1,6 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.typeOfView;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +14,7 @@ public class ClientSocket {
     //server info
     private final String ip;
     private final int port;
-    private final typeOfView view;
+    private final TypeOfView view;
 
     //canali di comunicazione
     private Scanner serverIn;
@@ -25,7 +25,7 @@ public class ClientSocket {
     private String token[];
     private String received;
 
-    public ClientSocket(String ip, int port, typeOfView view) {
+    public ClientSocket(String ip, int port, TypeOfView view) {
         this.ip = ip;
         this.port = port;
         this.view = view;

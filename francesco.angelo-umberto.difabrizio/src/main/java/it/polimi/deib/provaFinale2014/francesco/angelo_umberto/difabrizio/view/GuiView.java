@@ -3,7 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import java.util.List;
 
 
-public class GuiView implements typeOfView {
+public class GuiView implements TypeOfView {
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb) {
@@ -89,7 +89,7 @@ public class GuiView implements typeOfView {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int askStreet() {
+    public String askStreet() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

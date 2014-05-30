@@ -1,8 +1,9 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemoteImpl;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.typeOfView;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -22,11 +23,11 @@ public class ClientRmi implements ClientInterfaceRemote{
     private String ip;
     private int port;
     private String nameServer;
-    private typeOfView view;
+    private TypeOfView view;
     private ServerRmi serverRmi;
-    private PlayerRemoteImpl playerRmi;
+    private PlayerRemote playerRmi;
 
-    public ClientRmi(String ip, int port, String nameServer, typeOfView view, String nickName) {
+    public ClientRmi(String ip, int port, String nameServer, TypeOfView view, String nickName) {
         this.nickName = nickName;
         this.nameServer = nameServer;
         this.port = port;
@@ -89,9 +90,18 @@ public class ClientRmi implements ClientInterfaceRemote{
     }
 
     public boolean setUpShepherd(int idShepherd) {
-        //view.askIdShepherd();
-        int chosenStreet = view.askStreet();
-        return playerRmi.setUpShepherd(nickName, idShepherd, chosenStreet);
+        String chosenStreet = view.askStreet();
+        String result;
+        try {
+            result = playerRmi.setShepherd(idShepherd, chosenStreet);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return false;
+        }
+        if(result.contains("Patore posizionato corretamente!")){
+            return true;
+        }
+        return false;
     }
 
     public void chooseAction() {

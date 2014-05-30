@@ -1,12 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
-import java.net.Socket;
-import java.util.List;
-
 public class SocketTrasmission extends TrasmissionController {
     
     public String refreshRegion(String nickName, int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
@@ -63,7 +56,7 @@ public class SocketTrasmission extends TrasmissionController {
         String chosenStringedStreet = ServerSockets.NickSocketMap.get(nickName).receive();
         String result = super.getNick2PlayerMap().get(nickName).setShepherd(shepherdIndex, chosenStringedStreet);
         ServerSockets.NickSocketMap.get(nickName).send(result);
-        if (result.contains("Pastore settato")) {
+        if (result.contains("Patore posizionato corretamente!")) {
             return true;
         }
         return false;

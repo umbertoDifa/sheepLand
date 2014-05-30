@@ -3,7 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-public class CommandLineView implements typeOfView {
+public class CommandLineView implements TypeOfView {
 
     private final PrintStream stdOut = System.out;
     private final InputStream stdIn = System.in;
@@ -110,7 +110,7 @@ public class CommandLineView implements typeOfView {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int askStreet() {
+    public String askStreet() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

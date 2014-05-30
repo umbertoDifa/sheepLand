@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class Player {
+public class Player implements PlayerRemote{
 
     protected final Shepherd[] shepherd;
 
@@ -330,7 +330,7 @@ public class Player {
 
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
-        DebugLogger.println("Pastore settato");
+        DebugLogger.println("Patore posizionato corretamente!");
 
         DebugLogger.println("invio conferma");
 
