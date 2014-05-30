@@ -1,7 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
@@ -15,7 +13,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
@@ -148,6 +145,7 @@ public class GameManager implements Runnable {
 
     private void refreshCards(int indexOfPlayer) {
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
+        
         for (int j = 0; j < numberOfCards; j++) {
             Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
                     j);
@@ -339,6 +337,7 @@ public class GameManager implements Runnable {
                     numbOfRam++;
                 }
             }
+            //refersh la regione a tutti i client
             for (String client : clientNickNames) {
                 controller.refreshRegion(client, i, numbOfSheep,
                         numbOfRam, numbOfLamb);

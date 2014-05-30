@@ -95,8 +95,8 @@ public class CommandLineView implements TypeOfView {
         return null; //TODO
     }
 
-    public void refereshCards(String[] myCards) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refereshCard(String type, int value) {
+        stdOut.println("Hai una carta " + type + "di valore " + value);
     }
 
     public int chooseAction(int[] availableActions,

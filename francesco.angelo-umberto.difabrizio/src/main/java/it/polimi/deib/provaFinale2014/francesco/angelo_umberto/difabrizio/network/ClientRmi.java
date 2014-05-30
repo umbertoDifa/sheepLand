@@ -73,8 +73,8 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refereshCurrentPlayer(currenPlayer);
     }
 
-    public void refereshCards(String[] myCards) {
-        view.refereshCards(myCards);
+    public void refereshCard(String type,int value) {
+        view.refereshCard(type,value);
     }
 
     public void refreshBlackSheep(int regionIndex) {

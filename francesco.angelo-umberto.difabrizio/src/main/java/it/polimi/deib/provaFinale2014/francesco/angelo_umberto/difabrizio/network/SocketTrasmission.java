@@ -2,13 +2,18 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 public class SocketTrasmission extends TrasmissionController {
 
-    public void refreshRegion(String nickName, int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
-        ServerSockets.NickSocketMap.get(nickName).send("regione " + regionIndex
-                + numbOfSheep + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni");
+    public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
+                              int numbOfRam, int numbOfLamb) {
+        ServerSockets.NickSocketMap.get(nickName).send("RefreshRegion");
+        ServerSockets.NickSocketMap.get(nickName).send(
+                regionIndex + "," + numbOfSheep + "," + numbOfLamb + "," + numbOfRam);
     }
 
-    public void refreshStreet(String nickName, int streetIndex, boolean fence, String nickNameOfShepherdPlayer) {
-        ServerSockets.NickSocketMap.get(nickName).send(streetIndex + "," + fence + "," + nickNameOfShepherdPlayer);
+    public void refreshStreet(String nickName, int streetIndex, boolean fence,
+                              String nickNameOfShepherdPlayer) {
+        ServerSockets.NickSocketMap.get(nickName).send("RefreshStreet");
+        ServerSockets.NickSocketMap.get(nickName).send(
+                streetIndex + "," + fence + "," + nickNameOfShepherdPlayer);
     }
 
     public void refreshGameParameters(String nickName) {
@@ -19,8 +24,9 @@ public class SocketTrasmission extends TrasmissionController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshCard(String nickName, String card, int value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshCard(String nickName, String type, int value) {
+        ServerSockets.NickSocketMap.get(nickName).send("RefereshCard");
+        ServerSockets.NickSocketMap.get(nickName).send(type + "," + value);
     }
 
     public void refreshBlackSheep(String message) {
@@ -31,7 +37,8 @@ public class SocketTrasmission extends TrasmissionController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshMoveOvine(String nickName, String startRegion, String endRegion, String ovineType) {
+    public void refreshMoveOvine(String nickName, String startRegion,
+                                 String endRegion, String ovineType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -41,6 +48,7 @@ public class SocketTrasmission extends TrasmissionController {
      *
      * @param nickNameMover
      * @param newStreet
+     *
      * @return
      */
     public void refreshMoveShepherd(String nickNameMover, String newStreet) {
@@ -53,9 +61,10 @@ public class SocketTrasmission extends TrasmissionController {
 
     public boolean askSetUpShepherd(String nickName, int shepherdIndex) {
         ServerSockets.NickSocketMap.get(nickName).send("SetUpShepherd");
-        ServerSockets.NickSocketMap.get(nickName).send(""+shepherdIndex);
+        ServerSockets.NickSocketMap.get(nickName).send("" + shepherdIndex);
         String chosenStringedStreet = ServerSockets.NickSocketMap.get(nickName).receive();
-        String result = super.getNick2PlayerMap().get(nickName).setShepherd(shepherdIndex, chosenStringedStreet);
+        String result = super.getNick2PlayerMap().get(nickName).setShepherd(
+                shepherdIndex, chosenStringedStreet);
         ServerSockets.NickSocketMap.get(nickName).send(result);
         if (result.contains("Patore posizionato corretamente!")) {
             return true;
@@ -74,22 +83,22 @@ public class SocketTrasmission extends TrasmissionController {
             case 2:
                 return askMoveSheperd(nickName);
             case 3:
-                //return buyLand(nickName);
+            //return buyLand(nickName);
             case 4:
-                //return askMateSheepWith(nickName);
+            //return askMateSheepWith(nickName);
             case 5:
-               // return askKillOvine(nickName);
+            // return askKillOvine(nickName);
         }
         return false;
-    }    
-    
+    }
 
     public boolean askMoveOvine(String nickName) {
         ServerSockets.NickSocketMap.get(nickName).send("MoveOvine");
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
         String token[] = result.split(",");
-        result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0], token[1], token[2]);
-        if( result.contains("Ovino mosso!"));
+        result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0],
+                token[1], token[2]);
+        if (result.contains("Ovino mosso!"));
         return false;    //TODO
     }
 

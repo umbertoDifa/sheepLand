@@ -21,7 +21,7 @@ public interface TypeOfView {
 
     public void refereshCurrentPlayer(String currenPlayer);
 
-    public void refereshCards(String[] myCards);
+    public void refereshCard(String type, int value);
 
     public void refreshBlackSheep(int regionIndex);
 

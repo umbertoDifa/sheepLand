@@ -29,7 +29,7 @@ public class GuiView implements TypeOfView {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refereshCards(String[] myCards) {
+    public void refereshCard(String type, int value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

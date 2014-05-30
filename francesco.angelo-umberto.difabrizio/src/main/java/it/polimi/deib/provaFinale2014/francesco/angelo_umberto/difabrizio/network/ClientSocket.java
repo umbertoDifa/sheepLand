@@ -79,8 +79,8 @@ public class ClientSocket {
                 refreshGameParameters();
             } else if (received.equals("RefereshCurrentPlayer")) {
                 refreshCurrentPlayer();
-            } else if (received.equals("RefereshCards")) {
-                refreshCards();
+            } else if (received.equals("RefereshCard")) {
+                refreshCard();
             } else if (received.equals("RefreshBlackSheep")) {
                 refreshBlackSheep();
             } else if (received.equals("RefreshWolf")) {
@@ -107,8 +107,7 @@ public class ClientSocket {
         //ricevo i nuovi parametri
         received = receiveString();
         token = received.split(",");
-        //TODO la stringa con i quattro parametri verrà 
-        //mandata separando i parametri da virgole
+
         view.refreshRegion(Integer.parseInt(token[0]),
                 Integer.parseInt(token[1]), Integer.parseInt(token[2]),
                 Integer.parseInt(token[3]));
@@ -136,10 +135,10 @@ public class ClientSocket {
         view.refereshCurrentPlayer(received);
     }
 
-    public void refreshCards() {
+    public void refreshCard() {
         received = receiveString();
         token = received.split(",");
-        view.refereshCards(token);
+        view.refereshCard(token[0], Integer.parseInt(token[1]));
     }
 
     public void refreshBlackSheep() {
