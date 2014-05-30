@@ -181,7 +181,7 @@ public class GameManager {
                                 Level.SEVERE, e.getMessage(), e);
                     }
                 }//while
-                this.server.sendTo(clientNickNames[currentPlayer],
+                this.server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
                         "Pastore accettato");
                 DebugLogger.println(
                         "Setto il pastore: " + j + " del giocatore: " + currentPlayer
@@ -203,7 +203,7 @@ public class GameManager {
 
                 DebugLogger.println("invio conferma");
                 //invia conferma riepilogativa all'utente
-                this.server.sendTo(clientNickNames[currentPlayer],
+                this.server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
                         "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
 
                 try {
