@@ -18,29 +18,29 @@ public abstract class TrasmissionController {
         }
     }
 
-    public abstract String refreshRegion(String nickName, int regionIndex,
+    public abstract void refreshRegion(String nickName, int regionIndex,
             int numbOfSheep, int numbOfRam,
             int numbOfLamb);
 
-    public abstract String refreshStreet(String nickName, int streetIndex, boolean fence,
+    public abstract void refreshStreet(String nickName, int streetIndex, boolean fence,
             String nickNameOfShepherdPlayer);
 
-    public abstract String refreshGameParameters(String nickName);
+    public abstract void refreshGameParameters(String nickName);
 
-    public abstract String refreshCurrentPlayer(String nickName);
+    public abstract void refreshCurrentPlayer(String nickName);
 
-    public abstract String refreshCard(String nickName, String card, int value);
+    public abstract void refreshCard(String nickName, String card, int value);
 
-    public abstract String refreshBlackSheep(String message);
+    public abstract void refreshBlackSheep(String message);
 
-    public abstract String refreshWolf(String nickName);
+    public abstract void refreshWolf(String nickName);
 
-    public abstract String refreshMoveOvine(String nickName);
+    public abstract void refreshMoveOvine(String nickName, String startRegion, String endRegion, String ovineType);
 
-    public abstract String refreshMoveShepherd(String nickNameMover,
+    public abstract void refreshMoveShepherd(String nickNameMover,
             String newStreet);
 
-    public abstract String refreshKillOvine(String nickName);
+    public abstract void refreshKillOvine(String nickName);
 
     //ritorna una stringa corripondente o a una strada o il risultato della chiamata RMI
     public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex);
