@@ -30,25 +30,15 @@ import java.util.logging.Logger;
 public class Player {
 
     protected final Shepherd[] shepherd;
-    private Shepherd currentShepherd;
 
     private final GameManager gameManager;
     private final String playerNickName;
-
-    private Region oldRegion;
-    private Region newRegion;
 
     /**
      * Lista di azioni che un player può fare, si aggiorna ad ogni azione del
      * turno
      */
     private List<String> possibleAction;
-
-    /**
-     * Lista degli interi che designano le azioni fattibili in un turno,
-     * corrispondenti alle possibleAction
-     */
-    private List<Integer> allowedActions;
 
     public Player(GameManager gameManager, String playerNickName) {
         this.playerNickName = playerNickName;
@@ -100,108 +90,95 @@ public class Player {
                     (String[]) possibleAction.toArray());
 
             //TODO check il cast sopra
-        } while (!outcomeOK);
+        } while (!outcomeOk);
 
-        int actionChoice = Integer.parseInt(stringedChoice);
-
-        DebugLogger.println("Scelta: " + actionChoice);
-        switch (actionChoice) {
-            case 1:
-                this.moveOvine(OvineType.SHEEP);
-
-                break;
-            case 2:
-                this.moveOvine(OvineType.RAM);
-
-                break;
-            case 3:
-                this.moveOvine(OvineType.LAMB);
-
-                break;
-            case 4:
-                this.moveShepherd();
-
-                break;
-            case 5:
-                this.buyLand();
-                break;
-            case 6:
-                this.mateSheepWith(OvineType.SHEEP);
-                break;
-            case 7:
-                this.mateSheepWith(OvineType.RAM);
-                break;
-            case 8:
-                this.killOvine();
-                break;
-        }
-
+//        int actionChoice = Integer.parseInt(stringedChoice);
+//
+//        DebugLogger.println("Scelta: " + actionChoice);
+//        switch (actionChoice) {
+//            case 1:
+//                this.moveOvine(OvineType.SHEEP);
+//
+//                break;
+//            case 2:
+//                this.moveOvine(OvineType.RAM);
+//
+//                break;
+//            case 3:
+//                this.moveOvine(OvineType.LAMB);
+//
+//                break;
+//            case 4:
+//                this.moveShepherd();
+//
+//                break;
+//            case 5:
+//                this.buyLand();
+//                break;
+//            case 6:
+//                this.mateSheepWith(OvineType.SHEEP);
+//                break;
+//            case 7:
+//                this.mateSheepWith(OvineType.RAM);
+//                break;
+//            case 8:
+//                this.killOvine();
+//                break;
+//        }
     }
 
     /**
-     * Checks that the received string matches the expected pattern.
-     *
-     * @param stringedChoice String to check
-     *
-     * @return Returns true if it does, an exception if it does not.
-     *
-     * @throws ActionNotFoundException If string does not match the expected
-     *                                 pattern
+     * // * Checks that the received string matches the expected pattern. // *
+     * // * @param stringedChoice String to check // * // * @return Returns true
+     * if it does, an exception if it does not. // * // * @throws
+     * ActionNotFoundException If string does not match the expected // *
+     * pattern //
      */
-    private boolean isChoiceOk(String stringedChoice) throws
-            ActionNotFoundException {
-
-        DebugLogger.println("isChoiceOK");
-        int actionChoice;
-        try {
-            //se la stringa è un numero
-            actionChoice = Integer.parseInt(stringedChoice);
-
-            //se il numero è contenuto in quelli possibili
-            if (!allowedActions.contains(actionChoice)) {
-                throw new ActionNotFoundException(
-                        "L'azione non è permessa in questa fase di gioco");
-            }
-            return true;
-        } catch (NumberFormatException e) {
-            throw new ActionNotFoundException(
-                    "Azione non esistente prego riporvare.");
-        }
-
-    }
-
+//    private boolean isChoiceOk(String stringedChoice) throws
+//            ActionNotFoundException {
+//
+//        DebugLogger.println("isChoiceOK");
+//        int actionChoice;
+//        try {
+//            //se la stringa è un numero
+//            actionChoice = Integer.parseInt(stringedChoice);
+//
+//            //se il numero è contenuto in quelli possibili
+//            if (!allowedActions.contains(actionChoice)) {
+//                throw new ActionNotFoundException(
+//                        "L'azione non è permessa in questa fase di gioco");
+//            }
+//            return true;
+//        } catch (NumberFormatException e) {
+//            throw new ActionNotFoundException(
+//                    "Azione non esistente prego riporvare.");
+//        }
+//
+//    }
     private void createActionList() {
         //crea lista con le possibili scelte         
         possibleAction = new ArrayList<String>();
-
-        //crea una lista con i numeri delle possibili scelte
-        allowedActions = new ArrayList<Integer>();
 
         //aggiungi movimento ovini se possibile
         int i = 1;
         for (OvineType type : OvineType.values()) {
             if (canMoveOvine(type)) {
                 possibleAction.add(i + "- Sposta " + type);
-                allowedActions.add(i);
             }
             i++;
         }
 
         possibleAction.add("4- Sposta pastore");
-        allowedActions.add(4);
 
         //aggiungi acquisto carta se possibile
         if (canBuyCard()) {
             possibleAction.add("5-Compra terreno");
-            allowedActions.add(5);
         }
 
         possibleAction.add("6-Accoppia pecore");
         possibleAction.add("7-Accoppia montone e pecora");
         possibleAction.add("8-Abbatti pecora");
-        allowedActions.add(6);
-        allowedActions.add(7);
-        allowedActions.add(8);
+
     }
 
     private boolean canMoveOvine(OvineType ovine) {
@@ -368,70 +345,93 @@ public class Player {
      * possibile (se confinanti o non confinanti e puoi pagare) muovo il pastore
      * e metto il cancello Altrimenti richiedo o annullo azione
      *
+     * @param shepherdIndex
+     * @param newStreet
+     * @return 
      */
-    public void moveShepherd() {
+    public String moveShepherd(int shepherdIndex, String newStreet) {
 
-//        Street startStreet;
-//        Street endStreet;
-//        //Controllo sul numero dei pastori
-//
-//        int idShepherdToMove = gameManager.askIdShepherd(playerNickName);
-//        currentShepherd = shepherd[idShepherdToMove];
-//        startStreet = currentShepherd.getStreet();
-//
-//        //mossa vera e propria
-//        while (true) {
-//            try {
-//                //chiedi strada arrivo (lancia StreetNotFoundException,BusyStreetException)
-//                endStreet = this.gameManager.askStreet(playerNickName,
-//                        idShepherdToMove);
-//                if (startStreet != endStreet) {
-//                    gameManager.server.sendTo(playerNickName, "Strada ok");
-//                    DebugLogger.println("Strada ok");
-//                    // se le strade sono confinanti
-//                    if (startStreet.isNeighbour(endStreet)) {
-//                        //muovilo
-//                        currentShepherd.moveTo(endStreet);
-//
-//                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
-//                        startStreet.setFence(this.gameManager.bank.getFence());
-//                        gameManager.server.sendTo(playerNickName,
-//                                "Mossa avvenuta con successo");
-//                        break;
-//                        //se le strade non confinano e puoi pagare
-//                    } else if (currentShepherd.ifPossiblePay(
-//                            GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
-//                        DebugLogger.println("Pagamento effettuato");
-//                        currentShepherd.moveTo(endStreet);
-//
-//                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
-//                        startStreet.setFence(this.gameManager.bank.getFence());
-//                        gameManager.server.sendTo(playerNickName,
-//                                "Mossa avvenuta con successo");
-//                        break;
-//                    } else {
-//                        throw new ActionCancelledException(
-//                                "Non hai abbastanaza soldi per muoverti");
-//                    }
-//                }
-//                gameManager.server.sendTo(playerNickName,
-//                        "Il pastore si trova già sulla strada selezionata");
-//            } catch (BusyStreetException e) {
-//                this.gameManager.server.sendTo(playerNickName,
-//                        "Non è possibile spostare il pastore, strada già occupata.");
-//                Logger.getLogger(DebugLogger.class
-//                        .getName()).log(
-//                                Level.SEVERE, e.getMessage(), e);
-//
-//                //se la strada di arrivo non esiste informa e riprova o cancella mossa
-//            } catch (StreetNotFoundException e) {
-//                this.gameManager.server.sendTo(playerNickName,
-//                        "La strada inserita è inesistente.");
-//                Logger.getLogger(DebugLogger.class
-//                        .getName()).log(
-//                                Level.SEVERE, e.getMessage(), e);
-//            }
-//        }
+        Shepherd currentShepherd = shepherd[shepherdIndex];
+        Street startStreet = currentShepherd.getStreet();
+
+        Street endStreet;
+        try {
+            endStreet = checkStreet(newStreet);
+        } catch (StreetNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return ex.getMessage();
+        } catch (BusyStreetException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return ex.getMessage();
+        }
+
+        if (startStreet != endStreet) {
+            if (startStreet.isNeighbour(endStreet)) {
+            }
+        }
+        //        Street startStreet;
+        //        Street endStreet;
+        //        //Controllo sul numero dei pastori
+        //
+        //        int idShepherdToMove = gameManager.askIdShepherd(playerNickName);
+        //        currentShepherd = shepherd[idShepherdToMove];
+        //        startStreet = currentShepherd.getStreet();
+        //
+        //        //mossa vera e propria
+        //        while (true) {
+        //            try {
+        //                //chiedi strada arrivo (lancia StreetNotFoundException,BusyStreetException)
+        //                endStreet = this.gameManager.askStreet(playerNickName,
+        //                        idShepherdToMove);
+        //                if (startStreet != endStreet) {
+        //                    gameManager.server.sendTo(playerNickName, "Strada ok");
+        //                    DebugLogger.println("Strada ok");
+        //                    // se le strade sono confinanti
+        //                    if (startStreet.isNeighbour(endStreet)) {
+        //                        //muovilo
+        //                        currentShepherd.moveTo(endStreet);
+        //
+        //                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
+        //                        startStreet.setFence(this.gameManager.bank.getFence());
+        //                        gameManager.server.sendTo(playerNickName,
+        //                                "Mossa avvenuta con successo");
+        //                        break;
+        //                        //se le strade non confinano e puoi pagare
+        //                    } else if (currentShepherd.ifPossiblePay(
+        //                            GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
+        //                        DebugLogger.println("Pagamento effettuato");
+        //                        currentShepherd.moveTo(endStreet);
+        //
+        //                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
+        //                        startStreet.setFence(this.gameManager.bank.getFence());
+        //                        gameManager.server.sendTo(playerNickName,
+        //                                "Mossa avvenuta con successo");
+        //                        break;
+        //                    } else {
+        //                        throw new ActionCancelledException(
+        //                                "Non hai abbastanaza soldi per muoverti");
+        //                    }
+        //                }
+        //                gameManager.server.sendTo(playerNickName,
+        //                        "Il pastore si trova già sulla strada selezionata");
+        //            } catch (BusyStreetException e) {
+        //                this.gameManager.server.sendTo(playerNickName,
+        //                        "Non è possibile spostare il pastore, strada già occupata.");
+        //                Logger.getLogger(DebugLogger.class
+        //                        .getName()).log(
+        //                                Level.SEVERE, e.getMessage(), e);
+        //
+        //                //se la strada di arrivo non esiste informa e riprova o cancella mossa
+        //            } catch (StreetNotFoundException e) {
+        //                this.gameManager.server.sendTo(playerNickName,
+        //                        "La strada inserita è inesistente.");
+        //                Logger.getLogger(DebugLogger.class
+        //                        .getName()).log(
+        //                                Level.SEVERE, e.getMessage(), e);
+        //            }
+        //        }
     }
 
     public void buyLand() throws ActionCancelledException {
@@ -740,7 +740,7 @@ public class Player {
      * @throws StreetNotFoundException
      * @throws BusyStreetException
      */
-    private Street checkStreet(String stringedStreet) throws
+    public Street checkStreet(String stringedStreet) throws
             StreetNotFoundException, BusyStreetException {
         Street chosenStreet = gameManager.map.convertStringToStreet(
                 stringedStreet);

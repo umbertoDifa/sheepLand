@@ -79,8 +79,7 @@ public class GameManager implements Runnable {
         //setto arraylist dei giocatori 
         this.setUpPlayers();
 
-        controller.setPlayersNickNames(this.clientNickNames);
-        controller.setPlayers(players);
+        controller.setNick2PlayerMap(this.clientNickNames, players);
 
         myThread = new Thread(this);
     }
@@ -497,7 +496,6 @@ public class GameManager implements Runnable {
         //altrimenti ritorna la strada
         return chosenStreet;
     }
-    
 
     /**
      * Chiede, mandandogli la stringa message, al giocatore corrispondente all
