@@ -2,11 +2,13 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class CommandLineView implements TypeOfView {
 
-    private final PrintStream stdOut = System.out;
-    private final InputStream stdIn = System.in;
+    private final PrintWriter stdOut = new PrintWriter(System.out);
+    private final Scanner stdIn = new Scanner(System.in);
 
     public CommandLineView() {
 
@@ -48,11 +50,12 @@ public class CommandLineView implements TypeOfView {
         stdOut.println("Il lupo è nella regione" + regionIndex);
     }
 
-    public void setUpShepherds() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String setUpShepherds(int shepherdIndex) {
+        stdOut.println("Inserisci una strada per il pastore " +shepherdIndex);
+        return stdIn.nextLine();
     }
 
-    public void moveOvine() {
+    public String moveOvine() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -97,10 +100,10 @@ public class CommandLineView implements TypeOfView {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int chooseAction(int[] avaibleActions, String[] avaibleStringedActions) {
+    public int chooseAction(int[] availableActions, String[] availableStringedActions) {
         String stringToPrint = "";
-        for (int i : avaibleActions) {
-            stringToPrint += String.valueOf(avaibleActions[i])+"- "+ avaibleActions[i];
+        for (int i : availableActions) {
+            stringToPrint += String.valueOf(availableActions[i])+"- "+ availableActions[i];
         }
         stdOut.println("inserire azione tra " + stringToPrint);
         
@@ -112,6 +115,10 @@ public class CommandLineView implements TypeOfView {
 
     public String askStreet() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showInfo(String info) {
+        stdOut.println(info);
     }
 
 }

@@ -61,17 +61,17 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public boolean askChooseAction(String nickName, String[] possibleActions) {
+    public boolean askChooseAction(String nickName, String possibleActions) {
+        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(possibleActions);
+    }
+
+    @Override
+    public boolean askMoveOvine(String nickName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String askMoveOvine(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String askMoveSheperd(String nickName) {
+    public boolean askMoveSheperd(String nickName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

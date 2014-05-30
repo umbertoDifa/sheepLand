@@ -46,13 +46,13 @@ public abstract class TrasmissionController {
     public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex);
 
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
-    public abstract boolean askChooseAction(String nickName, String possibleActions[]);
+    public abstract boolean askChooseAction(String nickName, String possibleActions);
 
     //ritorna una stringa con regione di partenza e di arrivo o risultato RMI !!!!TORNA DUE
-    public abstract String askMoveOvine(String nickName);
+    public abstract boolean askMoveOvine(String nickName);
 
     //ritorna una stringa corrispondente a una strada o risultato RMI
-    public abstract String askMoveSheperd(String nickName);
+    public abstract boolean askMoveSheperd(String nickName);
 
     //ritorna una stringa corrispondente al tipo di regione
     public abstract String buyLand(String nickName);
