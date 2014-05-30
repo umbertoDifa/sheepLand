@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class Player implements PlayerRemote{
+public class Player implements PlayerRemote {
 
     protected final Shepherd[] shepherd;
 
@@ -38,7 +38,7 @@ public class Player implements PlayerRemote{
      * Lista di azioni che un player può fare, si aggiorna ad ogni azione del
      * turno
      */
-    private List<String> possibleAction;
+    private String possibleAction;
 
     public Player(GameManager gameManager, String playerNickName) {
         this.playerNickName = playerNickName;
@@ -70,114 +70,44 @@ public class Player implements PlayerRemote{
      * Invita il player a fare una mossa tra quelle che gli sono permesse. Ne
      * può scegliere al massimo una.
      *
-     * @throws ActionNotFoundException  Se l'azione chiesta non esiste
-     * @throws ActionCancelledException Se il player ha deciso di non fare più
-     *                                  l'azione
-     * @throws FinishedFencesException  Se non ci sono più recinti da inserire
-     *                                  quando si muovono i pastori
      */
-    public void chooseAndMakeAction() throws ActionNotFoundException,
-                                             ActionCancelledException,
-                                             FinishedFencesException {
+    public void chooseAndMakeAction() {
 
-        String stringedChoice;
         boolean outcomeOk;
         createActionList();
 
         do {
             //raccogli la scelta
             outcomeOk = gameManager.controller.askChooseAction(playerNickName,
-                    (String[]) possibleAction.toArray());
-
-            //TODO check il cast sopra
+                    possibleAction);
         } while (!outcomeOk);
-
-//        int actionChoice = Integer.parseInt(stringedChoice);
-//
-//        DebugLogger.println("Scelta: " + actionChoice);
-//        switch (actionChoice) {
-//            case 1:
-//                this.moveOvine(OvineType.SHEEP);
-//
-//                break;
-//            case 2:
-//                this.moveOvine(OvineType.RAM);
-//
-//                break;
-//            case 3:
-//                this.moveOvine(OvineType.LAMB);
-//
-//                break;
-//            case 4:
-//                this.moveShepherd();
-//
-//                break;
-//            case 5:
-//                this.buyLand();
-//                break;
-//            case 6:
-//                this.mateSheepWith(OvineType.SHEEP);
-//                break;
-//            case 7:
-//                this.mateSheepWith(OvineType.RAM);
-//                break;
-//            case 8:
-//                this.killOvine();
-//                break;
-//        }
     }
 
     /**
-     * // * Checks that the received string matches the expected pattern. // *
-     * // * @param stringedChoice String to check // * // * @return Returns true
-     * if it does, an exception if it does not. // * // * @throws
-     * ActionNotFoundException If string does not match the expected // *
-     * pattern //
+     * Crea una lista di azioni possibili secondo il formato:
+     * [numero_azione]-[descrizione] separando le azioni da una virgola
      */
-//    private boolean isChoiceOk(String stringedChoice) throws
-//            ActionNotFoundException {
-//
-//        DebugLogger.println("isChoiceOK");
-//        int actionChoice;
-//        try {
-//            //se la stringa è un numero
-//            actionChoice = Integer.parseInt(stringedChoice);
-//
-//            //se il numero è contenuto in quelli possibili
-//            if (!allowedActions.contains(actionChoice)) {
-//                throw new ActionNotFoundException(
-//                        "L'azione non è permessa in questa fase di gioco");
-//            }
-//            return true;
-//        } catch (NumberFormatException e) {
-//            throw new ActionNotFoundException(
-//                    "Azione non esistente prego riporvare.");
-//        }
-//
-//    }
     private void createActionList() {
-        //crea lista con le possibili scelte         
-        possibleAction = new ArrayList<String>();
-
-        //aggiungi movimento ovini se possibile
+        //nessuna azione disponibile inizialmente
+        possibleAction = "";
         int i = 1;
         for (OvineType type : OvineType.values()) {
             if (canMoveOvine(type)) {
-                possibleAction.add(i + "- Sposta " + type);
+                possibleAction += i + "-Sposta " + type + ",";
             }
             i++;
         }
 
-        possibleAction.add("4- Sposta pastore");
+        possibleAction += "4-Sposta pastore,";
 
         //aggiungi acquisto carta se possibile
         if (canBuyCard()) {
-            possibleAction.add("5-Compra terreno");
+            possibleAction += "5-Compra terreno,";
         }
 
-        possibleAction.add("6-Accoppia pecore");
-        possibleAction.add("7-Accoppia montone e pecora");
-        possibleAction.add("8-Abbatti pecora");
+        possibleAction += "6-Accoppia pecore,";
+        possibleAction += "7-Accoppia montone e pecora,";
+        possibleAction += "8-Abbatti pecora";
 
     }
 
@@ -222,84 +152,43 @@ public class Player implements PlayerRemote{
      * Se mossa non valida chiede e annullare o ripetere azione
      *
      * @param type
+     * @param oldRegion
+     * @param newRegion
      *
-     * @throws ActionCancelledException
+     * @return
      */
-    public void moveOvine(OvineType type) throws ActionCancelledException {
-        Region startRegion;
-        Region endRegion;
-        while (true) {
-            while (true) {
+    public String moveOvine(OvineType type, String oldRegion, String newRegion) {
+
+        Region startRegion = gameManager.map.convertStringToRegion(newRegion);
+        Region endRegion = gameManager.map.convertStringToRegion(oldRegion);
+
+        //per ogni strada occupata dai patori del giocatore
+        //finchè non ne trovo una adatta e quindi o ritorno 
+        //un fallimento o un successo
+        for (Street possibleStreet : this.getShepherdsStreets()) {
+            //se le regioni confinano con la strada e sono diverse tra loro
+            if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
+                    possibleStreet) && startRegion != endRegion) {
+                //rimuovi ovino del tipo specificato
+                DebugLogger.println("Rimuovo ovino");
                 try {
-                    DebugLogger.println("Chiedo prima regione");
-                    //chiedi regione di partenza
-                    startRegion = this.gameManager.askAboutRegion(
-                            playerNickName, "Da dove vuoi spostare l'ovino?");
-                    break;
-                } catch (RegionNotFoundException ex) {
-                    DebugLogger.println("Nok regione");
+                    startRegion.removeOvine(type);
+                } catch (NoOvineException ex) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
                             ex.getMessage(), ex);
-                    this.gameManager.server.sendTo(playerNickName,
-                            ex.getMessage());
-
+                    return "Nessun ovino nella regione di partenza!";
                 }
+                //e aggiungilo nella regione d'arrivo
+                endRegion.addOvine(new Ovine(type));
+                //refreshio
+                gameManager.controller.refreshMoveOvine(playerNickName,
+                        oldRegion, newRegion, type.toString());
+
+                return "Ovino mosso!";
             }
-            while (true) {
-                try {
-                    DebugLogger.println("Chiedo seconda regione");
-
-                    //e regione arrivo
-                    endRegion = this.gameManager.askAboutRegion(playerNickName,
-                            "In quale regione vuoi spostarlo?");
-                    break;
-                } catch (RegionNotFoundException ex) {
-                    DebugLogger.println("Nok regione");
-
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                    this.gameManager.server.sendTo(playerNickName,
-                            ex.getMessage());
-
-                }
-            }
-            //per ogni strada occupata dai patori del giocatore
-            for (Street possibleStreet : this.getShepherdsStreets()) {
-                //se le regioni confinano con la strada
-                if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
-                        possibleStreet) && startRegion != endRegion) {
-                    //rimuovi ovino del tipo specificato
-                    DebugLogger.println("Rimuovo ovino");
-                    try {
-                        startRegion.removeOvine(type);
-                    } catch (NoOvineException ex) {
-                        Logger.getLogger(DebugLogger.class.getName()).log(
-                                Level.SEVERE,
-                                ex.getMessage(), ex);
-                        DebugLogger.println("Nessun ovino annullo azione");
-
-                        throw new ActionCancelledException(ex.getMessage());
-                    }
-                    //e aggiungilo nella regione d'arrivo
-                    endRegion.addOvine(new Ovine(type));
-                    this.gameManager.server.sendTo(playerNickName,
-                            "Mossa avvenuta con successo!");
-
-                    //setto le variabili oldRegion e newRegion per informare 
-                    //gli altri player
-                    this.oldRegion = startRegion;
-                    this.newRegion = endRegion;
-                    return;
-                }
-            }
-            //le regioni non confinano col pastore 
-            throw new ActionCancelledException(
-                    "Non è possibile effettuare la mossa! "
-                    + "Le regioni indicate non confinano col tuo pastore");
-
         }
+
     }
 
     /**
@@ -318,17 +207,20 @@ public class Player implements PlayerRemote{
         Street chosenStreet;
         try {
             chosenStreet = checkStreet(stringedStreet);
+
         } catch (StreetNotFoundException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
             return ex.getMessage();
         } catch (BusyStreetException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
             return ex.getMessage();
         }
 
-        //sposta il pastore 
+//sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
         DebugLogger.println("Patore posizionato corretamente!");
 
@@ -347,91 +239,60 @@ public class Player implements PlayerRemote{
      *
      * @param shepherdIndex
      * @param newStreet
-     * @return 
+     *
+     * @return
+     *
+     * @throws
+     * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
-    public String moveShepherd(int shepherdIndex, String newStreet) {
+    public String moveShepherd(int shepherdIndex, String newStreet) throws
+            FinishedFencesException {
 
         Shepherd currentShepherd = shepherd[shepherdIndex];
         Street startStreet = currentShepherd.getStreet();
 
         Street endStreet;
+        //controllo strada
         try {
             endStreet = checkStreet(newStreet);
+
         } catch (StreetNotFoundException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
             return ex.getMessage();
         } catch (BusyStreetException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
             return ex.getMessage();
         }
 
+//se strada free ed esiste e non è quella di partenza ed è vicina o posso pagare
         if (startStreet != endStreet) {
             if (startStreet.isNeighbour(endStreet)) {
+                //muovilo
+                currentShepherd.moveTo(endStreet);
+                startStreet.setFence(this.gameManager.bank.getFence());
+                DebugLogger.println("Pastore posizionato");
+                //invia conferma riepilogativa agli utenti
+                gameManager.controller.refreshMoveShepherd(playerNickName,
+                        newStreet);
+                return "Pastore posizionato";
+            } else if (currentShepherd.ifPossiblePay(
+                    GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
+                DebugLogger.println("Pagamento effettuato");
+                currentShepherd.moveTo(endStreet);
+                startStreet.setFence(this.gameManager.bank.getFence());
+                //invia conferma riepilogativa agli utenti
+                gameManager.controller.refreshMoveShepherd(playerNickName,
+                        newStreet);
+                return "Passaggio pagato e pastore posizionato";
+
             }
+            return "Non hai i soldi per spostarti";
         }
-        //        Street startStreet;
-        //        Street endStreet;
-        //        //Controllo sul numero dei pastori
-        //
-        //        int idShepherdToMove = gameManager.askIdShepherd(playerNickName);
-        //        currentShepherd = shepherd[idShepherdToMove];
-        //        startStreet = currentShepherd.getStreet();
-        //
-        //        //mossa vera e propria
-        //        while (true) {
-        //            try {
-        //                //chiedi strada arrivo (lancia StreetNotFoundException,BusyStreetException)
-        //                endStreet = this.gameManager.askStreet(playerNickName,
-        //                        idShepherdToMove);
-        //                if (startStreet != endStreet) {
-        //                    gameManager.server.sendTo(playerNickName, "Strada ok");
-        //                    DebugLogger.println("Strada ok");
-        //                    // se le strade sono confinanti
-        //                    if (startStreet.isNeighbour(endStreet)) {
-        //                        //muovilo
-        //                        currentShepherd.moveTo(endStreet);
-        //
-        //                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
-        //                        startStreet.setFence(this.gameManager.bank.getFence());
-        //                        gameManager.server.sendTo(playerNickName,
-        //                                "Mossa avvenuta con successo");
-        //                        break;
-        //                        //se le strade non confinano e puoi pagare
-        //                    } else if (currentShepherd.ifPossiblePay(
-        //                            GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
-        //                        DebugLogger.println("Pagamento effettuato");
-        //                        currentShepherd.moveTo(endStreet);
-        //
-        //                        //metti recinto nella vecchia strada (lancia FinishedFencesException)
-        //                        startStreet.setFence(this.gameManager.bank.getFence());
-        //                        gameManager.server.sendTo(playerNickName,
-        //                                "Mossa avvenuta con successo");
-        //                        break;
-        //                    } else {
-        //                        throw new ActionCancelledException(
-        //                                "Non hai abbastanaza soldi per muoverti");
-        //                    }
-        //                }
-        //                gameManager.server.sendTo(playerNickName,
-        //                        "Il pastore si trova già sulla strada selezionata");
-        //            } catch (BusyStreetException e) {
-        //                this.gameManager.server.sendTo(playerNickName,
-        //                        "Non è possibile spostare il pastore, strada già occupata.");
-        //                Logger.getLogger(DebugLogger.class
-        //                        .getName()).log(
-        //                                Level.SEVERE, e.getMessage(), e);
-        //
-        //                //se la strada di arrivo non esiste informa e riprova o cancella mossa
-        //            } catch (StreetNotFoundException e) {
-        //                this.gameManager.server.sendTo(playerNickName,
-        //                        "La strada inserita è inesistente.");
-        //                Logger.getLogger(DebugLogger.class
-        //                        .getName()).log(
-        //                                Level.SEVERE, e.getMessage(), e);
-        //            }
-        //        }
+        return "Non puoi spostarti su una strada su cui sei già";
     }
 
     public void buyLand() throws ActionCancelledException {
@@ -503,8 +364,9 @@ public class Player implements PlayerRemote{
         } catch (MissingCardException e) {
             gameManager.server.sendTo(playerNickName,
                     "Il territorio richiesto non è disponibile");
-            Logger.getLogger(DebugLogger.class
-                    .getName()).log(Level.SEVERE, e.getMessage(), e);
+            Logger
+                    .getLogger(DebugLogger.class
+                            .getName()).log(Level.SEVERE, e.getMessage(), e);
         }
 
     }
