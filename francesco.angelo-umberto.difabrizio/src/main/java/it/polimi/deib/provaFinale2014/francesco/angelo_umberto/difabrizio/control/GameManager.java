@@ -182,7 +182,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
                                 Level.SEVERE, e.getMessage(), e);
                     }
                 }//while
-                this.server.sendTo(clientNickNames[currentPlayer],
+                this.server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
                         "Pastore accettato");
                 DebugLogger.println(
                         "Setto il pastore: " + j + " del giocatore: " + currentPlayer
@@ -204,7 +204,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
                 DebugLogger.println("invio conferma");
                 //invia conferma riepilogativa all'utente
-                this.server.sendTo(clientNickNames[currentPlayer],
+                this.server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
                         "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
 
                 try {
@@ -342,7 +342,7 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //informiamo numerodi player, numero di pastori, il primo giocatore
         //a secnoda del player le carte
         for (int i = 0; i < playersNumber; i++) {
-            this.server.sendTo(clientNickNames[i],
+            this.server.getTrasmissionController().sendTo(clientNickNames[i],
                     "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
                     + "; ogni giocatore ha :" + this.shepherd4player
                     + "pastori. Il primo del turno è :" + firstPlayer
