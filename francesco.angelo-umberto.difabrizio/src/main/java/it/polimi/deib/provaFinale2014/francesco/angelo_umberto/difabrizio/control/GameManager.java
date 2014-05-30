@@ -35,9 +35,10 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class GameManager implements Runnable{
+public class GameManager implements Runnable {
+
     Thread myThread;
-    
+
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
     private String clientNickNames[];
@@ -77,18 +78,18 @@ public class GameManager implements Runnable{
         }
         //setto arraylist dei giocatori 
         this.setUpPlayers();
-        
+
         controller.setPlayersNickNames(this.clientNickNames);
         controller.setPlayers(players);
-        
-        myThread  = new Thread(this);
+
+        myThread = new Thread(this);
     }
-    
-    public void start(){
+
+    public void start() {
         myThread.start();
     }
-    
-    public void run(){
+
+    public void run() {
         this.startGame();
     }
 
@@ -195,12 +196,9 @@ public class GameManager implements Runnable{
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
     private void setUpShepherds() {
-        Street chosenStreet = new Street(0);//HACK
-
         int i;//indice giocatori
         int j;//indice pastori
-        boolean stringNotValid;
-        String stringedStreet = null;
+        boolean outcomeOk;
 
         //per ogni playerint 
         for (i = 0; i < this.playersNumber; i++) {
@@ -209,34 +207,11 @@ public class GameManager implements Runnable{
 
             //per ogni suo pastore
             for (j = 0; j < this.shepherd4player; j++) {
-                stringNotValid = true;
-
-                while (stringNotValid) {
-
+                outcomeOk = false;
+                while (!outcomeOk) {
                     //prova a chiedere la strada per il j-esimo pastore                    
-                    stringedStreet = controller.askSetUpShepherd(
+                    outcomeOk = controller.askSetUpShepherd(
                             clientNickNames[currentPlayer], j);
-
-                    if (!stringedStreet.contains("rmi ok")) {
-                        if (!stringedStreet.contains("rmi err")) {
-                            String result = players.get(currentPlayer).setShepherd(
-                                    j, stringedStreet);
-                            if (result.contains("ok")) {
-                                stringNotValid = false;
-                            } else {
-                                //err
-                                controller.refreshInfo(
-                                        clientNickNames[currentPlayer], result);
-                                stringNotValid = true;
-                            }
-                        } else {
-                            //rmi err
-                            stringNotValid = true;
-                        }
-                    } else {
-                        //rmi ok
-                        stringNotValid = false;
-                    }
                 }//while               
             }//for pastori
         }//for giocatori
@@ -295,7 +270,6 @@ public class GameManager implements Runnable{
         }
     }
 
-    //TODO modularizzare
     private void playTheGame() {
         int[][] classification = new int[2][playersNumber];
         int numOfWinners = 1;
@@ -444,7 +418,7 @@ public class GameManager implements Runnable{
 
         DebugLogger.println("Muovo pecora nera");
         String blackSheepMessage = "";
-        
+
         try {
             //muovo la pecora nera
             this.moveSpecialAnimal(this.map.getBlackSheep());
@@ -464,7 +438,7 @@ public class GameManager implements Runnable{
         } finally {
             controller.refreshBlackSheep(blackSheepMessage);
         }
-      
+
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
             while (true) {
@@ -523,30 +497,7 @@ public class GameManager implements Runnable{
         //altrimenti ritorna la strada
         return chosenStreet;
     }
-
-    /**
-     * Data una strada in stringa ritorna l'oggetto strada corrispondente o un
-     * eccezione se la strada è occupata o non esistente
-     *
-     * @param stringedStreet
-     *
-     * @return
-     *
-     * @throws StreetNotFoundException
-     * @throws BusyStreetException
-     */
-    protected Street checkStreet(String stringedStreet) throws
-            StreetNotFoundException, BusyStreetException {
-        Street chosenStreet = map.convertStringToStreet(stringedStreet);
-        DebugLogger.println("Conversione strada effettuata");
-        //se la strada è occuapata
-        if (!chosenStreet.isFree()) {
-            throw new BusyStreetException("Strada occupata");
-            //solleva eccezione
-        }
-        //altrimenti ritorna la strada
-        return chosenStreet;
-    }
+    
 
     /**
      * Chiede, mandandogli la stringa message, al giocatore corrispondente all

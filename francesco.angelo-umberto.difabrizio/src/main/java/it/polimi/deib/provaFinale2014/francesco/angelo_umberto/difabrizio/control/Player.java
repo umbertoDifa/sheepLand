@@ -15,7 +15,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.ArrayList;
@@ -92,55 +91,49 @@ public class Player {
                                              FinishedFencesException {
 
         String stringedChoice;
-        try {
-            createActionList();
+        boolean outcomeOk;
+        createActionList();
 
-            do {
-                //raccogli la scelta
-                stringedChoice = gameManager.controller.askChooseAction(
-                        playerNickName, (String[]) possibleAction.toArray());
+        do {
+            //raccogli la scelta
+            outcomeOk = gameManager.controller.askChooseAction(playerNickName,
+                    (String[]) possibleAction.toArray());
 
-                //TODO check il cast sopra
-            } while (isChoiceOk(stringedChoice));
+            //TODO check il cast sopra
+        } while (!outcomeOK);
 
-            int actionChoice = Integer.parseInt(stringedChoice);
+        int actionChoice = Integer.parseInt(stringedChoice);
 
-            DebugLogger.println("Scelta: " + actionChoice);
-            switch (actionChoice) {
-                case 1:
-                    this.moveOvine(OvineType.SHEEP);
-                   
-                    break;
-                case 2:
-                    this.moveOvine(OvineType.RAM);
-                    
-                    break;
-                case 3:
-                    this.moveOvine(OvineType.LAMB);
-                    
-                    break;
-                case 4:
-                    this.moveShepherd();
-                    
-                    break;
-                case 5:
-                    this.buyLand();
-                    break;
-                case 6:
-                    this.mateSheepWith(OvineType.SHEEP);
-                    break;
-                case 7:
-                    this.mateSheepWith(OvineType.RAM);
-                    break;
-                case 8:
-                    this.killOvine();
-                    break;
-            }
-        } catch (NodeNotFoundException ex) {
-            //Non potrà mai succedere perchè se la mossa è stata compiuta le regioni
-            //esistono
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, null,
-                    ex);
+        DebugLogger.println("Scelta: " + actionChoice);
+        switch (actionChoice) {
+            case 1:
+                this.moveOvine(OvineType.SHEEP);
+
+                break;
+            case 2:
+                this.moveOvine(OvineType.RAM);
+
+                break;
+            case 3:
+                this.moveOvine(OvineType.LAMB);
+
+                break;
+            case 4:
+                this.moveShepherd();
+
+                break;
+            case 5:
+                this.buyLand();
+                break;
+            case 6:
+                this.mateSheepWith(OvineType.SHEEP);
+                break;
+            case 7:
+                this.mateSheepWith(OvineType.RAM);
+                break;
+            case 8:
+                this.killOvine();
+                break;
         }
 
     }
@@ -332,18 +325,30 @@ public class Player {
         }
     }
 
+    /**
+     * Cerca di piazzare il pastore passato nella strada, se ci riesce ritorna
+     * una stringa di successo altrimenti una stringa che spiega l'errore
+     * accaduto
+     *
+     * @param indexShepherd  Index of the Shepherd in the player's array
+     * @param stringedStreet Street that the shepherd has to move to
+     *
+     * @return "Pastore posizionato" if everything goes right, an error string
+     *         if an exeption is caught.
+     */
     public String setShepherd(int indexShepherd, String stringedStreet) {
+
         Street chosenStreet;
         try {
-            chosenStreet = this.gameManager.checkStreet(stringedStreet);
+            chosenStreet = checkStreet(stringedStreet);
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            return "err: " + ex.getMessage();
+            return ex.getMessage();
         } catch (BusyStreetException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            return "err: " + ex.getMessage();
+            return ex.getMessage();
         }
 
         //sposta il pastore 
@@ -355,7 +360,7 @@ public class Player {
         //invia conferma riepilogativa agli utenti
         gameManager.controller.refreshMoveShepherd(playerNickName,
                 stringedStreet);
-        return "ok";
+        return "Patore posizionato corretamente!";
     }
 
     /**
@@ -722,6 +727,31 @@ public class Player {
             }
         }
         return false;
+    }
+
+    /**
+     * Data una strada in stringa ritorna l'oggetto strada corrispondente o un
+     * eccezione se la strada è occupata o non esistente
+     *
+     * @param stringedStreet
+     *
+     * @return
+     *
+     * @throws StreetNotFoundException
+     * @throws BusyStreetException
+     */
+    private Street checkStreet(String stringedStreet) throws
+            StreetNotFoundException, BusyStreetException {
+        Street chosenStreet = gameManager.map.convertStringToStreet(
+                stringedStreet);
+        DebugLogger.println("Conversione strada effettuata");
+        //se la strada è occuapata
+        if (!chosenStreet.isFree()) {
+            throw new BusyStreetException("Strada occupata");
+            //solleva eccezione
+        }
+        //altrimenti ritorna la strada
+        return chosenStreet;
     }
 
 }
