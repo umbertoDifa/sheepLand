@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemoteImpl;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
 import java.rmi.NotBoundException;
@@ -90,7 +91,7 @@ public class ClientRmi implements ClientInterfaceRemote{
     }
 
     public boolean setUpShepherd(int idShepherd) {
-        String chosenStreet = view.askStreet();
+        String chosenStreet = view.setUpShepherd(idShepherd);
         String result;
         try {
             result = playerRmi.setShepherd(idShepherd, chosenStreet);
@@ -98,17 +99,35 @@ public class ClientRmi implements ClientInterfaceRemote{
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return false;
         }
+        view.showInfo(result);
         if(result.contains("Patore posizionato corretamente!")){
             return true;
         }
         return false;
     }
 
-    public void chooseAction() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void chooseAction(String actions) {
+        String possibleActions[] = actions.split(","); 
+        
+        int availableAcions[] = new int[possibleActions.length];
+        String actionsName[] = new String[possibleActions.length];
+        
+        for(int i = 0; i < possibleActions.length; i++){
+            String token[] = possibleActions[i].split("-");
+            availableAcions[i] = Integer.parseInt(token[0]);
+            actionsName[i] = token[1];
+        }
+        
+        int choice = view.chooseAction(availableAcions, actionsName);
+        switch(choice){
+            case 1: this.moveOvine(OvineType.SHEEP);break;
+            case 2: this. moveOvine(OvineType.RAM);break;
+            case 3: this.moveOvine(OvineType.LAMB);break;
+                
+        }
     }
 
-    public void moveOvine() {
+    public void moveOvine(OvineType type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

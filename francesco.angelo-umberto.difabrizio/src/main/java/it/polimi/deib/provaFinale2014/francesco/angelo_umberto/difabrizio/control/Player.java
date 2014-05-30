@@ -157,7 +157,7 @@ public class Player implements PlayerRemote {
      *
      * @return
      */
-    public String moveOvine(OvineType type, String oldRegion, String newRegion) {
+    public String moveOvine(String type, String oldRegion, String newRegion) {
 
         Region startRegion;
         Region endRegion;
@@ -180,7 +180,7 @@ public class Player implements PlayerRemote {
                 //rimuovi ovino del tipo specificato
                 DebugLogger.println("Rimuovo ovino");
                 try {
-                    startRegion.removeOvine(type);
+                    startRegion.removeOvine(OvineType.valueOf(type));
                 } catch (NoOvineException ex) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
@@ -188,10 +188,11 @@ public class Player implements PlayerRemote {
                     return "Nessun ovino nella regione di partenza!";
                 }
                 //e aggiungilo nella regione d'arrivo
-                endRegion.addOvine(new Ovine(type));
+                endRegion.addOvine(new Ovine(OvineType.valueOf(type)));
+
                 //refreshio
                 gameManager.controller.refreshMoveOvine(playerNickName,
-                        oldRegion, newRegion, type.toString());
+                        oldRegion, newRegion, type);
 
                 return "Ovino mosso!";
             }

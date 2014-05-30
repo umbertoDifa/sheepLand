@@ -83,8 +83,8 @@ public class ClientSocket {
                 refreshBlackSheep();
             } else if (received.equals("RefreshWolf")) {
                 refreshWolf();
-            } else if (received.equals("SetUpShepherds")) {
-                setUpShepherds();
+            } else if (received.equals("SetUpShepherd")) {
+                setUpShepherd();
             } else if (received.equals("ChooseAction")) {
                 chooseAction();
             } else if (received.equals("MoveOvine")) {
@@ -150,26 +150,34 @@ public class ClientSocket {
         view.refreshWolf(Integer.parseInt(received));
     }
 
-    public void setUpShepherds() {
-        //Scegli pastore        
-        int chosenShepherd = view.askIdShepherd();
-
-        //scegli strada
-        int street = view.askStreet();
-        sendString(chosenShepherd + "," + street);
+    public void setUpShepherd() {
+        String shepherdIndex = receiveString();
+        String street = view.setUpShepherd(Integer.parseInt(shepherdIndex));      
+        sendString(street);
+        view.showInfo(receiveString());
     }
 
     public void chooseAction() {
         //receive possible actions
-        String numberOfActions = receiveString();        
-        token = received.split(",");
-        String nameOfActions = receiveString();
+        String actions = receiveString();        
+        String possibleActions[] = received.split(","); 
         
-        view.chooseAction(avaibleActions, token);
+        int availableAcions[] = new int[possibleActions.length];
+        String actionsName[] = new String[possibleActions.length];
+        
+        for(int i = 0; i < possibleActions.length; i++){
+            token = possibleActions[i].split("-");
+            availableAcions[i] = Integer.parseInt(token[0]);
+            actionsName[i] = token[1];
+        }
+        //invio l'intero ritornato
+        sendString(view.chooseAction(availableAcions, actionsName));
     }
 
-    public void moveOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String moveOvine() {
+    String receivedString = receiveString();
+    String possibleActions[] = receivedString.split(",");
+    return view.moveOvine(possibleActions);//stringa formato tipoOvino, regionepartenza, regioneArrivo   
     }
 
     public void moveShepherd() {
