@@ -159,8 +159,16 @@ public class Player implements PlayerRemote {
      */
     public String moveOvine(OvineType type, String oldRegion, String newRegion) {
 
-        Region startRegion = gameManager.map.convertStringToRegion(newRegion);
-        Region endRegion = gameManager.map.convertStringToRegion(oldRegion);
+        Region startRegion;
+        Region endRegion;
+        try {
+            startRegion = gameManager.map.convertStringToRegion(newRegion);
+            endRegion = gameManager.map.convertStringToRegion(oldRegion);
+        } catch (RegionNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return "La regione inserita non esiste";
+        }
 
         //per ogni strada occupata dai patori del giocatore
         //finchè non ne trovo una adatta e quindi o ritorno 
@@ -188,6 +196,7 @@ public class Player implements PlayerRemote {
                 return "Ovino mosso!";
             }
         }
+        return "Non è possibile spostare l'ovino tra le regioni inidicate";
 
     }
 
