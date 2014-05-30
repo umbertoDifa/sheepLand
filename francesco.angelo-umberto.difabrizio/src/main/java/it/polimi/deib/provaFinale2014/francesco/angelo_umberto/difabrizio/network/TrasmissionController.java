@@ -7,69 +7,73 @@ import java.util.List;
  *
  * @author
  */
-public interface TrasmissionController {
-    
-    public void setPlayersNickNames(String[] nickNames);
-    
-    public void setPlayers(List<Player> players);
+public abstract class TrasmissionController {
 
-    public String refreshRegion(String nickName, int regionIndex,
-                                int numbOfSheep, int numbOfRam,
-                                int numbOfLamb);
+    private String[] nickNames;
+    private List<Player> players;
 
-    public String refreshStreet(String nickName, int streetIndex, boolean fence,
-                                String nickNameOfShepherdPlayer);
+    public void setPlayersNickNames(String[] nickNames) {
+        this.nickNames = nickNames;
+    }
 
-    public String refreshGameParameters(String nickName);
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
 
-    public String refreshCurrentPlayer(String nickName);
+    public abstract String refreshRegion(String nickName, int regionIndex,
+            int numbOfSheep, int numbOfRam,
+            int numbOfLamb);
 
-    public String refreshCard(String nickName, String card, int value);
+    public abstract String refreshStreet(String nickName, int streetIndex, boolean fence,
+            String nickNameOfShepherdPlayer);
 
-    public String refreshBlackSheep(String message);
+    public abstract String refreshGameParameters(String nickName);
 
-    public String refreshWolf(String nickName);
+    public abstract String refreshCurrentPlayer(String nickName);
 
-    public String refreshMoveOvine(String nickName);
+    public abstract String refreshCard(String nickName, String card, int value);
 
-    public String refreshMoveShepherd(String nickNameMover,
-                                      String newStreet);
+    public abstract String refreshBlackSheep(String message);
 
-    public String refreshKillOvine(String nickName);
+    public abstract String refreshWolf(String nickName);
+
+    public abstract String refreshMoveOvine(String nickName);
+
+    public abstract String refreshMoveShepherd(String nickNameMover,
+            String newStreet);
+
+    public abstract String refreshKillOvine(String nickName);
 
     //ritorna una stringa corripondente o a una strada o il risultato della chiamata RMI
-    public String askSetUpShepherd(String nickName, int shepherdIndex);
+    public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex);
 
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
-    public String askChooseAction(String nickName, String possibleActions[]);
+    public abstract boolean askChooseAction(String nickName, String possibleActions[]);
 
     //ritorna una stringa con regione di partenza e di arrivo o risultato RMI !!!!TORNA DUE
-    public String askMoveOvine(String nickName);
+    public abstract String askMoveOvine(String nickName);
 
     //ritorna una stringa corrispondente a una strada o risultato RMI
-    public String askMoveSheperd(String nickName);
+    public abstract String askMoveSheperd(String nickName);
 
     //ritorna una stringa corrispondente al tipo di regione
-    public String buyLand(String nickName);
+    public abstract String buyLand(String nickName);
 
     //ritorna stringa corrispondente a Regione e Tipo di ovino
-    public String askKillOvine(String nickName);
+    public abstract String askKillOvine(String nickName);
 
     //ritorna una stringa corrispondente alla regione e Tipo di ovino
-    public String askMateSheepWith(String nickName);
+    public abstract String askMateSheepWith(String nickName);
 
-    public void askThrowDice(String nickName);
+    public abstract void askThrowDice(String nickName);
 
-    public void refreshInfo(String nickName, String info);
-//
-//    public void broadcastRegion();
-//
-//    public void refreshAll();
-//
-//    public int askRegion();
-//
-//    public String askStreet(String nickName, int idShepherd);
-//    
-//    public void sendTo(String nickName, String message);
+    public abstract void refreshInfo(String nickName, String info);
 
+    public String[] getNickNames() {
+        return nickNames;
+    }
+
+    protected List<Player> getPlayers() {
+        return players;
+    }
 }
