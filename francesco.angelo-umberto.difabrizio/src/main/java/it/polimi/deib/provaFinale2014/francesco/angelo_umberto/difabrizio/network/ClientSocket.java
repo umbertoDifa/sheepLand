@@ -15,6 +15,7 @@ public class ClientSocket {
     private final String ip;
     private final int port;
     private final TypeOfView view;
+    private final String nickName;
 
     //canali di comunicazione
     private Scanner serverIn;
@@ -25,10 +26,11 @@ public class ClientSocket {
     private String token[];
     private String received;
 
-    public ClientSocket(String ip, int port, TypeOfView view) {
+    public ClientSocket(String ip, int port, TypeOfView view, String nickName) {
         this.ip = ip;
         this.port = port;
         this.view = view;
+        this.nickName = nickName;
     }
 
     public void startClient() {
@@ -152,32 +154,32 @@ public class ClientSocket {
 
     public void setUpShepherd() {
         String shepherdIndex = receiveString();
-        String street = view.setUpShepherd(Integer.parseInt(shepherdIndex));      
+        String street = view.setUpShepherd(Integer.parseInt(shepherdIndex));
         sendString(street);
         view.showInfo(receiveString());
     }
 
     public void chooseAction() {
         //receive possible actions
-        String actions = receiveString();        
-        String possibleActions[] = received.split(","); 
-        
+        String actions = receiveString();
+        String possibleActions[] = received.split(",");
+
         int availableAcions[] = new int[possibleActions.length];
         String actionsName[] = new String[possibleActions.length];
-        
-        for(int i = 0; i < possibleActions.length; i++){
+
+        for (int i = 0; i < possibleActions.length; i++) {
             token = possibleActions[i].split("-");
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
         }
         //invio l'intero ritornato
-        sendString(view.chooseAction(availableAcions, actionsName));
+        sendString("" + view.chooseAction(availableAcions, actionsName));
     }
 
     public String moveOvine() {
-    String receivedString = receiveString();
-    String possibleActions[] = receivedString.split(",");
-    return view.moveOvine(possibleActions);//stringa formato tipoOvino, regionepartenza, regioneArrivo   
+        String receivedString = receiveString();
+        String arguments[] = receivedString.split(",");
+        return null; ///TODO
     }
 
     public void moveShepherd() {

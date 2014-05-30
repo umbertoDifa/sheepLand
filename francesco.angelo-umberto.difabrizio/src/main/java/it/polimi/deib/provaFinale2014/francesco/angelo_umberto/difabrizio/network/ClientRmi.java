@@ -1,7 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemoteImpl;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
@@ -10,7 +9,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author Umberto
  */
-public class ClientRmi implements ClientInterfaceRemote{
+public class ClientRmi implements ClientInterfaceRemote {
 
     private String nickName;
     private String ip;
@@ -28,7 +26,8 @@ public class ClientRmi implements ClientInterfaceRemote{
     private ServerRmi serverRmi;
     private PlayerRemote playerRmi;
 
-    public ClientRmi(String ip, int port, String nameServer, TypeOfView view, String nickName) {
+    public ClientRmi(String ip, int port, String nameServer, TypeOfView view,
+                     String nickName) {
         this.nickName = nickName;
         this.nameServer = nameServer;
         this.port = port;
@@ -36,20 +35,16 @@ public class ClientRmi implements ClientInterfaceRemote{
         this.view = view;
     }
 
-    public void start() {
+    public void startClient() {
         try {
             Registry registry = LocateRegistry.getRegistry(ip, port);
 
             //cerco l'oggetto nel registry
             serverRmi = (ServerRmi) registry.lookup(
                     nameServer);
-            
-            boolean nickOk;
-            do{
-                String nick = view.askNickName();
-                nickOk = serverRmi.connect(this, nickName);
-            }while (nickOk == false);
-            
+
+            boolean connectionAccepted = serverRmi.connect(this, nickName);
+
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "StartRmiClient" + ex.getMessage(), ex);
@@ -60,17 +55,17 @@ public class ClientRmi implements ClientInterfaceRemote{
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-            int numbOfLamb) {
+                              int numbOfLamb) {
         view.refreshRegion(regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
     }
 
     public void refreshStreet(int streetIndex, boolean Fence,
-            String nickShepherd) {
+                              String nickShepherd) {
         view.refreshStreet(streetIndex, Fence, nickShepherd);
     }
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-            int shepherd4player) {
+                                       int shepherd4player) {
         view.refereshGameParameters(numbOfPlayers, firstPlayer, shepherd4player);
     }
 
@@ -96,34 +91,41 @@ public class ClientRmi implements ClientInterfaceRemote{
         try {
             result = playerRmi.setShepherd(idShepherd, chosenStreet);
         } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
             return false;
         }
         view.showInfo(result);
-        if(result.contains("Patore posizionato corretamente!")){
+        if (result.contains("Patore posizionato corretamente!")) {
             return true;
         }
         return false;
     }
 
     public void chooseAction(String actions) {
-        String possibleActions[] = actions.split(","); 
-        
+        String possibleActions[] = actions.split(",");
+
         int availableAcions[] = new int[possibleActions.length];
         String actionsName[] = new String[possibleActions.length];
-        
-        for(int i = 0; i < possibleActions.length; i++){
+
+        for (int i = 0; i < possibleActions.length; i++) {
             String token[] = possibleActions[i].split("-");
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
         }
-        
+
         int choice = view.chooseAction(availableAcions, actionsName);
-        switch(choice){
-            case 1: this.moveOvine(OvineType.SHEEP);break;
-            case 2: this. moveOvine(OvineType.RAM);break;
-            case 3: this.moveOvine(OvineType.LAMB);break;
-                
+        switch (choice) {
+            case 1:
+                this.moveOvine(OvineType.SHEEP);
+                break;
+            case 2:
+                this.moveOvine(OvineType.RAM);
+                break;
+            case 3:
+                this.moveOvine(OvineType.LAMB);
+                break;
+
         }
     }
 
@@ -132,7 +134,7 @@ public class ClientRmi implements ClientInterfaceRemote{
     }
 
     public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
-            String type) {
+                                 String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -169,7 +171,6 @@ public class ClientRmi implements ClientInterfaceRemote{
     }
 
     public void connectPlayerRemote(PlayerRemote playerRemote) {
-        this.playerRemote = playerRemote;
     }
 
 }

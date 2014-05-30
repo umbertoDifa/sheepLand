@@ -281,8 +281,7 @@ public class GameManager implements Runnable {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
         } catch (FinishedFencesException ex) {
-            this.server.broadcastMessage(
-                    "I recinti totali sono finiti, fine gioco e calcolo dei punteggi");
+
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
@@ -298,16 +297,16 @@ public class GameManager implements Runnable {
             int i;
             //per tutti i vincitori
             for (i = 0; i < numOfWinners; i++) {
-                this.server.sendTo(clientNickNames[classification[0][i]],
-                        "hai vinto! con" + classification[1][i]);
+//                this.server.sendTo(clientNickNames[classification[0][i]],
+//                        "hai vinto! con" + classification[1][i]);
             }
             //per tutti gli altri
             for (; i < playersNumber; i++) {
-                this.server.sendTo(clientNickNames[classification[0][i]],
-                        "hai perso! con" + classification[1][i]);
+//                this.server.sendTo(clientNickNames[classification[0][i]],
+//                        "hai perso! con" + classification[1][i]);
             }
 
-            this.server.broadcastMessage(printResults(classification));
+//            this.server.broadcastMessage(printResults(classification));
         }
     }
 
@@ -389,26 +388,19 @@ public class GameManager implements Runnable {
                 //1)avvio il market  
                 //FIXME this.startMarket();
                 //2)muovo il lupo
-                try {
-                    DebugLogger.println("muovo lupo");
-                    this.moveSpecialAnimal(this.map.getWolf());
-                    this.server.broadcastMessage(
-                            "Il lupo si è mosso in: " + this.map.getNodeIndex(
-                                    this.map.getWolf().getMyRegion()));
-                } catch (CannotMoveAnimalException e) {
-                    DebugLogger.println(
-                            "il lupo non si muove perchè " + e.getMessage());
 
-                    this.server.broadcastMessage(
-                            "Il lupo non si muove perchè " + e.getMessage());
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, e.getMessage(), e);
-                } catch (NodeNotFoundException ex) {
-                    //non può verificarsi in questa occasione
+                DebugLogger.println("muovo lupo");
+                try {
+                    this.moveSpecialAnimal(this.map.getWolf());
+//                    this.server.broadcastMessage(
+//                            "Il lupo si è mosso in: " + this.map.getNodeIndex(
+//                                    this.map.getWolf().getMyRegion()));
+                } catch (CannotMoveAnimalException ex) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
                             ex.getMessage(), ex);
                 }
+
             }
         }//while
     }
@@ -441,22 +433,15 @@ public class GameManager implements Runnable {
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
             while (true) {
-                try {
-                    DebugLogger.println("Avvio choose and make action");
-                    //scegli l'azione e falla
-                    this.players.get(player).chooseAndMakeAction();
-                    //se non arriva un l'eccezione passo alla prossima azione
-                    break;
-                } catch (ActionException ex) {
-                    DebugLogger.println("Gestisco ActionCancelledException");
-                    //avvisa e riavvia la procedura di scelta dell'i-esima azione
-                    this.server.sendTo(clientNickNames[player],
-                            "err:" + ex.getMessage());
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
-                }
+
+                DebugLogger.println("Avvio choose and make action");
+                //scegli l'azione e falla
+                this.players.get(player).chooseAndMakeAction();
+                //se non arriva un l'eccezione passo alla prossima azione
+                break;
             }
         }
+
         //se sono finiti i recinti normali chiamo l'ultimo giro
         return this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue();
     }
@@ -473,30 +458,29 @@ public class GameManager implements Runnable {
      * @throws StreetNotFoundException se la strada non esiste
      * @throws BusyStreetException     se la strada è occupata
      */
-    protected Street askStreet(String playerName, int idShepherd) throws
-            StreetNotFoundException,
-            BusyStreetException {
-        String errorString = "Strada già occupata, prego riprovare:";
-
-        DebugLogger.println("Chiedo una strada in askStreet");
-
-        //raccogli decisione
-        String stringedStreet = this.server.talkTo(playerName,
-                "In quale strada vuoi posizionare il pastore " + Integer.toString(
-                        idShepherd + 1) + " ?");
-        DebugLogger.println("Risposta sulla strada ottenuta");
-        //traducila in oggetto steet 
-        Street chosenStreet = map.convertStringToStreet(stringedStreet);
-        DebugLogger.println("Conversione strada effettuata");
-        //se la strada è occuapata
-        if (!chosenStreet.isFree()) {
-            throw new BusyStreetException(errorString);
-            //solleva eccezione
-        }
-        //altrimenti ritorna la strada
-        return chosenStreet;
-    }
-
+//    protected Street askStreet(String playerName, int idShepherd) throws
+//            StreetNotFoundException,
+//            BusyStreetException {
+//        String errorString = "Strada già occupata, prego riprovare:";
+//
+//        DebugLogger.println("Chiedo una strada in askStreet");
+//
+//        //raccogli decisione
+//        String stringedStreet = this.server.talkTo(playerName,
+//                "In quale strada vuoi posizionare il pastore " + Integer.toString(
+//                        idShepherd + 1) + " ?");
+//        DebugLogger.println("Risposta sulla strada ottenuta");
+//        //traducila in oggetto steet 
+//        Street chosenStreet = map.convertStringToStreet(stringedStreet);
+//        DebugLogger.println("Conversione strada effettuata");
+//        //se la strada è occuapata
+//        if (!chosenStreet.isFree()) {
+//            throw new BusyStreetException(errorString);
+//            //solleva eccezione
+//        }
+//        //altrimenti ritorna la strada
+//        return chosenStreet;
+//    }
     /**
      * Chiede, mandandogli la stringa message, al giocatore corrispondente all
      * hashCode, qual'è l'id del pastore da muovere tra i suoi numShepherd
@@ -506,59 +490,58 @@ public class GameManager implements Runnable {
      *
      * @return id pastore scelto
      */
-    protected int askIdShepherd(String playerNickName) {
-        int idShepherd;
-        String errorMessage;
-
-        DebugLogger.println("chiedo id pastore da muovere");
-        while (true) {
-            try {
-                //chiedi quale pastore muovere
-                idShepherd = Integer.parseInt(this.server.talkTo(
-                        playerNickName, "Quale pastore vuoi muovere?"));
-
-                //se l'id è valido
-                if (idShepherd > 0 && idShepherd <= shepherd4player) {
-                    this.server.sendTo(playerNickName, "pastore selezionato ok");
-                    break;
-                }
-                errorMessage = "Non esiste il pastore chiesto, prego riprovare.";
-
-            } catch (NumberFormatException e) {
-                Logger.getLogger(DebugLogger.class.getName()).log(
-                        Level.SEVERE, e.getMessage(), e);
-                errorMessage = "La stringa inserita non identifica un pastore, prego riprovare.";
-            }
-
-            this.server.sendTo(playerNickName, errorMessage);
-        }
-
-        //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array                   
-        return --idShepherd;
-    }
-
-    /**
-     * Chiede al player inviandogli la stringa message un id regione
-     *
-     * @param playerNickName
-     * @param message
-     *
-     * @return Regione corrispondente
-     *
-     * @throws RegionNotFoundException
-     */
-    protected Region askAboutRegion(String playerNickName, String message)
-            throws
-            RegionNotFoundException {
-        Region chosenRegion;
-        String stringedRegion = this.server.talkTo(playerNickName, message);
-        chosenRegion = map.convertStringToRegion(stringedRegion);
-        DebugLogger.println("regione ok");
-        this.server.sendTo(playerNickName, "regione ok");
-
-        return chosenRegion;
-    }
-
+//    protected int askIdShepherd(String playerNickName) {
+//        int idShepherd;
+//        String errorMessage;
+//
+//        DebugLogger.println("chiedo id pastore da muovere");
+//        while (true) {
+//            try {
+//                //chiedi quale pastore muovere
+//                idShepherd = Integer.parseInt(this.server.talkTo(
+//                        playerNickName, "Quale pastore vuoi muovere?"));
+//
+//                //se l'id è valido
+//                if (idShepherd > 0 && idShepherd <= shepherd4player) {
+//                    this.server.sendTo(playerNickName, "pastore selezionato ok");
+//                    break;
+//                }
+//                errorMessage = "Non esiste il pastore chiesto, prego riprovare.";
+//
+//            } catch (NumberFormatException e) {
+//                Logger.getLogger(DebugLogger.class
+//                        .getName()).log(
+//                                Level.SEVERE, e.getMessage(), e);
+//                errorMessage = "La stringa inserita non identifica un pastore, prego riprovare.";
+//            }
+//
+//            this.server.sendTo(playerNickName, errorMessage);
+//        }
+//
+//        //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array                   
+//        return --idShepherd;
+//    }
+//    /**
+//     * Chiede al player inviandogli la stringa message un id regione
+//     *
+//     * @param playerNickName
+//     * @param message
+//     *
+//     * @return Regione corrispondente
+//     *
+//     * @throws RegionNotFoundException
+//     */
+//    protected Region askAboutRegion(String playerNickName, String message)
+//            throws
+//            RegionNotFoundException {
+//        Region chosenRegion;
+//        String stringedRegion = this.server.talkTo(playerNickName, message);
+//        chosenRegion = map.convertStringToRegion(stringedRegion);
+//        DebugLogger.println("regione ok");
+//        this.server.sendTo(playerNickName, "regione ok");
+//
+//        return chosenRegion;
+//    }
     //TODO piuttosto che fare mappa e server private e fornire i getter
     //forse è meglio che siano private
     private void moveSpecialAnimal(SpecialAnimal animal) throws
@@ -609,40 +592,6 @@ public class GameManager implements Runnable {
             //aggiorno il prossimo player
             playerThatBuys = (playerThatBuys + 1) % this.playersNumber;
         }
-    }
-
-    protected void askCancelOrRetry(String playerNickName, String message)
-            throws
-            ActionCancelledException {
-        //chiedo cosa vuole fare traducendo la scelta in char e processandolo in una switch
-        DebugLogger.println("AskOrRetry avviato");
-        Character choice = server.talkTo(
-                playerNickName, message + " Riprovare(R) o Annullare(A)?").charAt(
-                        0);
-        switch (choice) {
-            //se vuole riprovare
-            case 'R':
-                this.server.sendTo(playerNickName, "Riprova.");
-                break;
-            //se vuole annullare 
-            default:
-                throw new ActionCancelledException("Abort.");
-        }//switch
-    }
-
-    /**
-     * chiedo conferma per lanciare il dado al giocatore corrispondente al
-     * playerHashCode. Ritorno sempre un valore random
-     *
-     * @param playerNickName
-     *
-     * @return
-     */
-    protected int askAndThrowDice(String playerNickName) {
-        this.server.talkTo(playerNickName,
-                "Premi un tasto per lanciare dado?");
-        //discard returned string e lancia il dado
-        return Dice.roll();
     }
 
     /**

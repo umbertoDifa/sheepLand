@@ -10,22 +10,25 @@ import java.util.List;
  */
 public abstract class TrasmissionController {
 
-    private HashMap<String,Player> nick2PlayerMap = new HashMap<String, Player>();
+    private HashMap<String, Player> nick2PlayerMap = new HashMap<String, Player>();
 
     public void setNick2PlayerMap(String[] nickNames, List<Player> players) {
-        for(int i=0; i<nickNames.length; i++){
+        for (int i = 0; i < nickNames.length; i++) {
             nick2PlayerMap.put(nickNames[i], players.get(i));
         }
     }
 
     public abstract void refreshRegion(String nickName, int regionIndex,
-            int numbOfSheep, int numbOfRam,
-            int numbOfLamb);
+                                       int numbOfSheep, int numbOfRam,
+                                       int numbOfLamb);
 
-    public abstract void refreshStreet(String nickName, int streetIndex, boolean fence,
-            String nickNameOfShepherdPlayer);
+    public abstract void refreshStreet(String nickName, int streetIndex,
+                                       boolean fence,
+                                       String nickNameOfShepherdPlayer);
 
-    public abstract void refreshGameParameters(String nickName);
+    public abstract void refreshGameParameters(String nickName,
+                                               int numbOfPlayers,
+                                               int shepherd4player);
 
     public abstract void refreshCurrentPlayer(String nickName);
 
@@ -35,10 +38,11 @@ public abstract class TrasmissionController {
 
     public abstract void refreshWolf(String nickName);
 
-    public abstract void refreshMoveOvine(String nickName, String startRegion, String endRegion, String ovineType);
+    public abstract void refreshMoveOvine(String nickName, String startRegion,
+                                          String endRegion, String ovineType);
 
     public abstract void refreshMoveShepherd(String nickNameMover,
-            String newStreet);
+                                             String newStreet);
 
     public abstract void refreshKillOvine(String nickName);
 
@@ -46,7 +50,8 @@ public abstract class TrasmissionController {
     public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex);
 
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
-    public abstract boolean askChooseAction(String nickName, String possibleActions);
+    public abstract boolean askChooseAction(String nickName,
+                                            String possibleActions);
 
     //ritorna una stringa con regione di partenza e di arrivo o risultato RMI !!!!TORNA DUE
     public abstract boolean askMoveOvine(String nickName);

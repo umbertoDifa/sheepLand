@@ -1,8 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
-import java.util.List;
-
 public class RmiTrasmission extends TrasmissionController {
 
     @Override
@@ -16,7 +13,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshGameParameters(String nickName) {
+    public void refreshGameParameters(String nickName, int numbOfPlayers, int shepherd4player) {
         ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refereshGameParameters(numbOfPlayers, nickName, shepherd4player);
     }
 
@@ -41,11 +38,6 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshMoveOvine(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void refreshMoveShepherd(String nickNameMover, String newStreet) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -63,6 +55,7 @@ public class RmiTrasmission extends TrasmissionController {
     @Override
     public boolean askChooseAction(String nickName, String possibleActions) {
         ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(possibleActions);
+        return false; //TODO
     }
 
     @Override
@@ -97,6 +90,12 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public void refreshInfo(String nickName, String info) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void refreshMoveOvine(String nickName, String startRegion,
+                                 String endRegion, String ovineType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

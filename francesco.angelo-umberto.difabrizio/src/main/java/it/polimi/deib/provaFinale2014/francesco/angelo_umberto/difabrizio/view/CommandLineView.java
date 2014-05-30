@@ -1,7 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
@@ -15,13 +13,13 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-            int numbOfLamb) {
+                              int numbOfLamb) {
         stdOut.println("La regione " + regionIndex + " ora ha " + numbOfSheep
                 + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni.");
     }
 
     public void refreshStreet(int streetIndex, boolean fence,
-            String nickShepherd) {
+                              String nickShepherd) {
         stdOut.println("La strada " + streetIndex + "è ");
         if (fence == true) {
             stdOut.println(" recintata");
@@ -33,8 +31,9 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-            int shepherd4player) {
-        stdOut.println("La partita ha " + numbOfPlayers + ", il primo giocatore è "
+                                       int shepherd4player) {
+        stdOut.println(
+                "La partita ha " + numbOfPlayers + ", il primo giocatore è "
                 + firstPlayer + ", ogni giocatore ha " + shepherd4player);
     }
 
@@ -50,8 +49,8 @@ public class CommandLineView implements TypeOfView {
         stdOut.println("Il lupo è nella regione" + regionIndex);
     }
 
-    public String setUpShepherds(int shepherdIndex) {
-        stdOut.println("Inserisci una strada per il pastore " +shepherdIndex);
+    public String setUpShepherd(int shepherdIndex) {
+        stdOut.println("Inserisci una strada per il pastore " + shepherdIndex);
         return stdIn.nextLine();
     }
 
@@ -60,7 +59,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
-            String type) {
+                                 String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -93,20 +92,39 @@ public class CommandLineView implements TypeOfView {
     }
 
     public String askNickName() {
-
+        return null; //TODO
     }
 
     public void refereshCards(String[] myCards) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int chooseAction(int[] availableActions, String[] availableStringedActions) {
+    public int chooseAction(int[] availableActions,
+                            String[] availableStringedActions) {
         String stringToPrint = "";
         for (int i : availableActions) {
-            stringToPrint += String.valueOf(availableActions[i])+"- "+ availableActions[i];
+            stringToPrint += String.valueOf(availableActions[i]) + "- " + availableActions[i] + " ";
         }
-        stdOut.println("inserire azione tra " + stringToPrint);
-        
+        String choice;
+        int action = -1;
+        boolean correct = false;
+
+        do {
+            stdOut.println("Inserire azione tra " + stringToPrint);
+            choice = stdIn.nextLine();
+            try {
+                action = Integer.parseInt(choice);
+                for (int i = 0; i < availableActions.length; i++) {
+                    if (availableActions[i] == action) {
+                        correct = true;
+                        break;
+                    }
+                }
+            } catch (NumberFormatException ex) {
+                stdOut.println("Azione non valida.\nPrego riprovare:");
+            }
+        } while (!correct);
+        return action;
     }
 
     public int askIdShepherd() {
@@ -119,6 +137,10 @@ public class CommandLineView implements TypeOfView {
 
     public void showInfo(String info) {
         stdOut.println(info);
+    }
+
+    public void moveOvine(String type, String startRegion, String endRegion) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

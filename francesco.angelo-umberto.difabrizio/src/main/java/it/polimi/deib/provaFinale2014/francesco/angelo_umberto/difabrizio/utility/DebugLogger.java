@@ -1,5 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility;
 
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -10,10 +12,8 @@ public class DebugLogger {
 
     private static final boolean DEBUG = true;
     private static final boolean PARENT_HANDLERS_ON = true;
-    
-    
-            
-    private DebugLogger() {        
+
+    private DebugLogger() {
     }
 
     public static void println(String debugPrint) {
@@ -22,13 +22,13 @@ public class DebugLogger {
 
             //stampa la stringa
             System.out.println(debugPrint);
-        }       
+        }
         //altrimenti nulla
     }
-    
-    public static void turnOffExceptionLog(){
+
+    public static void turnOffExceptionLog() {
         Logger.getLogger(DebugLogger.class
-                        .getName()).setUseParentHandlers(DebugLogger.PARENT_HANDLERS_ON);
+                .getName()).setUseParentHandlers(DebugLogger.PARENT_HANDLERS_ON);
     }
 
 }

@@ -1,7 +1,9 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.GuiView;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.CommandLineView;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.GuiView;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
@@ -12,62 +14,66 @@ public class Client {
 
     public static void main(String[] args) {
 
-        boolean rmi = false;
         final String ip = "127.0.0.1";
         final int port = 5050;
         final String nameServer = "sheepland";
 
-//        Client client = new Client(ip, port);
         Scanner stdIn = new Scanner(System.in);
-        boolean stringValid = false;
-        String answer;
-        int choice;
+        PrintWriter stdOut = new PrintWriter(System.out);
 
-        while (!stringValid) {
-            // try {
-            System.out.println(
-                    "Scegli connessione:\n1- Socket\n2- RMI");
-            answer = stdIn.nextLine();
-            choice = Integer.parseInt(answer);
+        stdOut.println("Inserisci il tuo nickName:");
+        stdOut.flush();
 
-            if (choice == 1) {
-                stringValid = true;
-                rmi = false;
-                System.out.println(
-                        "Scegli interfaccia:\n1- CLC\n2- GUI");
-                answer = stdIn.nextLine();
-                choice = Integer.parseInt(answer);
-                if (choice == 1) {
-                    ClientSocket clientSocket = new ClientSocket(ip,
-                            port, new CommandLineView());
-                } else if (choice == 2) {
-                    ClientSocket clientSocket = new ClientSocket(ip,
-                            port, new GuiView());
+        String nickName = stdIn.nextLine();
+
+        boolean valid = false;
+
+        while (!valid) {
+            stdOut.println("Scegli connessione:\n1- Socket\n2- RMI");
+            stdOut.flush();
+            String typeOfConnection = stdIn.nextLine();
+
+            stdOut.println("Scegli interfaccia:\n1- CLC\n2- GUI");
+            stdOut.flush();
+            String typeOfInterface = stdIn.nextLine();
+
+            if ("1".equals(typeOfConnection)) {
+                if ("1".equals(typeOfInterface)) {
+                    //Socket - CLC
+                    ClientSocket client = new ClientSocket(ip, port,
+                            new CommandLineView(), nickName);
+                    client.startClient();
+                    valid = true;
+                } else if ("2".equals(typeOfInterface)) {
+                    //Socket - GUI
+                    ClientSocket client = new ClientSocket(ip, port,
+                            new GuiView(), nickName);
+                    client.startClient();
+                    valid = true;
                 }
-            } else if (choice == 2) {
-                stringValid = true;
-                rmi = true;
-                System.out.println(
-                        "Scegli interfaccia:\n1- CLC\n2- GUI");
-                answer = stdIn.nextLine();
-                choice = Integer.parseInt(answer);
-                if (choice == 1) {
-                    ClientRmi clientRmi = new ClientRmi(ip, port, new CommandLineView(), String nickName);
-                    clientRmi.start();
-                } else if (choice == 2) {
-                    ClientRmi clientRmi = new ClientRmi(ip, port, nameServer, new GuiView(), String nickName);
-                    clientRmi.start();
+            } else if ("2".equals(typeOfConnection)) {
+                if ("1".equals(typeOfInterface)) {
+                    //Rmi - CLC
+                    ClientRmi client = new ClientRmi(ip, port, nameServer,
+                            new CommandLineView(),
+                            nickName);
+                    client.startClient();
+                    valid = true;
+                } else if ("2".equals(typeOfInterface)) {
+                    //rmi -GUI
+                    ClientRmi client = new ClientRmi(ip, port, nameServer,
+                            new GuiView(),
+                            nickName);
+                    client.startClient();
+                    valid = true;
                 }
-
-            } else {
-                System.out.println("La scelta inserita non è valida\n");
             }
-        }catch (NumberFormatException e) {
-            System.out.println("Scelta non valida\n");
-
+            if (!valid) {
+                stdOut.println(
+                        "\nI dati inseriti non sono validi prego riprovare.\n");
+                stdOut.flush();
+            }
         }
-    }
 
-    System.out.println("Server spento.");
     }
 }

@@ -31,7 +31,7 @@ public class SocketTrasmission extends TrasmissionController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshMoveOvine(String nickName) {
+    public void refreshMoveOvine(String nickName, String startRegion, String endRegion, String ovineType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -74,12 +74,13 @@ public class SocketTrasmission extends TrasmissionController {
             case 2:
                 return askMoveSheperd(nickName);
             case 3:
-                return buyLand(nickName);
+                //return buyLand(nickName);
             case 4:
-                return askMateSheepWith(nickName);
+                //return askMateSheepWith(nickName);
             case 5:
-                return askKillOvine(nickName);
+               // return askKillOvine(nickName);
         }
+        return false;
     }    
     
 
@@ -89,7 +90,7 @@ public class SocketTrasmission extends TrasmissionController {
         String token[] = result.split(",");
         result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0], token[1], token[2]);
         if( result.contains("Ovino mosso!"));
-            ServerSockets.NickSocketMap.get(nickName).send();
+        return false;    //TODO
     }
 
     public boolean askMoveSheperd(String nickName) {
@@ -113,6 +114,12 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     public void refreshInfo(String nickName, String info) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void refreshGameParameters(String nickName, int numbOfPlayers,
+                                      int shepherd4player) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
