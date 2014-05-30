@@ -35,8 +35,9 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class GameManager {
-
+public class GameManager implements Runnable{
+    Thread myThread;
+    
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
     private String clientNickNames[];
@@ -76,6 +77,19 @@ public class GameManager {
         }
         //setto arraylist dei giocatori 
         this.setUpPlayers();
+        
+        controller.setPlayersNickNames(this.clientNickNames);
+        controller.setPlayers(players);
+        
+        myThread  = new Thread(this);
+    }
+    
+    public void start(){
+        myThread.start();
+    }
+    
+    public void run(){
+        this.startGame();
     }
 
     /**

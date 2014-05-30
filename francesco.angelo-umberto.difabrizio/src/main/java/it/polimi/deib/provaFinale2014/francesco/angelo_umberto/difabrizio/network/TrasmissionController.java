@@ -1,5 +1,8 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
+import java.util.List;
+
 /**
  *
  * @author
@@ -7,6 +10,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 public interface TrasmissionController {
     
     public void setPlayersNickNames(String[] nickNames);
+    
+    public void setPlayers(List<Player> players);
 
     public String refreshRegion(String nickName, int regionIndex,
                                 int numbOfSheep, int numbOfRam,

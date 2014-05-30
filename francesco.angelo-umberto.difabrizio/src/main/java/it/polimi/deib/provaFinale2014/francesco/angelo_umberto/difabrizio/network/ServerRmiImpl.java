@@ -1,5 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -78,10 +80,10 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
     protected static int activatedGames = 0;
 
     private final int port;
-    private final  String serverName;
+    private final String serverName;
     private final String ip;
-    
-     /**
+
+    /**
      * Lista dei nickNames dei client che sono in coda per iniziare una partita
      */
     private List<String> clientNickNames = new ArrayList<String>();
@@ -104,15 +106,15 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
         DebugLogger.turnOffExceptionLog();
 
     }
-    
-    public void start(){
+
+    public void start() {
         myThread.start();
     }
-    
-    public void run(){
+
+    public void run() {
         this.startServer();
     }
-    
+
     private void startServer() {
         try {
             //Creo una versione remota
@@ -121,7 +123,7 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
 
             //Setto i player che aspettano di iniziare una partita a 0
             numberOfPlayers = 0;
-            
+
             //Creo registro rmi nel quale caricare la mia istanza del server
             Registry registry = LocateRegistry.createRegistry(port);
 
@@ -165,18 +167,17 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
         }
         return false;//FIXME!!
     }
-    
-     private void startGame() {
+
+    private void startGame() {
         if (numberOfPlayers >= minClientsForGame) {
             DebugLogger.println(
                     "Avvio il gioco con " + numberOfPlayers + " giocatori");
-            executor.submit(new ServerThread(clientNickNames,
+            executor.submit(new GameManager(clientNickNames,
                     new RmiTrasmission()));
         } else {
             //TODO reject
         }
     }
-
 
     /**
      * The timer that starts when the first client of a game connects to the

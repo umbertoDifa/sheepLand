@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -193,7 +194,7 @@ public class ServerSockets implements Runnable {
                     "Avvio il gioco con " + clientNickNames.size() + " giocatori");
 
             //avvio il thread per gestire la partita
-            executor.submit(new ServerThread(clientNickNames,
+            executor.submit(new GameManager(clientNickNames,
                     new SocketTrasmission()));
 
             //aumento i giochi attivi

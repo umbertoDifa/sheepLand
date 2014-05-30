@@ -364,7 +364,7 @@ public class Player {
      * e metto il cancello Altrimenti richiedo o annullo azione
      *
      */
-    public void moveShepherd(int indexShepherd, String newStreet) {
+    public void moveShepherd() {
 
 //        Street startStreet;
 //        Street endStreet;
