@@ -45,7 +45,7 @@ public class PlayerRemoteImpl implements PlayerRemote {
     }
 
     public void setUpShepherd(String nickName, int idShepherd, int streetIndex) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     public void buyLand() throws RemoteException, ActionCancelledException {

@@ -1,4 +1,4 @@
-package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
+package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public interface typeOfView {
 
     public void refreshWolf(int regionIndex);
 
-    public void setUpShepherds();
+    public boolean setUpShepherds();
 
     public int chooseAction(int[] avaibleActions, String[] avaibleStringedActions);
 

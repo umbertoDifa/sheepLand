@@ -1,54 +1,38 @@
-package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
+package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.util.List;
 
-public class CommandLineView implements typeOfView {
 
-    private final PrintStream stdOut = System.out;
-    private final InputStream stdIn = System.in;
-
-    public CommandLineView() {
-
-    }
+public class GuiView implements typeOfView {
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-            int numbOfLamb) {
-        stdOut.println("La regione " + regionIndex + " ora ha " + numbOfSheep
-                + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni.");
+                              int numbOfLamb) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshStreet(int streetIndex, boolean fence,
-            String nickShepherd) {
-        stdOut.println("La strada " + streetIndex + "è ");
-        if (fence == true) {
-            stdOut.println(" recintata");
-        } else if (nickShepherd != null) {
-            stdOut.println(" occupata da " + nickShepherd);
-        } else {
-            stdOut.println("libera");
-        }
+    public void refreshStreet(int streetIndex, boolean Fence,
+                              String nickShepherd) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-            int shepherd4player) {
-        stdOut.println("La partita ha " + numbOfPlayers + ", il primo giocatore è "
-                + firstPlayer + ", ogni giocatore ha " + shepherd4player);
+                                       int shepherd4player) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
-        stdOut.println("é il turno di " + currenPlayer);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refreshBlackSheep(int regionIndex) {
-        stdOut.println("La pecora nera è nella regione " + regionIndex);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refreshWolf(int regionIndex) {
-        stdOut.println("Il lupo è nella regione" + regionIndex);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void setUpShepherds() {
+    public boolean setUpShepherds() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -57,7 +41,7 @@ public class CommandLineView implements typeOfView {
     }
 
     public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
-            String type) {
+                                 String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -90,7 +74,7 @@ public class CommandLineView implements typeOfView {
     }
 
     public String askNickName() {
-
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refereshCards(String[] myCards) {
@@ -98,12 +82,7 @@ public class CommandLineView implements typeOfView {
     }
 
     public int chooseAction(int[] avaibleActions, String[] avaibleStringedActions) {
-        String stringToPrint = "";
-        for (int i : avaibleActions) {
-            stringToPrint += String.valueOf(avaibleActions[i])+"- "+ avaibleActions[i];
-        }
-        stdOut.println("inserire azione tra " + stringToPrint);
-        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public int askIdShepherd() {

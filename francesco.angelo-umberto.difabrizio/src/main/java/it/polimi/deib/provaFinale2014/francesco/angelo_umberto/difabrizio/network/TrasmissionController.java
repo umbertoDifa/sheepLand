@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -9,15 +10,12 @@ import java.util.List;
  */
 public abstract class TrasmissionController {
 
-    private String[] nickNames;
-    private List<Player> players;
+    private HashMap<String,Player> nick2PlayerMap = new HashMap<String, Player>();
 
-    public void setPlayersNickNames(String[] nickNames) {
-        this.nickNames = nickNames;
-    }
-
-    public void setPlayers(List<Player> players) {
-        this.players = players;
+    public void setNick2PlayerMap(String[] nickNames, List<Player> players) {
+        for(int i=0; i<nickNames.length; i++){
+            nick2PlayerMap.put(nickNames[i], players.get(i));
+        }
     }
 
     public abstract String refreshRegion(String nickName, int regionIndex,
@@ -69,11 +67,8 @@ public abstract class TrasmissionController {
 
     public abstract void refreshInfo(String nickName, String info);
 
-    public String[] getNickNames() {
-        return nickNames;
+    public HashMap<String, Player> getNick2PlayerMap() {
+        return nick2PlayerMap;
     }
 
-    protected List<Player> getPlayers() {
-        return players;
-    }
 }

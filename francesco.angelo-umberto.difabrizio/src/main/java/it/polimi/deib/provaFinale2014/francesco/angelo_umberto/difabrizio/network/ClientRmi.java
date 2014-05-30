@@ -1,5 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemoteImpl;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.typeOfView;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -14,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author Umberto
  */
-public class ClientRmi {
+public class ClientRmi implements ClientInterfaceRemote{
 
     private String nickName;
     private String ip;
@@ -22,6 +24,7 @@ public class ClientRmi {
     private String nameServer;
     private typeOfView view;
     private ServerRmi serverRmi;
+    private PlayerRemoteImpl playerRmi;
 
     public ClientRmi(String ip, int port, String nameServer, typeOfView view, String nickName) {
         this.nickName = nickName;
@@ -85,11 +88,10 @@ public class ClientRmi {
         view.refreshWolf(regionIndex);
     }
 
-    public void setUpShepherds() {
-        view.askIdShepherd();
-        view.askRegion();
-        
-                
+    public boolean setUpShepherd(int idShepherd) {
+        //view.askIdShepherd();
+        int chosenStreet = view.askStreet();
+        return playerRmi.setUpShepherd(nickName, idShepherd, chosenStreet);
     }
 
     public void chooseAction() {

@@ -18,5 +18,9 @@ public class RmiClientProxy {
     public void setGameId(int gameId){
         this.gameId = gameId;
     }
+    
+    public ClientRmi getClientRmi(){
+        return client;
+    }
 
 }
