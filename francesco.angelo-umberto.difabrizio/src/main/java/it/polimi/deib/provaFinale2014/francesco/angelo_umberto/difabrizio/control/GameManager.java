@@ -9,6 +9,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
@@ -19,7 +20,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class GameManager {
     private List<Player> players = new ArrayList<Player>();
     private String clientNickNames[];
     private final int playersNumber;
-    private TrasmissionController controller;
+    protected TrasmissionController controller;
     /**
      * rappresenterà il segnalino indicante il primo giocatore del giro
      */
@@ -50,8 +50,9 @@ public class GameManager {
     protected final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
 
-    public GameManager(List<String> clientNickNames, TrasmissionController controller) {
-        
+    public GameManager(List<String> clientNickNames,
+                       TrasmissionController controller) {
+
         this.controller = controller;
         //salvo il numero di player
         this.playersNumber = clientNickNames.size();
@@ -74,12 +75,12 @@ public class GameManager {
             this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
         }
         //setto arraylist dei giocatori 
-        this.setUpPlayers();                
+        this.setUpPlayers();
     }
 
     /**
-     * Riempie l'arraylist dei player e riempie l'array dei rispettivi hashcode
-     *
+     * Riempie l'arraylist dei player assegnando ad ognuno il nickName
+     * corrispondente nell'array dei nickName rispettando l'ordine
      */
     private void setUpPlayers() {
         //per ogni giocatore
@@ -96,25 +97,62 @@ public class GameManager {
     private void SetUpGame() {
         DebugLogger.println("SetUpMap Avviato");
         this.setUpMap();
+
         DebugLogger.println("SetUpAnimals Avviato");
-
         this.setUpAnimals();
-        DebugLogger.println("SetUpSheperds Avviato");
 
+        DebugLogger.println("SetUpcards Avviato");
         this.setUpCards();
+
         DebugLogger.println("SetUpFences Avviato");
-
         this.setUpFences();
-        DebugLogger.println("SetUpShift Avviato");
 
+        DebugLogger.println("SetUpShift Avviato");
         this.setUpShift();
         DebugLogger.println(
                 "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
 
+        DebugLogger.println("SetUpinitial Avviato");
+        this.setUpInitialCards();
+
+        DebugLogger.println("SetUpinitial conditions");
         this.broadcastInitialConditions();
 
+        DebugLogger.println("brodcast cards");
+        this.brodcastCards();
+
         this.setUpShepherds();
-        DebugLogger.println("SetUpCards Avviato");
+        DebugLogger.println("SetUpshpherds terminato");
+
+    }
+
+    private void brodcastCards() {
+        for (int i = 0; i < playersNumber; i++) {
+            refreshCards(i);
+        }
+    }
+
+    private void refreshCards(int indexOfPlayer) {
+        int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
+        for (int j = 0; j < numberOfCards; j++) {
+            Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
+                    j);
+            controller.refreshCard(clientNickNames[indexOfPlayer],
+                    card.getType().toString(), card.getValue());
+        }
+    }
+
+    private void setUpInitialCards() {
+
+        for (int i = 0; i < clientNickNames.length; i++) {
+            //aggiungi la carta prendendola dalle carte iniziali della banca
+            DebugLogger.println("Prendo una carta dalla banca");
+            Card initialCard = this.bank.getInitialCard();
+
+            DebugLogger.println("Aggiungo la carta al pastore");
+            this.players.get(i).shepherd[0].addCard(
+                    initialCard);
+        }
 
     }
 
@@ -143,82 +181,50 @@ public class GameManager {
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
     private void setUpShepherds() {
-        Street chosenStreet = new Street(0); //HACK: creo cmq una strada con valore 0 così non ho errori 
-        //perchè la variabile potrebbe essere null fuori dal while infatti tutti i controlli necessari li faccio
-        //in askStreet e nelle funzioni da lei chiamate che mi ridanno una delle eccezioni che gestisco
+        Street chosenStreet = new Street(0);//HACK
 
         int i;//indice giocatori
         int j;//indice pastori
+        boolean stringNotValid;
+        String stringedStreet = null;
 
         //per ogni playerint 
         for (i = 0; i < this.playersNumber; i++) {
             //setto il player corrente
-            currentPlayer = (firstPlayer + i) % playersNumber;           
+            currentPlayer = (firstPlayer + i) % playersNumber;
 
             //per ogni suo pastore
             for (j = 0; j < this.shepherd4player; j++) {
-                while (true) {
-                    //prova a chiedere la strada per il j-esimo pastore
-                    try {
-                        //se ho un valore di ritorno
-                        String stringedStreet = server.getTrasmissionController().askStreet(
-                                clientNickNames[currentPlayer], j);
-                        chosenStreet = checkStreet(stringedStreet);
-                        break;
-                        //se strada non trovata 
-                    } catch (StreetNotFoundException ex) {
-                        //invio msg strada non trovata e ricomincia loop
-                        server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
-                                ex.getMessage());
-                        Logger.getLogger(DebugLogger.class.getName()).log(
-                                Level.SEVERE, ex.getMessage(), ex);
-                        //se la strada è occupata
-                    } catch (BusyStreetException e) {
-                        //manda il messaggio di errore al client e ricomincia il loop
-                       server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
-                                e.getMessage());
-                        Logger.getLogger(DebugLogger.class.getName()).log(
-                                Level.SEVERE, e.getMessage(), e);
+                stringNotValid = true;
+
+                while (stringNotValid) {
+
+                    //prova a chiedere la strada per il j-esimo pastore                    
+                    stringedStreet = controller.askSetUpShepherd(
+                            clientNickNames[currentPlayer], j);
+
+                    if (!stringedStreet.contains("rmi ok")) {
+                        if (!stringedStreet.contains("rmi err")) {
+                            String result = players.get(currentPlayer).setShepherd(
+                                    j, stringedStreet);
+                            if (result.contains("ok")) {
+                                stringNotValid = false;
+                            } else {
+                                //err
+                                controller.refreshInfo(
+                                        clientNickNames[currentPlayer], result);
+                                stringNotValid = true;
+                            }
+                        } else {
+                            //rmi err
+                            stringNotValid = true;
+                        }
+                    } else {
+                        //rmi ok
+                        stringNotValid = false;
                     }
-                }//while
-                this.server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
-                        "Pastore accettato");
-                DebugLogger.println(
-                        "Setto il pastore: " + j + " del giocatore: " + currentPlayer
-                );
-                //sposta il pastore 
-                this.players.get(currentPlayer).shepherd[j].moveTo(
-                        chosenStreet);
-                DebugLogger.println("Pastore settato");
-
-                //creo una carta con valore 0 e di tipo casuale e l'aggiungo a 
-                //quelle del pastore corrispondente al mio player
-                //aggiungi la carta prendendola dalle carte iniziali della banca
-                DebugLogger.println("Prendo una carta dalla banca");
-                Card initialCard = this.bank.getInitialCard();
-
-                DebugLogger.println("Aggiungo la carta al pastore");
-                this.players.get(currentPlayer).shepherd[0].addCard(
-                        initialCard);
-
-                DebugLogger.println("invio conferma");
-                //invia conferma riepilogativa all'utente
-                this.server.getTrasmissionController().sendTo(clientNickNames[currentPlayer],
-                        "Pastore posizionato. Hai una carta terreno di tipo: " + initialCard.getType().toString());
-
-                try {
-                    //aggiorna gli altri
-                    this.server.broadcastExcept(
-                            "Il giocatore " + currentPlayer + " ha posizionato il pastore " + j + " nella strada " + this.map.getNodeIndex(
-                                    chosenStreet),
-                            clientNickNames[currentPlayer]);
-                } catch (NodeNotFoundException ex) {
-                    //è impossibile che la strada non esista perchè è stata appena convertita...
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                }
-            }
+                }//while               
+            }//for pastori
         }//for giocatori
     }
 
@@ -279,7 +285,11 @@ public class GameManager {
     private void playTheGame() {
         int[][] classification = new int[2][playersNumber];
         int numOfWinners = 1;
-        this.server.broadcastMessage("Inizia il gioco!");
+
+        //broadcast avvio gioco
+        for (String client : clientNickNames) {
+            controller.refreshInfo(client, "Inizia il gioco!");
+        }
         try {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
@@ -325,32 +335,49 @@ public class GameManager {
     }
 
     private void broadcastInitialConditions() {
-        
-        
-        
-        
-        //LandData RegionData = this.map.createRegionData();
 
-        //GameData gameData = this.createGameData();
-        //add cards
-        //CompleteDataTransfer data = createDataTransfer();
-        //server.broadcastInitialConditon(data)
-        //informiamo animali regioni
-//        for(Region region: map.getRegions()){
-//            for(Ovine ovine : region.getMyOvines()){
-//                server.broadcastRegion(indexRegione, tipoOvino, numeroDIovino);
-//            }
-//        }
-        //informiamo pastori strade 
-        //informiamo numerodi player, numero di pastori, il primo giocatore
-        //a secnoda del player le carte
-//        for (int i = 0; i < playersNumber; i++) {
-//            this.server.sendTo(clientNickNames[i],
-//                    "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
-//                    + "; ogni giocatore ha :" + this.shepherd4player
-//                    + "pastori. Il primo del turno è :" + firstPlayer
-//                    + ". Ogni giocatore ha :" + GameConstants.NUM_ACTIONS.getValue() + " azioni.");
-//        }
+        //broadcast regions
+        int numbOfSheep, numbOfLamb, numbOfRam;
+
+        for (int i = 0; i < this.map.getRegions().length; i++) {
+            numbOfLamb = 0;
+            numbOfRam = 0;
+            numbOfSheep = 0;
+            Region region = this.map.getRegions()[i];
+            for (Ovine ovine : region.getMyOvines()) {
+                if (ovine.getType() == OvineType.SHEEP) {
+                    numbOfSheep++;
+                } else if (ovine.getType() == OvineType.LAMB) {
+                    numbOfLamb++;
+                } else if (ovine.getType() == OvineType.RAM) {
+                    numbOfRam++;
+                }
+            }
+            for (String client : clientNickNames) {
+                controller.refreshRegion(client, i, numbOfSheep,
+                        numbOfRam, numbOfLamb);
+            }
+        }
+
+        //broadcast streets
+        boolean fence;
+        String shepherdName;
+
+        int streetsNumber = this.map.getStreets().length;
+        for (int i = 0; i < streetsNumber; i++) {
+            Street street = this.map.getStreets()[i];
+            fence = false;
+            shepherdName = null;
+            if (street.hasFence()) {
+                fence = true;
+            } else if (street.hasShepherd()) {
+                shepherdName = getPlayerNickNameByShepherd(street.getShepherd());
+            }
+            for (String client : clientNickNames) {
+                controller.refreshStreet(client, i, fence, shepherdName);
+            }
+        }
+
     }
 
     private void executeRounds() throws FinishedFencesException {
@@ -400,31 +427,30 @@ public class GameManager {
     }
 
     private boolean executeShift(int player) throws FinishedFencesException {
-        //TODO: timer shift? cos' un giocatore non può metterci più di un toto
-        //a fare le sue azioni
+
         DebugLogger.println("Muovo pecora nera");
+        String blackSheepMessage = "";
+        
         try {
             //muovo la pecora nera
             this.moveSpecialAnimal(this.map.getBlackSheep());
             DebugLogger.println("pecora nera mossa");
-            this.server.broadcastMessage(
-                    "La Pecora nera si è mossa in: " + this.map.getNodeIndex(
-                            this.map.getBlackSheep().getMyRegion()));
+            blackSheepMessage = "La Pecora nera si è mossa in: " + this.map.getNodeIndex(
+                    this.map.getBlackSheep().getMyRegion());
         } catch (CannotMoveAnimalException e) {
-            this.server.broadcastMessage(e.getMessage());
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE,
                     "La pecora non si muove perchè: " + e.getMessage(), e);
+            blackSheepMessage = "La pecora non si muove perchè: " + e.getMessage();
         } catch (NodeNotFoundException ex) {
             //non può verificarsi perchè se la pecora si muove allora il nodo esiste
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "La pecora non si muove perchè: " + ex.getMessage(), ex);
+            blackSheepMessage = "La pecora non si muove perchè: " + ex.getMessage();
+        } finally {
+            controller.refreshBlackSheep(blackSheepMessage);
         }
-
-        //sveglia il client
-        server.sendTo(clientNickNames[player], "E' il tuo turno");
-        DebugLogger.println("E' il tuo turno inviato");
-
+      
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
             while (true) {
@@ -484,7 +510,18 @@ public class GameManager {
         return chosenStreet;
     }
 
-    private Street checkStreet(String stringedStreet) throws
+    /**
+     * Data una strada in stringa ritorna l'oggetto strada corrispondente o un
+     * eccezione se la strada è occupata o non esistente
+     *
+     * @param stringedStreet
+     *
+     * @return
+     *
+     * @throws StreetNotFoundException
+     * @throws BusyStreetException
+     */
+    protected Street checkStreet(String stringedStreet) throws
             StreetNotFoundException, BusyStreetException {
         Street chosenStreet = map.convertStringToStreet(stringedStreet);
         DebugLogger.println("Conversione strada effettuata");
@@ -652,11 +689,11 @@ public class GameManager {
      *
      * @return player corrispondente al pastore
      */
-    protected Player getPlayerByShepherd(Shepherd shepherd) {
+    protected String getPlayerNickNameByShepherd(Shepherd shepherd) {
         for (Player player : players) {
             for (int i = 0; i < shepherd4player; i++) {
                 if (player.shepherd[i] == shepherd) {
-                    return player;
+                    return player.getPlayerNickName();
                 }
             }
         }

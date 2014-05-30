@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  *
  * @author Umberto
  */
-public class ClientRmi implements RemoteClientRmi {
+public class ClientRmi {
 
     private String nickName;
     private String ip;
@@ -22,7 +22,6 @@ public class ClientRmi implements RemoteClientRmi {
     private String nameServer;
     private typeOfView view;
     private ServerRmi serverRmi;
-    private PlayerRemote playerRemote;
 
     public ClientRmi(String ip, int port, String nameServer, typeOfView view, String nickName) {
         this.nickName = nickName;

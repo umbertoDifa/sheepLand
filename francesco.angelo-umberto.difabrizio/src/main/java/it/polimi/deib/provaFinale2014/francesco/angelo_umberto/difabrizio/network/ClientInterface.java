@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public interface RemoteClientRmi extends Remote {
+public interface ClientInterface {
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb) throws RemoteException;
