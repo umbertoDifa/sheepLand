@@ -20,6 +20,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerThread;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,13 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class GameManager {//TODO: pattern memento per ripristini?
-
-    protected final ServerThread server;
+public class GameManager {
 
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
     private String clientNickNames[];
     private final int playersNumber;
+    private TrasmissionController controller;
     /**
      * rappresenterà il segnalino indicante il primo giocatore del giro
      */
@@ -50,7 +50,9 @@ public class GameManager {//TODO: pattern memento per ripristini?
     protected final int shepherd4player;
     protected final Bank bank;  //per permettere a player di usarlo
 
-    public GameManager(List<String> clientNickNames, ServerThread server) {
+    public GameManager(List<String> clientNickNames, TrasmissionController controller) {
+        
+        this.controller = controller;
         //salvo il numero di player
         this.playersNumber = clientNickNames.size();
 
@@ -59,9 +61,6 @@ public class GameManager {//TODO: pattern memento per ripristini?
 
         //creo la mappa univoca del gioco
         this.map = new Map();
-
-        //creo il collegamento all'univoco serverThread
-        this.server = server;
 
         //creo la banca
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
@@ -326,6 +325,10 @@ public class GameManager {//TODO: pattern memento per ripristini?
     }
 
     private void broadcastInitialConditions() {
+        
+        
+        
+        
         //LandData RegionData = this.map.createRegionData();
 
         //GameData gameData = this.createGameData();
@@ -341,13 +344,13 @@ public class GameManager {//TODO: pattern memento per ripristini?
         //informiamo pastori strade 
         //informiamo numerodi player, numero di pastori, il primo giocatore
         //a secnoda del player le carte
-        for (int i = 0; i < playersNumber; i++) {
-            this.server.sendTo(clientNickNames[i],
-                    "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
-                    + "; ogni giocatore ha :" + this.shepherd4player
-                    + "pastori. Il primo del turno è :" + firstPlayer
-                    + ". Ogni giocatore ha :" + GameConstants.NUM_ACTIONS.getValue() + " azioni.");
-        }
+//        for (int i = 0; i < playersNumber; i++) {
+//            this.server.sendTo(clientNickNames[i],
+//                    "Ci sono :" + playersNumber + " giocatori, tu sei il numero :" + i
+//                    + "; ogni giocatore ha :" + this.shepherd4player
+//                    + "pastori. Il primo del turno è :" + firstPlayer
+//                    + ". Ogni giocatore ha :" + GameConstants.NUM_ACTIONS.getValue() + " azioni.");
+//        }
     }
 
     private void executeRounds() throws FinishedFencesException {
