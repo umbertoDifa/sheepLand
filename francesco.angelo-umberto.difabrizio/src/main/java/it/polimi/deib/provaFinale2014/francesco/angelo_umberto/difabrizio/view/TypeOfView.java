@@ -7,6 +7,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 public interface TypeOfView {
 
     public void showInfo(String info);
+    
+    public void showWelcome();
 
     public String setUpShepherd(int idShepherd);
 
@@ -15,6 +17,8 @@ public interface TypeOfView {
 
     public void refreshStreet(int streetIndex, boolean Fence,
             String nickShepherd);
+    
+    public void refreshMoveShepherd(String nickNameMover, String streetIndex);
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
             int shepherd4player);

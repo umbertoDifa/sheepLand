@@ -33,7 +33,7 @@ public class CommandLineView implements TypeOfView {
             stdOut.flush();
 
         } else {
-            stdOut.println("libera");
+            stdOut.println(" libera");
             stdOut.flush();
 
         }
@@ -114,7 +114,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refereshCard(String type, int value) {
-        stdOut.println("Hai una carta " + type + "di valore " + value);
+        stdOut.println("Hai una carta " + type + " di valore " + value);
         stdOut.flush();
     }
 
@@ -175,6 +175,15 @@ public class CommandLineView implements TypeOfView {
         stdOut.println("Scegliere in quale regione spostare il pastore "+idShepherd+":");
         String stringedStreet = stdIn.nextLine();
         return idShepherd + "," + stringedStreet;
+    }
+
+    public void showWelcome() {
+        this.showInfo("Benvenuto, il gioco sta per iniziare!");
+        //per ora la welcome da tastiera è una sringa normale
+    }
+
+    public void refreshMoveShepherd(String nickNameMover, String streetIndex) {
+        this.showInfo("Il giocatore "+nickNameMover+" ha spostato il suo pastore in "+ streetIndex);
     }
 
 }

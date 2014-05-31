@@ -1,7 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
-import static it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerSockets.NickSocketMap;
+import static it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerSockets.activatedGames;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -26,7 +26,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     /**
      * Default seconds to wait before timeout the clients connection to a game
      */
-    private static final int DEFAULT_TIMEOUT_ACCEPT = 10;
+    private static final int DEFAULT_TIMEOUT_ACCEPT = 15;
     /**
      * The default minimum number of clients for a game
      */
@@ -49,12 +49,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
      * process that waits for client's connections, it's set up by the
      * constructor.
      */
-    private int secondsBeforeAcceptTimeout;
+    private final int secondsBeforeAcceptTimeout;
 
     /**
      * Timeout in milliseconds for the client's connections
      */
-    private int timeoutAccept;
+    private final int timeoutAccept;
     /**
      * Thread timer
      */
@@ -134,15 +134,18 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
     }
 
-    public boolean connect(ClientInterfaceRemote client, String nickName) throws
+    public void connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException {
         //se il client che tenta di connettersi non esiste
         if (!NickClientRmiMap.containsKey(nickName)) {
 
             //se ci sono partite da poter avviare
             if (activatedGames < maxNumberOfGames) {
+                
                 numberOfPlayers++;
                 clientNickNames.add(nickName);
+                DebugLogger.println(nickName+": added");
+                
                 NickClientRmiMap.put(nickName, new RmiClientProxy(client));
                 //se è il primo player
                 if (numberOfPlayers == 1) {
@@ -165,16 +168,22 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                         "Il server è pieno riporavare più tardi");
                 clientNickNames.clear();
             }
-        }
-        return false;//FIXME!!
+        }//TODO handle reconnection
     }
 
     private void startGame() {
+
         if (numberOfPlayers >= minClientsForGame) {
             DebugLogger.println(
                     "Avvio il gioco con " + numberOfPlayers + " giocatori");
+
             executor.submit(new GameManager(clientNickNames,
                     new RmiTrasmission()));
+            
+            activatedGames++;
+            
+            System.out.println("Partita numero " + activatedGames + " avviata.");
+
         } else {
             handleClientRejection(
                     "Ci scusiamo, non ci sono abbastanza giocatori per una partita");
@@ -185,7 +194,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         }
         //comunque vada svuota la lista dei socket
         clientNickNames.clear();
-
+        numberOfPlayers = 0;
+        
         DebugLogger.println("Lista client:" + clientNickNames.toString());
     }
 

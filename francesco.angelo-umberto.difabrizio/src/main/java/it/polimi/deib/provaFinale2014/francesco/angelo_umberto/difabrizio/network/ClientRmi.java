@@ -68,7 +68,6 @@ public class ClientRmi extends UnicastRemoteObject implements
                     "Il client non è riuscito a fare il bind" + ex.getMessage(),
                     ex);
         }
-        DebugLogger.println("Client attivo, in attesa di chiamate");
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
@@ -81,7 +80,7 @@ public class ClientRmi extends UnicastRemoteObject implements
         view.refreshStreet(streetIndex, Fence, nickShepherd);
     }
 
-    public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
+    public void refreshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player) {
         view.refereshGameParameters(numbOfPlayers, firstPlayer, shepherd4player);
     }
@@ -217,6 +216,19 @@ public class ClientRmi extends UnicastRemoteObject implements
                     ex.getMessage(),
                     ex);
         }
+    }
+
+    public void welcome() throws RemoteException {
+        view.showWelcome();
+    }
+
+    public void connectPlayer(PlayerRemote player) throws RemoteException {
+        this.playerRmi = player;
+    }
+
+    public void refreshMoveShepherd(String nickNameMover, String streetIndex)
+            throws RemoteException {
+        view.refreshMoveShepherd(nickNameMover, streetIndex);
     }
 
 }

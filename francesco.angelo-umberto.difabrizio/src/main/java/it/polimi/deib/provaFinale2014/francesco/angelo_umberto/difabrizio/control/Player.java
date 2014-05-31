@@ -2,21 +2,20 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class Player implements PlayerRemote {
+public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     protected final Shepherd[] shepherd;
 
@@ -40,7 +39,7 @@ public class Player implements PlayerRemote {
      */
     private String possibleAction;
 
-    public Player(GameManager gameManager, String playerNickName) {
+    public Player(GameManager gameManager, String playerNickName) throws RemoteException{
         this.playerNickName = playerNickName;
         this.gameManager = gameManager;
 
@@ -70,8 +69,9 @@ public class Player implements PlayerRemote {
      * Invita il player a fare una mossa tra quelle che gli sono permesse. Ne
      * può scegliere al massimo una.
      *
+     * @throws java.rmi.RemoteException
      */
-    public void chooseAndMakeAction() {
+    public void chooseAndMakeAction() throws RemoteException {
 
         boolean outcomeOk;
         createActionList();
@@ -157,7 +157,7 @@ public class Player implements PlayerRemote {
      *
      * @return
      */
-    public String moveOvine(String type, String oldRegion, String newRegion) {
+    public String moveOvine(String type, String oldRegion, String newRegion) throws RemoteException {
 
         Region startRegion;
         Region endRegion;
@@ -212,7 +212,7 @@ public class Player implements PlayerRemote {
      * @return "Pastore posizionato" if everything goes right, an error string
      *         if an exeption is caught.
      */
-    public String setShepherd(int indexShepherd, String stringedStreet) {
+    public String setShepherd(int indexShepherd, String stringedStreet) throws RemoteException {
 
         Street chosenStreet;
         try {
@@ -232,7 +232,7 @@ public class Player implements PlayerRemote {
 
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
-
+        
         //invia conferma riepilogativa agli utenti
         gameManager.controller.refreshMoveShepherd(playerNickName,
                 stringedStreet);
@@ -250,7 +250,7 @@ public class Player implements PlayerRemote {
      * @return
      */
     //aggiustare. convertire il parametro sringato della strada
-    public String moveShepherd(int shepherdIndex, String newStreet) {
+    public String moveShepherd(int shepherdIndex, String newStreet) throws RemoteException {
 
         Shepherd currentShepherd = shepherd[shepherdIndex];
         Street startStreet = currentShepherd.getStreet();
@@ -623,7 +623,7 @@ public class Player implements PlayerRemote {
             StreetNotFoundException, BusyStreetException {
         Street chosenStreet = gameManager.map.convertStringToStreet(
                 stringedStreet);
-        DebugLogger.println("Conversione strada effettuata");
+        DebugLogger.println("Conversione strada effettuata con successo");
         //se la strada è occuapata
         if (!chosenStreet.isFree()) {
             throw new BusyStreetException("Strada occupata");

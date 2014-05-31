@@ -1,9 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SocketTrasmission extends TrasmissionController {
 
@@ -57,8 +54,6 @@ public class SocketTrasmission extends TrasmissionController {
      *
      * @param nickNameMover
      * @param newStreet
-     *
-     * @return
      */
     public void refreshMoveShepherd(String nickNameMover, String newStreet) {
         //per tutti i nick tranne quello dato refresha
@@ -66,7 +61,7 @@ public class SocketTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameMover)) {
                 ServerSockets.NickSocketMap.get(nickName).send(
-                        nickNameMover + " ha spostato il pastore in: " + newStreet);
+                        nickNameMover + "," + newStreet);
             }
 
         }
@@ -177,7 +172,7 @@ public class SocketTrasmission extends TrasmissionController {
         for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             ServerSockets.NickSocketMap.get(nickName).send("Avvio gioco");
-
+            ServerSockets.NickSocketMap.get(nickName).send("Welcome");
         }
 
     }

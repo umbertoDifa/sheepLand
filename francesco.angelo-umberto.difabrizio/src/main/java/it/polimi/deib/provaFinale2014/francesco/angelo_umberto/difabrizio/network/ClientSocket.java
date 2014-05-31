@@ -83,7 +83,9 @@ public class ClientSocket {
             received = receiveString();
             DebugLogger.println(received);
 
-            if (received.equals("RefreshRegion")) {
+            if (received.equals("Welcome")) {
+                welcome();
+            } else if (received.equals("RefreshRegion")) {
                 refreshRegion();
             } else if (received.equals("RefreshStreet")) {
                 refreshStreet();
@@ -167,7 +169,8 @@ public class ClientSocket {
 
     public void refreshMoveShepherd() {
         received = receiveString();
-        view.showInfo(received);
+        token = received.split(",");
+        view.refreshMoveShepherd(token[0], token[1]);
     }
 
     public void setUpShepherd() {
@@ -222,6 +225,10 @@ public class ClientSocket {
 
     public void killOvine() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void welcome() {
+        view.showWelcome();
     }
 
 }
