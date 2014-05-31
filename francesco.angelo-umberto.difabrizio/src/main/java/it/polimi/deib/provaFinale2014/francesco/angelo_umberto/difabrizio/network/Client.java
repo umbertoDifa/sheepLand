@@ -4,7 +4,10 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.CommandLineView;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.GuiView;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,7 +17,7 @@ public class Client {
 
     public static void main(String[] args) {
 
-        final String ip = "127.0.0.1";
+        final String ip = "localhost";
         final int port = 5050;
         final String nameServer = "sheepland";
 
@@ -54,17 +57,33 @@ public class Client {
             } else if ("2".equals(typeOfConnection)) {
                 if ("1".equals(typeOfInterface)) {
                     //Rmi - CLC
-                    ClientRmi client = new ClientRmi(ip, port, nameServer,
-                            new CommandLineView(),
-                            nickName);
-                    client.startClient();
+                    ClientRmi client;
+                    try {
+                        client = new ClientRmi(ip, port, nameServer,
+                                new CommandLineView(),
+                                nickName);
+                        client.startClient();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(DebugLogger.class.getName()).log(
+                                Level.SEVERE,
+                                ex.getMessage(), ex);
+                    }
+
                     valid = true;
                 } else if ("2".equals(typeOfInterface)) {
                     //rmi -GUI
-                    ClientRmi client = new ClientRmi(ip, port, nameServer,
-                            new GuiView(),
-                            nickName);
-                    client.startClient();
+                    ClientRmi client;
+                    try {
+                        client = new ClientRmi(ip, port, nameServer,
+                                new GuiView(),
+                                nickName);
+                        client.startClient();
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(DebugLogger.class.getName()).log(
+                                Level.SEVERE,
+                                ex.getMessage(), ex);
+                    }
+
                     valid = true;
                 }
             }

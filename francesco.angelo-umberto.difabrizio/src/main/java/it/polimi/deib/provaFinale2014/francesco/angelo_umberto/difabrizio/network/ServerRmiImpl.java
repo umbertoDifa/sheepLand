@@ -1,7 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,7 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ServerRmiImpl implements ServerRmi, Runnable {
+public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
+                                                                  Runnable {
 
     //constanti generiche
     private final int MILLISECONDS_IN_SECONDS = 1000;
@@ -89,7 +89,7 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
     private List<String> clientNickNames = new ArrayList<String>();
     protected static HashMap<String, RmiClientProxy> NickClientRmiMap = new HashMap<String, RmiClientProxy>();
 
-    public ServerRmiImpl(String serverName, String ip, int port) {
+    public ServerRmiImpl(String serverName, String ip, int port) throws RemoteException{
         myThread = new Thread(this);
 
         this.port = port;
@@ -101,10 +101,6 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
         this.minClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
         this.secondsBeforeAcceptTimeout = DEFAULT_TIMEOUT_ACCEPT;
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
-
-        //turn off debug
-        DebugLogger.turnOffExceptionLog();
-
     }
 
     public void start() {
@@ -117,10 +113,7 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
 
     private void startServer() {
         try {
-            //Creo una versione remota
-            ServerRmi stub = (ServerRmi) UnicastRemoteObject.exportObject(this,
-                    0);
-
+       
             //Setto i player che aspettano di iniziare una partita a 0
             numberOfPlayers = 0;
 
@@ -128,7 +121,7 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
             Registry registry = LocateRegistry.createRegistry(port);
 
             //Faccio il bind della mia istanza remota con un nome specifico
-            registry.rebind(serverName, stub);
+            registry.rebind(serverName, this);
 
             System.out.println("ServerRmi caricato.");
         } catch (RemoteException ex) {
@@ -162,7 +155,12 @@ public class ServerRmiImpl implements ServerRmi, Runnable {
 
                 //comunque vada lo mappo
             } else {
-                //TODO disconnect client
+                DebugLogger.println("Client rifiutato");
+                RmiClientProxy clientToReject = (RmiClientProxy) NickClientRmiMap.get(
+                        nickName);
+                clientToReject.getClientRmi().disconnect(
+                        "Il server è pieno riporavare più tardi");
+                clientNickNames.clear();
             }
         }
         return false;//FIXME!!

@@ -8,6 +8,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,18 +17,22 @@ import java.util.logging.Logger;
  *
  * @author Umberto
  */
-public class ClientRmi implements ClientInterfaceRemote {
+public class ClientRmi extends UnicastRemoteObject implements
+        ClientInterfaceRemote {
 
-    private String nickName;
-    private String ip;
-    private int port;
-    private String nameServer;
-    private TypeOfView view;
+    private final String nickName;
+    private final String ip;
+    private final int port;
+    private final String nameServer;
+
+    private final TypeOfView view;
+
     private ServerRmi serverRmi;
     private PlayerRemote playerRmi;
+    Registry registry;
 
     public ClientRmi(String ip, int port, String nameServer, TypeOfView view,
-                     String nickName) {
+                     String nickName) throws RemoteException {
         this.nickName = nickName;
         this.nameServer = nameServer;
         this.port = port;
@@ -37,13 +42,16 @@ public class ClientRmi implements ClientInterfaceRemote {
 
     public void startClient() {
         try {
-            Registry registry = LocateRegistry.getRegistry(ip, port);
+            registry = LocateRegistry.getRegistry(ip, port);
 
             //cerco l'oggetto nel registry
             serverRmi = (ServerRmi) registry.lookup(
                     nameServer);
 
             boolean connectionAccepted = serverRmi.connect(this, nickName);
+
+            //crea uno skeleton affinche il server possa chiamare dei metodi su di te
+           // registry.rebind(nickName, this);
 
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -52,6 +60,8 @@ public class ClientRmi implements ClientInterfaceRemote {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "Il server non è ancora bounded " + ex.getMessage(), ex);
         }
+
+        DebugLogger.println("Client attivo, in attesa di chiamate");
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
@@ -73,8 +83,8 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refereshCurrentPlayer(currenPlayer);
     }
 
-    public void refereshCard(String type,int value) {
-        view.refereshCard(type,value);
+    public void refereshCard(String type, int value) {
+        view.refereshCard(type, value);
     }
 
     public void refreshBlackSheep(int regionIndex) {
@@ -171,6 +181,21 @@ public class ClientRmi implements ClientInterfaceRemote {
     }
 
     public void connectPlayerRemote(PlayerRemote playerRemote) {
+    }
+
+    public void disconnect(String message) {
+        view.showInfo(message);
+        try {
+            registry.unbind(nickName);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(),
+                    ex);
+        } catch (NotBoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(),
+                    ex);
+        }
     }
 
 }

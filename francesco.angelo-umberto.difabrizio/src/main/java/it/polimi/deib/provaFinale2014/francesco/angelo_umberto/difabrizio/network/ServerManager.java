@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
@@ -29,6 +30,9 @@ public class ServerManager {
         PrintWriter stdOut = new PrintWriter(System.out);
 
         boolean stringValid = false;
+
+        //DEBUG ON/OFF
+        DebugLogger.turnOffExceptionLog();
 
         while (!stringValid) {
             try {
