@@ -8,9 +8,9 @@ public class RmiClientProxy {
 
     private int gameId;
     private boolean online;
-    private final ClientRmi client;
+    private final ClientInterfaceRemote client;
 
-    public RmiClientProxy( ClientRmi client) {
+    public RmiClientProxy( ClientInterfaceRemote client) {
         this.online = true;
         this.client = client;
     }
@@ -19,7 +19,7 @@ public class RmiClientProxy {
         this.gameId = gameId;
     }
     
-    public ClientRmi getClientRmi(){
+    public ClientInterfaceRemote getClientRmi(){
         return client;
     }
 

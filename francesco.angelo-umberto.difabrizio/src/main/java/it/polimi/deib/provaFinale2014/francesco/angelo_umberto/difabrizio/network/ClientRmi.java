@@ -38,20 +38,21 @@ public class ClientRmi extends UnicastRemoteObject implements
         this.port = port;
         this.ip = ip;
         this.view = view;
+
     }
 
     public void startClient() {
         try {
             registry = LocateRegistry.getRegistry(ip, port);
 
+            //crea uno skeleton affinche il server possa chiamare dei metodi su di te
+            registry.rebind(nickName, this);
+
             //cerco l'oggetto nel registry
             serverRmi = (ServerRmi) registry.lookup(
                     nameServer);
 
-            boolean connectionAccepted = serverRmi.connect(this, nickName);
-
-            //crea uno skeleton affinche il server possa chiamare dei metodi su di te
-           // registry.rebind(nickName, this);
+            serverRmi.connect(this, nickName);
 
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -60,7 +61,13 @@ public class ClientRmi extends UnicastRemoteObject implements
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "Il server non è ancora bounded " + ex.getMessage(), ex);
         }
-
+        try {
+            registry.rebind(nickName, this);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "Il client non è riuscito a fare il bind" + ex.getMessage(),
+                    ex);
+        }
         DebugLogger.println("Client attivo, in attesa di chiamate");
     }
 
@@ -155,12 +162,14 @@ public class ClientRmi extends UnicastRemoteObject implements
             String token[] = result.split(",");
             result = playerRmi.moveShepherd(Integer.parseInt(token[0]), token[1]);
         } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
             return false;
         }
-        if(result.contains("pastore posizionato"))
+        if (result.contains("pastore posizionato")) {
             return true;
-        return false;        
+        }
+        return false;
     }
 
     public void refreshMoveShepherd() {
@@ -194,9 +203,10 @@ public class ClientRmi extends UnicastRemoteObject implements
     public void connectPlayerRemote(PlayerRemote playerRemote) {
     }
 
-    public void disconnect(String message) {
+    public void disconnect(String message) {               
         view.showInfo(message);
         try {
+            UnicastRemoteObject.unexportObject(this,true);
             registry.unbind(nickName);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,

@@ -8,14 +8,14 @@ import java.util.logging.Logger;
 public class SocketTrasmission extends TrasmissionController {
 
     public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
-            int numbOfRam, int numbOfLamb) {
+                              int numbOfRam, int numbOfLamb) {
         ServerSockets.NickSocketMap.get(nickName).send("RefreshRegion");
         ServerSockets.NickSocketMap.get(nickName).send(
                 regionIndex + "," + numbOfSheep + "," + numbOfLamb + "," + numbOfRam);
     }
 
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
-            String nickNameOfShepherdPlayer) {
+                              String nickNameOfShepherdPlayer) {
         ServerSockets.NickSocketMap.get(nickName).send("RefreshStreet");
         ServerSockets.NickSocketMap.get(nickName).send(
                 streetIndex + "," + fence + "," + nickNameOfShepherdPlayer);
@@ -46,7 +46,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     public void refreshMoveOvine(String nickName, String startRegion,
-            String endRegion, String ovineType) {
+                                 String endRegion, String ovineType) {
 //        ServerSockets.NickSocketMap.get(nickName).send("RefreshMoveOvine");
 //        ServerSockets.NickSocketMap.get(nickName).send(startRegion+","+endRegion+","+ovineType);
     }
@@ -129,22 +129,20 @@ public class SocketTrasmission extends TrasmissionController {
         return false;
     }
 
-    public boolean askMoveSheperd(String nickName){
-        try {
-            ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
-            String result = ServerSockets.NickSocketMap.get(nickName).receive();
-            String token[] = result.split(",");
-            //gestire eccezione finishedfences
-            result = super.getNick2PlayerMap().get(nickName).moveShepherd(Integer.parseInt(token[0]), token[1]);
-            ServerSockets.NickSocketMap.get(nickName).send(result);
-            if (result.contains("pastore posizionato")) {
-                return true;
-            }
-            return false;
-        } catch (FinishedFencesException ex) {
-            Logger.getLogger(SocketTrasmission.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
+    public boolean askMoveSheperd(String nickName) {
+
+        ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
+        String result = ServerSockets.NickSocketMap.get(nickName).receive();
+        String token[] = result.split(",");
+        //gestire eccezione finishedfences
+        result = super.getNick2PlayerMap().get(nickName).moveShepherd(
+                Integer.parseInt(token[0]), token[1]);
+        ServerSockets.NickSocketMap.get(nickName).send(result);
+        if (result.contains("pastore posizionato")) {
+            return true;
         }
+        return false;
+
     }
 
     public String buyLand(String nickName) {
@@ -169,7 +167,7 @@ public class SocketTrasmission extends TrasmissionController {
 
     @Override
     public void refreshGameParameters(String nickName, int numbOfPlayers,
-            int shepherd4player) {
+                                      int shepherd4player) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

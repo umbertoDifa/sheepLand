@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
+import static it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerSockets.NickSocketMap;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -9,6 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -89,7 +91,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     private List<String> clientNickNames = new ArrayList<String>();
     protected static HashMap<String, RmiClientProxy> NickClientRmiMap = new HashMap<String, RmiClientProxy>();
 
-    public ServerRmiImpl(String serverName, String ip, int port) throws RemoteException{
+    public ServerRmiImpl(String serverName, String ip, int port) throws
+            RemoteException {
         myThread = new Thread(this);
 
         this.port = port;
@@ -97,7 +100,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         this.ip = ip;
 
         this.maxNumberOfGames = DEFAULT_MAX_GAMES;
-        this.maxClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
+        this.maxClientsForGame = DEFAULT_MAX_CLIENTS_FOR_GAME;
         this.minClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
         this.secondsBeforeAcceptTimeout = DEFAULT_TIMEOUT_ACCEPT;
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
@@ -113,7 +116,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
     private void startServer() {
         try {
-       
+
             //Setto i player che aspettano di iniziare una partita a 0
             numberOfPlayers = 0;
 
@@ -131,7 +134,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
     }
 
-    public boolean connect(ClientRmi client, String nickName) throws
+    public boolean connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException {
         //se il client che tenta di connettersi non esiste
         if (!NickClientRmiMap.containsKey(nickName)) {
@@ -173,7 +176,38 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
             executor.submit(new GameManager(clientNickNames,
                     new RmiTrasmission()));
         } else {
-            //TODO reject
+            handleClientRejection(
+                    "Ci scusiamo, non ci sono abbastanza giocatori per una partita");
+            //elimina il loro record dai giocatori attivi
+            for (String client : clientNickNames) {
+                NickClientRmiMap.remove(client);
+            }
+        }
+        //comunque vada svuota la lista dei socket
+        clientNickNames.clear();
+
+        DebugLogger.println("Lista client:" + clientNickNames.toString());
+    }
+
+    private void handleClientRejection(String message) {
+        DebugLogger.println("Rifiuto Client.");
+
+        //per tutti i client
+        for (Map.Entry pairs : NickClientRmiMap.entrySet()) {
+            //se il loro nick è tra quelli in lista di attesa
+            String nick = (String) pairs.getKey();
+            if (clientNickNames.contains(nick)) {
+                RmiClientProxy clientProxy = (RmiClientProxy) pairs.getValue();
+                try {
+                    clientProxy.getClientRmi().disconnect(message);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                    //poco male il client che dovevamo rifiutare si è gia disconnesso
+                }
+            }
+
         }
     }
 

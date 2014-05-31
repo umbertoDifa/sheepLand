@@ -65,8 +65,11 @@ public class ServerManager {
                 stdOut.flush();
 
             } catch (RemoteException ex) {
-                //TODO
-                Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                stdOut.println("Error catched by server manager.");
+                stdOut.flush();
+
             }
         }
         stdOut.println("Thread server attivato.");

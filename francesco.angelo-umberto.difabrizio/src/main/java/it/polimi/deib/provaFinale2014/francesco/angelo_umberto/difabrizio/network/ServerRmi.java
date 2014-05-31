@@ -9,6 +9,6 @@ import java.rmi.RemoteException;
  */
 public interface ServerRmi extends Remote {
 
-    public boolean connect(ClientRmi client, String nickName) throws
+    public boolean connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException;
 }

@@ -232,7 +232,7 @@ public class Player implements PlayerRemote {
 
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
-      
+
         //invia conferma riepilogativa agli utenti
         gameManager.controller.refreshMoveShepherd(playerNickName,
                 stringedStreet);
@@ -248,9 +248,6 @@ public class Player implements PlayerRemote {
      * @param newStreet
      *
      * @return
-     *
-     * @throws
-     * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
     //aggiustare. convertire il parametro sringato della strada
     public String moveShepherd(int shepherdIndex, String newStreet) {
@@ -275,7 +272,7 @@ public class Player implements PlayerRemote {
             return ex.getMessage();
         }
 
-//se strada free ed esiste e non è quella di partenza ed è vicina o posso pagare
+        //se strada free ed esiste e non è quella di partenza ed è vicina o posso pagare
         if (startStreet != endStreet) {
             if (startStreet.isNeighbour(endStreet)) {
                 //muovilo
@@ -283,8 +280,10 @@ public class Player implements PlayerRemote {
                 try {
                     startStreet.setFence(this.gameManager.bank.getFence());
                 } catch (FinishedFencesException ex) {
-                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-                    //TODO
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                    return "Recinti terminati";
                 }
                 DebugLogger.println("Pastore posizionato");
                 //invia conferma riepilogativa agli utenti
@@ -298,8 +297,10 @@ public class Player implements PlayerRemote {
                 try {
                     startStreet.setFence(this.gameManager.bank.getFence());
                 } catch (FinishedFencesException ex) {
-                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
-                    //TODO
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                    return "Recinti terminati";
                 }
                 //invia conferma riepilogativa agli utenti
                 gameManager.controller.refreshMoveShepherd(playerNickName,

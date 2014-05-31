@@ -63,6 +63,7 @@ public class Client {
                                 new CommandLineView(),
                                 nickName);
                         client.startClient();
+                        DebugLogger.println("Client remoto attivo");
                     } catch (RemoteException ex) {
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE,
@@ -78,6 +79,7 @@ public class Client {
                                 new GuiView(),
                                 nickName);
                         client.startClient();
+                        DebugLogger.println("Client remoto attivo");
                     } catch (RemoteException ex) {
                         Logger.getLogger(DebugLogger.class.getName()).log(
                                 Level.SEVERE,

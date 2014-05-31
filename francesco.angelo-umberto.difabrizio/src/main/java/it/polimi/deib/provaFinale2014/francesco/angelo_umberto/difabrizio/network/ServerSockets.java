@@ -223,8 +223,6 @@ public class ServerSockets implements Runnable {
 
     private String getNickName() throws IOException {
         Scanner fromClient = new Scanner(clientSocket.getInputStream());
-        PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream());
-
         return fromClient.nextLine();
     }
 
