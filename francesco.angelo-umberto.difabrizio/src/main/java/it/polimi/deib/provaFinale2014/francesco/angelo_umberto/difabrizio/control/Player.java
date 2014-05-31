@@ -39,7 +39,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     private String possibleAction;
 
-    public Player(GameManager gameManager, String playerNickName) throws RemoteException{
+    public Player(GameManager gameManager, String playerNickName) throws
+            RemoteException {
         this.playerNickName = playerNickName;
         this.gameManager = gameManager;
 
@@ -157,7 +158,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @return
      */
-    public String moveOvine(String type, String oldRegion, String newRegion) throws RemoteException {
+    public String moveOvine(String type, String oldRegion, String newRegion) {
 
         Region startRegion;
         Region endRegion;
@@ -188,11 +189,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return "Nessun ovino nella regione di partenza!";
                 }
                 //e aggiungilo nella regione d'arrivo
-                endRegion.addOvine(new Ovine(OvineType.valueOf(type)));
-
-                //refreshio
-                gameManager.controller.refreshMoveOvine(playerNickName,
-                        oldRegion, newRegion, type);
+                endRegion.addOvine(new Ovine(OvineType.valueOf(type)));               
 
                 return "Ovino mosso!";
             }
@@ -212,7 +209,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @return "Pastore posizionato" if everything goes right, an error string
      *         if an exeption is caught.
      */
-    public String setShepherd(int indexShepherd, String stringedStreet) throws RemoteException {
+    public String setShepherd(int indexShepherd, String stringedStreet) {
 
         Street chosenStreet;
         try {
@@ -232,11 +229,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
-        
-        //invia conferma riepilogativa agli utenti
-        gameManager.controller.refreshMoveShepherd(playerNickName,
-                stringedStreet);
+
         return "Patore posizionato corretamente!";
+    }
+
+    public String setShepherdRemote(int idShepherd, String stringedStreet)
+            throws RemoteException {
+        return this.setShepherd(idShepherd, stringedStreet);
     }
 
     /**
@@ -250,7 +249,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @return
      */
     //aggiustare. convertire il parametro sringato della strada
-    public String moveShepherd(int shepherdIndex, String newStreet) throws RemoteException {
+    public String moveShepherd(int shepherdIndex, String newStreet) {
 
         Shepherd currentShepherd = shepherd[shepherdIndex];
         Street startStreet = currentShepherd.getStreet();
@@ -286,9 +285,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return "Recinti terminati";
                 }
                 DebugLogger.println("Pastore posizionato");
-                //invia conferma riepilogativa agli utenti
-                gameManager.controller.refreshMoveShepherd(playerNickName,
-                        newStreet);
+              
                 return "pastore posizionato";
             } else if (currentShepherd.ifPossiblePay(
                     GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
@@ -301,10 +298,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                             Level.SEVERE,
                             ex.getMessage(), ex);
                     return "Recinti terminati";
-                }
-                //invia conferma riepilogativa agli utenti
-                gameManager.controller.refreshMoveShepherd(playerNickName,
-                        newStreet);
+                }                
                 return "Passaggio pagato e pastore posizionato";
 
             }
@@ -631,6 +625,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         }
         //altrimenti ritorna la strada
         return chosenStreet;
+    }
+
+    public String moveShepherdRemote(int shepherdIndex, String newStreet) throws
+            RemoteException {
+        return this.moveShepherd(shepherdIndex, newStreet);
     }
 
 }

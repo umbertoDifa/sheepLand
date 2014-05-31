@@ -69,7 +69,7 @@ public class GuiView implements TypeOfView, ActionListener {
         
     }
 
-    public void moveShepherd(String type, String startRegion, String endRegion) {
+    public void moveShepherd( String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -81,7 +81,7 @@ public class GuiView implements TypeOfView, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshMoveShepherd(String nickNameMover, String streetIndex) {
+    public void refreshMoveShepherd(String nickNameMover,String shpherdIndex, String streetIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

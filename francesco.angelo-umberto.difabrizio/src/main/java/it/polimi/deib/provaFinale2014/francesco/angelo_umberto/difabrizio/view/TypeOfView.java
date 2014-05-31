@@ -18,7 +18,7 @@ public interface TypeOfView {
     public void refreshStreet(int streetIndex, boolean Fence,
             String nickShepherd);
     
-    public void refreshMoveShepherd(String nickNameMover, String streetIndex);
+    public void refreshMoveShepherd(String nickNameMover,String shepherdIndex, String streetIndex);
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
             int shepherd4player);
@@ -36,7 +36,7 @@ public interface TypeOfView {
 
     public void moveOvine(String type, String startRegion, String endRegion);
 
-    public void moveShepherd(String type, String startRegion, String endRegion);
+    public void moveShepherd( String startRegion, String endRegion);
 
     public String askMoveShepherd();
 

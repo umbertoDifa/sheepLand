@@ -2,7 +2,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -44,7 +43,6 @@ public class GameManagerTest {
     public void testStartGame() {
         System.out.println("startGame");
         GameManager instance = null;
-        instance.startGame();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

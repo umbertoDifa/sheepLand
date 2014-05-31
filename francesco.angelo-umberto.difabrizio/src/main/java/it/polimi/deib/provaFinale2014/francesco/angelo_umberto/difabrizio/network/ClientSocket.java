@@ -170,7 +170,7 @@ public class ClientSocket {
     public void refreshMoveShepherd() {
         received = receiveString();
         token = received.split(",");
-        view.refreshMoveShepherd(token[0], token[1]);
+        view.refreshMoveShepherd(token[0], token[1],token[2]);
     }
 
     public void setUpShepherd() {

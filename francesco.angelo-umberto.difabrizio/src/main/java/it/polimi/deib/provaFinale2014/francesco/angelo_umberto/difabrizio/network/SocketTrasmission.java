@@ -53,15 +53,17 @@ public class SocketTrasmission extends TrasmissionController {
      * nella newStreet
      *
      * @param nickNameMover
+     * @param shepherdIndex
      * @param newStreet
      */
-    public void refreshMoveShepherd(String nickNameMover, String newStreet) {
+    public void refreshMoveShepherd(String nickNameMover, String shepherdIndex,
+                                    String newStreet) {
         //per tutti i nick tranne quello dato refresha
         for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameMover)) {
                 ServerSockets.NickSocketMap.get(nickName).send(
-                        nickNameMover + "," + newStreet);
+                        nickNameMover + "," + shepherdIndex + "," + newStreet);
             }
 
         }
@@ -86,6 +88,9 @@ public class SocketTrasmission extends TrasmissionController {
 
         //ritorno il successo o meno dell'operazione
         if (result.contains("Patore posizionato corretamente!")) {
+            //refresho
+            refreshMoveShepherd(nickName, "" + shepherdIndex,
+                    chosenStringedStreet);
             return true;
         }
         return false;
@@ -119,6 +124,8 @@ public class SocketTrasmission extends TrasmissionController {
                 token[1], token[2]);
         ServerSockets.NickSocketMap.get(nickName).send(result);
         if (result.contains("Ovino mosso!")) {
+            //refreshio
+            refreshMoveOvine(nickName, token[0], token[1], token[2]);
             return true;
         }
         return false;
@@ -129,11 +136,12 @@ public class SocketTrasmission extends TrasmissionController {
         ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
         String token[] = result.split(",");
-        //gestire eccezione finishedfences
         result = super.getNick2PlayerMap().get(nickName).moveShepherd(
                 Integer.parseInt(token[0]), token[1]);
         ServerSockets.NickSocketMap.get(nickName).send(result);
         if (result.contains("pastore posizionato")) {
+            //invia conferma riepilogativa agli utenti
+            refreshMoveShepherd(nickName, token[0], token[1]);
             return true;
         }
         return false;
