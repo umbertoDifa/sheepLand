@@ -9,7 +9,14 @@ import java.rmi.RemoteException;
  */
 public interface PlayerRemote extends Remote {
 
-    public String setShepherdRemote(int idShepherd, String stringedStreet) throws RemoteException;
-    public String moveShepherdRemote(int shepherdIndex, String newStreet) throws RemoteException;
+    public String setShepherdRemote(int idShepherd, String stringedStreet)
+            throws RemoteException;
 
+    public String moveShepherdRemote(int shepherdIndex, String newStreet) throws
+            RemoteException;
+
+    public String moveOvineRemote(String startRegion, String endRegion,
+                                  String type) throws RemoteException;
+
+    public String buyLandRemote(String regionType) throws RemoteException;
 }

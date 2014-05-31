@@ -25,15 +25,15 @@ public class CommandLineView implements TypeOfView {
         stdOut.print("La strada " + streetIndex + "è ");
 
         if (fence == true) {
-            stdOut.println(" recintata");
+            stdOut.println("recintata");
             stdOut.flush();
 
-        } else if (nickShepherd != null) {
-            stdOut.println(" occupata da " + nickShepherd);
+        } else if (nickShepherd != null && !nickShepherd.equals("null")) {
+            stdOut.println("occupata da " + nickShepherd);
             stdOut.flush();
 
         } else {
-            stdOut.println(" libera");
+            stdOut.println("libera");
             stdOut.flush();
 
         }
@@ -163,7 +163,7 @@ public class CommandLineView implements TypeOfView {
         stdOut.flush();
     }
 
-    public void moveOvine(String type, String startRegion, String endRegion) {
+    public void refreshMoveOvine(String type, String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -188,6 +188,17 @@ public class CommandLineView implements TypeOfView {
     public void refreshMoveShepherd(String nickNameMover, String streetIndex) {
         this.showInfo(
                 "Il giocatore " + nickNameMover + " ha spostato il suo pastore in " + streetIndex);
+    }
+
+    public void showEndGame() {
+        this.showInfo("Il gioco è terminato arrivederci!");
+    }
+
+    public String askBuyLand() {
+        stdOut.println("Che territorio vuoi comprare?");
+        stdOut.flush();
+        
+        return stdIn.nextLine();
     }
 
 }

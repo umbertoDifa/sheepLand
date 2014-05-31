@@ -101,16 +101,11 @@ public class ClientRmi extends UnicastRemoteObject implements
         view.refreshWolf(regionIndex);
     }
 
-    public String setUpShepherd(int idShepherd) {
+    public String setUpShepherd(int idShepherd) throws RemoteException {
         String chosenStreet = view.setUpShepherd(idShepherd);
         String result;
-        try {
-            result = playerRmi.setShepherdRemote(idShepherd, chosenStreet);
-        } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
-            return null;
-        }
+
+        result = playerRmi.setShepherdRemote(idShepherd, chosenStreet);
 
         view.showInfo(result);
         if (result.contains("Patore posizionato corretamente!")) {
@@ -119,7 +114,16 @@ public class ClientRmi extends UnicastRemoteObject implements
         return null;
     }
 
-    public void chooseAction(String actions) {
+    /**
+     * It ask the player to choose an action and makes it by calling the right
+     * method.
+     *
+     * @param actions Actions that ca be chosen
+     *
+     * @return A string with the number of the action and the result or a string
+     *         with the number of the action concatenated with null
+     */
+    public String chooseAction(String actions) {
         String possibleActions[] = actions.split(",");
 
         int availableAcions[] = new int[possibleActions.length];
@@ -132,22 +136,33 @@ public class ClientRmi extends UnicastRemoteObject implements
         }
 
         int choice = view.chooseAction(availableAcions, actionsName);
-        switch (choice) {
-            case 1:
-                this.moveOvine(OvineType.SHEEP);
-                break;
-            case 2:
-                this.moveOvine(OvineType.RAM);
-                break;
-            case 3:
-                this.moveOvine(OvineType.LAMB);
-                break;
+        try {
+            switch (choice) {
+                case 1:
+                    return "1," + this.moveOvine();
 
+                //TODO completare
+            }
+        } catch (RemoteException ex) {
+            //TODO gestire quando il client tenta di eseguire un metodo sul server
+            //ma fallisce
         }
+        return null; //FIXME
     }
 
-    public void moveOvine(OvineType type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private String moveOvine() throws RemoteException {
+        String parameters = view.moveOvine();
+        String token[] = parameters.split(",");
+
+        String result = playerRmi.moveOvineRemote(token[0], token[1], token[2]);
+        view.showInfo(result);
+        //se l'azione è andata a buon fine
+        if (result.equals("Ovino mosso!")) {
+            //ritorna la stringa dei parametri tipo,arrivo,partenza
+            return parameters;
+        }
+        //altrimenti null
+        return null;
     }
 
     public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
@@ -227,6 +242,6 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     public void connectPlayer(PlayerRemote player) throws RemoteException {
         this.playerRmi = player;
-    }   
+    }
 
 }

@@ -1,19 +1,21 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -94,21 +96,22 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         int i = 1;
         for (OvineType type : OvineType.values()) {
             if (canMoveOvine(type)) {
-                possibleAction += i + "-Sposta " + type + ",";
+                possibleAction += "1-Sposta ovino";
+                break;
             }
             i++;
         }
 
-        possibleAction += "4-Sposta pastore,";
+        possibleAction += "2-Sposta pastore,";
 
         //aggiungi acquisto carta se possibile
         if (canBuyCard()) {
-            possibleAction += "5-Compra terreno,";
+            possibleAction += "3-Compra terreno,";
         }
 
-        possibleAction += "6-Accoppia pecore,";
-        possibleAction += "7-Accoppia montone e pecora,";
-        possibleAction += "8-Abbatti pecora";
+        possibleAction += "4-Accoppia pecore,";
+        possibleAction += "5-Accoppia montone e pecora,";
+        possibleAction += "6-Abbatti pecora";
 
     }
 
@@ -158,7 +161,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @return
      */
-    public String moveOvine(String type, String oldRegion, String newRegion) {
+    public String moveOvine(String newRegion, String oldRegion, String type) {
 
         Region startRegion;
         Region endRegion;
@@ -189,7 +192,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return "Nessun ovino nella regione di partenza!";
                 }
                 //e aggiungilo nella regione d'arrivo
-                endRegion.addOvine(new Ovine(OvineType.valueOf(type)));               
+                endRegion.addOvine(new Ovine(OvineType.valueOf(type)));
 
                 return "Ovino mosso!";
             }
@@ -285,7 +288,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return "Recinti terminati";
                 }
                 DebugLogger.println("Pastore posizionato");
-              
+
                 return "pastore posizionato";
             } else if (currentShepherd.ifPossiblePay(
                     GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
@@ -298,7 +301,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                             Level.SEVERE,
                             ex.getMessage(), ex);
                     return "Recinti terminati";
-                }                
+                }
                 return "Passaggio pagato e pastore posizionato";
 
             }
@@ -307,79 +310,44 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return "Non puoi spostarti su una strada su cui sei già";
     }
 
-    public void buyLand() throws ActionCancelledException {
+    public String buyLand(String landToBuy) {
 
-//        //creo lista delle possibili regioni da comprare di un pastore
-//        List<RegionType> possibleRegionsType = new ArrayList<RegionType>();
-//
-//        String stringedTypeOfCard;
-//        RegionType chosenTypeOfCard;
-//        int cardPrice;
-//
-//        //per ogni regione confinante con i pastori del giocatore
-//        for (Region region : getShepherdsRegion()) {
-//            //aggiungila ai tipi di regione possibili
-//            possibleRegionsType.add(region.getType());
-//        }
-//
-//        try {
-//            while (true) {
-//                //chiedi il tipo di carta desiderato            
-//                stringedTypeOfCard = this.gameManager.server.talkTo(
-//                        playerNickName,
-//                        "Quale tipo di carta vuoi comprare?\n" + possibleRegionsType);
-//
-//                //se la stringa coincide con uno dei tipi di regione possibili
-//                boolean typeFound = false;
-//                for (RegionType type : possibleRegionsType) {
-//                    if (type.name().equalsIgnoreCase(stringedTypeOfCard)) {
-//                        typeFound = true;
-//                        break;
-//                    }
-//                }
-//                //TODO: boh sta roba
-//                if (typeFound) {
-//                    break;
-//                }
-//                gameManager.server.sendTo(playerNickName,
-//                        "Non puoi comprare un terreno che non confina con il tuo pastore");
-//            }
-//            //convertilo in RegionType
-//            chosenTypeOfCard = RegionType.valueOf(stringedTypeOfCard);
-//
-//            //richiedi prezzo alla banca                    
-//            cardPrice = this.gameManager.bank.getPriceOfCard(
-//                    chosenTypeOfCard);
-//
-//            //se il pastore ha abbastanza soldi paga
-//            if (shepherd[0].ifPossiblePay(cardPrice)) {
-//                //carta scquistabile
-//                gameManager.server.sendTo(playerNickName, "Carta acquistabile");
-//
-//                //recupero la carta dal banco
-//                Card card = this.gameManager.bank.getCard(
-//                        chosenTypeOfCard);
-//
-//                //la do al pastore
-//                this.shepherd[0].addCard(card);
-//
-//                //lo informo
-//                //TODO
-//                return;
-//            } else {
-//                //se non ha abbastanza soldi
-//                gameManager.server.sendTo(playerNickName,
-//                        "Non puoi comprare il territorio " + stringedTypeOfCard + "non hai abbastanza soldi");
-//            }
-//            //se il tipo non è tra quelli accessibili
-//
-//        } catch (MissingCardException e) {
-//            gameManager.server.sendTo(playerNickName,
-//                    "Il territorio richiesto non è disponibile");
-//            Logger
-//                    .getLogger(DebugLogger.class
-//                            .getName()).log(Level.SEVERE, e.getMessage(), e);
-//        }
+        //creo lista delle possibili regioni da comprare di un pastore
+        List<String> possibleRegionsType = new ArrayList<String>();
+
+        //per ogni regione confinante con i pastori del giocatore
+        for (Region region : getShepherdsRegion()) {
+            //aggiungila ai tipi di regione possibili
+            possibleRegionsType.add(region.getType().toString());
+        }
+
+        //se la stringa coincide con uno dei tipi di regione possibili
+        try {
+            for (String type : possibleRegionsType) {
+                if (type.equalsIgnoreCase(landToBuy)) {
+                    //richiedi prezzo alla banca                    
+                    int cardPrice = this.gameManager.bank.getPriceOfCard(
+                            RegionType.valueOf(type));
+                    //paga se puo
+                    if (shepherd[0].ifPossiblePay(cardPrice)) {
+                    //carta scquistabile
+                        //recupero la carta dal banco
+                        Card card = this.gameManager.bank.getCard(
+                                RegionType.valueOf(type));
+
+                        //la do al pastore
+                        this.shepherd[0].addCard(card);
+                        return "Carta acquistata a " + cardPrice + " danari!";
+                    } else {
+                        return "Non hai abbastanza soldi per pagare la carta";
+                    }
+                }
+            }
+            return "Non è possibile acquistare il territorio richiesto";
+        } catch (MissingCardException ex) {
+            return "Non ci sono più carte del territorio richiesto";
+        }
+
     }
 
     public void mateSheepWith(OvineType otherOvineType) throws
@@ -630,6 +598,15 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     public String moveShepherdRemote(int shepherdIndex, String newStreet) throws
             RemoteException {
         return this.moveShepherd(shepherdIndex, newStreet);
+    }
+
+    public String moveOvineRemote(String startRegion, String endRegion,
+                                  String type) {
+        return this.moveOvine(startRegion, endRegion, type);
+    }
+
+    public String buyLandRemote(String regionType) throws RemoteException {
+        return buyLand(regionType);
     }
 
 }

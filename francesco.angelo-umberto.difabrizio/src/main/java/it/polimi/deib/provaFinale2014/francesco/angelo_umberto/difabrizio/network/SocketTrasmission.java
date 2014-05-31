@@ -100,6 +100,9 @@ public class SocketTrasmission extends TrasmissionController {
         ServerSockets.NickSocketMap.get(nickName).send("ChooseActions");
         ServerSockets.NickSocketMap.get(nickName).send(possibleActions);
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
+        
+        // so che il risultato è buono perchè passo al client solo quelli possibili
+        //e lui fa anche il controllo sulla correttezza sintattica della stringa
         int action = Integer.parseInt(result);
         switch (action) {
             case 1:
@@ -107,7 +110,7 @@ public class SocketTrasmission extends TrasmissionController {
             case 2:
                 return askMoveSheperd(nickName);
             case 3:
-            //return buyLand(nickName);
+               return askBuyLand(nickName);
             case 4:
             //return askMateSheepWith(nickName);
             case 5:
@@ -118,10 +121,14 @@ public class SocketTrasmission extends TrasmissionController {
 
     public boolean askMoveOvine(String nickName) {
         ServerSockets.NickSocketMap.get(nickName).send("MoveOvine");
+        
+        //ricevo i parametri
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
         String token[] = result.split(",");
+        
         result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0],
                 token[1], token[2]);
+        
         ServerSockets.NickSocketMap.get(nickName).send(result);
         if (result.contains("Ovino mosso!")) {
             //refreshio
@@ -134,11 +141,18 @@ public class SocketTrasmission extends TrasmissionController {
     public boolean askMoveSheperd(String nickName) {
 
         ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
+        
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
+        
         String token[] = result.split(",");
+        
+        //eseguo
         result = super.getNick2PlayerMap().get(nickName).moveShepherd(
                 Integer.parseInt(token[0]), token[1]);
+        
+        //invio il risultato
         ServerSockets.NickSocketMap.get(nickName).send(result);
+        
         if (result.contains("pastore posizionato")) {
             //invia conferma riepilogativa agli utenti
             refreshMoveShepherd(nickName, token[0], token[1]);
@@ -148,8 +162,10 @@ public class SocketTrasmission extends TrasmissionController {
 
     }
 
-    public String buyLand(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String askBuyLand(String nickName) {
+        ServerSockets.NickSocketMap.get(nickName).send("BuyLand");
+        String landToBuy =  ServerSockets.NickSocketMap.get(nickName).receive();
+        //TODO completare questa trasmissione
     }
 
     public String askKillOvine(String nickName) {

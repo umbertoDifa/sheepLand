@@ -39,7 +39,7 @@ public interface ClientInterfaceRemote extends Remote {
 
     public String setUpShepherd(int idShepherd) throws RemoteException;
 
-    public void chooseAction(String actions) throws RemoteException;
+    public String chooseAction(String actions) throws RemoteException;
 
-    public boolean moveShepherd() throws RemoteException;
+    
 }

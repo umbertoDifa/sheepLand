@@ -5,6 +5,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,43 +80,47 @@ public class ClientSocket {
     }
 
     private void waitCommand() {
-        while (true) {
-            received = receiveString();
-            DebugLogger.println(received);
+        try {
+            while (true) {
+                received = receiveString();
+                DebugLogger.println(received);
 
-            if (received.equals("Welcome")) {
-                welcome();
-            } else if (received.equals("RefreshRegion")) {
-                refreshRegion();
-            } else if (received.equals("RefreshStreet")) {
-                refreshStreet();
-            } else if (received.equals("RefereshGameParameters")) {
-                refreshGameParameters();
-            } else if (received.equals("RefereshCurrentPlayer")) {
-                refreshCurrentPlayer();
-            } else if (received.equals("RefereshCard")) {
-                refreshCard();
-            } else if (received.equals("RefreshBlackSheep")) {
-                refreshBlackSheep();
-            } else if (received.equals("RefreshMoveShepherd")) {
-                refreshMoveShepherd();
-            } else if (received.equals("RefreshWolf")) {
-                refreshWolf();
-            } else if (received.equals("SetUpShepherd")) {
-                setUpShepherd();
-            } else if (received.equals("ChooseAction")) {
-                chooseAction();
-            } else if (received.equals("MoveOvine")) {
-                moveOvine();
-            } else if (received.equals("MoveShepherd")) {
-                moveShepherd();
-            } else if (received.equals("BuyLand")) {
-                buyLand();
-            } else if (received.equals("MateSheepWith")) {
-                mateSheepWith();
-            } else if (received.equals("KillOvine")) {
-                killOvine();
+                if (received.equals("Welcome")) {
+                    welcome();
+                } else if (received.equals("RefreshRegion")) {
+                    refreshRegion();
+                } else if (received.equals("RefreshStreet")) {
+                    refreshStreet();
+                } else if (received.equals("RefereshGameParameters")) {
+                    refreshGameParameters();
+                } else if (received.equals("RefereshCurrentPlayer")) {
+                    refreshCurrentPlayer();
+                } else if (received.equals("RefereshCard")) {
+                    refreshCard();
+                } else if (received.equals("RefreshBlackSheep")) {
+                    refreshBlackSheep();
+                } else if (received.equals("RefreshMoveShepherd")) {
+                    refreshMoveShepherd();
+                } else if (received.equals("RefreshWolf")) {
+                    refreshWolf();
+                } else if (received.equals("SetUpShepherd")) {
+                    setUpShepherd();
+                } else if (received.equals("ChooseAction")) {
+                    chooseAction();
+                } else if (received.equals("MoveOvine")) {
+                    moveOvine();
+                } else if (received.equals("MoveShepherd")) {
+                    moveShepherd();
+                } else if (received.equals("BuyLand")) {
+                    buyLand();
+                } else if (received.equals("MateSheepWith")) {
+                    mateSheepWith();
+                } else if (received.equals("KillOvine")) {
+                    killOvine();
+                }
             }
+        } catch (NoSuchElementException ex) {
+            view.showEndGame();
         }
     }
 
@@ -170,7 +175,7 @@ public class ClientSocket {
     public void refreshMoveShepherd() {
         received = receiveString();
         token = received.split(",");
-        view.refreshMoveShepherd(token[0], token[1],token[2]);
+        view.refreshMoveShepherd(token[0], token[1], token[2]);
     }
 
     public void setUpShepherd() {
@@ -184,7 +189,9 @@ public class ClientSocket {
         String result = receiveString();
         DebugLogger.println(result);
         //che mi rimanda il risultato
-        view.showInfo(result);
+        token = result.split(",");
+
+        view.refreshMoveShepherd(token[0], token[1], token[2]);
     }
 
     public void chooseAction() {
@@ -204,19 +211,29 @@ public class ClientSocket {
         sendString("" + view.chooseAction(availableAcions, actionsName));
     }
 
-    public String moveOvine() {
-        String receivedString = receiveString();
-        String arguments[] = receivedString.split(",");
-        return null; ///TODO
+    public void moveOvine() {
+        //ottengo i parametri stratRegion, endRegion e Type dalla view
+        String parameters = view.moveOvine();
+        
+        //li mando al server per far eseguire l'azione
+        sendString(parameters);
+        
+        //ricevo il risultato dell'operazione
+        view.showInfo(receiveString());
     }
 
     public void moveShepherd() {
         String result = view.askMoveShepherd();
+        
         sendString(result);
+        
+        //ottengo il risultato
+        view.showInfo(receiveString());        
     }
 
     public void buyLand() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        view.askBuyLand();
+        
     }
 
     public void mateSheepWith() {

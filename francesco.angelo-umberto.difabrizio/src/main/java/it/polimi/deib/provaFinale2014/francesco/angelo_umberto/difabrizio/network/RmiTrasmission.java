@@ -93,7 +93,8 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshMoveShepherd(String nickNameMover, String shepherdInedx, String newStreet)
+    public void refreshMoveShepherd(String nickNameMover, String shepherdInedx,
+                                    String newStreet)
             throws RemoteException {
         String nickName = null;
 
@@ -104,7 +105,7 @@ public class RmiTrasmission extends TrasmissionController {
                 if (!nickName.equals(nickNameMover)) {
 
                     ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshMoveShepherd(
-                            nickNameMover,shepherdInedx, newStreet);
+                            nickNameMover, shepherdInedx, newStreet);
                 }
             }
         } catch (RemoteException ex) {
@@ -128,7 +129,7 @@ public class RmiTrasmission extends TrasmissionController {
                     shepherdIndex);
             //invia conferma riepilogativa agli utenti
             if (chosenStreet != null) {
-                refreshMoveShepherd(nickName, ""+shepherdIndex, chosenStreet);
+                refreshMoveShepherd(nickName, "" + shepherdIndex, chosenStreet);
                 return true;
             }
         } catch (RemoteException ex) {
@@ -144,17 +145,32 @@ public class RmiTrasmission extends TrasmissionController {
     public boolean askChooseAction(String nickName, String possibleActions)
             throws RemoteException {
         try {
-            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(
+            String action = ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(
                     possibleActions);
-            //TODO
+            if (!action.contains("null")) {
+                //tokenizza 
+                String token[] = action.split(",");
+
+                //switcha l'azione e refreshia tutti in base  all'azinoe fatta dal player
+                switch (token[0].charAt(0)) {
+                    case '1':
+                        refreshMoveOvine(nickName, token[1], token[2], token[3]);
+                        return true;
+                    case '2':
+                        refreshMoveShepherd(nickName, token[1], token[2]);
+                        return true;
+
+                }
+                //ritorna true
+            }
             return false;
+
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
             throw new RemoteException(
                     "Il player:" + nickName + " si è disconnesso");
         }
-
     }
 
     @Override
@@ -164,15 +180,7 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public boolean askMoveSheperd(String nickName) throws RemoteException {
-        try {
-            return ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().moveShepherd();
-        } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
-            throw new RemoteException(
-                    "Il player:" + nickName + " si è disconnesso");
-        }
-
+        return false;//TODO
     }
 
     @Override

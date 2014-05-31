@@ -46,6 +46,15 @@ public abstract class TrasmissionController {
 
     public abstract void refreshWolf(int regionIndex) throws RemoteException;
 
+    /**
+     * It refreshes to all the player except the nickName player, the action
+     * which was made by moving an ovine
+     * @param nickName Player not to refresh
+     * @param startRegion Region where the ovine was before moving
+     * @param endRegion Region of the ovine after the move
+     * @param ovineType Type of ovine which was moved
+     * @throws RemoteException 
+     */
     public abstract void refreshMoveOvine(String nickName, String startRegion,
                                           String endRegion, String ovineType)
             throws RemoteException;
