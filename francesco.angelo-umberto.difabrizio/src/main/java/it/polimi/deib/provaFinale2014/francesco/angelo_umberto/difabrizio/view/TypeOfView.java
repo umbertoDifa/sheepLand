@@ -11,13 +11,13 @@ public interface TypeOfView {
     public String setUpShepherd(int idShepherd);
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb);
+            int numbOfLamb);
 
     public void refreshStreet(int streetIndex, boolean Fence,
-                              String nickShepherd);
+            String nickShepherd);
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-                                       int shepherd4player);
+            int shepherd4player);
 
     public void refereshCurrentPlayer(String currenPlayer);
 
@@ -28,7 +28,12 @@ public interface TypeOfView {
     public void refreshWolf(int regionIndex);
 
     public int chooseAction(int[] availableActions,
-                            String[] availableStringedActions);
-    
+            String[] availableStringedActions);
+
     public void moveOvine(String type, String startRegion, String endRegion);
+
+    public void moveShepherd(String type, String startRegion, String endRegion);
+
+    public String askMoveShepherd();
+
 }

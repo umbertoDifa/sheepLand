@@ -148,8 +148,19 @@ public class ClientRmi extends UnicastRemoteObject implements
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void moveShepherd() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean moveShepherd() {
+        String result;
+        try {
+            result = view.askMoveShepherd();
+            String token[] = result.split(",");
+            result = playerRmi.moveShepherd(Integer.parseInt(token[0]), token[1]);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return false;
+        }
+        if(result.contains("pastore posizionato"))
+            return true;
+        return false;        
     }
 
     public void refreshMoveShepherd() {

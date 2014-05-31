@@ -10,5 +10,6 @@ import java.rmi.RemoteException;
 public interface PlayerRemote extends Remote {
 
     public String setShepherd(int idShepherd, String stringedStreet) throws RemoteException;
+    public String moveShepherd(int shepherdIndex, String newStreet) throws RemoteException;
 
 }

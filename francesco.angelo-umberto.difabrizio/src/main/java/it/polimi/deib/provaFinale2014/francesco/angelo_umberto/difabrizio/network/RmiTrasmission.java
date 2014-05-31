@@ -74,7 +74,7 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public boolean askMoveSheperd(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().moveShepherd();
     }
 
     @Override

@@ -252,6 +252,7 @@ public class Player implements PlayerRemote {
      * @throws
      * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
+    //aggiustare. convertire il parametro sringato della strada
     public String moveShepherd(int shepherdIndex, String newStreet) throws
             FinishedFencesException {
 
@@ -285,7 +286,7 @@ public class Player implements PlayerRemote {
                 //invia conferma riepilogativa agli utenti
                 gameManager.controller.refreshMoveShepherd(playerNickName,
                         newStreet);
-                return "Pastore posizionato";
+                return "pastore posizionato";
             } else if (currentShepherd.ifPossiblePay(
                     GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
                 DebugLogger.println("Pagamento effettuato");

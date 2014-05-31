@@ -208,7 +208,8 @@ public class ClientSocket {
     }
 
     public void moveShepherd() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String result = view.askMoveShepherd();
+        sendString(result);
     }
 
     public void buyLand() {

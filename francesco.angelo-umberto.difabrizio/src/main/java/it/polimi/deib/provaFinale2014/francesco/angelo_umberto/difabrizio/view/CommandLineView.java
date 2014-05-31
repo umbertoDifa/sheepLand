@@ -13,7 +13,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         stdOut.println("La regione " + regionIndex + " ora ha " + numbOfSheep
                 + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni.");
         stdOut.flush();
@@ -21,7 +21,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd) {
+            String nickShepherd) {
         stdOut.print("La strada " + streetIndex + "è ");
 
         if (fence == true) {
@@ -40,7 +40,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-                                       int shepherd4player) {
+            int shepherd4player) {
         stdOut.println(
                 "La partita ha " + numbOfPlayers + ", il primo giocatore è "
                 + firstPlayer + ", ogni giocatore ha " + shepherd4player);
@@ -77,7 +77,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
-                                 String type) {
+            String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -119,7 +119,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public int chooseAction(int[] availableActions,
-                            String[] availableStringedActions) {
+            String[] availableStringedActions) {
         String stringToPrint = "";
         for (int i : availableActions) {
             stringToPrint += String.valueOf(availableActions[i]) + "- " + availableActions[i] + " ";
@@ -163,6 +163,18 @@ public class CommandLineView implements TypeOfView {
 
     public void moveOvine(String type, String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void moveShepherd(String type, String startRegion, String endRegion) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askMoveShepherd() {
+        stdOut.println("Scegliere quale pastore muovere:");
+        String idShepherd = stdIn.nextLine();
+        stdOut.println("Scegliere in quale regione spostare il pastore "+idShepherd+":");
+        String stringedStreet = stdIn.nextLine();
+        return idShepherd + "," + stringedStreet;
     }
 
 }
