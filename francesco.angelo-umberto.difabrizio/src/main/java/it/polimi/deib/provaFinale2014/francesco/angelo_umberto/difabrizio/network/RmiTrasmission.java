@@ -4,21 +4,21 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
-                              int numbOfRam, int numbOfLamb) {
+            int numbOfRam, int numbOfLamb) {
         ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshRegion(
                 regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
     }
 
     @Override
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
-                              String nickNameOfShepherdPlayer) {
+            String nickNameOfShepherdPlayer) {
         ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshStreet(
                 streetIndex, fence, nickNameOfShepherdPlayer);
     }
 
     @Override
     public void refreshGameParameters(String nickName, int numbOfPlayers,
-                                      int shepherd4player) {
+            int shepherd4player) {
         ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refereshGameParameters(
                 numbOfPlayers, nickName, shepherd4player);
     }
@@ -35,13 +35,13 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshBlackSheep(String message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshBlackSheep(int regionIndex) {
+        //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshBlackSheep(regionIndex);
     }
 
     @Override
-    public void refreshWolf(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshWolf(int regionIndex) {
+        //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshWolf(regionIndex);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public void refreshMoveOvine(String nickName, String startRegion,
-                                 String endRegion, String ovineType) {
+            String endRegion, String ovineType) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

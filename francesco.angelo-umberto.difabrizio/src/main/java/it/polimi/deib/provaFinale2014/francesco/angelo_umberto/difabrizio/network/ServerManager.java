@@ -2,7 +2,10 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The class is a manager that collects connections from clients and starts
@@ -61,6 +64,9 @@ public class ServerManager {
                 stdOut.println("Scelta non valida\n");
                 stdOut.flush();
 
+            } catch (RemoteException ex) {
+                //TODO
+                Logger.getLogger(ServerManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         stdOut.println("Thread server attivato.");

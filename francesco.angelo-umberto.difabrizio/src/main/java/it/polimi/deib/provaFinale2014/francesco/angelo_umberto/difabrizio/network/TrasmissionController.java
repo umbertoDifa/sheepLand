@@ -36,9 +36,9 @@ public abstract class TrasmissionController {
 
     public abstract void refreshCard(String nickName, String card, int value);
 
-    public abstract void refreshBlackSheep(String message);
+    public abstract void refreshBlackSheep(int regionIndex);
 
-    public abstract void refreshWolf(String nickName);
+    public abstract void refreshWolf(int regionIndex);
 
     public abstract void refreshMoveOvine(String nickName, String startRegion,
                                           String endRegion, String ovineType);

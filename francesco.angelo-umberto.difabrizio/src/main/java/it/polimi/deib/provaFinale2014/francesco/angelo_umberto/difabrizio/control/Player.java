@@ -253,8 +253,7 @@ public class Player implements PlayerRemote {
      * it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException
      */
     //aggiustare. convertire il parametro sringato della strada
-    public String moveShepherd(int shepherdIndex, String newStreet) throws
-            FinishedFencesException {
+    public String moveShepherd(int shepherdIndex, String newStreet) {
 
         Shepherd currentShepherd = shepherd[shepherdIndex];
         Street startStreet = currentShepherd.getStreet();
@@ -281,7 +280,12 @@ public class Player implements PlayerRemote {
             if (startStreet.isNeighbour(endStreet)) {
                 //muovilo
                 currentShepherd.moveTo(endStreet);
-                startStreet.setFence(this.gameManager.bank.getFence());
+                try {
+                    startStreet.setFence(this.gameManager.bank.getFence());
+                } catch (FinishedFencesException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                    //TODO
+                }
                 DebugLogger.println("Pastore posizionato");
                 //invia conferma riepilogativa agli utenti
                 gameManager.controller.refreshMoveShepherd(playerNickName,
@@ -291,7 +295,12 @@ public class Player implements PlayerRemote {
                     GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
                 DebugLogger.println("Pagamento effettuato");
                 currentShepherd.moveTo(endStreet);
-                startStreet.setFence(this.gameManager.bank.getFence());
+                try {
+                    startStreet.setFence(this.gameManager.bank.getFence());
+                } catch (FinishedFencesException ex) {
+                    Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+                    //TODO
+                }
                 //invia conferma riepilogativa agli utenti
                 gameManager.controller.refreshMoveShepherd(playerNickName,
                         newStreet);

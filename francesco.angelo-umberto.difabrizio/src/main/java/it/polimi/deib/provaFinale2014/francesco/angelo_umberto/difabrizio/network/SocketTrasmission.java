@@ -1,6 +1,9 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SocketTrasmission extends TrasmissionController {
 
@@ -23,7 +26,8 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     public void refreshCurrentPlayer(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ServerSockets.NickSocketMap.get(nickName).send("RefreshCurrentPlayer");
+        ServerSockets.NickSocketMap.get(nickName).send(nickName);
     }
 
     public void refreshCard(String nickName, String type, int value) {
@@ -31,17 +35,20 @@ public class SocketTrasmission extends TrasmissionController {
         ServerSockets.NickSocketMap.get(nickName).send(type + "," + value);
     }
 
-    public void refreshBlackSheep(String message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshBlackSheep(int regionIndex) {
+//        ServerSockets.NickSocketMap.get(nickName).send("RefreshBlackSheep");
+//        ServerSockets.NickSocketMap.get(nickName).send(String.valueOf(regionIndex));
     }
 
-    public void refreshWolf(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshWolf(int regionIndex) {
+//        ServerSockets.NickSocketMap.get(nickName).send("RefreshWolf");
+//        ServerSockets.NickSocketMap.get(nickName).send(String.valueOf(regionIndex));
     }
 
     public void refreshMoveOvine(String nickName, String startRegion,
             String endRegion, String ovineType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        ServerSockets.NickSocketMap.get(nickName).send("RefreshMoveOvine");
+//        ServerSockets.NickSocketMap.get(nickName).send(startRegion+","+endRegion+","+ovineType);
     }
 
     /**
@@ -122,17 +129,22 @@ public class SocketTrasmission extends TrasmissionController {
         return false;
     }
 
-    public boolean askMoveSheperd(String nickName) {
-        ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
-        String result = ServerSockets.NickSocketMap.get(nickName).receive();
-        String token[] = result.split(",");
-        //gestire eccezione finishedfences
-        result = super.getNick2PlayerMap().get(nickName).moveShepherd(Integer.parseInt(token[0]), token[1]);
-        ServerSockets.NickSocketMap.get(nickName).send(result);
-        if(result.contains("pastore posizionato")){
-            return true;
+    public boolean askMoveSheperd(String nickName){
+        try {
+            ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
+            String result = ServerSockets.NickSocketMap.get(nickName).receive();
+            String token[] = result.split(",");
+            //gestire eccezione finishedfences
+            result = super.getNick2PlayerMap().get(nickName).moveShepherd(Integer.parseInt(token[0]), token[1]);
+            ServerSockets.NickSocketMap.get(nickName).send(result);
+            if (result.contains("pastore posizionato")) {
+                return true;
+            }
+            return false;
+        } catch (FinishedFencesException ex) {
+            Logger.getLogger(SocketTrasmission.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        return false;
     }
 
     public String buyLand(String nickName) {

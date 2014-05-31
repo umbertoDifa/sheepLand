@@ -428,7 +428,8 @@ public class GameManager implements Runnable {
                     "La pecora non si muove perchè: " + ex.getMessage(), ex);
             blackSheepMessage = "La pecora non si muove perchè: " + ex.getMessage();
         } finally {
-            controller.refreshBlackSheep(blackSheepMessage);
+//            controller.refreshBlackSheep(this.map.getNodeIndex(
+//                    this.map.getBlackSheep().getMyRegion()));
         }
 
         //faccio fare le azioni al giocatore
