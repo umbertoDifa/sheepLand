@@ -1,6 +1,24 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-public class GuiView implements TypeOfView {
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+
+public class GuiView implements TypeOfView, ActionListener {
+    private GuiClass gui;
+    private HashMap <Integer, Point> idStreetPointMap;
+    private HashMap <Integer, Point> idRegionPointMap;
+    private int NUM_OF_REGIONS;
+    
+    public GuiView(){
+        gui = new GuiClass();
+        setUpMap();
+    }
+    
+    public setUpMap(){
+        idRegionPointMap.put(1, new Point());
+    }
 
     public void showInfo(String info) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -47,7 +65,8 @@ public class GuiView implements TypeOfView {
     }
 
     public void moveOvine(String type, String startRegion, String endRegion) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        
     }
 
     public void moveShepherd(String type, String startRegion, String endRegion) {
@@ -63,6 +82,10 @@ public class GuiView implements TypeOfView {
     }
 
     public void refreshMoveShepherd(String nickNameMover, String streetIndex) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void actionPerformed(ActionEvent e) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
