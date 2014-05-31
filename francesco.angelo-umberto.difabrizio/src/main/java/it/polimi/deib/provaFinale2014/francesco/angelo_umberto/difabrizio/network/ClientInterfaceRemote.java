@@ -22,7 +22,7 @@ public interface ClientInterfaceRemote extends Remote {
     public void refreshStreet(int streetIndex, boolean Fence,
                               String nickShepherd) throws RemoteException;
     
-    public void refreshMoveShepherd(String nickNameMover, String streetIndex) throws RemoteException;
+    public void refreshMoveShepherd(String nickNameMover,String shepherdIndex, String streetIndex) throws RemoteException;
 
     public void refreshGameParameters(int numbOfPlayers, String firstPlayer,
                                       int shepherd4player) throws
@@ -37,7 +37,7 @@ public interface ClientInterfaceRemote extends Remote {
 
     public void refreshWolf(int regionIndex) throws RemoteException;
 
-    public boolean setUpShepherd(int idShepherd) throws RemoteException;
+    public String setUpShepherd(int idShepherd) throws RemoteException;
 
     public void chooseAction(String actions) throws RemoteException;
 

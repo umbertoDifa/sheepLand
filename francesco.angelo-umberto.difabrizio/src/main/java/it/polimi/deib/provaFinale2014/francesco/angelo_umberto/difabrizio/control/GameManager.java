@@ -19,6 +19,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -73,8 +74,14 @@ public class GameManager implements Runnable {
         } else {
             this.shepherd4player = ControlConstants.STANDARD_SHEPHERD_FOR_PLAYER.getValue();
         }
-        //setto arraylist dei giocatori 
-        this.setUpPlayers();
+        try {
+            //setto arraylist dei giocatori
+            this.setUpPlayers();
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            //TODO stesso discorso della run()
+        }
 
         controller.setNick2PlayerMap(this.clientNickNames, players);
 
@@ -86,18 +93,32 @@ public class GameManager implements Runnable {
     }
 
     public void run() {
-        this.startGame();
+        try {
+            this.startGame();
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            //TODO chiamare una funzione per avviasare il server
+            //oppure lo faccio io ovvero setto il nickName offline
+        }
     }
 
     /**
      * Riempie l'arraylist dei player assegnando ad ognuno il nickName
      * corrispondente nell'array dei nickName rispettando l'ordine
      */
-    private void setUpPlayers() {
+    private void setUpPlayers() throws RemoteException {
         //per ogni giocatore
         for (int i = 0; i < playersNumber; i++) {
-            //lo aggiungo alla lista dei giocatori
-            players.add(new Player(this, clientNickNames[i]));
+            try {
+                //lo aggiungo alla lista dei giocatori
+                players.add(new Player(this, clientNickNames[i]));
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                throw new RemoteException(
+                        "Il player:" + clientNickNames[i] + " si è disconnesso");
+            }
         }
     }
 
@@ -105,11 +126,11 @@ public class GameManager implements Runnable {
      * Metodo principale che viene invocato dal server thread per creare tutti
      * gli oggetti di una partita e avviarla
      */
-    private void SetUpGame() {
+    private void SetUpGame() throws RemoteException {
         DebugLogger.println("Avvio partita");
-        
+
         controller.broadcastStartGame();
-        
+
         DebugLogger.println("SetUpMap Avviato");
         this.setUpMap();
 
@@ -141,15 +162,15 @@ public class GameManager implements Runnable {
 
     }
 
-    private void brodcastCards() {
+    private void brodcastCards() throws RemoteException {
         for (int i = 0; i < playersNumber; i++) {
             refreshCards(i);
         }
     }
 
-    private void refreshCards(int indexOfPlayer) {
+    private void refreshCards(int indexOfPlayer) throws RemoteException {
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
-        
+
         for (int j = 0; j < numberOfCards; j++) {
             Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
                     j);
@@ -194,7 +215,7 @@ public class GameManager implements Runnable {
     /**
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
-    private void setUpShepherds() {
+    private void setUpShepherds() throws RemoteException {
         int i;//indice giocatori
         int j;//indice pastori
         boolean outcomeOk;
@@ -269,14 +290,10 @@ public class GameManager implements Runnable {
         }
     }
 
-    private void playTheGame() {
+    private void playTheGame() throws RemoteException {
         int[][] classification = new int[2][playersNumber];
         int numOfWinners = 1;
 
-        //broadcast avvio gioco
-        for (String client : clientNickNames) {
-            controller.refreshInfo(client, "Inizia il gioco!");
-        }
         try {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
@@ -310,7 +327,7 @@ public class GameManager implements Runnable {
         }
     }
 
-    public void startGame() {
+    public void startGame() throws RemoteException {
         DebugLogger.println("SetUpGameAvviato");
         this.SetUpGame();
 
@@ -320,7 +337,7 @@ public class GameManager implements Runnable {
         //gameFinished
     }
 
-    private void broadcastInitialConditions() {
+    private void broadcastInitialConditions() throws RemoteException {
 
         //broadcast regions
         int numbOfSheep, numbOfLamb, numbOfRam;
@@ -367,7 +384,7 @@ public class GameManager implements Runnable {
 
     }
 
-    private void executeRounds() throws FinishedFencesException {
+    private void executeRounds() throws FinishedFencesException, RemoteException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
         //TODO dicutere il fine giro per la discordanza 11recinti 12recintni
@@ -406,7 +423,8 @@ public class GameManager implements Runnable {
         }//while
     }
 
-    private boolean executeShift(int player) throws FinishedFencesException {
+    private boolean executeShift(int player) throws FinishedFencesException,
+                                                    RemoteException {
 
         DebugLogger.println("Muovo pecora nera");
         String blackSheepMessage = "";

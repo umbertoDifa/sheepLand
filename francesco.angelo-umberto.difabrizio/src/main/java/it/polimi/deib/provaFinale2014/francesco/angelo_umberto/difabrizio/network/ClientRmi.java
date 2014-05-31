@@ -81,7 +81,7 @@ public class ClientRmi extends UnicastRemoteObject implements
     }
 
     public void refreshGameParameters(int numbOfPlayers, String firstPlayer,
-                                       int shepherd4player) {
+                                      int shepherd4player) {
         view.refereshGameParameters(numbOfPlayers, firstPlayer, shepherd4player);
     }
 
@@ -101,21 +101,22 @@ public class ClientRmi extends UnicastRemoteObject implements
         view.refreshWolf(regionIndex);
     }
 
-    public boolean setUpShepherd(int idShepherd) {
+    public String setUpShepherd(int idShepherd) {
         String chosenStreet = view.setUpShepherd(idShepherd);
         String result;
         try {
-            result = playerRmi.setShepherd(idShepherd, chosenStreet);
+            result = playerRmi.setShepherdRemote(idShepherd, chosenStreet);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            return false;
+            return null;
         }
+
         view.showInfo(result);
         if (result.contains("Patore posizionato corretamente!")) {
-            return true;
+            return chosenStreet;
         }
-        return false;
+        return null;
     }
 
     public void chooseAction(String actions) {
@@ -159,7 +160,8 @@ public class ClientRmi extends UnicastRemoteObject implements
         try {
             result = view.askMoveShepherd();
             String token[] = result.split(",");
-            result = playerRmi.moveShepherd(Integer.parseInt(token[0]), token[1]);
+            result = playerRmi.moveShepherdRemote(Integer.parseInt(token[0]),
+                    token[1]);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
@@ -171,8 +173,9 @@ public class ClientRmi extends UnicastRemoteObject implements
         return false;
     }
 
-    public void refreshMoveShepherd() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshMoveShepherd(String nickName, String indexShepherd,
+                                    String newStreet) {
+        view.refreshMoveShepherd(nickName, indexShepherd, newStreet);
     }
 
     public void buyLand() {
@@ -202,10 +205,10 @@ public class ClientRmi extends UnicastRemoteObject implements
     public void connectPlayerRemote(PlayerRemote playerRemote) {
     }
 
-    public void disconnect(String message) {               
+    public void disconnect(String message) {
         view.showInfo(message);
         try {
-            UnicastRemoteObject.unexportObject(this,true);
+            UnicastRemoteObject.unexportObject(this, true);
             registry.unbind(nickName);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -224,11 +227,6 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     public void connectPlayer(PlayerRemote player) throws RemoteException {
         this.playerRmi = player;
-    }
-
-    public void refreshMoveShepherd(String nickNameMover, String streetIndex)
-            throws RemoteException {
-        view.refreshMoveShepherd(nickNameMover, streetIndex);
-    }
+    }   
 
 }

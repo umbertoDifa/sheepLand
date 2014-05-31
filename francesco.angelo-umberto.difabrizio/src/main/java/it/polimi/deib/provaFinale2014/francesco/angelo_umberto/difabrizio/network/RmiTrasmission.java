@@ -18,9 +18,15 @@ public class RmiTrasmission extends TrasmissionController {
     public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
                               int numbOfRam, int numbOfLamb) throws
             RemoteException {
-
-        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshRegion(
-                regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
+        try {
+            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshRegion(
+                    regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
+        }
 
     }
 
@@ -28,9 +34,15 @@ public class RmiTrasmission extends TrasmissionController {
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
                               String nickNameOfShepherdPlayer) throws
             RemoteException {
-
-        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshStreet(
-                streetIndex, fence, nickNameOfShepherdPlayer);
+        try {
+            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshStreet(
+                    streetIndex, fence, nickNameOfShepherdPlayer);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
+        }
 
     }
 
@@ -38,9 +50,15 @@ public class RmiTrasmission extends TrasmissionController {
     public void refreshGameParameters(String nickName, int numbOfPlayers,
                                       int shepherd4player) throws
             RemoteException {
-
-        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshGameParameters(
-                numbOfPlayers, nickName, shepherd4player);
+        try {
+            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshGameParameters(
+                    numbOfPlayers, nickName, shepherd4player);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
+        }
 
     }
 
@@ -52,9 +70,15 @@ public class RmiTrasmission extends TrasmissionController {
     @Override
     public void refreshCard(String nickName, String card, int value) throws
             RemoteException {
-
-        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refereshCard(
-                card, value);
+        try {
+            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refereshCard(
+                    card, value);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
+        }
 
     }
 
@@ -69,18 +93,25 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshMoveShepherd(String nickNameMover, String newStreet)
+    public void refreshMoveShepherd(String nickNameMover, String shepherdInedx, String newStreet)
             throws RemoteException {
-        //per tutti i nick tranne quello dato refresha
-        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
-            String nickName = (String) pairs.getKey();
-            if (!nickName.equals(nickNameMover)) {
+        String nickName = null;
 
-                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshMoveShepherd(
-                        nickNameMover, newStreet);
+        try {
+            //per tutti i nick tranne quello dato refresha
+            for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+                nickName = (String) pairs.getKey();
+                if (!nickName.equals(nickNameMover)) {
 
+                    ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshMoveShepherd(
+                            nickNameMover,shepherdInedx, newStreet);
+                }
             }
-
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
         }
     }
 
@@ -92,22 +123,38 @@ public class RmiTrasmission extends TrasmissionController {
     @Override
     public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws
             RemoteException {
-
-        return ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().setUpShepherd(
-                shepherdIndex);
-
-    }
-
-    @Override
-    public boolean askChooseAction(String nickName, String possibleActions) {
         try {
-            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(
-                    possibleActions);
+            String chosenStreet = ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().setUpShepherd(
+                    shepherdIndex);
+            //invia conferma riepilogativa agli utenti
+            if (chosenStreet != null) {
+                refreshMoveShepherd(nickName, ""+shepherdIndex, chosenStreet);
+                return true;
+            }
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
         }
-        return false; //TODO
+        return false;
+    }
+
+    @Override
+    public boolean askChooseAction(String nickName, String possibleActions)
+            throws RemoteException {
+        try {
+            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(
+                    possibleActions);
+            //TODO
+            return false;
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
+        }
+
     }
 
     @Override
@@ -117,8 +164,14 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public boolean askMoveSheperd(String nickName) throws RemoteException {
-
-        return ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().moveShepherd();
+        try {
+            return ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().moveShepherd();
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            throw new RemoteException(
+                    "Il player:" + nickName + " si è disconnesso");
+        }
 
     }
 
@@ -158,10 +211,16 @@ public class RmiTrasmission extends TrasmissionController {
 
         for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
-
-            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().welcome();
-            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().connectPlayer(
-                    super.getNick2PlayerMap().get(nickName));
+            try {
+                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().welcome();
+                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().connectPlayer(
+                        super.getNick2PlayerMap().get(nickName));
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                throw new RemoteException(
+                        "Il player:" + nickName + " si è disconnesso");
+            }
 
         }
     }
