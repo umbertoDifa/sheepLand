@@ -48,9 +48,20 @@ public class ClientSocket {
 
             //creo scanner da tastiera
             stdIn = new Scanner(System.in);
-            DebugLogger.println("Canali di comunicazione impostati");
+            DebugLogger.println(
+                    "Canali di comunicazione impostati\nAttento ordine dal server");
 
-            waitCommand();
+            DebugLogger.println("Invio nickName");
+            serverOut.println(nickName);
+            serverOut.flush();
+
+            String connectionResult = receiveString();
+            if ("Avvio gioco".equals(connectionResult)) {
+                DebugLogger.println(connectionResult);
+                waitCommand();
+            } else {
+                view.showInfo(connectionResult);
+            }
 
         } catch (IOException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -70,6 +81,7 @@ public class ClientSocket {
     private void waitCommand() {
         while (true) {
             received = receiveString();
+            DebugLogger.println(received);
 
             if (received.equals("RefreshRegion")) {
                 refreshRegion();
@@ -83,6 +95,8 @@ public class ClientSocket {
                 refreshCard();
             } else if (received.equals("RefreshBlackSheep")) {
                 refreshBlackSheep();
+            } else if (received.equals("RefreshMoveShepherd")) {
+                refreshMoveShepherd();
             } else if (received.equals("RefreshWolf")) {
                 refreshWolf();
             } else if (received.equals("SetUpShepherd")) {
@@ -151,11 +165,23 @@ public class ClientSocket {
         view.refreshWolf(Integer.parseInt(received));
     }
 
+    public void refreshMoveShepherd() {
+        received = receiveString();
+        view.showInfo(received);
+    }
+
     public void setUpShepherd() {
         String shepherdIndex = receiveString();
+
+        //chiedo strada dalla view
         String street = view.setUpShepherd(Integer.parseInt(shepherdIndex));
+
+        //e la mando al server
         sendString(street);
-        view.showInfo(receiveString());
+        String result = receiveString();
+        DebugLogger.println(result);
+        //che mi rimanda il risultato
+        view.showInfo(result);
     }
 
     public void chooseAction() {

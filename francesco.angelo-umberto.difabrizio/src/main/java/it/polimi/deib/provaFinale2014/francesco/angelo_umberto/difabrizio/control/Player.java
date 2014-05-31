@@ -230,12 +230,9 @@ public class Player implements PlayerRemote {
             return ex.getMessage();
         }
 
-//sposta il pastore 
+        //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
-        DebugLogger.println("Patore posizionato corretamente!");
-
-        DebugLogger.println("invio conferma");
-
+      
         //invia conferma riepilogativa agli utenti
         gameManager.controller.refreshMoveShepherd(playerNickName,
                 stringedStreet);
@@ -378,7 +375,6 @@ public class Player implements PlayerRemote {
 //                    .getLogger(DebugLogger.class
 //                            .getName()).log(Level.SEVERE, e.getMessage(), e);
 //        }
-
     }
 
     public void mateSheepWith(OvineType otherOvineType) throws

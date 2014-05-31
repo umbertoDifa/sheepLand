@@ -106,6 +106,10 @@ public class GameManager implements Runnable {
      * gli oggetti di una partita e avviarla
      */
     private void SetUpGame() {
+        DebugLogger.println("Avvio partita");
+        
+        controller.broadcastStartGame();
+        
         DebugLogger.println("SetUpMap Avviato");
         this.setUpMap();
 
@@ -126,7 +130,7 @@ public class GameManager implements Runnable {
         DebugLogger.println("SetUpinitial Avviato");
         this.setUpInitialCards();
 
-        DebugLogger.println("SetUpinitial conditions");
+        DebugLogger.println("broadcastinitial conditions");
         this.broadcastInitialConditions();
 
         DebugLogger.println("brodcast cards");
@@ -158,10 +162,8 @@ public class GameManager implements Runnable {
 
         for (int i = 0; i < clientNickNames.length; i++) {
             //aggiungi la carta prendendola dalle carte iniziali della banca
-            DebugLogger.println("Prendo una carta dalla banca");
             Card initialCard = this.bank.getInitialCard();
 
-            DebugLogger.println("Aggiungo la carta al pastore");
             this.players.get(i).shepherd[0].addCard(
                     initialCard);
         }

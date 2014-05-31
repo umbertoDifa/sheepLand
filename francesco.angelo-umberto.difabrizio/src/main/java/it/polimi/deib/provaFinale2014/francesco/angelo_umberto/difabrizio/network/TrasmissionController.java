@@ -17,6 +17,8 @@ public abstract class TrasmissionController {
             nick2PlayerMap.put(nickNames[i], players.get(i));
         }
     }
+    
+    public abstract void broadcastStartGame();
 
     public abstract void refreshRegion(String nickName, int regionIndex,
                                        int numbOfSheep, int numbOfRam,

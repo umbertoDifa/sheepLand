@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
@@ -25,12 +26,16 @@ public class ServerManager {
         String serverName = "sheepland";
 
         Scanner stdIn = new Scanner(System.in);
+        PrintWriter stdOut = new PrintWriter(System.out);
+
         boolean stringValid = false;
 
         while (!stringValid) {
             try {
-                System.out.println(
+                stdOut.println(
                         "Scegli connessione:\n1- Socket\n2- RMI");
+                stdOut.flush();
+
                 answer = stdIn.nextLine();
                 choice = Integer.parseInt(answer);
 
@@ -40,17 +45,23 @@ public class ServerManager {
                     server.start();
                 } else if (choice == 2) {
                     stringValid = true;
-                    ServerRmiImpl server = new ServerRmiImpl(serverName, "localhost", port);
+                    ServerRmiImpl server = new ServerRmiImpl(serverName,
+                            "localhost", port);
                     server.start();
                 } else {
-                    System.out.println("La scelta inserita non è valida\n");
+                    stdOut.println("La scelta inserita non è valida\n");
+                    stdOut.flush();
+
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Scelta non valida\n");
+                stdOut.println("Scelta non valida\n");
+                stdOut.flush();
 
             }
         }
-        System.out.println("Server spento.");
+        stdOut.println("Thread server attivato.");
+        stdOut.flush();
+
     }
 
 }

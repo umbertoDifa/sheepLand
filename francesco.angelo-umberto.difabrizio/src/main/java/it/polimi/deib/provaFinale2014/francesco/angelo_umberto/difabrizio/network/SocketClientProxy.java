@@ -28,7 +28,7 @@ public class SocketClientProxy {
         try {
             //inizializzo stream out
             this.toClient = new PrintWriter(this.socket.getOutputStream());
-
+            
             //inizializzo streamo in
             this.fromClient = new Scanner(this.socket.getInputStream());
         } catch (IOException ex) {

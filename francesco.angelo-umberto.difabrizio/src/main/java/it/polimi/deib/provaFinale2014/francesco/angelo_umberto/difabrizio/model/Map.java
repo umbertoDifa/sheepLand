@@ -4,7 +4,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import java.util.List;
-import javafx.scene.input.KeyCode;
 
 /**
  * Rappresenta la plancia, quindi conosce Strade e Regioni e come esse sono

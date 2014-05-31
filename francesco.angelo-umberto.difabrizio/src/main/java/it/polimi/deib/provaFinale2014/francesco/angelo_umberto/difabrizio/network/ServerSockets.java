@@ -29,7 +29,7 @@ public class ServerSockets implements Runnable {
     /**
      * Default seconds to wait before timeout the clients connection to a game
      */
-    private static final int DEFAULT_TIMEOUT_ACCEPT = 10;
+    private static final int DEFAULT_TIMEOUT_ACCEPT = 15;
     /**
      * The default minimum number of clients for a game
      */
@@ -95,7 +95,7 @@ public class ServerSockets implements Runnable {
         this.port = port;
 
         this.maxNumberOfGames = DEFAULT_MAX_GAMES;
-        this.maxClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
+        this.maxClientsForGame = DEFAULT_MAX_CLIENTS_FOR_GAME;
         this.minClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
         this.secondsBeforeAcceptTimeout = DEFAULT_TIMEOUT_ACCEPT;
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
@@ -143,12 +143,14 @@ public class ServerSockets implements Runnable {
             try {
                 //accetto un client
                 clientSocket = serverSocket.accept();
+                //prendo il nick dal client
+                DebugLogger.println("Chiedo nick");
+                String nickName = getNickName();
 
                 //se non ho attivato tutte le partite
                 if (activatedGames < maxNumberOfGames) {
-                    DebugLogger.println("Chiedo nick");
 
-                    if (isNewPlayer()) {
+                    if (isNewPlayer(nickName)) {
                         DebugLogger.println("Client accettato");
 
                         //se è il primo client
@@ -173,6 +175,8 @@ public class ServerSockets implements Runnable {
                     DebugLogger.println("Client rifiutato");
                     handleClientRejection(
                             "Il server è pieno, riprova più tardi");
+                    clientNickNames.clear();
+
                 }
 
             } catch (IOException ex) {
@@ -205,21 +209,26 @@ public class ServerSockets implements Runnable {
             //se non ci sono abbastanza giocatori
             handleClientRejection(
                     "Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.");
-        }
+            //elimina il loro record dai giocatori attivi
+            for (String client : clientNickNames) {
+                NickSocketMap.remove(client);
+            }
 
+        }
         //comunque vada svuota la lista dei socket
         clientNickNames.clear();
+
+        DebugLogger.println("Lista client:" + clientNickNames.toString());
     }
 
-    private boolean isNewPlayer() throws IOException {
-
+    private String getNickName() throws IOException {
         Scanner fromClient = new Scanner(clientSocket.getInputStream());
         PrintWriter toClient = new PrintWriter(clientSocket.getOutputStream());
 
-        toClient.println("Inserisci il tuo nickName: ");
-        toClient.flush();
+        return fromClient.nextLine();
+    }
 
-        String nickName = fromClient.nextLine();
+    private boolean isNewPlayer(String nickName) {
 
         if (NickSocketMap.containsKey(nickName)) {
             DebugLogger.println("NickName alredy in use");
@@ -229,7 +238,7 @@ public class ServerSockets implements Runnable {
             NickSocketMap.put(nickName, new SocketClientProxy(clientSocket));
             //aggiungilo ai client in connessione
             clientNickNames.add(nickName);
-            DebugLogger.println("nickName " + nickName + "added");
+            DebugLogger.println("nickName " + nickName + " added");
             return true;
         }
 
@@ -244,14 +253,14 @@ public class ServerSockets implements Runnable {
 
         //per tutti i client
         for (Map.Entry pairs : NickSocketMap.entrySet()) {
-
-            //provo ad avvisarli
-            SocketClientProxy client = (SocketClientProxy) pairs.getValue();
-            client.send(message);
+            //se il loro nick è tra quelli in lista di attesa
+            String nick = (String) pairs.getKey();
+            if (clientNickNames.contains(nick)) {
+                SocketClientProxy client = (SocketClientProxy) pairs.getValue();
+                client.send(message);
+            }
 
         }
-        //svuoto array socket
-        clientNickNames.clear();
     }
 
     /**
