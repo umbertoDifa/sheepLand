@@ -46,8 +46,8 @@ public class CommandLineView implements TypeOfView {
 
     }
 
-    public void refereshCurrentPlayer(String currenPlayer) {
-        showInfo("é il turno di " + currenPlayer);
+    public void refereshCurrentPlayer(String currentPlayer) {
+        showInfo("E' il turno di " + currentPlayer);
 
     }
 
@@ -77,16 +77,16 @@ public class CommandLineView implements TypeOfView {
     }
 
     public String moveOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        showInfo("Inserisci il tipo di ovino da spostare:");
+        String type = stdIn.nextLine();
 
-    public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
-                                 String type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        showInfo("Inserisci la regione di partenza:");
+        String startRegion = stdIn.nextLine();
 
-    public void moveShepherd() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        showInfo("Inserisci la regione d'arrivo:");
+        String endRegion = stdIn.nextLine();
+
+        return startRegion + "," + endRegion + "," + type;
     }
 
     public void refreshMoveShepherd(String nickName, String shepherdIndex,
@@ -126,10 +126,6 @@ public class CommandLineView implements TypeOfView {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String askNickName() {
-        return null; //TODO
-    }
-
     public void refereshCard(String type, int value) {
         showInfo("Hai una carta " + type + " di valore " + value);
 
@@ -147,8 +143,8 @@ public class CommandLineView implements TypeOfView {
         boolean actionFound;
 
         do {
-            showInfo("Scegli un azione tra:\n" + stringToPrint);
 
+            showInfo("Scegli un azione tra:\n" + stringToPrint);
             choice = stdIn.nextLine();
             try {
                 action = Integer.parseInt(choice);
@@ -183,9 +179,11 @@ public class CommandLineView implements TypeOfView {
         stdOut.flush();
     }
 
-    public void refreshMoveOvine(String type, String startRegion,
+    public void refreshMoveOvine(String nickName, String type,
+                                 String startRegion,
                                  String endRegion) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        showInfo(
+                "Il giocatore " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
 
     public void moveShepherd(String startRegion, String endRegion) {
@@ -229,4 +227,8 @@ public class CommandLineView implements TypeOfView {
         showInfo("Pastore spostato pagando " + priceToMove + " denari");
     }
 
+    public void showMoveOvine(String startRegion, String endRegion, String type) {
+        showInfo(
+                "Hai spostato un " + type + " da " + startRegion + " a " + endRegion);
+    }
 }

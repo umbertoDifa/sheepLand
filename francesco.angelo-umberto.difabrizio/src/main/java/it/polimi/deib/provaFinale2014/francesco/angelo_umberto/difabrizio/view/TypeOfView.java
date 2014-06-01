@@ -12,9 +12,13 @@ public interface TypeOfView {
 
     public void showInfo(String info);
 
-    public void showBoughtLand(String boughLand,String price);
-    
+    public void showBoughtLand(String boughLand, String price);
+
     public void showSetShepherd(String shepherdIndex, String streetIndex);
+
+    public void showMoveShepherd(String priceToMove);
+
+    public void showMoveOvine(String startRegion, String endRegion, String type);
 
     public String setUpShepherd(int idShepherd);
 
@@ -27,7 +31,7 @@ public interface TypeOfView {
     public void refreshMoveShepherd(String nickNameMover, String shepherdIndex,
                                     String streetIndex);
 
-    public void refreshBuyLand(String buyer, String land,String price);
+    public void refreshBuyLand(String buyer, String land, String price);
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player);
@@ -43,7 +47,7 @@ public interface TypeOfView {
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions);
 
-    public void refreshMoveOvine(String type, String startRegion,
+    public void refreshMoveOvine(String nickName,String type, String startRegion,
                                  String endRegion);
 
     /**
@@ -71,7 +75,5 @@ public interface TypeOfView {
      * @return
      */
     public String askBuyLand();
-
-    public void showMoveShepherd(String priceToMove);
 
 }

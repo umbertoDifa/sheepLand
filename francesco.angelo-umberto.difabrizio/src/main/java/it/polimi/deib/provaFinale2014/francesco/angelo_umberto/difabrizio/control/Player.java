@@ -2,7 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ShepherdNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.ShepherdNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
@@ -14,6 +14,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.BusyStreetException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NoOvineException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.OvineNotFoundExeption;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
@@ -157,22 +158,31 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * Se mossa non valida chiede e annullare o ripetere azione
      *
      * @param type
-     * @param oldRegion
-     * @param newRegion
+     * @param finishRegion
+     * @param beginRegion
      *
      * @return
      */
-    public String moveOvine(String newRegion, String oldRegion, String type) {
+    public String moveOvine(String beginRegion, String finishRegion, String type) {
 
         Region startRegion;
         Region endRegion;
+        String typeToMove;
+        
         try {
-            startRegion = gameManager.map.convertStringToRegion(newRegion);
-            endRegion = gameManager.map.convertStringToRegion(oldRegion);
+            startRegion = gameManager.map.convertStringToRegion(beginRegion);
+            endRegion = gameManager.map.convertStringToRegion(finishRegion);
         } catch (RegionNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
             return "La regione inserita non esiste";
+        }
+        try {
+            typeToMove = convertAndCheckOvineType(type);
+        } catch (OvineNotFoundExeption ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return ex.getMessage();
         }
 
         //per ogni strada occupata dai patori del giocatore
@@ -185,17 +195,18 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //rimuovi ovino del tipo specificato
                 DebugLogger.println("Rimuovo ovino");
                 try {
-                    startRegion.removeOvine(OvineType.valueOf(type));
+                    startRegion.removeOvine(
+                            OvineType.valueOf(typeToMove));
                 } catch (NoOvineException ex) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
                             ex.getMessage(), ex);
                     return "Nessun ovino nella regione di partenza!";
                 }
+                DebugLogger.println("ovino rimosso");
                 //e aggiungilo nella regione d'arrivo
-                endRegion.addOvine(new Ovine(OvineType.valueOf(type)));
-
-                return "Ovino mosso!";
+                endRegion.addOvine(new Ovine(OvineType.valueOf(typeToMove)));
+                return "Ovino mosso";
             }
         }
         return "Non è possibile spostare l'ovino tra le regioni inidicate";
@@ -260,7 +271,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //se il pastore selezionato è nell'array dei pastori
         int shepherdIndex;
         try {
-            shepherdIndex = convertShepherd(shepherdNumber);
+            shepherdIndex = convertAndCheckShepherd(shepherdNumber);
         } catch (ShepherdNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
@@ -317,7 +328,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return "Pastore spostato," + GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue();
 
         }
-        return "Non hai i soldi per spostarti";
+        return "Non hai soldi per spostarti";
 
     }
 
@@ -328,7 +339,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @param landToBuy
      *
-     * @return
+     * @return "Carta acquistata,[type],[price]" or an error string
      */
     public String buyLand(String landToBuy) {
 
@@ -621,21 +632,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return chosenStreet;
     }
 
-    public String moveShepherdRemote(String shepherdIndex, String newStreet)
-            throws
-            RemoteException {
-        return this.moveShepherd(shepherdIndex, newStreet);
-    }
-
-    public String moveOvineRemote(String startRegion, String endRegion,
-                                  String type) {
-        return this.moveOvine(startRegion, endRegion, type);
-    }
-
-    public String buyLandRemote(String regionType) throws RemoteException {
-        return buyLand(regionType);
-    }
-
     /**
      * Checks if the shepherd is one of the player and returns its index in the
      * shepherd array
@@ -644,7 +640,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @return The shepherdIndex in the array of shpherds
      */
-    private int convertShepherd(String shepherdNumber) throws
+    private int convertAndCheckShepherd(String shepherdNumber) throws
             ShepherdNotFoundException {
         try {
             int shepherdIndex = Integer.parseInt(shepherdNumber);
@@ -662,6 +658,37 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             throw new ShepherdNotFoundException(
                     "La stringa non rappresenta un pastore");
         }
+    }
+    /**
+     * Checks if the string is an ovine type and returns the
+     * type as a string
+     * @param type Ovine type to check
+     * @return
+     * @throws OvineNotFoundExeption If the string is not an ovine
+     */
+    private String convertAndCheckOvineType(String type) throws
+            OvineNotFoundExeption {
+        for (OvineType ovine : OvineType.values()) {
+            if (ovine.toString().equalsIgnoreCase(type)) {
+                return ovine.toString();
+            }
+        }
+        throw new OvineNotFoundExeption("La stringa non è un tipo di ovino.");
+    }
+
+    public String moveShepherdRemote(String shepherdIndex, String newStreet)
+            throws
+            RemoteException {
+        return this.moveShepherd(shepherdIndex, newStreet);
+    }
+
+    public String moveOvineRemote(String startRegion, String endRegion,
+                                  String type) {
+        return this.moveOvine(startRegion, endRegion, type);
+    }
+
+    public String buyLandRemote(String regionType) throws RemoteException {
+        return buyLand(regionType);
     }
 
 }

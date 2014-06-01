@@ -104,6 +104,8 @@ public class ClientSocket {
                     refreshMoveShepherd();
                 } else if (received.equals("RefreshBuyLand")) {
                     refreshBuyLand();
+                } else if (received.equals("RefreshMoveOvine")) {
+                    refreshMoveOvine();
                 } else if (received.equals("RefreshWolf")) {
                     refreshWolf();
                 } else if (received.equals("SetUpShepherd")) {
@@ -154,8 +156,8 @@ public class ClientSocket {
     }
 
     public void refreshCurrentPlayer() {
+        //ricevo il nickName
         received = receiveString();
-
         view.refereshCurrentPlayer(received);
     }
 
@@ -188,6 +190,12 @@ public class ClientSocket {
         received = receiveString();
         token = received.split(",");
         view.refreshBuyLand(token[0], token[1], token[2]);
+    }
+
+    private void refreshMoveOvine() {
+        received = receiveString();
+        token = received.split(",");
+        view.refreshMoveOvine(token[0], token[1], token[2], token[3]);
     }
 
     public void setUpShepherd() {
@@ -236,7 +244,14 @@ public class ClientSocket {
         sendString(parameters);
 
         //ricevo il risultato dell'operazione
-        view.showInfo(receiveString());
+        String result = receiveString();
+        DebugLogger.println(result);
+        if (result.contains("Ovino mosso")) {
+            token = parameters.split(",");
+            view.showMoveOvine(token[0], token[1], token[2]);
+        } else {
+            view.showInfo(result);
+        }
     }
 
     public void moveShepherd() {

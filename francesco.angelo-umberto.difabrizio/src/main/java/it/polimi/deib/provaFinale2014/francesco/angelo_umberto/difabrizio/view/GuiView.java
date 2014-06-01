@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 public class GuiView implements TypeOfView, ActionListener {
 
-    private MyGui gui;
+    private final MyGui gui;
     
     public GuiView() {
         gui = new MyGui();
@@ -83,7 +83,7 @@ public class GuiView implements TypeOfView, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshMoveOvine(String type, String startRegion, String endRegion) {
+    public void refreshMoveOvine(String nickName,String type, String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -108,6 +108,10 @@ public class GuiView implements TypeOfView, ActionListener {
     }
 
     public void showMoveShepherd(String priceToMove) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showMoveOvine(String startRegion, String endRegion, String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

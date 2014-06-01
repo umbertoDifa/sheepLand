@@ -9,7 +9,7 @@ public class SocketTrasmission extends TrasmissionController {
                               int numbOfRam, int numbOfLamb) {
         ServerSockets.NickSocketMap.get(nickName).send("RefreshRegion");
         ServerSockets.NickSocketMap.get(nickName).send(
-                regionIndex + "," + numbOfSheep + "," + numbOfLamb + "," + numbOfRam);
+                regionIndex + "," + numbOfSheep + "," + numbOfRam + "," + numbOfLamb);
     }
 
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
@@ -23,9 +23,17 @@ public class SocketTrasmission extends TrasmissionController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshCurrentPlayer(String nickName) {
-        ServerSockets.NickSocketMap.get(nickName).send("RefreshCurrentPlayer");
-        ServerSockets.NickSocketMap.get(nickName).send(nickName);
+    public void refreshCurrentPlayer(String nickNamePlayer) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNamePlayer)) {
+                ServerSockets.NickSocketMap.get(nickName).send(
+                        "RefreshCurrentPlayer");
+                ServerSockets.NickSocketMap.get(nickName).send(nickNamePlayer);
+            }
+
+        }
+
     }
 
     public void refreshCard(String nickName, String type, int value) {
@@ -51,8 +59,6 @@ public class SocketTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
 
             ServerSockets.NickSocketMap.get(nickName).send("RefreshBlackSheep");
-
-            DebugLogger.println("RefreshPecoranera Inviato");
             ServerSockets.NickSocketMap.get(nickName).send(movementResult);
 
         }
@@ -63,10 +69,18 @@ public class SocketTrasmission extends TrasmissionController {
 //        ServerSockets.NickSocketMap.get(nickName).send(String.valueOf(regionIndex));
     }
 
-    public void refreshMoveOvine(String nickName, String startRegion,
+    public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) {
-//        ServerSockets.NickSocketMap.get(nickName).send("RefreshMoveOvine");
-//        ServerSockets.NickSocketMap.get(nickName).send(startRegion+","+endRegion+","+ovineType);
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNameMover)) {
+                ServerSockets.NickSocketMap.get(nickName).send(
+                        "RefreshMoveOvine");
+                ServerSockets.NickSocketMap.get(nickName).send(
+                        nickNameMover + "," + startRegion + "," + endRegion + "," + ovineType);
+            }
+
+        }
     }
 
     /**
@@ -152,9 +166,9 @@ public class SocketTrasmission extends TrasmissionController {
 
         result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0],
                 token[1], token[2]);
-
+        DebugLogger.println(result);
         ServerSockets.NickSocketMap.get(nickName).send(result);
-        if (result.contains("Ovino mosso!")) {
+        if (result.contains("Ovino mosso")) {
             //refreshio
             refreshMoveOvine(nickName, token[0], token[1], token[2]);
             return true;

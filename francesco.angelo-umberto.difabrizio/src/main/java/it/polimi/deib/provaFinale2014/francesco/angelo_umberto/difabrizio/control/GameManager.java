@@ -425,6 +425,9 @@ public class GameManager implements Runnable {
 
     private boolean executeShift(int player) throws FinishedFencesException,
                                                     RemoteException {
+        DebugLogger.println("Broadcast giocatore di turno");
+        
+        controller.refreshCurrentPlayer(clientNickNames[player]);
 
         DebugLogger.println("Muovo pecora nera");
         try {
