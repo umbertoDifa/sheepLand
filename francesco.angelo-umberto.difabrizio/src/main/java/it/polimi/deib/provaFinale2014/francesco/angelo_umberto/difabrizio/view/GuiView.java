@@ -1,23 +1,19 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 
 public class GuiView implements TypeOfView, ActionListener {
+
     private GuiClass gui;
-    private HashMap <Integer, Point> idStreetPointMap;
-    private HashMap <Integer, Point> idRegionPointMap;
-    private int NUM_OF_REGIONS;
     
-    public GuiView(){
+    public GuiView() {
         gui = new GuiClass();
-        setUpMap();
-    }
-    
-    public setUpMap(){
-        idRegionPointMap.put(1, new Point());
     }
 
     public void showInfo(String info) {
@@ -29,17 +25,17 @@ public class GuiView implements TypeOfView, ActionListener {
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refreshStreet(int streetIndex, boolean Fence,
-                              String nickShepherd) {
+            String nickShepherd) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-                                       int shepherd4player) {
+            int shepherd4player) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -60,16 +56,15 @@ public class GuiView implements TypeOfView, ActionListener {
     }
 
     public int chooseAction(int[] availableActions,
-                            String[] availableStringedActions) {
+            String[] availableStringedActions) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void moveOvine(String type, String startRegion, String endRegion) {
 
-        
     }
 
-    public void moveShepherd( String startRegion, String endRegion) {
+    public void moveShepherd(String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -81,7 +76,7 @@ public class GuiView implements TypeOfView, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshMoveShepherd(String nickNameMover,String shpherdIndex, String streetIndex) {
+    public void refreshMoveShepherd(String nickNameMover, String shpherdIndex, String streetIndex) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -92,6 +87,17 @@ public class GuiView implements TypeOfView, ActionListener {
     public String moveOvine() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
+
+    public void refreshMoveOvine(String type, String startRegion, String endRegion) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askBuyLand() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

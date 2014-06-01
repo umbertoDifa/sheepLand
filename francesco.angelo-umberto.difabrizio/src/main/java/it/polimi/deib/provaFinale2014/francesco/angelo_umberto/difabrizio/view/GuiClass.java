@@ -3,17 +3,45 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.geom.Ellipse2D;
 import java.net.URL;
+import javafx.scene.shape.Ellipse;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-public class GuiClass extends javax.swing.JFrame implements ActionListener {
+public class GuiClass extends javax.swing.JFrame implements ActionListener, MouseListener {
 
+    private int NUM_OF_REGIONS;
+    private int ray = 10;
+    int xStreetPoints[] = {126, 252, 342, 200};
+    int yStreetPoints[] = {226, 161, 170, 254};
+    int xRegionPoints[] = {0, 100, 0, 100};
+    int yRegionPoints[] = {0, 50, 50, 0};
+    Ellipse2D[] streetShape = new Ellipse2D[4];
+
+//click: 126 226
+//click: 252 161
+//click: 342 170
+//click: 200 254
     /**
      * Creates new form NewJFrame
      */
     public GuiClass() {
         initComponents();
+        setUpMap();
+    }
+
+    public void setUpMap() {
+        //idRegionPointMap.put(1, new MyPoint());
+        setUpStreet();
+    }
+
+    private void setUpStreet() {
+        for (int i = 0; i < xStreetPoints.length; i++) {
+            streetShape[i] = new Ellipse2D.Double(xStreetPoints[i] + ray, yStreetPoints[i] + ray, 2 * ray, 2 * ray);
+        }
     }
 
     /**
@@ -83,16 +111,17 @@ public class GuiClass extends javax.swing.JFrame implements ActionListener {
         jButton5.setEnabled(true);
 
         jLabel2.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\Game_Board_big.jpg")); // NOI18N
+        jLabel2.addMouseListener(this);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 487, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -199,9 +228,32 @@ public class GuiClass extends javax.swing.JFrame implements ActionListener {
     // End of variables declaration                   
 
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == jButton1){
-            
+        if (e.getSource() == jButton1) {
+
         }
-        
+
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        System.out.println("click: " + e.getX() + " " + e.getY());
+        for (int i = 0; i < streetShape.length; i++) {
+            //System.out.println(streetShape[i].);
+            if (streetShape[i].contains(e.getX(), e.getY())) {
+                System.out.println("strada " + i + " cliccata!");
+            }
+        }
+        System.out.println("nessuna strada cliccata");
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
     }
 }
