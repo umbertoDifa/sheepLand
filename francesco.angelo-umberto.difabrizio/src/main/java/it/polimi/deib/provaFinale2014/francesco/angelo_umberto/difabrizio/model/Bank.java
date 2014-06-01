@@ -112,7 +112,10 @@ public class Bank {
 
     public int getPriceOfCard(RegionType type) throws MissingCardException {
         //chiamo la find card e ritorno il prezzo
-        return this.findCard(type).getValue();
+        if (type != RegionType.SHEEPSBURG) {
+            return this.findCard(type).getValue();
+        }
+        else return GameConstants.PRICE_FOR_SHEEPSBURG.getValue();
     }
 
     private Card findCard(RegionType type) throws MissingCardException {

@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -41,10 +42,8 @@ public abstract class TrasmissionController {
     public abstract void refreshCard(String nickName, String card, int value)
             throws RemoteException;
 
-    public abstract void refreshBlackSheep(String movementResult) throws
-            RemoteException;
-
-    public abstract void refreshWolf(String movementResult) throws RemoteException;
+    public abstract void refreshSpecialAnimal(SpecialAnimal animal,String movementResult) throws RemoteException;
+    
 
     /**
      * It refreshes to all the player except the nickName player, the action

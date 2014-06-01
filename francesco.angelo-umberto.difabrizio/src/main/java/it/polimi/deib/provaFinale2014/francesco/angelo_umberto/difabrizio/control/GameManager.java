@@ -408,16 +408,8 @@ public class GameManager implements Runnable {
                 //2)muovo il lupo
 
                 DebugLogger.println("muovo lupo");
-                try {
-                    this.moveSpecialAnimal(this.map.getWolf());
-//                    this.server.broadcastMessage(
-//                            "Il lupo si è mosso in: " + this.map.getNodeIndex(
-//                                    this.map.getWolf().getMyRegion()));
-                } catch (CannotMoveAnimalException ex) {
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                }
+                this.moveSpecialAnimal(this.map.getWolf());
+                DebugLogger.println("lupo mosso");
 
             }
         }//while
@@ -426,42 +418,23 @@ public class GameManager implements Runnable {
     private boolean executeShift(int player) throws FinishedFencesException,
                                                     RemoteException {
         DebugLogger.println("Broadcast giocatore di turno");
-        
+
         controller.refreshCurrentPlayer(clientNickNames[player]);
 
         DebugLogger.println("Muovo pecora nera");
-        try {
-            //muovo la pecora nera
-            this.moveSpecialAnimal(this.map.getBlackSheep());
-            DebugLogger.println("pecora nera mossa");
-            
-            controller.refreshBlackSheep(""+this.map.getNodeIndex(
-                    this.map.getBlackSheep().getMyRegion()));
-            
-        } catch (CannotMoveAnimalException e) {
-            Logger.getLogger(DebugLogger.class.getName()).log(
-                    Level.SEVERE,
-                    e.getMessage(), e);
-            
-            controller.refreshBlackSheep("err:"+e.getMessage());
 
-        } catch (NodeNotFoundException ex) {
-            //non può verificarsi perchè se la pecora si muove allora il nodo esiste
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "err:" + ex.getMessage(), ex);
-
-        }
+        //muovo la pecora nera
+        this.moveSpecialAnimal(this.map.getBlackSheep());
+        DebugLogger.println("pecora nera mossa");
 
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
-            while (true) {
 
-                DebugLogger.println("Avvio choose and make action");
-                //scegli l'azione e falla
-                this.players.get(player).chooseAndMakeAction();
-                //se non arriva un l'eccezione passo alla prossima azione
-                break;
-            }
+            DebugLogger.println(
+                    "Avvio choose and make action per il player " + player);
+            //scegli l'azione e falla
+            this.players.get(player).chooseAndMakeAction();
+
         }
 
         //se sono finiti i recinti normali chiamo l'ultimo giro
@@ -566,8 +539,7 @@ public class GameManager implements Runnable {
 //    }
     //TODO piuttosto che fare mappa e server private e fornire i getter
     //forse è meglio che siano private
-    private void moveSpecialAnimal(SpecialAnimal animal) throws
-            CannotMoveAnimalException {
+    private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
 
@@ -586,13 +558,30 @@ public class GameManager implements Runnable {
             animal.moveThrough(potentialWalkthroughStreet,
                     endRegion);
 
-            //tutto ok
+            //tutto ok      
+            controller.refreshSpecialAnimal(animal, "" + this.map.getNodeIndex(
+                    this.map.getBlackSheep().getMyRegion()));
         } catch (StreetNotFoundException ex) {
-            throw new CannotMoveAnimalException(
-                    "La strada indicata dal dado non esiste");
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "err:" + ex.getMessage(), ex);
+            controller.refreshSpecialAnimal(animal,
+                    "err:" + ex.getMessage() + animal.toString() + " non si muove.");
+
         } catch (RegionNotFoundException ex) {
-            throw new CannotMoveAnimalException(
-                    "La regione di arrivo non esiste");
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "err:" + ex.getMessage(), ex);
+            controller.refreshSpecialAnimal(animal,
+                    "err:" + ex.getMessage() + animal.toString() + " non si muove.");
+        } catch (NodeNotFoundException ex) {
+            //non può verificarsi perchè se la pecora si muove allora il nodo esiste
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "err:" + ex.getMessage(), ex);
+
+        } catch (CannotMoveAnimalException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "err:" + ex.getMessage(), ex);
+            controller.refreshSpecialAnimal(animal,
+                    "err:" + ex.getMessage() );
         }
     }
 

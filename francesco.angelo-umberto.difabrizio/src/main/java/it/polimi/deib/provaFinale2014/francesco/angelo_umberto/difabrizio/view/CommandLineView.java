@@ -66,9 +66,10 @@ public class CommandLineView implements TypeOfView {
         if (!regionIndex.contains("err")) {
             //se non ci sono errori
             showInfo("Il lupo si è mosso nella regione " + regionIndex);
+        } else {
+            String token[] = regionIndex.split(":");
+            showInfo(token[1]);
         }
-        String token[] = regionIndex.split(":");
-        showInfo(token[1]);
     }
 
     public String setUpShepherd(int shepherdIndex) {

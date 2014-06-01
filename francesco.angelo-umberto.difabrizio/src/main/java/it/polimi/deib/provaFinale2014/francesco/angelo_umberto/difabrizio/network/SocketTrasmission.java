@@ -1,6 +1,10 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.BlackSheep;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 public class SocketTrasmission extends TrasmissionController {
@@ -54,7 +58,7 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
-    public void refreshBlackSheep(String movementResult) {
+    private void refreshBlackSheep(String movementResult) {
         for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
 
@@ -64,9 +68,14 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
-    public void refreshWolf(String movementResult) {
-//        ServerSockets.NickSocketMap.get(nickName).send("RefreshWolf");
-//        ServerSockets.NickSocketMap.get(nickName).send(String.valueOf(regionIndex));
+    private void refreshWolf(String movementResult) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+
+            ServerSockets.NickSocketMap.get(nickName).send("RefreshWolf");
+            ServerSockets.NickSocketMap.get(nickName).send(movementResult);
+
+        }
     }
 
     public void refreshMoveOvine(String nickNameMover, String startRegion,
@@ -136,6 +145,8 @@ public class SocketTrasmission extends TrasmissionController {
 
     public boolean askChooseAction(String nickName, String possibleActions) {
         ServerSockets.NickSocketMap.get(nickName).send("ChooseAction");
+        DebugLogger.println("choose action inviata a " + nickName);
+
         ServerSockets.NickSocketMap.get(nickName).send(possibleActions);
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
 
@@ -250,6 +261,15 @@ public class SocketTrasmission extends TrasmissionController {
             ServerSockets.NickSocketMap.get(nickName).send("Welcome");
         }
 
+    }
+
+    @Override
+    public void refreshSpecialAnimal(SpecialAnimal animal, String movementResult) {
+        if(animal instanceof BlackSheep){
+            this.refreshBlackSheep(movementResult);
+        }else if(animal instanceof Wolf){
+            this.refreshWolf(movementResult);
+        }
     }
 
 }

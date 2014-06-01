@@ -175,6 +175,7 @@ public class ClientSocket {
 
     public void refreshWolf() {
         received = receiveString();
+        
         view.refreshWolf(received);
     }
 

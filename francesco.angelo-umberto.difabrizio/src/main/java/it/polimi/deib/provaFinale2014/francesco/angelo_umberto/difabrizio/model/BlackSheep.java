@@ -23,9 +23,14 @@ public class BlackSheep extends SpecialAnimal {
             this.setAt(endRegion);
         } else {
             throw new CannotMoveBlackSheepException(
-                    "La pecora nera non può muoversi, strada occupata.");
+                    "La pecora nera non si muove strada occupata");
     
         }
     }   
+    
+    @Override
+    public String toString(){
+    return "Pecora nera";
+    }
     
 }

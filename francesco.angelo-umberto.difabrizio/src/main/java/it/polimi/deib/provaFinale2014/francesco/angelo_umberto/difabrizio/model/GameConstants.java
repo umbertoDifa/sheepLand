@@ -2,12 +2,15 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 /**
  * Costanti del gioco
+ *
  * @author Francesco
  */
 public enum GameConstants {
+
     /**
      * Carte comprabili dai giocatori al banco
-     *//**
+     */
+    /**
      * Carte comprabili dai giocatori al banco
      */
     NUM_CARDS(30),
@@ -18,59 +21,62 @@ public enum GameConstants {
     /**
      * Carte per ogni tipo di regione
      */
-    NUM_CARDS_FOR_REGION_TYPE(5), 
+    NUM_CARDS_FOR_REGION_TYPE(5),
     /**
      * Numero di recinti, finali + non finali
      */
-    NUM_FENCES(32), 
+    NUM_FENCES(32),
     /**
      * Numero di regioni per ogni tipo di terreno
      */
-    NUM_REGIONS_FOR_TYPE(3), 
+    NUM_REGIONS_FOR_TYPE(3),
     /**
      * Numero totale di strade
      */
-    NUM_STREETS(42), 
+    NUM_STREETS(42),
     /**
      * Numero di regioni, compresa shepsburg
      */
-    NUM_REGIONS(19), 
+    NUM_REGIONS(19),
     /**
      * Numero di recinti finali
      */
-    NUM_FINAL_FENCES(12), 
+    NUM_FINAL_FENCES(12),
     /**
-     * Numero di azioni che possono essere fatte in un turno 
-     * da un giocatore
+     * Numero di azioni che possono essere fatte in un turno da un giocatore
      */
-    NUM_ACTIONS(3), 
+    NUM_ACTIONS(3),
     /**
-     * Valore iniziale del portafoglio quando i giocatori sono più
-     * del minimo
+     * Valore iniziale del portafoglio quando i giocatori sono più del minimo
      */
     STANDARD_WALLET_AMMOUNT(20),
     /**
      * Il valore del portafoglio quando ci sono pochi giocatori
      */
     LOW_PLAYER_WALLET_AMMOUNT(30),
-    
     /**
-     * Il prezzo da pagare per far muovere un pastore su una strada
-     * non adiacente a quella di partenza
+     * Il prezzo da pagare per far muovere un pastore su una strada non
+     * adiacente a quella di partenza
      */
-    PRICE_FOR_SHEPHERD_JUMP(1);
-    
+    PRICE_FOR_SHEPHERD_JUMP(1),
+    /**
+     * Prezzo per comprare sheepland, è volutamente settato a più del massimo di
+     * soldi che un pastore può avere per evitare che la carta possa essere
+     * comprata, e allo stesso tempo in futuro potrebbe adattarsi a dei
+     * cambiamenti delle regole del gioco
+     */
+    PRICE_FOR_SHEEPSBURG(
+            GameConstants.STANDARD_WALLET_AMMOUNT.getValue() + GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
     private final int value;
-    
 
-    GameConstants(int value){
+    GameConstants(int value) {
         this.value = value;
     }
-    
+
     /**
      * @return Valore corrispondente alla costante in questione
      */
-    public int getValue(){
+    public int getValue() {
         return this.value;
     }
 }

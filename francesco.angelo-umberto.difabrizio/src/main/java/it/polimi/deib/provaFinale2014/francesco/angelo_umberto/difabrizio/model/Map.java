@@ -118,7 +118,7 @@ public class Map {
         }
         //se non hai trovato nessuna strada limitrofa con quel valore
         throw new StreetNotFoundException(
-                "Non esiste una strada con valore" + Integer.toString(value) + " nella regione");
+                "Non esiste una strada con valore " + Integer.toString(value) + " nella regione. ");
     }
 
     /**

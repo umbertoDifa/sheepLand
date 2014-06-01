@@ -72,15 +72,17 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     /**
      * Invita il player a fare una mossa tra quelle che gli sono permesse. Ne
-     * può scegliere al massimo una.
+     * può scegliere al massimo una. Il player deve scegliere e fare un'azione
+     * finchè il risultato non è valido
      *
      * @throws java.rmi.RemoteException
      */
     public void chooseAndMakeAction() throws RemoteException {
 
         boolean outcomeOk;
+        DebugLogger.println("action list in creazione");
         createActionList();
-
+        DebugLogger.println("action list creata");
         do {
             //raccogli la scelta
             outcomeOk = gameManager.controller.askChooseAction(playerNickName,
@@ -93,15 +95,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * [numero_azione]-[descrizione] separando le azioni da una virgola
      */
     private void createActionList() {
-        //nessuna azione disponibile inizialmente
+        //nessuna azione disponibile inizialmente                
         possibleAction = "";
-        int i = 1;
+
         for (OvineType type : OvineType.values()) {
             if (canMoveOvine(type)) {
                 possibleAction += "1-Sposta ovino,";
                 break;
             }
-            i++;
         }
 
         possibleAction += "2-Sposta pastore,";
@@ -110,7 +111,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         if (canBuyCard()) {
             possibleAction += "3-Compra terreno,";
         }
-
+        DebugLogger.println("quo");
         possibleAction += "4-Accoppia pecore,";
         possibleAction += "5-Accoppia montone e pecora,";
         possibleAction += "6-Abbatti pecora";
@@ -134,7 +135,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         int price;
         int shepherdMoney = this.shepherd[0].getWallet().getAmount();
 
-        //trova le regioni confinanti ai pastori
+        //per tutte le regioni confinanti
         for (Region region : getShepherdsRegion()) {
             try {
                 //prendi il prezzo della carta per ogni regione
@@ -168,7 +169,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         Region startRegion;
         Region endRegion;
         String typeToMove;
-        
+
         try {
             startRegion = gameManager.map.convertStringToRegion(beginRegion);
             endRegion = gameManager.map.convertStringToRegion(finishRegion);
@@ -659,11 +660,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     "La stringa non rappresenta un pastore");
         }
     }
+
     /**
-     * Checks if the string is an ovine type and returns the
-     * type as a string
+     * Checks if the string is an ovine type and returns the type as a string
+     *
      * @param type Ovine type to check
+     *
      * @return
+     *
      * @throws OvineNotFoundExeption If the string is not an ovine
      */
     private String convertAndCheckOvineType(String type) throws

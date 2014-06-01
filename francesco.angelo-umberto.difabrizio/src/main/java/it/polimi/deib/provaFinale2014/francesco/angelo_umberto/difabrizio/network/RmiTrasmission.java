@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -82,13 +83,11 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
-    @Override
-    public void refreshBlackSheep(String movementResult) {
+    private void refreshBlackSheep(String movementResult) {
         //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshBlackSheep(regionIndex);
     }
 
-    @Override
-    public void refreshWolf(String movementResult) {
+    private void refreshWolf(String movementResult) {
         //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshWolf(regionIndex);
     }
 
@@ -234,8 +233,15 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshBuyLand(String nickNameBuyer, String boughtLand,String price) throws
-                                                                               RemoteException {
+    public void refreshBuyLand(String nickNameBuyer, String boughtLand,
+                               String price) throws
+            RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void refreshSpecialAnimal(SpecialAnimal animal,String movementResult) throws
+                                                                  RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
