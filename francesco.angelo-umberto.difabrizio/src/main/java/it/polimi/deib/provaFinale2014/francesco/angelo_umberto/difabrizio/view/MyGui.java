@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
 import javax.swing.*;
+import javax.swing.plaf.DimensionUIResource;
 
 /**
  *
@@ -18,16 +19,17 @@ import javax.swing.*;
 public class MyGui implements ActionListener, MouseListener {
 
     private JFrame frame;
+    private JPanel mainJPanel;
     private JButton jButton1;
     private JButton jButton2;
     private JButton jButton3;
     private JButton jButton4;
     private JButton jButton5;
-    private JPanel bottomJPanel;
+    private JPanel buttonJPanel;
     private JPanel mapJPanel;
     private JLabel mapJLabel;
     private int NUM_OF_REGIONS;
-    private int ray = 12;
+    private final int ray = 12;
     int xStreetPoints[] = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 253, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 427, 188, 225, 296, 326, 371, 124, 259, 188, 296};
     int yStreetPoints[] = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 380, 461, 481, 474, 449, 494, 521, 503, 578, 552};
     int xRegionPoints[] = {0, 100, 0, 100};
@@ -65,35 +67,43 @@ public class MyGui implements ActionListener, MouseListener {
     private void setUpFrame() {
         frame = new JFrame();
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        mainJPanel = new JPanel();
+        buttonJPanel = new JPanel();
+        mapJPanel = new JPanel();
         jButton1 = new JButton();
         jButton2 = new JButton();
         jButton3 = new JButton();
         jButton4 = new JButton();
         jButton5 = new JButton();
-        bottomJPanel = new JPanel();
-        mapJPanel = new JPanel();
         mapJLabel = new JLabel();
 
         //setto la struttura
         frame.setLayout(new BorderLayout());
-        bottomJPanel.setLayout(new FlowLayout());
-        bottomJPanel.add(jButton1);
-        bottomJPanel.add(jButton2);
-        bottomJPanel.add(jButton3);
-        bottomJPanel.add(jButton4);
-        bottomJPanel.add(jButton5);
-        frame.add(bottomJPanel, BorderLayout.EAST);
-        frame.add(mapJPanel, BorderLayout.CENTER);
+        frame.add(mainJPanel, BorderLayout.CENTER);
+        mainJPanel.setLayout(new FlowLayout());
+        mainJPanel.add(mapJPanel);
+        mainJPanel.add(buttonJPanel);
         mapJPanel.add(mapJLabel);
+        buttonJPanel.setLayout(new FlowLayout());
+        buttonJPanel.add(jButton1);
+        buttonJPanel.add(jButton2);
+        buttonJPanel.add(jButton3);
+        buttonJPanel.add(jButton4);
+        buttonJPanel.add(jButton5);
+//        frame.add(bottomJPanel, BorderLayout.EAST);
+//        frame.add(mapJPanel, BorderLayout.CENTER);
 
         //aggiungo immagini
-        jButton1.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\moveSheep.jpg")); // NOI18N
-        jButton2.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\moveShepherd.jpg")); // NOI18N
-        jButton3.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\buyLand.jpg")); // NOI18N
-        jButton4.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\mateSheep.jpg")); // NOI18N
-        jButton5.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\killOvine.jpg")); // NOI18N
-        mapJLabel.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\Game_Board_big.jpg")); // NOI18N
+        jButton1.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\moveSheep.jpg"));
+        jButton2.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\moveShepherd.jpg"));
+        jButton3.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\buyLand.jpg"));
+        jButton4.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\mateSheep.jpg"));
+        jButton5.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\killOvine.jpg"));
+        mapJLabel.setIcon(new ImageIcon("C:\\Users\\Francesco\\NetBeansProjects\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\francesco.angelo-umberto.difabrizio\\images\\Game_Board_big.jpg"));
         //frame.getContentPane().setBackground(Color.getHSBColor(205, 85, 250));
+        mainJPanel.setBackground(new Color(35,161,246));
+        buttonJPanel.setBackground(new Color(35,161,246));
+        mapJPanel.setBackground(new Color(35,161,246));
         
         //setto dimensioni
         jButton1.setPreferredSize(new java.awt.Dimension(68, 72));
@@ -103,8 +113,9 @@ public class MyGui implements ActionListener, MouseListener {
         jButton5.setPreferredSize(new java.awt.Dimension(68, 72));
         mapJLabel.setPreferredSize(new java.awt.Dimension(487, 700));
         mapJPanel.setPreferredSize(new java.awt.Dimension(487, 700));
-        bottomJPanel.setPreferredSize(new Dimension(68, bottomJPanel.getHeight()));
-
+        buttonJPanel.setPreferredSize(new Dimension(68, 68*6));
+        mainJPanel.setMaximumSize(mainJPanel.getPreferredSize());
+        
         //aggiungo this come listener per i bottom
         jButton1.addActionListener(this);
         jButton2.addActionListener(this);
