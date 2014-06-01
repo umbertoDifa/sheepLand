@@ -41,11 +41,17 @@ public class MyGui implements ActionListener, MouseListener {
         setUpFrame();
     }
 
+    /**
+     * imposto le 
+     */
     public void setUpMap() {
         //idRegionPointMap.put(1, new MyPoint());
         setUpStreet();
     }
 
+    /**
+     * imposto l'array di ellissi delle strada
+     */
     private void setUpStreet() {
         for (int i = 0; i < xStreetPoints.length; i++) {
             streetShape[i] = new Ellipse2D.Double(xStreetPoints[i] - ray, yStreetPoints[i] - ray, 2 * ray, 2 * ray);
@@ -53,8 +59,10 @@ public class MyGui implements ActionListener, MouseListener {
         }
     }
 
+    /**
+     * inizializzo tutti i componenti della Gui
+     */
     private void setUpFrame() {
-        System.out.println("setUp avviato");
         frame = new JFrame();
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         jButton1 = new JButton();
@@ -66,6 +74,7 @@ public class MyGui implements ActionListener, MouseListener {
         mapJPanel = new JPanel();
         mapJLabel = new JLabel();
 
+        //setto la struttura
         frame.setLayout(new BorderLayout());
         bottomJPanel.setLayout(new FlowLayout());
         bottomJPanel.add(jButton1);
@@ -108,21 +117,25 @@ public class MyGui implements ActionListener, MouseListener {
 
         frame.pack();
         frame.setVisible(true);
-        System.out.println("setUp finito");
     }
 
     public static void main(String args[]) {
-        System.out.println("main avviato");
-        System.out.println("main avviato");
+        //faccio gestire il thread da EDT, per il controllo ciclico della coda
+        //degli eventi generati dai vari componenti
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 new MyGui();
             }
         });
-        System.out.println("main finito");
     }
 
+/**
+ * quando la MyGui ascolta un evento ActionEvent controlla chi l ha generato
+ * e aggiorna la variabile bottomSelected
+ * @param e 
+ */
     public void actionPerformed(ActionEvent e) {
+        //aggiorno bottomSelected in base a chi ha generato e
         if (e.getSource().equals(jButton1)) {
             System.out.println("buttone 1 clickato");
             bottomSelected = 1;
@@ -141,9 +154,16 @@ public class MyGui implements ActionListener, MouseListener {
         }
     }
 
+    /**
+     * quando MyGui ascolta un evento MouseEvent (che per ora vengono generati solo
+     * da mapJLabel) controlla in quale strada è avvenuto il click
+     * @param e 
+     */
     public void mouseClicked(MouseEvent e) {
         System.out.println("click: " + e.getX() + " " + e.getY());
+        //per ogni strada
         for (int i = 0; i < streetShape.length; i++) {
+            //la strada contiene la posizione del click
             if (streetShape[i].contains(e.getX(), e.getY())) {
                 System.out.println("strada " + i + " cliccata!");
             }
@@ -162,8 +182,17 @@ public class MyGui implements ActionListener, MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
+    /**
+     * abilita i bottoni corrispondenti alle availableActions
+     * e controlla ciclicamente la variabile bottomSelected,
+     * appena cambia ritorno quel valore
+     * @param availableActions
+     * @return 
+     */
     public int chooseAction(int[] availableActions) {
+        //per ogni azione possibile
         for (int actionAvailable : availableActions) {
+            //abilito il corrispondente jButton FIXME
             if (actionAvailable == 1) {
                 jButton1.setEnabled(false);
             }
@@ -181,10 +210,13 @@ public class MyGui implements ActionListener, MouseListener {
             }
         }
         
+        //finchè la pressione di uno di questi bottoni
+        //non cambia la var bottomSelected faccio ;
         while(bottomSelected<0){
             ;
         }
         int choice = bottomSelected;
+        //risetto
         bottomSelected = -1;
         return choice;
     }
