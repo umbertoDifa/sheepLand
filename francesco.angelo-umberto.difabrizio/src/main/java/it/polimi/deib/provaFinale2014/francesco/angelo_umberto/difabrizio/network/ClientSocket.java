@@ -67,6 +67,7 @@ public class ClientSocket {
         } catch (IOException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
+            System.out.println("Il server è spento, impossibile connettersi");
         }
     }
 
@@ -91,16 +92,18 @@ public class ClientSocket {
                     refreshRegion();
                 } else if (received.equals("RefreshStreet")) {
                     refreshStreet();
-                } else if (received.equals("RefereshGameParameters")) {
+                } else if (received.equals("RefreshGameParameters")) {
                     refreshGameParameters();
-                } else if (received.equals("RefereshCurrentPlayer")) {
+                } else if (received.equals("RefreshCurrentPlayer")) {
                     refreshCurrentPlayer();
-                } else if (received.equals("RefereshCard")) {
+                } else if (received.equals("RefreshCard")) {
                     refreshCard();
                 } else if (received.equals("RefreshBlackSheep")) {
                     refreshBlackSheep();
                 } else if (received.equals("RefreshMoveShepherd")) {
                     refreshMoveShepherd();
+                } else if (received.equals("RefreshBuyLand")) {
+                    refreshBuyLand();
                 } else if (received.equals("RefreshWolf")) {
                     refreshWolf();
                 } else if (received.equals("SetUpShepherd")) {
@@ -164,18 +167,27 @@ public class ClientSocket {
 
     public void refreshBlackSheep() {
         received = receiveString();
-        view.refreshBlackSheep(Integer.parseInt(received));
+
+        view.refreshBlackSheep(received);
     }
 
     public void refreshWolf() {
         received = receiveString();
-        view.refreshWolf(Integer.parseInt(received));
+        view.refreshWolf(received);
     }
 
     public void refreshMoveShepherd() {
         received = receiveString();
+
         token = received.split(",");
+
         view.refreshMoveShepherd(token[0], token[1], token[2]);
+    }
+
+    private void refreshBuyLand() {
+        received = receiveString();
+        token = received.split(",");
+        view.refreshBuyLand(token[0], token[1], token[2]);
     }
 
     public void setUpShepherd() {
@@ -187,23 +199,28 @@ public class ClientSocket {
         //e la mando al server
         sendString(street);
         String result = receiveString();
-        DebugLogger.println(result);
-        //che mi rimanda il risultato
         token = result.split(",");
 
-        view.refreshMoveShepherd(token[0], token[1], token[2]);
+        if (result.contains("Pastore posizionato correttamente")) {
+            //che mi rimanda il risultato            
+            view.showSetShepherd(token[1], token[2]);
+        } else {
+            view.showInfo(token[0]);
+        }
     }
 
     public void chooseAction() {
         //receive possible actions
         String actions = receiveString();
-        String possibleActions[] = received.split(",");
+
+        String possibleActions[] = actions.split(",");
 
         int availableAcions[] = new int[possibleActions.length];
         String actionsName[] = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
             token = possibleActions[i].split("-");
+
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
         }
@@ -214,26 +231,44 @@ public class ClientSocket {
     public void moveOvine() {
         //ottengo i parametri stratRegion, endRegion e Type dalla view
         String parameters = view.moveOvine();
-        
+
         //li mando al server per far eseguire l'azione
         sendString(parameters);
-        
+
         //ricevo il risultato dell'operazione
         view.showInfo(receiveString());
     }
 
     public void moveShepherd() {
         String result = view.askMoveShepherd();
-        
+
         sendString(result);
-        
+
         //ottengo il risultato
-        view.showInfo(receiveString());        
+        result = receiveString();
+
+        if (result.contains("Pastore spostato")) {
+            token = result.split(",");
+            view.showMoveShepherd(token[1]);
+        } else {
+            view.showInfo(result);
+        }
     }
 
     public void buyLand() {
-        view.askBuyLand();
-        
+        //inivio al server il territorio da acquistare
+        sendString(view.askBuyLand());
+
+        //ottengo i lrisultato dell'operazione
+        String result = receiveString();
+        token = result.split(",");
+        if (result.contains("Carta acquistata")) {
+            //che mi rimanda il risultato            
+            view.showBoughtLand(token[1], token[2]);
+        } else {
+            view.showInfo(token[0]);
+        }
+
     }
 
     public void mateSheepWith() {

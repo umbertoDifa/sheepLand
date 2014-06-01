@@ -12,7 +12,7 @@ public interface PlayerRemote extends Remote {
     public String setShepherdRemote(int idShepherd, String stringedStreet)
             throws RemoteException;
 
-    public String moveShepherdRemote(int shepherdIndex, String newStreet) throws
+    public String moveShepherdRemote(String shepherdIndex, String newStreet) throws
             RemoteException;
 
     public String moveOvineRemote(String startRegion, String endRegion,

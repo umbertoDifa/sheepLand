@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.Map;
 
 public class SocketTrasmission extends TrasmissionController {
@@ -32,12 +33,32 @@ public class SocketTrasmission extends TrasmissionController {
         ServerSockets.NickSocketMap.get(nickName).send(type + "," + value);
     }
 
-    public void refreshBlackSheep(int regionIndex) {
-//        ServerSockets.NickSocketMap.get(nickName).send("RefreshBlackSheep");
-//        ServerSockets.NickSocketMap.get(nickName).send(String.valueOf(regionIndex));
+    public void refreshBuyLand(String nickNameBuyer, String boughtLand,
+                               String price) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNameBuyer)) {
+                ServerSockets.NickSocketMap.get(nickName).send("RefreshBuyLand");
+                ServerSockets.NickSocketMap.get(nickName).send(
+                        nickNameBuyer + "," + boughtLand + "," + price);
+            }
+
+        }
     }
 
-    public void refreshWolf(int regionIndex) {
+    public void refreshBlackSheep(String movementResult) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+
+            ServerSockets.NickSocketMap.get(nickName).send("RefreshBlackSheep");
+
+            DebugLogger.println("RefreshPecoranera Inviato");
+            ServerSockets.NickSocketMap.get(nickName).send(movementResult);
+
+        }
+    }
+
+    public void refreshWolf(String movementResult) {
 //        ServerSockets.NickSocketMap.get(nickName).send("RefreshWolf");
 //        ServerSockets.NickSocketMap.get(nickName).send(String.valueOf(regionIndex));
     }
@@ -63,6 +84,8 @@ public class SocketTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameMover)) {
                 ServerSockets.NickSocketMap.get(nickName).send(
+                        "RefreshMoveShepherd");
+                ServerSockets.NickSocketMap.get(nickName).send(
                         nickNameMover + "," + shepherdIndex + "," + newStreet);
             }
 
@@ -84,10 +107,11 @@ public class SocketTrasmission extends TrasmissionController {
                 shepherdIndex, chosenStringedStreet);
 
         //invio il risultato qualsiasi sia
-        ServerSockets.NickSocketMap.get(nickName).send(result);
+        ServerSockets.NickSocketMap.get(nickName).send(result + ","
+                + shepherdIndex + "," + chosenStringedStreet);
 
         //ritorno il successo o meno dell'operazione
-        if (result.contains("Patore posizionato corretamente!")) {
+        if (result.contains("Pastore posizionato correttamente!")) {
             //refresho
             refreshMoveShepherd(nickName, "" + shepherdIndex,
                     chosenStringedStreet);
@@ -97,10 +121,10 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     public boolean askChooseAction(String nickName, String possibleActions) {
-        ServerSockets.NickSocketMap.get(nickName).send("ChooseActions");
+        ServerSockets.NickSocketMap.get(nickName).send("ChooseAction");
         ServerSockets.NickSocketMap.get(nickName).send(possibleActions);
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
-        
+
         // so che il risultato è buono perchè passo al client solo quelli possibili
         //e lui fa anche il controllo sulla correttezza sintattica della stringa
         int action = Integer.parseInt(result);
@@ -110,7 +134,7 @@ public class SocketTrasmission extends TrasmissionController {
             case 2:
                 return askMoveSheperd(nickName);
             case 3:
-               return askBuyLand(nickName);
+                return askBuyLand(nickName);
             case 4:
             //return askMateSheepWith(nickName);
             case 5:
@@ -121,14 +145,14 @@ public class SocketTrasmission extends TrasmissionController {
 
     public boolean askMoveOvine(String nickName) {
         ServerSockets.NickSocketMap.get(nickName).send("MoveOvine");
-        
+
         //ricevo i parametri
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
         String token[] = result.split(",");
-        
+
         result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0],
                 token[1], token[2]);
-        
+
         ServerSockets.NickSocketMap.get(nickName).send(result);
         if (result.contains("Ovino mosso!")) {
             //refreshio
@@ -141,19 +165,19 @@ public class SocketTrasmission extends TrasmissionController {
     public boolean askMoveSheperd(String nickName) {
 
         ServerSockets.NickSocketMap.get(nickName).send("MoveShepherd");
-        
+
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
-        
+
         String token[] = result.split(",");
-        
+
         //eseguo
-        result = super.getNick2PlayerMap().get(nickName).moveShepherd(
-                Integer.parseInt(token[0]), token[1]);
-        
+        result = super.getNick2PlayerMap().get(nickName).moveShepherd(token[0],
+                token[1]);
+
         //invio il risultato
         ServerSockets.NickSocketMap.get(nickName).send(result);
-        
-        if (result.contains("pastore posizionato")) {
+
+        if (result.contains("Pastore spostato")) {
             //invia conferma riepilogativa agli utenti
             refreshMoveShepherd(nickName, token[0], token[1]);
             return true;
@@ -162,10 +186,23 @@ public class SocketTrasmission extends TrasmissionController {
 
     }
 
-    public String askBuyLand(String nickName) {
+    public boolean askBuyLand(String nickName) {
         ServerSockets.NickSocketMap.get(nickName).send("BuyLand");
-        String landToBuy =  ServerSockets.NickSocketMap.get(nickName).receive();
-        //TODO completare questa trasmissione
+        String landToBuy = ServerSockets.NickSocketMap.get(nickName).receive();
+
+        String result = super.getNick2PlayerMap().get(nickName).buyLand(
+                landToBuy);
+
+        //invio il risultato al client
+        ServerSockets.NickSocketMap.get(nickName).send(result);
+
+        String token[] = result.split(",");
+
+        if (result.contains("Carta acquistata")) {
+            refreshBuyLand(nickName, token[1], token[2]);
+            return true;
+        }
+        return false;
     }
 
     public String askKillOvine(String nickName) {

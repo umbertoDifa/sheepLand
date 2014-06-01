@@ -41,10 +41,10 @@ public abstract class TrasmissionController {
     public abstract void refreshCard(String nickName, String card, int value)
             throws RemoteException;
 
-    public abstract void refreshBlackSheep(int regionIndex) throws
+    public abstract void refreshBlackSheep(String movementResult) throws
             RemoteException;
 
-    public abstract void refreshWolf(int regionIndex) throws RemoteException;
+    public abstract void refreshWolf(String movementResult) throws RemoteException;
 
     /**
      * It refreshes to all the player except the nickName player, the action
@@ -63,6 +63,7 @@ public abstract class TrasmissionController {
                                              String shepherdIndex,
                                              String newStreet) throws
             RemoteException;
+    public abstract void refreshBuyLand(String nickNameBuyer, String boughtLand,String price) throws RemoteException;
 
     public abstract void refreshKillOvine(String nickName) throws
             RemoteException;
@@ -84,7 +85,7 @@ public abstract class TrasmissionController {
             RemoteException;
 
     //ritorna una stringa corrispondente al tipo di regione
-    public abstract String buyLand(String nickName) throws RemoteException;
+    public abstract boolean askBuyLand(String nickName) throws RemoteException;
 
     //ritorna stringa corrispondente a Regione e Tipo di ovino
     public abstract String askKillOvine(String nickName) throws RemoteException;

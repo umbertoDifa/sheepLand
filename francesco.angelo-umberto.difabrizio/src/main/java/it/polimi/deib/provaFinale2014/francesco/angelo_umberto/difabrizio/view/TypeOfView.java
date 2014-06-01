@@ -6,9 +6,15 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
  */
 public interface TypeOfView {
 
+    public void showWelcome();
+
+    public void showEndGame();
+
     public void showInfo(String info);
 
-    public void showWelcome();
+    public void showBoughtLand(String boughLand,String price);
+    
+    public void showSetShepherd(String shepherdIndex, String streetIndex);
 
     public String setUpShepherd(int idShepherd);
 
@@ -21,6 +27,8 @@ public interface TypeOfView {
     public void refreshMoveShepherd(String nickNameMover, String shepherdIndex,
                                     String streetIndex);
 
+    public void refreshBuyLand(String buyer, String land,String price);
+
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player);
 
@@ -28,9 +36,9 @@ public interface TypeOfView {
 
     public void refereshCard(String type, int value);
 
-    public void refreshBlackSheep(int regionIndex);
+    public void refreshBlackSheep(String regionIndex);
 
-    public void refreshWolf(int regionIndex);
+    public void refreshWolf(String regionIndex);
 
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions);
@@ -39,28 +47,31 @@ public interface TypeOfView {
                                  String endRegion);
 
     /**
-     * Chiede regione partenza, regione arrivo, tipo di ovino per spostare
-     * un ovino e ritorna i tre parametri separati da una virgola
-     *I paraetri possono essree chiesti dalla view in qualsiasi ordine a patto
-     * di restituirli come da contratto
+     * Chiede regione partenza, regione arrivo, tipo di ovino per spostare un
+     * ovino e ritorna i tre parametri separati da una virgola I paraetri
+     * possono essree chiesti dalla view in qualsiasi ordine a patto di
+     * restituirli come da contratto
+     *
      * @return
      */
     public String moveOvine();
 
     public void moveShepherd(String startRegion, String endRegion);
-    
+
     /**
      * Asks to the player which shepherd to move and in which streeet
-     * @return 
+     *
+     * @return
      */
     public String askMoveShepherd();
-    
+
     /**
      * it asks the player which land to buy and returns it
-     * @return 
+     *
+     * @return
      */
     public String askBuyLand();
 
-    public void showEndGame();
+    public void showMoveShepherd(String priceToMove);
 
 }

@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contr
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ShepherdNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
@@ -96,7 +97,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         int i = 1;
         for (OvineType type : OvineType.values()) {
             if (canMoveOvine(type)) {
-                possibleAction += "1-Sposta ovino";
+                possibleAction += "1-Sposta ovino,";
                 break;
             }
             i++;
@@ -216,7 +217,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         Street chosenStreet;
         try {
-            chosenStreet = checkStreet(stringedStreet);
+            chosenStreet = convertAndCheckStreet(stringedStreet);
 
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
@@ -233,7 +234,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
 
-        return "Patore posizionato corretamente!";
+        return "Pastore posizionato correttamente!";
     }
 
     public String setShepherdRemote(int idShepherd, String stringedStreet)
@@ -244,15 +245,27 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     /**
      * Chiede al giocatore quale pastore spostare e in che strada Se la mossa è
      * possibile (se confinanti o non confinanti e puoi pagare) muovo il pastore
-     * e metto il cancello Altrimenti richiedo o annullo azione
+     * e metto il cancello
      *
-     * @param shepherdIndex
+     * @param shepherdNumber
      * @param newStreet
      *
      * @return
      */
     //aggiustare. convertire il parametro sringato della strada
-    public String moveShepherd(int shepherdIndex, String newStreet) {
+    public String moveShepherd(String shepherdNumber, String newStreet) {
+        DebugLogger.println(
+                "Inizio move shepherd col pastore: " + shepherdNumber);
+
+        //se il pastore selezionato è nell'array dei pastori
+        int shepherdIndex;
+        try {
+            shepherdIndex = convertShepherd(shepherdNumber);
+        } catch (ShepherdNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return ex.getMessage();
+        }
 
         Shepherd currentShepherd = shepherd[shepherdIndex];
         Street startStreet = currentShepherd.getStreet();
@@ -260,7 +273,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         Street endStreet;
         //controllo strada
         try {
-            endStreet = checkStreet(newStreet);
+            endStreet = convertAndCheckStreet(newStreet);
 
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
@@ -274,42 +287,49 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return ex.getMessage();
         }
 
-        //se strada free ed esiste e non è quella di partenza ed è vicina o posso pagare
-        if (startStreet != endStreet) {
-            if (startStreet.isNeighbour(endStreet)) {
-                //muovilo
-                currentShepherd.moveTo(endStreet);
-                try {
-                    startStreet.setFence(this.gameManager.bank.getFence());
-                } catch (FinishedFencesException ex) {
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                    return "Recinti terminati";
-                }
-                DebugLogger.println("Pastore posizionato");
-
-                return "pastore posizionato";
-            } else if (currentShepherd.ifPossiblePay(
-                    GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
-                DebugLogger.println("Pagamento effettuato");
-                currentShepherd.moveTo(endStreet);
-                try {
-                    startStreet.setFence(this.gameManager.bank.getFence());
-                } catch (FinishedFencesException ex) {
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                    return "Recinti terminati";
-                }
-                return "Passaggio pagato e pastore posizionato";
-
+        //se strada free ed esiste ed è vicina o posso pagare
+        if (startStreet.isNeighbour(endStreet)) {
+            //muovilo
+            currentShepherd.moveTo(endStreet);
+            try {
+                startStreet.setFence(this.gameManager.bank.getFence());
+            } catch (FinishedFencesException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(
+                        Level.SEVERE,
+                        ex.getMessage(), ex);
+                return "Recinti terminati";
             }
-            return "Non hai i soldi per spostarti";
+            DebugLogger.println("Pastore posizionato");
+
+            return "Pastore spostato,0";
+        } else if (currentShepherd.ifPossiblePay(
+                GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
+            DebugLogger.println("Pagamento effettuato");
+            currentShepherd.moveTo(endStreet);
+            try {
+                startStreet.setFence(this.gameManager.bank.getFence());
+            } catch (FinishedFencesException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(
+                        Level.SEVERE,
+                        ex.getMessage(), ex);
+                return "Recinti terminati";
+            }
+            return "Pastore spostato," + GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue();
+
         }
-        return "Non puoi spostarti su una strada su cui sei già";
+        return "Non hai i soldi per spostarti";
+
     }
 
+    /**
+     * Tries to buy a land. If the player has enough money it buys it and
+     * returns a string "Carta acquistata,[type],[price]". Otherwise it returns
+     * a string mentioning the error occurred
+     *
+     * @param landToBuy
+     *
+     * @return
+     */
     public String buyLand(String landToBuy) {
 
         //creo lista delle possibili regioni da comprare di un pastore
@@ -330,21 +350,27 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                             RegionType.valueOf(type));
                     //paga se puo
                     if (shepherd[0].ifPossiblePay(cardPrice)) {
-                    //carta scquistabile
+                        //carta scquistabile
                         //recupero la carta dal banco
                         Card card = this.gameManager.bank.getCard(
                                 RegionType.valueOf(type));
 
                         //la do al pastore
                         this.shepherd[0].addCard(card);
-                        return "Carta acquistata a " + cardPrice + " danari!";
+                        return "Carta acquistata," + type + "," + cardPrice;
                     } else {
                         return "Non hai abbastanza soldi per pagare la carta";
                     }
                 }
             }
-            return "Non è possibile acquistare il territorio richiesto";
+            return "Non è possibile acquistare il territorio richiesto in quanto non confina con il tuo pastore";
+
         } catch (MissingCardException ex) {
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+
             return "Non ci sono più carte del territorio richiesto";
         }
 
@@ -581,7 +607,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @throws StreetNotFoundException
      * @throws BusyStreetException
      */
-    public Street checkStreet(String stringedStreet) throws
+    public Street convertAndCheckStreet(String stringedStreet) throws
             StreetNotFoundException, BusyStreetException {
         Street chosenStreet = gameManager.map.convertStringToStreet(
                 stringedStreet);
@@ -595,7 +621,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return chosenStreet;
     }
 
-    public String moveShepherdRemote(int shepherdIndex, String newStreet) throws
+    public String moveShepherdRemote(String shepherdIndex, String newStreet)
+            throws
             RemoteException {
         return this.moveShepherd(shepherdIndex, newStreet);
     }
@@ -607,6 +634,34 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     public String buyLandRemote(String regionType) throws RemoteException {
         return buyLand(regionType);
+    }
+
+    /**
+     * Checks if the shepherd is one of the player and returns its index in the
+     * shepherd array
+     *
+     * @param shepherdNumber The sphepherd index
+     *
+     * @return The shepherdIndex in the array of shpherds
+     */
+    private int convertShepherd(String shepherdNumber) throws
+            ShepherdNotFoundException {
+        try {
+            int shepherdIndex = Integer.parseInt(shepherdNumber);
+            if (shepherdIndex >= 0 && shepherdIndex < shepherd.length) {
+                return shepherdIndex;
+            } else {
+                throw new ShepherdNotFoundException("Il pastore non esiste");
+
+            }
+
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
+            throw new ShepherdNotFoundException(
+                    "La stringa non rappresenta un pastore");
+        }
     }
 
 }

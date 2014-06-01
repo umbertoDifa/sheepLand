@@ -93,11 +93,11 @@ public class ClientRmi extends UnicastRemoteObject implements
         view.refereshCard(type, value);
     }
 
-    public void refreshBlackSheep(int regionIndex) {
+    public void refreshBlackSheep(String regionIndex) {
         view.refreshBlackSheep(regionIndex);
     }
 
-    public void refreshWolf(int regionIndex) {
+    public void refreshWolf(String regionIndex) {
         view.refreshWolf(regionIndex);
     }
 
@@ -175,8 +175,7 @@ public class ClientRmi extends UnicastRemoteObject implements
         try {
             result = view.askMoveShepherd();
             String token[] = result.split(",");
-            result = playerRmi.moveShepherdRemote(Integer.parseInt(token[0]),
-                    token[1]);
+            result = playerRmi.moveShepherdRemote(token[0], token[1]);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);

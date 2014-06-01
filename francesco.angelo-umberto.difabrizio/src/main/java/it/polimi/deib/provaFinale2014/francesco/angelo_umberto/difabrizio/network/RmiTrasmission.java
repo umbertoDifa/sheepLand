@@ -83,12 +83,12 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshBlackSheep(int regionIndex) {
+    public void refreshBlackSheep(String movementResult) {
         //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshBlackSheep(regionIndex);
     }
 
     @Override
-    public void refreshWolf(int regionIndex) {
+    public void refreshWolf(String movementResult) {
         //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshWolf(regionIndex);
     }
 
@@ -184,7 +184,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public String buyLand(String nickName) {
+    public boolean askBuyLand(String nickName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -231,6 +231,12 @@ public class RmiTrasmission extends TrasmissionController {
             }
 
         }
+    }
+
+    @Override
+    public void refreshBuyLand(String nickNameBuyer, String boughtLand,String price) throws
+                                                                               RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

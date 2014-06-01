@@ -14,26 +14,25 @@ public class CommandLineView implements TypeOfView {
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb) {
-        stdOut.println("La regione " + regionIndex + " ora ha " + numbOfSheep
+        showInfo("La regione " + regionIndex + " ora ha " + numbOfSheep
                 + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni.");
-        stdOut.flush();
 
     }
 
     public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd) {
-        stdOut.print("La strada " + streetIndex + "è ");
+        stdOut.print("La strada " + streetIndex + " è ");
 
         if (fence == true) {
-            stdOut.println("recintata");
+            stdOut.println(" recintata");
             stdOut.flush();
 
         } else if (nickShepherd != null && !nickShepherd.equals("null")) {
-            stdOut.println("occupata da " + nickShepherd);
+            stdOut.println(" occupata da " + nickShepherd);
             stdOut.flush();
 
         } else {
-            stdOut.println("libera");
+            stdOut.println(" libera");
             stdOut.flush();
 
         }
@@ -41,34 +40,39 @@ public class CommandLineView implements TypeOfView {
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player) {
-        stdOut.println(
+        showInfo(
                 "La partita ha " + numbOfPlayers + ", il primo giocatore è "
                 + firstPlayer + ", ogni giocatore ha " + shepherd4player);
-        stdOut.flush();
 
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
-        stdOut.println("é il turno di " + currenPlayer);
-        stdOut.flush();
+        showInfo("é il turno di " + currenPlayer);
 
     }
 
-    public void refreshBlackSheep(int regionIndex) {
-        stdOut.println("La pecora nera è nella regione " + regionIndex);
-        stdOut.flush();
+    public void refreshBlackSheep(String regionIndex) {
+        if (!regionIndex.contains("err")) {
+            //se non ci sono errori
+            showInfo("La pecora nera si è mossa nella regione " + regionIndex);
+        } else {
+            String token[] = regionIndex.split(":");
+            showInfo(token[1]);
+        }
 
     }
 
-    public void refreshWolf(int regionIndex) {
-        stdOut.println("Il lupo è nella regione" + regionIndex);
-        stdOut.flush();
-
+    public void refreshWolf(String regionIndex) {
+        if (!regionIndex.contains("err")) {
+            //se non ci sono errori
+            showInfo("Il lupo si è mosso nella regione " + regionIndex);
+        }
+        String token[] = regionIndex.split(":");
+        showInfo(token[1]);
     }
 
     public String setUpShepherd(int shepherdIndex) {
-        stdOut.println("Inserisci una strada per il pastore " + shepherdIndex);
-        stdOut.flush();
+        showInfo("Inserisci una strada per il pastore " + shepherdIndex);
         return stdIn.nextLine();
     }
 
@@ -87,8 +91,19 @@ public class CommandLineView implements TypeOfView {
 
     public void refreshMoveShepherd(String nickName, String shepherdIndex,
                                     String newStreet) {
-        stdOut.println(
+        showInfo(
                 "Il giocatore " + nickName + " ha posizionato il pastore " + shepherdIndex + " nella strada " + newStreet);
+
+    }
+
+    public void showSetShepherd(String shepherdIndex, String streetIndex) {
+        showInfo("Pastore " + shepherdIndex + " posizionato in " + streetIndex);
+    }
+
+    public void refreshBuyLand(String buyer, String land, String price) {
+        showInfo(
+                "Il giocatore " + buyer + " ha acquistato un territorio " + land + " per " + price + " danari");
+
     }
 
     public void buyLand() {
@@ -116,35 +131,40 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refereshCard(String type, int value) {
-        stdOut.println("Hai una carta " + type + " di valore " + value);
-        stdOut.flush();
+        showInfo("Hai una carta " + type + " di valore " + value);
+
     }
 
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions) {
         String stringToPrint = "";
-        for (int i : availableActions) {
-            stringToPrint += String.valueOf(availableActions[i]) + "- " + availableActions[i] + " ";
+        for (int i = 0; i < availableActions.length; i++) {
+            stringToPrint += String.valueOf(availableActions[i]) + "- " + availableStringedActions[i] + " \n";
         }
         String choice;
         int action = -1;
         boolean correct = false;
+        boolean actionFound;
 
         do {
-            stdOut.println("Inserire azione tra " + stringToPrint);
-            stdOut.flush();
+            showInfo("Scegli un azione tra:\n" + stringToPrint);
+
             choice = stdIn.nextLine();
             try {
                 action = Integer.parseInt(choice);
-                for (int i = 0; i < availableActions.length; i++) {
+                actionFound = false;
+                for (int i = 0; i < availableActions.length && !actionFound; i++) {
                     if (availableActions[i] == action) {
                         correct = true;
-                        break;
+                        actionFound = true;
                     }
                 }
+                if (!actionFound) {
+                    showInfo("Azione non valida.\nPrego riprovare.");
+                }
             } catch (NumberFormatException ex) {
-                stdOut.println("Azione non valida.\nPrego riprovare:");
-                stdOut.flush();
+                showInfo("Azione non valida.\nPrego riprovare.");
+
             }
         } while (!correct);
         return action;
@@ -163,7 +183,8 @@ public class CommandLineView implements TypeOfView {
         stdOut.flush();
     }
 
-    public void refreshMoveOvine(String type, String startRegion, String endRegion) {
+    public void refreshMoveOvine(String type, String startRegion,
+                                 String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -172,10 +193,10 @@ public class CommandLineView implements TypeOfView {
     }
 
     public String askMoveShepherd() {
-        stdOut.println("Scegliere quale pastore muovere:");
+        showInfo("Scegliere quale pastore muovere:");
         String idShepherd = stdIn.nextLine();
-        stdOut.println(
-                "Scegliere in quale regione spostare il pastore " + idShepherd + ":");
+        showInfo(
+                "Scegliere in quale strada spostare il pastore " + idShepherd + ":");
         String stringedStreet = stdIn.nextLine();
         return idShepherd + "," + stringedStreet;
     }
@@ -195,10 +216,17 @@ public class CommandLineView implements TypeOfView {
     }
 
     public String askBuyLand() {
-        stdOut.println("Che territorio vuoi comprare?");
-        stdOut.flush();
-        
+        showInfo("Che territorio vuoi comprare?");
         return stdIn.nextLine();
+    }
+
+    public void showBoughtLand(String boughLand, String price) {
+        showInfo(
+                "Hai acquistato la carta " + boughLand + " per " + price + " danari");
+    }
+
+    public void showMoveShepherd(String priceToMove) {
+        showInfo("Pastore spostato pagando " + priceToMove + " denari");
     }
 
 }

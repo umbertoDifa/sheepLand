@@ -1,7 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility;
 
-import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -21,7 +19,7 @@ public class DebugLogger {
         if (DEBUG) {
 
             //stampa la stringa
-            System.out.println(debugPrint);
+            System.out.println("debug: " + debugPrint);
         }
         //altrimenti nulla
     }

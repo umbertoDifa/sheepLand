@@ -427,27 +427,26 @@ public class GameManager implements Runnable {
                                                     RemoteException {
 
         DebugLogger.println("Muovo pecora nera");
-        String blackSheepMessage = "";
-
         try {
             //muovo la pecora nera
             this.moveSpecialAnimal(this.map.getBlackSheep());
             DebugLogger.println("pecora nera mossa");
-            blackSheepMessage = "La Pecora nera si è mossa in: " + this.map.getNodeIndex(
-                    this.map.getBlackSheep().getMyRegion());
+            
+            controller.refreshBlackSheep(""+this.map.getNodeIndex(
+                    this.map.getBlackSheep().getMyRegion()));
+            
         } catch (CannotMoveAnimalException e) {
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE,
-                    "La pecora non si muove perchè: " + e.getMessage(), e);
-            blackSheepMessage = "La pecora non si muove perchè: " + e.getMessage();
+                    e.getMessage(), e);
+            
+            controller.refreshBlackSheep("err:"+e.getMessage());
+
         } catch (NodeNotFoundException ex) {
             //non può verificarsi perchè se la pecora si muove allora il nodo esiste
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "La pecora non si muove perchè: " + ex.getMessage(), ex);
-            blackSheepMessage = "La pecora non si muove perchè: " + ex.getMessage();
-        } finally {
-//            controller.refreshBlackSheep(this.map.getNodeIndex(
-//                    this.map.getBlackSheep().getMyRegion()));
+                    "err:" + ex.getMessage(), ex);
+
         }
 
         //faccio fare le azioni al giocatore

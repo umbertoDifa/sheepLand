@@ -33,9 +33,9 @@ public interface ClientInterfaceRemote extends Remote {
 
     public void refereshCard(String type, int value) throws RemoteException;
 
-    public void refreshBlackSheep(int regionIndex) throws RemoteException;
+    public void refreshBlackSheep(String regionIndex) throws RemoteException;
 
-    public void refreshWolf(int regionIndex) throws RemoteException;
+    public void refreshWolf(String regionIndex) throws RemoteException;
 
     public String setUpShepherd(int idShepherd) throws RemoteException;
 
