@@ -10,10 +10,10 @@ import java.util.HashMap;
 
 public class GuiView implements TypeOfView, ActionListener {
 
-    private GuiClass gui;
+    private MyGui gui;
     
     public GuiView() {
-        gui = new GuiClass();
+        gui = new MyGui();
     }
 
     public void showInfo(String info) {
@@ -57,7 +57,7 @@ public class GuiView implements TypeOfView, ActionListener {
 
     public int chooseAction(int[] availableActions,
             String[] availableStringedActions) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return gui.chooseAction(availableActions);
     }
 
     public void moveOvine(String type, String startRegion, String endRegion) {
