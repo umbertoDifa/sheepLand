@@ -19,6 +19,8 @@ public interface TypeOfView {
     public void showMoveShepherd(String priceToMove);
 
     public void showMoveOvine(String startRegion, String endRegion, String type);
+    
+    public void showMateSheepWith(String region, String otherType, String newType);
 
     public String setUpShepherd(int idShepherd);
 
@@ -47,7 +49,11 @@ public interface TypeOfView {
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions);
 
-    public void refreshMoveOvine(String nickName,String type, String startRegion,
+    public void refreshMateSheepWith(String nickName, String region,
+                                    String otherType, String newType);
+
+    public void refreshMoveOvine(String nickName, String type,
+                                 String startRegion,
                                  String endRegion);
 
     /**
@@ -75,5 +81,12 @@ public interface TypeOfView {
      * @return
      */
     public String askBuyLand();
+    
+    /**
+     * Asks the player to choose a shepherd and a region.
+     * Then returns this information
+     * @return shepherd,region
+     */
+    public String askMateSheepWith();
 
 }

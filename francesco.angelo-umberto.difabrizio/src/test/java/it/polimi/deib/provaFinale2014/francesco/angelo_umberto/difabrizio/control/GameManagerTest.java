@@ -43,18 +43,18 @@ public class GameManagerTest {
     public void testStartGame() {
         System.out.println("startGame");
         GameManager instance = null;
-        // TODO review the generated test code and remove the default call to fail.
+       
         fail("The test case is a prototype.");
     }
 
     /**
      * Test of askStreet method, of class GameManager.
+     * @throws java.lang.Exception
      */
     @Ignore
     @Test
     public void testAskStreet() throws Exception {
-        System.out.println("askStreet");
-        String playerHashCode;
+        System.out.println("askStreet");        
 
     }
 

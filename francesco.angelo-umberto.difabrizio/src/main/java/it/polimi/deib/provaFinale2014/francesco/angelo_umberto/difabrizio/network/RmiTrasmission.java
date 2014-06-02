@@ -179,7 +179,7 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public boolean askMoveSheperd(String nickName) throws RemoteException {
-        return false;//TODO
+        return false;
     }
 
     @Override
@@ -193,7 +193,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public String askMateSheepWith(String nickName) {
+    public boolean askMateSheepWith(String nickName,String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -242,6 +242,13 @@ public class RmiTrasmission extends TrasmissionController {
     @Override
     public void refreshSpecialAnimal(SpecialAnimal animal,String movementResult) throws
                                                                   RemoteException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void refreshMateSheepWith(String nickName, String region,
+                                     String otherType, String newType) throws
+                                                                              RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

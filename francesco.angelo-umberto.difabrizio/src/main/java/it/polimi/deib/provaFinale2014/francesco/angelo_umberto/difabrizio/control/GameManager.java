@@ -13,7 +13,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveAnimalException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
@@ -26,7 +25,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//TODO: importantissimo settare il parent handler di ogni logger!
 /**
  * E' il controllo della partita. Si occupa di crearne una a seconda del numero
  * dei giocatori.
@@ -403,7 +401,7 @@ public class GameManager implements Runnable {
             currentPlayer %= this.playersNumber;
 
             evolveLambs();
-            broadcastInitialConditions();//FIXME non serve ad ogni giro, debug
+            broadcastInitialConditions();
 
             //controllo se ho finito il giro
             //se il prossimo a giocare è il primo del giro
@@ -538,8 +536,7 @@ public class GameManager implements Runnable {
 //
 //        return chosenRegion;
 //    }
-    //TODO piuttosto che fare mappa e server private e fornire i getter
-    //forse è meglio che siano private
+   
     private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();

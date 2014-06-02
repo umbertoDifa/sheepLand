@@ -63,6 +63,8 @@ public abstract class TrasmissionController {
                                              String newStreet) throws
             RemoteException;
     public abstract void refreshBuyLand(String nickNameBuyer, String boughtLand,String price) throws RemoteException;
+    
+    public abstract void refreshMateSheepWith(String nickName, String region, String otherType, String newType) throws RemoteException;
 
     public abstract void refreshKillOvine(String nickName) throws
             RemoteException;
@@ -90,7 +92,7 @@ public abstract class TrasmissionController {
     public abstract String askKillOvine(String nickName) throws RemoteException;
 
     //ritorna una stringa corrispondente alla regione e Tipo di ovino
-    public abstract String askMateSheepWith(String nickName) throws
+    public abstract boolean askMateSheepWith(String nickName,String type) throws
             RemoteException;
 
     public abstract void askThrowDice(String nickName) throws RemoteException;

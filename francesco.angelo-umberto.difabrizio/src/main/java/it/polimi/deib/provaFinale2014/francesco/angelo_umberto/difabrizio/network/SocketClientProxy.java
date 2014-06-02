@@ -18,9 +18,7 @@ public class SocketClientProxy {
     private final Socket socket;
     private Scanner fromClient;
     private PrintWriter toClient;
-    /**
-     * Online offline TODO: usarlo per gestire riconnessioni
-     */
+   
     private int status;
     
     public SocketClientProxy(Socket socket) {

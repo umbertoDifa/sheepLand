@@ -46,7 +46,6 @@ public class ClientSocket {
             //creo printwriter verso server
             serverOut = new PrintWriter(socket.getOutputStream());
 
-           
             DebugLogger.println(
                     "Canali di comunicazione impostati\nAttento ordine dal server");
 
@@ -104,6 +103,8 @@ public class ClientSocket {
                     refreshBuyLand();
                 } else if ("RefreshMoveOvine".equals(received)) {
                     refreshMoveOvine();
+                } else if ("RefreshMateSheepWith".equals(received)) {
+                    refreshMateSheepWith();
                 } else if ("RefreshWolf".equals(received)) {
                     refreshWolf();
                 } else if ("SetUpShepherd".equals(received)) {
@@ -124,7 +125,7 @@ public class ClientSocket {
             }
         } catch (NoSuchElementException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        ex.getMessage(), ex);
+                    ex.getMessage(), ex);
             view.showEndGame();
         }
     }
@@ -175,7 +176,7 @@ public class ClientSocket {
 
     public void refreshWolf() {
         received = receiveString();
-        
+
         view.refreshWolf(received);
     }
 
@@ -185,6 +186,14 @@ public class ClientSocket {
         token = received.split(",");
 
         view.refreshMoveShepherd(token[0], token[1], token[2]);
+    }
+
+    private void refreshMateSheepWith() {
+        received = receiveString();
+
+        token = received.split(",");
+
+        view.refreshMateSheepWith(token[0], token[1], token[2], token[3]);
     }
 
     private void refreshBuyLand() {
@@ -288,7 +297,23 @@ public class ClientSocket {
     }
 
     public void mateSheepWith() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String parameters = view.askMateSheepWith();
+        sendString(parameters);
+
+        //ottengo i lrisultato dell'operazione
+        String result = receiveString();
+        DebugLogger.println(result);
+        String[] resultTokens = result.split(",");
+        //resultTokens1 è il tipo creato, resultTokens2 è il tipo accoppiato con la pecora
+        if (result.contains("Accoppiamento eseguito")) {            
+            token = parameters.split(",");
+            //token 1 è la regione
+            //che mi rimanda il risultato              
+            view.showMateSheepWith(token[1], resultTokens[2], resultTokens[1]);
+        } else {
+            view.showInfo(resultTokens[0]);
+        }
+
     }
 
     public void killOvine() {

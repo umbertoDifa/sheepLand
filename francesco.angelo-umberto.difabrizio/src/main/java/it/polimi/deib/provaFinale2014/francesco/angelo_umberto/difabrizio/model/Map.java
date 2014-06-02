@@ -94,7 +94,6 @@ public class Map {
     public Wolf getWolf() {
         return wolf;
     }
-  
 
     /**
      * Data una region e un value ritorna la strada limitrofa alla regione con
@@ -432,8 +431,6 @@ public class Map {
      * @throws NodeNotFoundException Se la regione o la strada cercate non
      *                               esistono
      */
-    //TODO: vale la pena questa exception? io gli passo un nodo quindi di 
-    //sicuro esisterà...però come buona pratica...
     public int getNodeIndex(Node node) throws NodeNotFoundException {
         if (node instanceof Street) {
             for (int i = 0; i < streets.length; i++) {
@@ -441,7 +438,6 @@ public class Map {
                     return i;
                 }
             }
-
         } else {
             //è una regione
             for (int i = 0; i < regions.length; i++) {

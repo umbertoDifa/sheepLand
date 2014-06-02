@@ -4,6 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.contro
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.ShepherdNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
@@ -21,6 +22,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,8 +111,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         if (canBuyCard()) {
             possibleAction += "3-Compra terreno,";
         }
-        possibleAction += "4-Accoppia pecore,";
-        possibleAction += "5-Accoppia montone e pecora,";
+        if (canMateSheep()) {
+            possibleAction += "4-Accoppia pecore,";
+        }
+        if (canMateSheepWithRam()) {
+            possibleAction += "5-Accoppia montone e pecora,";
+        }
         possibleAction += "6-Abbatti pecora";
 
     }
@@ -146,6 +152,49 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
 
         }
+        return false;
+    }
+
+    private boolean canMateSheep() {
+        int numbOfSheep;
+
+        for (Shepherd shphd : shepherd) {
+            for (Region region : shphd.getStreet().getNeighbourRegions()) {
+                numbOfSheep = 0;
+                for (Ovine ovine : region.getMyOvines()) {
+                    if (ovine.getType() == OvineType.SHEEP) {
+                        numbOfSheep++;
+                    }
+                }
+                if (numbOfSheep >= 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean canMateSheepWithRam() {
+        int numbOfSheep;
+        int numbOfRam;
+
+        for (Shepherd shphd : shepherd) {
+            for (Region region : shphd.getStreet().getNeighbourRegions()) {
+                numbOfRam = 0;
+                numbOfSheep = 0;
+                for (Ovine ovine : region.getMyOvines()) {
+                    if (ovine.getType() == OvineType.SHEEP) {
+                        numbOfSheep++;
+                    } else if (ovine.getType() == OvineType.RAM) {
+                        numbOfRam++;
+                    }
+                }
+                if (numbOfRam >= 1 && numbOfSheep >= 1) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -191,10 +240,10 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
                     possibleStreet) && startRegion != endRegion) {
                 //rimuovi ovino del tipo specificato
-                 Ovine movedOvine;
+                Ovine movedOvine;
                 DebugLogger.println("Rimuovo ovino");
                 try {
-                     movedOvine = startRegion.removeOvine(
+                    movedOvine = startRegion.removeOvine(
                             OvineType.valueOf(typeToMove));
                 } catch (NoOvineException ex) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
@@ -386,69 +435,113 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     }
 
-    public void mateSheepWith(OvineType otherOvineType) throws
-            ActionCancelledException {
-//        //TODO: ricontrollare e scomporre
-//        List<Region> nearRegions = null;
-//        Region chosenRegion;
-//        int randomStreetValue;
-//        String errorMessage = "";
-//
-//        //per ogni pastore del giocatore
-//        for (Shepherd shepherdPlayer : this.shepherd) {
-//            //per ogni regione confinante alla strada di quel pastore
-//            for (Region region : shepherdPlayer.getStreet().getNeighbourRegions()) {
-//                //se non contenuta nelle regioni vicine aggiungila
-//                if ((nearRegions != null) && !nearRegions.contains(region)) {
-//                    nearRegions.add(region);
-//                }
-//            }
-//        }
-//        try {
-//            //chiedi conferma per lanciare dado e lancialo
-//            randomStreetValue = this.gameManager.askAndThrowDice(playerNickName);
-//            //chiedi regione (può lanciare RegionNotFoundException)
-//            chosenRegion = this.gameManager.askAboutRegion(playerNickName,
-//                    "In quale regione?");
-//            //se regione è fra le regioni vicine
-//            if ((nearRegions != null) && nearRegions.contains(chosenRegion)) {
-//                //controlla che nella regione sia possibile accoppiare Sheep con otherOvine
-//                if (chosenRegion.isPossibleToMeetSheepWith(otherOvineType)) {
-//                    //per ogni strada confinante alla regione scelta
-//                    for (Street street : chosenRegion.getNeighbourStreets()) {
-//                        //se ha valore uguale a quello del dado e sopra c'è un suo pastore
-//                        if (street.getValue() == randomStreetValue && this.hasShepherdIn(
-//                                street)) {
-//                            //aggiungi ovino e esci dal ciclo
-//                            if (otherOvineType == otherOvineType.SHEEP) {
-//                                chosenRegion.addOvine(new Ovine(OvineType.SHEEP));
-//                            } else if (otherOvineType == otherOvineType.RAM) {
-//                                chosenRegion.addOvine(new Ovine(OvineType.LAMB));
-//                            }
-//                            return;
-//                        } else {
-//                            errorMessage = "Accoppiamento non permesso";
-//                            break;
-//                        }
-//                    }
-//                    if (errorMessage.compareTo("") == 0) {
-//                        errorMessage = "Nessuna strada con quel valore e col tuo pastore";
-//                    }
-//                } else {
-//                    errorMessage = "Nessun possibile accoppiamento per questa regione.";
-//                }
-//            } else {
-//                errorMessage = "Regione lontana dai tuoi pastori.";
-//            }
-//        } catch (RegionNotFoundException ex) {
-//            errorMessage = ex.getMessage();
-//            Logger
-//                    .getLogger(Player.class
-//                            .getName()).log(
-//                            Level.SEVERE, ex.getMessage(), ex);
-//        } finally {
-//            this.gameManager.askCancelOrRetry(playerNickName, errorMessage);
-//        }
+    /**
+     * Tries to mate a sheep in the given region with an other type of ovine.
+     * The region must be next to one of the shepherds.
+     *
+     * @param shepherdNumber Which shepherd is next to the region where to mate
+     *                       sheep and other ovine
+     * @param regionToMate   The region with the sheep and the other animal
+     * @param otherOvineType The other ovine to mate with the sheep
+     *
+     * @return "Accoppiamento eseguito",[ovineCreated] if the mate goes
+     *         allright, an error string if not
+     */
+    public String mateSheepWith(String shepherdNumber, String regionToMate,
+                                String otherOvineType) {
+
+        int shepherdIndex;
+        String type;
+        Region matingRegion;
+
+        
+        try {
+            //controllo i dati sul pastore,sul tipo di ovino e sulla regione
+            shepherdIndex = convertAndCheckShepherd(shepherdNumber);
+            type = convertAndCheckOvineType(otherOvineType);
+            matingRegion = gameManager.map.convertStringToRegion(regionToMate);
+        } catch (ShepherdNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return ex.getMessage();
+        } catch (OvineNotFoundExeption ex) {
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
+            return ex.getMessage();
+        } catch (RegionNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
+            return ex.getMessage();
+        }
+
+        
+
+        //controllo se la regione chiesta confina con la strada del pastore indicato 
+        boolean regionOk = false;
+
+        for (Region region : shepherd[shepherdIndex].getStreet().getNeighbourRegions()) {
+            if (region == matingRegion) {
+                regionOk = true;
+                break;
+            }
+        }
+        if (!regionOk) {
+            return "La regione non confina con il pastore indicato";
+        }
+
+        
+        boolean canMate = false;
+        //se il tipo per l'accoppiamento non è una pecora
+        if (OvineType.valueOf(type) != OvineType.SHEEP) {
+
+            //controllo che la regione contienga una pecora e l'altro tipo di ovino
+            if (matingRegion.hasOvine(OvineType.SHEEP) && matingRegion.hasOvine(
+                    OvineType.valueOf(type))) {
+                canMate = true;
+            }
+        } else {
+            //conto le pecore
+            int numbOfSheep = 0;
+
+            for (Shepherd shphd : shepherd) {
+                for (Region region : shphd.getStreet().getNeighbourRegions()) {
+                    for (Ovine ovine : region.getMyOvines()) {
+                        if (ovine.getType() == OvineType.SHEEP) {
+                            numbOfSheep++;
+                        }
+                    }
+                    if (numbOfSheep >= 2) {
+                        canMate = true;
+                    }
+                }
+            }
+
+        }
+        
+        if (canMate) {
+            //lancio il dado
+            int diceValue = Dice.roll();
+            if (diceValue == shepherd[shepherdIndex].getStreet().getValue()) {
+                
+                //aggiungo un ovino alla regione in base al tipo dell'altro ovino
+                if (type.equalsIgnoreCase(OvineType.SHEEP.toString())) {
+                    
+                    matingRegion.addOvine(new Ovine(OvineType.SHEEP));
+                    return "Accoppiamento eseguito," + OvineType.SHEEP.toString();
+
+                } else if (type.equalsIgnoreCase(OvineType.RAM.toString())) {
+                    
+                    matingRegion.addOvine(new Ovine(OvineType.LAMB));
+                    return "Accoppiamento eseguito," + OvineType.LAMB.toString();
+                }
+            } else {
+                
+                return "Il valore del dado è diverso dalla strada del pastore";
+            }
+        }
+        return "Non è possibile l'accoppiamento nella regione indicata";
     }
 
     public void killOvine() {

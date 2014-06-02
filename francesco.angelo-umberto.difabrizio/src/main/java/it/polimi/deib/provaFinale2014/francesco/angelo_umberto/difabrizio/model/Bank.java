@@ -16,8 +16,7 @@ public class Bank {
 
     private Card[] unusedCards;
     private List<Card> initialCards = new ArrayList<Card>();
-    private Fence[] unusedFences; //TODO: magari inseriamo un margine di sicurezza? se mi arriva una FinishedFenceException 
-    //mi si sputtana tutto
+    private Fence[] unusedFences;
 
     /**
      * Costruisce un banco settando il numero di carte da vendere, il numero di
@@ -49,8 +48,7 @@ public class Bank {
      *
      * @return Una carta il cui tipo è casuale ma unico nella lista
      */
-    //TODO: guarda che sta roba manda un IllegalArgumentException se alla random gli passo una size
-    //minore di 1 quindi boh...la gestiamo?
+   
     public Card getInitialCard() {
         //crea oggetto random
         Random random = new Random();

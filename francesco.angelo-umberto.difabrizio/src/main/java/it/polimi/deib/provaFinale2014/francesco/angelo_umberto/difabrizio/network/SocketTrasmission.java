@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.BlackSheep;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
@@ -42,6 +43,21 @@ public class SocketTrasmission extends TrasmissionController {
     public void refreshCard(String nickName, String type, int value) {
         ServerSockets.NickSocketMap.get(nickName).send("RefreshCard");
         ServerSockets.NickSocketMap.get(nickName).send(type + "," + value);
+    }
+
+    @Override
+    public void refreshMateSheepWith(String nickNamePlayer, String region,
+                                     String otherType, String newType) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNamePlayer)) {
+                ServerSockets.NickSocketMap.get(nickName).send(
+                        "RefreshMateSheepWith");
+                ServerSockets.NickSocketMap.get(nickName).send(
+                        nickNamePlayer + "," + region + "," + otherType + "," + newType);
+            }
+
+        }
     }
 
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
@@ -166,9 +182,11 @@ public class SocketTrasmission extends TrasmissionController {
             case 3:
                 return askBuyLand(nickName);
             case 4:
-            //return askMateSheepWith(nickName);
+                return askMateSheepWith(nickName, OvineType.SHEEP.toString());
             case 5:
-            // return askKillOvine(nickName);
+                return askMateSheepWith(nickName, OvineType.RAM.toString());
+            case 6:
+            //return askKillOvine(nickName);
         }
         return false;
     }
@@ -239,8 +257,42 @@ public class SocketTrasmission extends TrasmissionController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String askMateSheepWith(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean askMateSheepWith(String nickName, String type) {
+        ServerSockets.NickSocketMap.get(nickName).send("MateSheepWith");
+        String parameters = ServerSockets.NickSocketMap.get(nickName).receive();
+
+        DebugLogger.println(parameters);
+
+        //splitto i parametri
+        String[] token = parameters.split(",");
+        String shepherd = token[0];
+        String region = token[1];
+
+        String result = super.getNick2PlayerMap().get(nickName).mateSheepWith(
+                shepherd, region, type);
+
+        //invio il risultato al client
+        DebugLogger.println(result);
+
+        if (result.contains("Accoppiamento eseguito")) {
+            token = result.split(",");
+            //token1 ha il tipo creato
+
+            DebugLogger.println(
+                    "invio risultato mateSheepWith " + result + "," + token[1]);
+            ServerSockets.NickSocketMap.get(nickName).send(
+                    result + "," + type);
+
+            refreshMateSheepWith(nickName, region, type, token[1]);
+            return true;
+        } else if (result.equals(
+                "Il valore del dado è diverso dalla strada del pastore")) {
+            ServerSockets.NickSocketMap.get(nickName).send(result);
+            return true;
+        }
+        ServerSockets.NickSocketMap.get(nickName).send(result);
+        return false;
+
     }
 
     public void askThrowDice(String nickName) {
