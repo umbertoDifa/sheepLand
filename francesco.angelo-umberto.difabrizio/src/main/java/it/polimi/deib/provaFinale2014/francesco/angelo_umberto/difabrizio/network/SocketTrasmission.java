@@ -57,6 +57,12 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * Invia una stringa del tipo [Cosa è successo alla pecora nera],[regione
+     * della pecora nera]
+     *
+     * @param movementResult
+     */
     private void refreshBlackSheep(String movementResult) {
         for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -264,9 +270,9 @@ public class SocketTrasmission extends TrasmissionController {
 
     @Override
     public void refreshSpecialAnimal(SpecialAnimal animal, String movementResult) {
-        if(animal instanceof BlackSheep){
+        if (animal instanceof BlackSheep) {
             this.refreshBlackSheep(movementResult);
-        }else if(animal instanceof Wolf){
+        } else if (animal instanceof Wolf) {
             this.refreshWolf(movementResult);
         }
     }

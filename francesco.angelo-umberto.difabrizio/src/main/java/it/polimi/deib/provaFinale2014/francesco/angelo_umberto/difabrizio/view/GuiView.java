@@ -42,11 +42,11 @@ public class GuiView implements TypeOfView, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshBlackSheep(String regionIndex) {
+    public void refreshBlackSheep(String result) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshWolf(String regionIndex) {
+    public void refreshWolf(String result) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

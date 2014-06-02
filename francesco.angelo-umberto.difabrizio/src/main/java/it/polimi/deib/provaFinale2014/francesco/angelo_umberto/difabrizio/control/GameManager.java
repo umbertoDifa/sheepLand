@@ -543,46 +543,47 @@ public class GameManager implements Runnable {
     private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
-
+        int startRegionIndex = 0;
+        Region endRegion;
         //cerco la strada che dovrebbe attraversare
         Street potentialWalkthroughStreet;
+        int streetValue = Dice.roll();
+        
         try {
+            startRegionIndex = map.getNodeIndex(
+                    actualAnimalRegion);
+
             potentialWalkthroughStreet = this.map.getStreetByValue(
-                    actualAnimalRegion,
-                    Dice.roll());
+                    actualAnimalRegion, streetValue);
 
             //calcola regione d'arrivo
-            Region endRegion = this.map.getEndRegion(actualAnimalRegion,
+            endRegion = this.map.getEndRegion(actualAnimalRegion,
                     potentialWalkthroughStreet);
 
             //cerco di farlo passare (nel caso del lupo si occupa pure di farlo mangiare)
-            animal.moveThrough(potentialWalkthroughStreet,
+            String result = animal.moveThrough(potentialWalkthroughStreet,
                     endRegion);
 
             //tutto ok      
-            controller.refreshSpecialAnimal(animal, "" + map.getNodeIndex(
-                    endRegion));
+            controller.refreshSpecialAnimal(animal,
+                    result + "," + streetValue + "," + startRegionIndex + "," + map.getNodeIndex(
+                            endRegion));
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "err:" + ex.getMessage(), ex);
+                    "nok" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
-                    "err:" + ex.getMessage() + animal.toString() + " non si muove.");
-
+                    "nok" + "," + streetValue + "," + startRegionIndex);
         } catch (RegionNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "err:" + ex.getMessage(), ex);
+                    "nok" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
-                    "err:" + ex.getMessage() + animal.toString() + " non si muove.");
+                    "nok" + "," + streetValue + "," + startRegionIndex);
         } catch (NodeNotFoundException ex) {
-            //non può verificarsi perchè se la pecora si muove allora il nodo esiste
+            //non può accadere
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "err:" + ex.getMessage(), ex);
-
-        } catch (CannotMoveAnimalException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "err:" + ex.getMessage(), ex);
-            controller.refreshSpecialAnimal(animal,
-                    "err:" + ex.getMessage());
+                    "nok" + ex.getMessage(), ex);
+           controller.refreshSpecialAnimal(animal,
+                    "nok" + "," + streetValue + "," + startRegionIndex);
         }
     }
 

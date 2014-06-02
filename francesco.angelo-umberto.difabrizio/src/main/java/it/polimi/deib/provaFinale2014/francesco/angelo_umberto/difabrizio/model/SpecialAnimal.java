@@ -20,14 +20,12 @@ public abstract class SpecialAnimal {
     }
 
     /**
-     * Sposta l'animale attraverso una strada verso una regione
+     * Moves the animal through a street to the endRegion
      * @param street Strada da attraversare
      * @param endRegion Regione da raggiungere
-     * @throws CannotMoveAnimalException Se non è possibile muovere quell'animale
+     * @return Depends on the implementations
      */
-    public void moveThrough(Street street, Region endRegion) throws
-            CannotMoveAnimalException {
-    }
+    public abstract String moveThrough(Street street, Region endRegion);
 
     /**
      * 

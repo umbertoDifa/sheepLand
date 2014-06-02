@@ -40,9 +40,9 @@ public interface TypeOfView {
 
     public void refereshCard(String type, int value);
 
-    public void refreshBlackSheep(String regionIndex);
+    public void refreshBlackSheep(String result);
 
-    public void refreshWolf(String regionIndex);
+    public void refreshWolf(String result);
 
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions);

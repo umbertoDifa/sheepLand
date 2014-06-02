@@ -14,59 +14,66 @@ import java.util.logging.Logger;
 public class Wolf extends SpecialAnimal {
 
     /**
-     * Data una strada e una regione d'arrivo il lupo tenta di muoversi nella
-     * regione secondo le regole del gioco. Inoltre se nella regione d'arrivo
-     * esiste almeno una pecora il lupo la mangia.
+     * Given a street and an end region the wolf tries to move to that region
+     * following the rules of the game. If in the end region there exists at
+     * least one sheep the wolf eats it.
      *
      * @param street    Strada da attraversare
      * @param endRegion Regione da raggiungere
      *
-     * @throws CannotMoveWolfException Se la strada è sbarrata ma ce ne sono
-     *                                 altre aperte nella regione di partenza
-     *                                 del lupo
+     * @return If the wolf can easly move "Il lupo si muove,[type of ovine
+     *         eaten]"; if the wolf jumps the fence"Il lupo ha saltato la
+     *         recinzione ,[type of ovine eaten]"; if the wolf cannot move "Il
+     *         lupo tenta di muoversi ma la strada è sbarrata!"; type of ovine
+     *         eaten can be null
      */
     @Override
-    public void moveThrough(Street street, Region endRegion) throws
-            CannotMoveWolfException {
-
+    public String moveThrough(Street street, Region endRegion) {
+        String result;
+        String fenceJump;
         //cerco di far muover il lupo
         //se la strada non è sbarrata o tutta la regione è sbarrata
         if (!street.hasFence()) {
             this.setAt(endRegion);
+            result = "ok";
+            fenceJump = "nok";
         } else if (super.getMyRegion().isAllFenced()) {
             DebugLogger.println("Il lupo ha saltato la recinzione!");
             this.setAt(endRegion);
+            result = "ok";
+            fenceJump = "ok";
         } else {
             //la strada è sbarrata ma altre sono libere
-            throw new CannotMoveWolfException(
-                    "Il lupo tenta di muoversi ma la strada è sbarrata!");
+            return "nok";
+
         }
 
-        //se la regione d'arrivo ha pecore mangiane una
-        this.eatOvine(endRegion);
+        try {
+            //se la regione d'arrivo ha pecore mangiane una
+            return result + "," + fenceJump + "," + this.eatOvine(endRegion);
+        } catch (NoOvineException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return result + "," + fenceJump + "," + "nok";
+        }
 
     }
 
     /**
-     * se c è almeno una pecora, ne mangia una
+     * If there is at least one sheep, the wolf eats it
      *
-     * @param region
+     * @param region Region where the wolf has to eat
      */
-    private void eatOvine(Region region) {
-        try {
-            DebugLogger.println(
-                    "Tentativo di mangiare un tipo: " + OvineType.SHEEP);
-            //TODO questa funziona ritorna l'ovino rimosso
+    private String eatOvine(Region region) throws NoOvineException {
 
-            region.removeOvine(OvineType.SHEEP);
+        DebugLogger.println(
+                "Tentativo di mangiare un tipo: " + OvineType.SHEEP);
+        region.removeOvine(OvineType.SHEEP);
+        //se tutto va bene ritorna l'ovino mangiato
+        //in questo caso è sempre sheep ma può essere facilmente cambiato 
+        //considerando che removeOvine ritorna l'ovino rimosso
+        return "sheep";
 
-        } catch (NoOvineException ex) {
-            //non la mangiare perchè non c'è                
-
-            Logger.getLogger(DebugLogger.class
-                    .getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
-        }
     }
 
     @Override
