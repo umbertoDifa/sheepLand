@@ -176,6 +176,7 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void showInfo(String info) {
+        stdOut.println();
         stdOut.println(info);
         stdOut.flush();
     }

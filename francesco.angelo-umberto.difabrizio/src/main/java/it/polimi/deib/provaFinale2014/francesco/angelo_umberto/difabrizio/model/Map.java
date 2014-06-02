@@ -94,6 +94,7 @@ public class Map {
     public Wolf getWolf() {
         return wolf;
     }
+  
 
     /**
      * Data una region e un value ritorna la strada limitrofa alla regione con
@@ -508,5 +509,4 @@ public class Map {
 //            }
 //        }
 //    }
-
 }

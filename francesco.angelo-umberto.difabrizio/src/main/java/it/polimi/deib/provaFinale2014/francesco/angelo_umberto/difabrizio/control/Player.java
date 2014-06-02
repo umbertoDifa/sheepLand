@@ -80,9 +80,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     public void chooseAndMakeAction() throws RemoteException {
 
         boolean outcomeOk;
-        DebugLogger.println("action list in creazione");
         createActionList();
-        DebugLogger.println("action list creata");
         do {
             //raccogli la scelta
             outcomeOk = gameManager.controller.askChooseAction(playerNickName,
@@ -111,7 +109,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         if (canBuyCard()) {
             possibleAction += "3-Compra terreno,";
         }
-        DebugLogger.println("quo");
         possibleAction += "4-Accoppia pecore,";
         possibleAction += "5-Accoppia montone e pecora,";
         possibleAction += "6-Abbatti pecora";

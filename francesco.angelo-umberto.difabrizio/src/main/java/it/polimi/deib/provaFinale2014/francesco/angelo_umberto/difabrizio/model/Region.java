@@ -63,19 +63,16 @@ public class Region extends Node {
      * @return True se e solo se tutte le strade sono recintate
      */
     public boolean isAllFenced() {
-        List<Node> endStreets = this.getNeighbourNodes();
+        List<Street> endStreets = this.getNeighbourStreets();
         //per ogni strada limitrofa
-        for (Node s : endStreets) {
-            //se è una strada
-            if (s instanceof Street) {
-                //casto a strada
-                Street street = (Street) s;
-                //ritorno false se non ha un recinto
-                if (!street.hasFence()) {
-                    return false;
-                }
+        
+        for (Street s : endStreets) {
+            //ritorno false se non ha un recinto
+            if (!s.hasFence()) {
+                return false;
             }
         }
+
         //controllati tutti posso ritornare true
         return true;
     }
@@ -123,7 +120,7 @@ public class Region extends Node {
 
         int sheepToFind = 2;
         int mateToFind = 1;
-        
+
         for (int i = 0; i < this.getMyOvines().size()
                 && (foundedMate < mateToFind || foundedSheep < sheepToFind); i++) {
             if (this.getMyOvines().get(i).getType() == OvineType.SHEEP) {

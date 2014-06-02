@@ -559,8 +559,7 @@ public class GameManager implements Runnable {
                     endRegion);
 
             //tutto ok      
-            controller.refreshSpecialAnimal(animal, "" + this.map.getNodeIndex(
-                    this.map.getBlackSheep().getMyRegion()));
+            controller.refreshSpecialAnimal(animal, ""+map.getNodeIndex(endRegion));
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "err:" + ex.getMessage(), ex);
