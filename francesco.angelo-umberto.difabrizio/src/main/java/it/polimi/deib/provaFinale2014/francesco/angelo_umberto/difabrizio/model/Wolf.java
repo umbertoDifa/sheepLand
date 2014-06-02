@@ -56,10 +56,12 @@ public class Wolf extends SpecialAnimal {
         try {
             DebugLogger.println(
                     "Tentativo di mangiare un tipo: " + OvineType.SHEEP);
+            //TODO questa funziona ritorna l'ovino rimosso
+
             region.removeOvine(OvineType.SHEEP);
 
         } catch (NoOvineException ex) {
-                //non la mangiare perchè non c'è                
+            //non la mangiare perchè non c'è                
 
             Logger.getLogger(DebugLogger.class
                     .getName()).log(

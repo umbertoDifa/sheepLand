@@ -191,9 +191,10 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
                     possibleStreet) && startRegion != endRegion) {
                 //rimuovi ovino del tipo specificato
+                 Ovine movedOvine;
                 DebugLogger.println("Rimuovo ovino");
                 try {
-                    startRegion.removeOvine(
+                     movedOvine = startRegion.removeOvine(
                             OvineType.valueOf(typeToMove));
                 } catch (NoOvineException ex) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
@@ -202,8 +203,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return "Nessun ovino nella regione di partenza!";
                 }
                 DebugLogger.println("ovino rimosso");
-                //e aggiungilo nella regione d'arrivo
-                endRegion.addOvine(new Ovine(OvineType.valueOf(typeToMove)));
+                //e aggiungi, proprio quello rimosso nella regione d'arrivo
+                endRegion.addOvine(movedOvine);
                 return "Ovino mosso";
             }
         }

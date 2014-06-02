@@ -80,21 +80,26 @@ public class Region extends Node {
     }
 
     /**
-     * Rimuove dagli ovini di una regione quello che gli passo
+     * It removes an ovine of the specified type from a region and returns it
      *
      * @param type Tipo di ovino da cercare
+     * @return Removed Ovine
      *
-     * @throws NoOvineException Se l'ovino di quel tipo non c'è
+     * @throws NoOvineException If that ovine type does not exist
      */
-    public void removeOvine(OvineType type) throws NoOvineException {
+    public Ovine removeOvine(OvineType type) throws NoOvineException {
         //scorri la lista degli ovini fino a quando non trovi uno di quel tipo
         //scorri la lista degli ovini
         for (int i = 0; i < this.myOvines.size(); i++) {
             //il primo ovino che trovi del tipo che ti interessa 
             if (this.myOvines.get(i).getType() == type) {
-                //rimuovilo e ritorna
+                //salva il riferimento all'ovino che stai per uccidere
+                Ovine ovineToRemove =this.myOvines.get(i);
+                //rimuovilo 
                 this.myOvines.remove(i);
-                return;
+                
+                //ritorna l'ovino rimosso
+                return ovineToRemove;
             }
         }
         //se non lo trovi

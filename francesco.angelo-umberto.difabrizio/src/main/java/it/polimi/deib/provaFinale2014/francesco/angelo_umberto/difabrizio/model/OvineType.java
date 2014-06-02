@@ -19,7 +19,7 @@ public enum OvineType {
      *
      * @return Ritorna il tipo default di ovino(pecora)
      */
-    static OvineType getDefaultOvineType() {
+    protected static OvineType getDefaultOvineType() {
         return SHEEP;
     }
 
@@ -27,10 +27,21 @@ public enum OvineType {
      *
      * @return OvineType Un tipo a caso di ovino nella enum
      */
-    static OvineType getRandomOvineType() {
+    protected static OvineType getRandomOvineType() {
         //prendi un numero a caso appartenente al totale dei valori dell'enum
         int choice = random.nextInt(size);
         //ritorno l'ovino corrispondente
+        return OvineType.values()[choice];
+    }
+
+    public static OvineType getRandomLambEvolution() {
+        int choice;
+        do {
+            //prendi un numero a caso appartenente al totale dei valori dell'enum
+            choice = random.nextInt(size);
+            //finchè è uguale a lamb
+        } while (OvineType.values()[choice] == OvineType.LAMB);
+        
         return OvineType.values()[choice];
     }
 }

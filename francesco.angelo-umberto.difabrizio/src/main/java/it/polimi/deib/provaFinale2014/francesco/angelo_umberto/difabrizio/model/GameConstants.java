@@ -66,7 +66,12 @@ public enum GameConstants {
      * cambiamenti delle regole del gioco
      */
     PRICE_FOR_SHEEPSBURG(
-            GameConstants.STANDARD_WALLET_AMMOUNT.getValue() + GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
+            GameConstants.STANDARD_WALLET_AMMOUNT.getValue() + GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue()),
+    /**
+     * The age when the lamb evolves to ram or sheep
+     */
+    LAMB_EVOLUTION_AGE(2);
+    
     private final int value;
 
     GameConstants(int value) {

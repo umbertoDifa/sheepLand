@@ -387,18 +387,23 @@ public class GameManager implements Runnable {
     private void executeRounds() throws FinishedFencesException, RemoteException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
-        //TODO dicutere il fine giro per la discordanza 11recinti 12recintni
-        //se non è l'ultimo giro o il giocatore non è l'ultimo del giro
+        int numberOfShiftsMade = 0;
+
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
-            //TODO: spostare mossa pecora nera e controllo recinti?
             lastRound = this.executeShift(currentPlayer);
+
+            //aggiorno il numero di giri
+            numberOfShiftsMade++;
 
             //aggiorno il player che gioca 
             currentPlayer++;
             //conto in modulo playersNumber
             currentPlayer %= this.playersNumber;
+
+            evolveLambs();
+            broadcastInitialConditions();//FIXME non serve ad ogni giro, debug
 
             //controllo se ho finito il giro
             //se il prossimo a giocare è il primo del giro
@@ -406,7 +411,6 @@ public class GameManager implements Runnable {
                 //1)avvio il market  
                 //FIXME this.startMarket();
                 //2)muovo il lupo
-
                 DebugLogger.println("muovo lupo");
                 this.moveSpecialAnimal(this.map.getWolf());
                 DebugLogger.println("lupo mosso");
@@ -422,10 +426,8 @@ public class GameManager implements Runnable {
         controller.refreshCurrentPlayer(clientNickNames[player]);
 
         DebugLogger.println("Muovo pecora nera");
-
         //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
-        DebugLogger.println("pecora nera mossa");
 
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
@@ -434,7 +436,6 @@ public class GameManager implements Runnable {
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
             this.players.get(player).chooseAndMakeAction();
-
         }
 
         //se sono finiti i recinti normali chiamo l'ultimo giro
@@ -559,7 +560,8 @@ public class GameManager implements Runnable {
                     endRegion);
 
             //tutto ok      
-            controller.refreshSpecialAnimal(animal, ""+map.getNodeIndex(endRegion));
+            controller.refreshSpecialAnimal(animal, "" + map.getNodeIndex(
+                    endRegion));
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "err:" + ex.getMessage(), ex);
@@ -580,7 +582,7 @@ public class GameManager implements Runnable {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "err:" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
-                    "err:" + ex.getMessage() );
+                    "err:" + ex.getMessage());
         }
     }
 
@@ -661,5 +663,25 @@ public class GameManager implements Runnable {
             result += i + "posto: player" + classification[0][i] + "con" + classification[1][i];
         }
         return result;
+    }
+
+    private void evolveLambs() {
+        //per tutti gli ovini che sono agnelli
+        for (Region region : this.map.getRegions()) {
+            for (Ovine ovine : region.getMyOvines()) {
+                if (ovine.getType() == OvineType.LAMB) {
+                    //se l'età è quella della trasformazione
+                    if (ovine.getAge() == GameConstants.LAMB_EVOLUTION_AGE.getValue()) {
+                        //trasformalo
+                        ovine.setType(OvineType.getRandomLambEvolution());
+                    } else {
+                        //altrimenti
+                        //aumenta l'età
+                        ovine.setAge(ovine.getAge() + 1);
+                    }
+                }
+
+            }
+        }
     }
 }
