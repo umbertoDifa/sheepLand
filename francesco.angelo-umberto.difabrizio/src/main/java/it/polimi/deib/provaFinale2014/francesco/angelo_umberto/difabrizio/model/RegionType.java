@@ -9,7 +9,7 @@ import java.util.Random;
 public enum RegionType {
 	MOUNTAIN(0), HILL(1), COUNTRYSIDE(2), PLAIN(3), LAKE(4), DESERT(5), SHEEPSBURG(6);
         
-    private int index;
+    private final int index;
     //size dell'enum cached così non la ricalco ogni volta
     private static final int size = RegionType.values().length;
     //oggetto random cached

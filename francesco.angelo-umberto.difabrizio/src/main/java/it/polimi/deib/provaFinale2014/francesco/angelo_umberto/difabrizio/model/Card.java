@@ -8,7 +8,7 @@ public class Card {
     private int value;
     private int marketValue;
     
-    private RegionType type;
+    private final RegionType type;
     /**
      * 
      * @return Il tipo di regione della carta

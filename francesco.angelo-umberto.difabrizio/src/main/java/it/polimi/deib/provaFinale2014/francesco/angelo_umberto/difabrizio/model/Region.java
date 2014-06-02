@@ -12,13 +12,14 @@ import java.util.List;
 public class Region extends Node {
 
     final private RegionType type;
-    private List<Ovine> myOvines = new ArrayList<Ovine>();
+    private final List<Ovine> myOvines;
 
     /**
      * Costruisce una regione di tipo a caso fra i tipi di regione
      */
     public Region() {
         super();
+        this.myOvines = new ArrayList<Ovine>();
         this.type = RegionType.getDefaultRegionType();
     }
 
@@ -29,6 +30,7 @@ public class Region extends Node {
      */
     public Region(RegionType type) {
         super();
+        this.myOvines = new ArrayList<Ovine>();
         this.type = type;
     }
 

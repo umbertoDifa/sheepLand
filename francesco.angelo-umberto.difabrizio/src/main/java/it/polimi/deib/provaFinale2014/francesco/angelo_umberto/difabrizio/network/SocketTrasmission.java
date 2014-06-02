@@ -4,7 +4,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
-import java.rmi.RemoteException;
 import java.util.Map;
 
 public class SocketTrasmission extends TrasmissionController {
@@ -173,7 +172,7 @@ public class SocketTrasmission extends TrasmissionController {
 
         //ricevo i parametri
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
-        String token[] = result.split(",");
+        String[] token = result.split(",");
 
         result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0],
                 token[1], token[2]);
@@ -193,7 +192,7 @@ public class SocketTrasmission extends TrasmissionController {
 
         String result = ServerSockets.NickSocketMap.get(nickName).receive();
 
-        String token[] = result.split(",");
+        String[] token = result.split(",");
 
         //eseguo
         result = super.getNick2PlayerMap().get(nickName).moveShepherd(token[0],
@@ -221,7 +220,7 @@ public class SocketTrasmission extends TrasmissionController {
         //invio il risultato al client
         ServerSockets.NickSocketMap.get(nickName).send(result);
 
-        String token[] = result.split(",");
+        String[] token = result.split(",");
 
         if (result.contains("Carta acquistata")) {
             refreshBuyLand(nickName, token[1], token[2]);

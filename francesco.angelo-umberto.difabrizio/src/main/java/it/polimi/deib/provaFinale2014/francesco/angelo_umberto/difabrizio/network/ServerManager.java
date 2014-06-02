@@ -52,15 +52,16 @@ public class ServerManager {
                     server.start();
                 } else if (choice == 2) {
                     stringValid = true;
-                    ServerRmiImpl server = new ServerRmiImpl(serverName,
-                            "localhost", port);
+                    ServerRmiImpl server = new ServerRmiImpl(serverName, port);
                     server.start();
                 } else {
                     stdOut.println("La scelta inserita non è valida\n");
                     stdOut.flush();
 
                 }
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
                 stdOut.println("Scelta non valida\n");
                 stdOut.flush();
 

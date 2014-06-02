@@ -1,7 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
 import java.rmi.NotBoundException;
@@ -124,13 +123,13 @@ public class ClientRmi extends UnicastRemoteObject implements
      *         with the number of the action concatenated with null
      */
     public String chooseAction(String actions) {
-        String possibleActions[] = actions.split(",");
+        String[] possibleActions = actions.split(",");
 
-        int availableAcions[] = new int[possibleActions.length];
-        String actionsName[] = new String[possibleActions.length];
+        int[] availableAcions = new int[possibleActions.length];
+        String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
-            String token[] = possibleActions[i].split("-");
+            String[] token = possibleActions[i].split("-");
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
         }
@@ -144,6 +143,8 @@ public class ClientRmi extends UnicastRemoteObject implements
                 //TODO completare
             }
         } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);         
             //TODO gestire quando il client tenta di eseguire un metodo sul server
             //ma fallisce
         }
@@ -152,12 +153,12 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     private String moveOvine() throws RemoteException {
         String parameters = view.moveOvine();
-        String token[] = parameters.split(",");
+        String[] token = parameters.split(",");
 
         String result = playerRmi.moveOvineRemote(token[0], token[1], token[2]);
         view.showInfo(result);
         //se l'azione è andata a buon fine
-        if (result.equals("Ovino mosso!")) {
+        if ("Ovino mosso!".equals(result)) {
             //ritorna la stringa dei parametri tipo,arrivo,partenza
             return parameters;
         }
@@ -174,7 +175,7 @@ public class ClientRmi extends UnicastRemoteObject implements
         String result;
         try {
             result = view.askMoveShepherd();
-            String token[] = result.split(",");
+            String[] token = result.split(",");
             result = playerRmi.moveShepherdRemote(token[0], token[1]);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -214,10 +215,7 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     public void refereshCards(List<String> myCards) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void connectPlayerRemote(PlayerRemote playerRemote) {
-    }
+    }   
 
     public void disconnect(String message) {
         view.showInfo(message);
