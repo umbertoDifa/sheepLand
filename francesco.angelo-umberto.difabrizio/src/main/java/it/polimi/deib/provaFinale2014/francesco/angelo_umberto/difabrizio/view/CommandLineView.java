@@ -1,7 +1,10 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CommandLineView implements TypeOfView {
 
@@ -27,7 +30,7 @@ public class CommandLineView implements TypeOfView {
             stdOut.println(" recintata");
             stdOut.flush();
 
-        } else if (nickShepherd != null && !nickShepherd.equals("null")) {
+        } else if (nickShepherd != null && !"null".equals(nickShepherd)) {
             stdOut.println(" occupata da " + nickShepherd);
             stdOut.flush();
 
@@ -107,26 +110,6 @@ public class CommandLineView implements TypeOfView {
 
     }
 
-    public void buyLand() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void mateSheepWith() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void refreshMateSheepWith(int regionIndex, String ovineType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void killOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void refreshKillOvine(int regionIndex) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public void refereshCard(String type, int value) {
         showInfo("Hai una carta " + type + " di valore " + value);
 
@@ -160,19 +143,13 @@ public class CommandLineView implements TypeOfView {
                     showInfo("Azione non valida.\nPrego riprovare.");
                 }
             } catch (NumberFormatException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
                 showInfo("Azione non valida.\nPrego riprovare.");
 
             }
         } while (!correct);
         return action;
-    }
-
-    public int askIdShepherd() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public String askStreet() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void showInfo(String info) {
@@ -204,11 +181,6 @@ public class CommandLineView implements TypeOfView {
     public void showWelcome() {
         this.showInfo("Benvenuto, il gioco sta per iniziare!");
         //per ora la welcome da tastiera è una sringa normale
-    }
-
-    public void refreshMoveShepherd(String nickNameMover, String streetIndex) {
-        this.showInfo(
-                "Il giocatore " + nickNameMover + " ha spostato il suo pastore in " + streetIndex);
     }
 
     public void showEndGame() {

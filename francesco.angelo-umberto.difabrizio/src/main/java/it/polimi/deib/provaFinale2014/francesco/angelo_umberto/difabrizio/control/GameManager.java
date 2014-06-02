@@ -39,7 +39,7 @@ public class GameManager implements Runnable {
 
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
-    private String clientNickNames[];
+    private String[] clientNickNames;
     private final int playersNumber;
     protected TrasmissionController controller;
     /**

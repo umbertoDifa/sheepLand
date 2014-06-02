@@ -21,10 +21,9 @@ public class ClientSocket {
     //canali di comunicazione
     private Scanner serverIn;
     private PrintWriter serverOut;
-    private Scanner stdIn;
 
     //variabili dei metodi
-    private String token[];
+    private String[] token;
     private String received;
 
     public ClientSocket(String ip, int port, TypeOfView view, String nickName) {
@@ -47,8 +46,7 @@ public class ClientSocket {
             //creo printwriter verso server
             serverOut = new PrintWriter(socket.getOutputStream());
 
-            //creo scanner da tastiera
-            stdIn = new Scanner(System.in);
+           
             DebugLogger.println(
                     "Canali di comunicazione impostati\nAttento ordine dal server");
 
@@ -86,45 +84,47 @@ public class ClientSocket {
                 received = receiveString();
                 DebugLogger.println(received);
 
-                if (received.equals("Welcome")) {
+                if ("Welcome".equals(received)) {
                     welcome();
-                } else if (received.equals("RefreshRegion")) {
+                } else if ("RefreshRegion".equals(received)) {
                     refreshRegion();
-                } else if (received.equals("RefreshStreet")) {
+                } else if ("RefreshStreet".equals(received)) {
                     refreshStreet();
-                } else if (received.equals("RefreshGameParameters")) {
+                } else if ("RefreshGameParameters".equals(received)) {
                     refreshGameParameters();
-                } else if (received.equals("RefreshCurrentPlayer")) {
+                } else if ("RefreshCurrentPlayer".equals(received)) {
                     refreshCurrentPlayer();
-                } else if (received.equals("RefreshCard")) {
+                } else if ("RefreshCard".equals(received)) {
                     refreshCard();
-                } else if (received.equals("RefreshBlackSheep")) {
+                } else if ("RefreshBlackSheep".equals(received)) {
                     refreshBlackSheep();
-                } else if (received.equals("RefreshMoveShepherd")) {
+                } else if ("RefreshMoveShepherd".equals(received)) {
                     refreshMoveShepherd();
-                } else if (received.equals("RefreshBuyLand")) {
+                } else if ("RefreshBuyLand".equals(received)) {
                     refreshBuyLand();
-                } else if (received.equals("RefreshMoveOvine")) {
+                } else if ("RefreshMoveOvine".equals(received)) {
                     refreshMoveOvine();
-                } else if (received.equals("RefreshWolf")) {
+                } else if ("RefreshWolf".equals(received)) {
                     refreshWolf();
-                } else if (received.equals("SetUpShepherd")) {
+                } else if ("SetUpShepherd".equals(received)) {
                     setUpShepherd();
-                } else if (received.equals("ChooseAction")) {
+                } else if ("ChooseAction".equals(received)) {
                     chooseAction();
-                } else if (received.equals("MoveOvine")) {
+                } else if ("MoveOvine".equals(received)) {
                     moveOvine();
-                } else if (received.equals("MoveShepherd")) {
+                } else if ("MoveShepherd".equals(received)) {
                     moveShepherd();
-                } else if (received.equals("BuyLand")) {
+                } else if ("BuyLand".equals(received)) {
                     buyLand();
-                } else if (received.equals("MateSheepWith")) {
+                } else if ("MateSheepWith".equals(received)) {
                     mateSheepWith();
-                } else if (received.equals("KillOvine")) {
+                } else if ("KillOvine".equals(received)) {
                     killOvine();
                 }
             }
         } catch (NoSuchElementException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
             view.showEndGame();
         }
     }
@@ -222,10 +222,10 @@ public class ClientSocket {
         //receive possible actions
         String actions = receiveString();
 
-        String possibleActions[] = actions.split(",");
+        String[] possibleActions = actions.split(",");
 
-        int availableAcions[] = new int[possibleActions.length];
-        String actionsName[] = new String[possibleActions.length];
+        int[] availableAcions = new int[possibleActions.length];
+        String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
             token = possibleActions[i].split("-");

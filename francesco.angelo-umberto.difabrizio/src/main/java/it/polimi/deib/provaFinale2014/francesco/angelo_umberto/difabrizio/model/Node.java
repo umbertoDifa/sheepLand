@@ -8,7 +8,7 @@ import java.util.List;
  * @author Francesco
  */
 public abstract class Node { 
-    private List<Node> neighbourNodes;
+    private final List<Node> neighbourNodes;
 
     public Node() {
         this.neighbourNodes = new ArrayList<Node>();

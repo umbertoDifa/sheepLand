@@ -1,8 +1,8 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
-import static it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerSockets.activatedGames;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -83,21 +83,20 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
     private final int port;
     private final String serverName;
-    private final String ip;
 
+    private final PrintWriter stdOut = new PrintWriter(System.out);
     /**
      * Lista dei nickNames dei client che sono in coda per iniziare una partita
      */
     private List<String> clientNickNames = new ArrayList<String>();
     protected static HashMap<String, RmiClientProxy> NickClientRmiMap = new HashMap<String, RmiClientProxy>();
 
-    public ServerRmiImpl(String serverName, String ip, int port) throws
+    public ServerRmiImpl(String serverName, int port) throws
             RemoteException {
         myThread = new Thread(this);
 
         this.port = port;
         this.serverName = serverName;
-        this.ip = ip;
 
         this.maxNumberOfGames = DEFAULT_MAX_GAMES;
         this.maxClientsForGame = DEFAULT_MAX_CLIENTS_FOR_GAME;
@@ -126,7 +125,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
             //Faccio il bind della mia istanza remota con un nome specifico
             registry.rebind(serverName, this);
 
-            System.out.println("ServerRmi caricato.");
+            stdOut.println("ServerRmi caricato.");
+            stdOut.flush();
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
@@ -182,7 +182,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
             
             activatedGames++;
             
-            System.out.println("Partita numero " + activatedGames + " avviata.");
+            stdOut.println("Partita numero " + activatedGames + " avviata.");
+            stdOut.flush();
 
         } else {
             handleClientRejection(
@@ -241,7 +242,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
             try {
                 //avvio il timer
 
-                this.myThread.sleep(timeoutAccept);
+                Thread.sleep(timeoutAccept);
 
                 DebugLogger.println("Timer finito");
 

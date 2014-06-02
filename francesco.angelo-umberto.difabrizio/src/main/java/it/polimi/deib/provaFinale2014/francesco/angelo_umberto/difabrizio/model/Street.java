@@ -7,7 +7,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
  */
 public class Street extends Node {
 
-    private int value;
+    private final int value;
     private Fence fence;
     private Shepherd shepherd;
 

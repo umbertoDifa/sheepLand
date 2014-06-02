@@ -51,12 +51,12 @@ public class ServerSockets implements Runnable {
      * process that waits for client's connections, it's set up by the
      * constructor.
      */
-    private int secondsBeforeAcceptTimeout;
+    private final int secondsBeforeAcceptTimeout;
 
     /**
      * Timeout in milliseconds for the client's connections
      */
-    private int timeoutAccept;
+    private final int timeoutAccept;
     /**
      * Thread timer
      */
@@ -76,6 +76,8 @@ public class ServerSockets implements Runnable {
      */
     protected static int activatedGames = 0;
 
+    private final PrintWriter stdOut = new PrintWriter(System.out);
+    
     private final int maxNumberOfGames;
     /**
      * Executes the threads which manage the games
@@ -126,8 +128,9 @@ public class ServerSockets implements Runnable {
             return;
         }
 
-        DebugLogger.println("Server pronto");
-        //System.out.println("Server pronto");
+        stdOut.println("Server pronto");
+        stdOut.flush();
+        
         this.handleClientRequest();
     }
 
@@ -204,7 +207,8 @@ public class ServerSockets implements Runnable {
             //aumento i giochi attivi
             activatedGames++;
 
-            System.out.println("Partita numero " + activatedGames + " avviata.");
+            stdOut.println("Partita numero " + activatedGames + " avviata.");
+            stdOut.flush();
         } else {
             //se non ci sono abbastanza giocatori
             handleClientRejection(
@@ -281,7 +285,7 @@ public class ServerSockets implements Runnable {
             try {
                 //avvio il timer
 
-                this.myThread.sleep(timeoutAccept);
+                Thread.sleep(timeoutAccept);
 
                 DebugLogger.println("Timer finito");
 

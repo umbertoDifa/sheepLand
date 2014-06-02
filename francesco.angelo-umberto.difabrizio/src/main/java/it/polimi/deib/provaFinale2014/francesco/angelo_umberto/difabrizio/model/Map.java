@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class Map {
 
-    private Node[] streets;
-    private Node[] regions;
+    private final Node[] streets;
+    private final Node[] regions;
     private final BlackSheep blackSheep;
     private final Wolf wolf;
 
