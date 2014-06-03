@@ -41,6 +41,8 @@ public interface TypeOfViewController {
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player);
+    
+    public void refreshMoney(String money);
 
     public void refereshCurrentPlayer(String currenPlayer);
 

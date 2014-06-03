@@ -1,6 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.ActionCancelledException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.ShepherdNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
@@ -22,7 +21,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,6 +68,10 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     public String getPlayerNickName() {
         return playerNickName;
+    }
+    
+    public Shepherd getMainShepherd(){
+        return shepherd[0];
     }
 
     /**

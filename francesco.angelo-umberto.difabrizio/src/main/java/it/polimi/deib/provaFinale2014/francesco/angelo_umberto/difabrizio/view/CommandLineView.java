@@ -255,7 +255,7 @@ public class CommandLineView implements TypeOfViewController {
     }
 
     public void showKillOvine(String region, String type) {
-        showInfo("Hai ucciso un "+type+" nella regione "+region);
+        showInfo("Hai ucciso un " + type + " nella regione " + region);
     }
 
     public void showMoveShepherd(String priceToMove) {
@@ -280,13 +280,15 @@ public class CommandLineView implements TypeOfViewController {
         }
 
     }
-    
-    
-    public void refreshKillOvine(String killer, String region, String type,String outcome) {
-        if("ok".equals(outcome)){
-            showInfo("Il giocatore "+killer+" ha ucciso un ovino "+type+" nella regione "+ region + "e ti ha pagato 2 denari");
-        }else{
-            showInfo("Il giocatore "+killer+" ha tentato di uccidere un "+type+" nella regione "+region);
+
+    public void refreshKillOvine(String killer, String region, String type,
+                                 String outcome) {
+        if ("ok".equals(outcome)) {
+            showInfo(
+                    "Il giocatore " + killer + " ha ucciso un ovino " + type + " nella regione " + region );
+        } else {
+            showInfo(
+                    "Il giocatore " + killer + " ha tentato di uccidere un " + type + " nella regione " + region);
         }
     }
 
@@ -297,5 +299,8 @@ public class CommandLineView implements TypeOfViewController {
                 + " nella regione " + region + " ed è nato un " + newType);
     }
 
+    public void refreshMoney(String money) {
+        showInfo("Ora hai " + money + " denari");
+    }
 
 }

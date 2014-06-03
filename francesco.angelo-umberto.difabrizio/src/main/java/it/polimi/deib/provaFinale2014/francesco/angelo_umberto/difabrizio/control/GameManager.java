@@ -379,6 +379,9 @@ public class GameManager implements Runnable {
                 controller.refreshStreet(client, i, fence, shepherdName);
             }
         }
+        
+        //broadcast money        
+        controller.refreshMoney();
 
     }
 

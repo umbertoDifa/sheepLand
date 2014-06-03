@@ -5,6 +5,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.rmi.RemoteException;
 import java.util.Map;
 
 public class SocketTrasmission extends TrasmissionController {
@@ -363,6 +364,16 @@ public class SocketTrasmission extends TrasmissionController {
             this.refreshBlackSheep(movementResult);
         } else if (animal instanceof Wolf) {
             this.refreshWolf(movementResult);
+        }
+    }
+
+    @Override
+    public void refreshMoney() throws RemoteException {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            ServerSockets.NickSocketMap.get(nickName).send("RefreshMoney");
+            ServerSockets.NickSocketMap.get(nickName).send(""+
+                    super.getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
         }
     }
 

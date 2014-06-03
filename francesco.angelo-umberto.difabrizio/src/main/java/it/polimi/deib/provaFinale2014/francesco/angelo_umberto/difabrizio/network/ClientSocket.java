@@ -92,6 +92,8 @@ public class ClientSocket {
                     refreshStreet();
                 } else if ("RefreshGameParameters".equals(received)) {
                     refreshGameParameters();
+                } else if ("RefreshMoney".equals(received)) {
+                    refreshMoney();
                 } else if ("RefreshCurrentPlayer".equals(received)) {
                     refreshCurrentPlayer();
                 } else if ("RefreshCard".equals(received)) {
@@ -199,15 +201,14 @@ public class ClientSocket {
         view.refreshMateSheepWith(token[0], token[1], token[2], token[3],
                 token[4]);
     }
-    
-    private void refreshKillOvine() {
-       received = receiveString();
-       
-       token = received.split(",");
-       
-       view.refreshKillOvine(token[0], token[1], token[2], token[3]);
-    }
 
+    private void refreshKillOvine() {
+        received = receiveString();
+
+        token = received.split(",");
+
+        view.refreshKillOvine(token[0], token[1], token[2], token[3]);
+    }
 
     private void refreshBuyLand() {
         received = receiveString();
@@ -348,5 +349,8 @@ public class ClientSocket {
         view.showWelcome();
     }
 
-    
+    private void refreshMoney() {
+        view.refreshMoney(receiveString());
+    }
+
 }
