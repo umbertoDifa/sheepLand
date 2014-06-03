@@ -36,6 +36,16 @@ public class Map {
         this.wolf = new Wolf();
     }
 
+    /**
+     * Converts a string to its Street object taking advantage of the array
+     * order of the streets.
+     *
+     * @param streetId Stringed id of the street
+     *
+     * @return Street object corresponding to that street
+     *
+     * @throws StreetNotFoundException If no street exists given that string
+     */
     public Street convertStringToStreet(String streetId) throws
             StreetNotFoundException {
         if (streetId.matches("\\d{1,2}")) {
@@ -53,6 +63,15 @@ public class Map {
         }
     }
 
+    /**
+     * The same of convertStringToStreet for the regions
+     *
+     * @param regionId the region id to convert
+     *
+     * @return The region object in that index
+     *
+     * @throws RegionNotFoundException If no region with that id is found
+     */
     public Region convertStringToRegion(String regionId) throws
             RegionNotFoundException {
         if (regionId.matches("\\d{1,2}")) {
@@ -450,10 +469,13 @@ public class Map {
 
         throw new NodeNotFoundException("Il nodo cercato non esiste");
     }
+
     /**
-     * It calsulates the number of ovine in a certain region type.
-     * Every ovine counts as 1, but the blackSheep count as  2
-     * @param type Region type 
+     * It calsulates the number of ovine in a certain region type. Every ovine
+     * counts as 1, but the blackSheep count as 2
+     *
+     * @param type Region type
+     *
      * @return number of ovines in that region including the blackSheep
      */
     public int numberOfOvineIn(RegionType type) {
@@ -468,7 +490,7 @@ public class Map {
             }
 
         }
-        
+
         //aggiunge +2 per la pecora nera se c'è
         if (blackSheep.getMyRegion().getType() == type) {
             numOvines += GameConstants.BLACKSHEEP_WEIGHT.getValue();

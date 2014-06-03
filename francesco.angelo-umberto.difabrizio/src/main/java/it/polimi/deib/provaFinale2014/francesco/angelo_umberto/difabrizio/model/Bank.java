@@ -107,7 +107,13 @@ public class Bank {
             }
         }
     }
-
+    /**
+     * Given a type of card it returns its price, which means the price of 
+     * the first available card of that type in the bank
+     * @param type Type of card
+     * @return The price
+     * @throws MissingCardException If no card of that type is found
+     */
     public int getPriceOfCard(RegionType type) throws MissingCardException {
         //chiamo la find card e ritorno il prezzo
         if (type != RegionType.SHEEPSBURG) {
@@ -130,7 +136,11 @@ public class Bank {
         throw new MissingCardException(
                 "Non ci sono più carte per il tipo " + type.toString());
     }
-
+    /**
+     * It returns a fence taking it from tha unused ones
+     * @return A fence
+     * @throws FinishedFencesException If there are no more fences
+     */
     public Fence getFence() throws FinishedFencesException {
         //questo valore avrà sempre senso per come è implementata la numberOfUsedFence
         int position = this.numberOfUsedFence();

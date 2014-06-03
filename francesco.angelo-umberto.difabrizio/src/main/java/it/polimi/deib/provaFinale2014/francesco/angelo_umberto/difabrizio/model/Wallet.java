@@ -9,6 +9,11 @@ public class Wallet {
 
     private int amount;
 
+    /**
+     * Creates a wallet with a given ammount of money
+     *
+     * @param amount money to put in the wallet
+     */
     public Wallet(int amount) {
         this.amount = amount;
     }
@@ -21,6 +26,11 @@ public class Wallet {
         return amount;
     }
 
+    /**
+     * Sets the ammount of money in the waller
+     *
+     * @param amount Ammount of money to set in the wallet
+     */
     public void setAmount(int amount) {
         this.amount = amount;
     }

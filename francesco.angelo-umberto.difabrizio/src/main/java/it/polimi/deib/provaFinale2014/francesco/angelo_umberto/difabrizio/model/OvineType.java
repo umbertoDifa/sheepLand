@@ -9,7 +9,18 @@ import java.util.Random;
  */
 public enum OvineType {
 
-    SHEEP, RAM, LAMB;
+    /**
+     * Type of ovine sheep
+     */
+    SHEEP,
+    /**
+     * Type of ovine ram
+     */
+    RAM,
+    /**
+     * Type of ovine lamb
+     */
+    LAMB;
     //size dell'enum cached così non la ricalco ogni volta
     private static final int size = OvineType.values().length;
     //oggetto random cached
@@ -34,6 +45,12 @@ public enum OvineType {
         return OvineType.values()[choice];
     }
 
+    /**
+     * It return a ramndom type between the ovineTypes which will be the future
+     * one of the lamb. Of course it won't be a lamb type
+     *
+     * @return A ramndom type for the lamb evolution
+     */
     public static OvineType getRandomLambEvolution() {
         int choice;
         do {
@@ -41,7 +58,7 @@ public enum OvineType {
             choice = random.nextInt(size);
             //finchè è uguale a lamb
         } while (OvineType.values()[choice] == OvineType.LAMB);
-        
+
         return OvineType.values()[choice];
     }
 }

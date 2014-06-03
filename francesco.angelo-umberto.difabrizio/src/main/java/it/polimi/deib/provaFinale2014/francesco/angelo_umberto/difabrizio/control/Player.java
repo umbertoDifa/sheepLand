@@ -32,11 +32,24 @@ import java.util.logging.Logger;
  */
 public class Player extends UnicastRemoteObject implements PlayerRemote {
 
+    /**
+     * It's the list of shepherd of a given player
+     */
     protected final Shepherd[] shepherd;
 
     private final GameManager gameManager;
     private final String playerNickName;
+    /**
+     * It's the code of the last action performed by the player int the current
+     * shift It can be NO_ACTION if the player didn't make any action, so this
+     * is the case of the first action of each shift
+     */
     protected int lastAction;
+    /**
+     * It's the last shepherd who was used by the player to make an action. It's
+     * null if no shepherd was used, which means the player didn't make any
+     * action in the current shift
+     */
     protected Shepherd lastShepherd;
     private final String noSameShepherdString = "Non è possibile muovere due pastori diversi nello stesso turno";
 
@@ -46,6 +59,17 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     private String possibleAction;
 
+    /**
+     * Creates a player connected to a given gameManager and one and only one
+     * player = client. It sets up the array of shepherd as well as their wallet
+     * ammount. It sets up the sharing of wallet and cards between shepherds of
+     * the same player
+     *
+     * @param gameManager    The game manager controlling the game
+     * @param playerNickName The nickName to whom the player is associated
+     *
+     * @throws RemoteException When the remote rmi call fails
+     */
     public Player(GameManager gameManager, String playerNickName) throws
             RemoteException {
         this.playerNickName = playerNickName;
@@ -69,10 +93,22 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     }
 
+    /**
+     * Returns the player nickName
+     *
+     * @return Player nickName
+     */
     public String getPlayerNickName() {
         return playerNickName;
     }
 
+    /**
+     * It returns the first shepherd of the array, which is the main one since
+     * it always exists and it's also the one which creates the wallet and teh
+     * cards that the others shepherd share with
+     *
+     * @return The first shepherd
+     */
     public Shepherd getMainShepherd() {
         return shepherd[0];
     }
@@ -365,12 +401,23 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return ex.getMessage();
         }
 
-//sposta il pastore 
+        //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
 
         return "Pastore posizionato correttamente!";
     }
 
+    /**
+     * It's the method called by the client to set up the shepherd which in turn
+     * call the setShepherd
+     *
+     * @param idShepherd     id of the shepherd to set
+     * @param stringedStreet Street where to set the shepherd
+     *
+     * @return The result of the action
+     *
+     * @throws RemoteException When the rmi connection fails
+     */
     public String setShepherdRemote(int idShepherd, String stringedStreet)
             throws RemoteException {
         return this.setShepherd(idShepherd, stringedStreet);
@@ -643,6 +690,19 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return "Non è possibile l'accoppiamento nella regione indicata";
     }
 
+    /**
+     * The method checks the arguments to verify that they correspond to real
+     * parameters. Then it roll the dice to see if the player can kill an ovine,
+     * in case of success it calculates the amount of money needed to pay the
+     * silence of the other player. If all these conditions are respected than
+     * the given type of ovine is killed, and the killer pays the silence
+     *
+     * @param shepherdNumber The shepherd who kills the ovine
+     * @param region         The region of the ovine
+     * @param typeToKill     The typo of ovine to kill
+     *
+     * @return The result of the action
+     */
     public String killOvine(String shepherdNumber, String region,
                             String typeToKill) {
         int shepherdIndex;
@@ -749,10 +809,16 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     }
 
+    /**
+     * The method to sell cards of a player
+     */
     public void sellCards() {
         //TODO
     }
 
+    /**
+     * The method to buy cards in the market
+     */
     public void buyCards() {
         //TODO
     }
@@ -853,17 +919,45 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         throw new OvineNotFoundExeption("La stringa non è un tipo di ovino.");
     }
 
+    /**
+     * It's the remote interface to call the method moveShepherd
+     *
+     * @param shepherdIndex shepherd to move
+     * @param newStreet     end street of the shepherd
+     *
+     * @return the result of the action
+     *
+     * @throws RemoteException When the rmi connection fails
+     */
     public String moveShepherdRemote(String shepherdIndex, String newStreet)
             throws
             RemoteException {
         return this.moveShepherd(shepherdIndex, newStreet);
     }
 
+    /**
+     * Calls the method move ovine.
+     *
+     * @param startRegion Region of the ovine
+     * @param endRegion   Region where to move the ovine
+     * @param type        Type of ovine to move
+     *
+     * @return The result of the action
+     */
     public String moveOvineRemote(String startRegion, String endRegion,
                                   String type) {
         return this.moveOvine(startRegion, endRegion, type);
     }
 
+    /**
+     * Calls the method buyLand. It' tryes to buy a land given the type
+     *
+     * @param regionType Type of land to buy
+     *
+     * @return the result of the action
+     *
+     * @throws RemoteException When the rmi connection fails
+     */
     public String buyLandRemote(String regionType) throws RemoteException {
         return buyLand(regionType);
     }

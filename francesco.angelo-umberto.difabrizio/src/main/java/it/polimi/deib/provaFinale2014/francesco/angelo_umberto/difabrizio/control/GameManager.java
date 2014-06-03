@@ -33,21 +33,45 @@ import java.util.logging.Logger;
  */
 public class GameManager implements Runnable {
 
-    private Thread myThread;
-
+    private final Thread myThread;
+    /**
+     * The map of a certain game. It holds the charateristics of the region and
+     * of the streets as well as the position of the blackSheep and the wolf
+     */
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
     private String[] clientNickNames;
     private final int playersNumber;
+    /**
+     * It's the controller of the trasmission, it has the duty of use the right
+     * trasmission between server and client (rmi or socket)
+     */
     protected TrasmissionController controller;
     /**
      * rappresenterà il segnalino indicante il primo giocatore del giro
      */
     private int firstPlayer;
+    /**
+     * It's the player currently playing
+     */
     protected int currentPlayer;
+    /**
+     * It's the number of shepherd that each player has
+     */
     protected final int shepherd4player;
+    /**
+     * It's the bank which stores fences and cards so that the game manager can
+     * take them during the game
+     */
     protected final Bank bank;  //per permettere a player di usarlo
 
+    /**
+     * Creates a game manager connecting it to a given list of clientNickNames
+     * and with a specified type of connection
+     *
+     * @param clientNickNames NickNames of the clients connected to the game
+     * @param controller      Type of connection between cllient and server
+     */
     public GameManager(List<String> clientNickNames,
                        TrasmissionController controller) {
 
@@ -86,6 +110,9 @@ public class GameManager implements Runnable {
         myThread = new Thread(this);
     }
 
+    /**
+     * It's the method to start the gameManager as a thread
+     */
     public void start() {
         myThread.start();
     }
@@ -395,14 +422,14 @@ public class GameManager implements Runnable {
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
-            
+
             //before starting anyone shift the last action is setted 
             //to none of the possibles
             players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
-            
+
             //the shepherd used is set to none too
             players.get(currentPlayer).lastShepherd = null;
-            
+
             lastRound = this.executeShift(currentPlayer);
 
             //aggiorno il player che gioca 
