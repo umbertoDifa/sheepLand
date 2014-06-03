@@ -126,7 +126,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         createActionList();
         do {
             //raccogli la scelta
-            outcomeOk = gameManager.controller.askChooseAction(playerNickName,
+            outcomeOk = gameManager.getController().askChooseAction(
+                    playerNickName,
                     possibleAction);
         } while (!outcomeOk);
     }
@@ -201,7 +202,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         for (Region region : regions) {
             try {
                 //prendi il prezzo della carta per ogni regione
-                price = this.gameManager.bank.getPriceOfCard(
+                price = this.gameManager.getBank().getPriceOfCard(
                         region.getType());
                 if (price < shepherdMoney) {
                     return true;
@@ -318,8 +319,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         String typeToMove;
 
         try {
-            startRegion = gameManager.map.convertStringToRegion(beginRegion);
-            endRegion = gameManager.map.convertStringToRegion(finishRegion);
+            startRegion = gameManager.getMap().convertStringToRegion(beginRegion);
+            endRegion = gameManager.getMap().convertStringToRegion(finishRegion);
 
         } catch (RegionNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
@@ -479,7 +480,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             //muovilo
             currentShepherd.moveTo(endStreet);
             try {
-                startStreet.setFence(this.gameManager.bank.getFence());
+                startStreet.setFence(this.gameManager.getBank().getFence());
 
             } catch (FinishedFencesException ex) {
                 Logger.getLogger(DebugLogger.class
@@ -498,7 +499,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             DebugLogger.println("Pagamento effettuato");
             currentShepherd.moveTo(endStreet);
             try {
-                startStreet.setFence(this.gameManager.bank.getFence());
+                startStreet.setFence(this.gameManager.getBank().getFence());
 
             } catch (FinishedFencesException ex) {
                 Logger.getLogger(DebugLogger.class
@@ -563,13 +564,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             for (String type : possibleRegionsType) {
                 if (type.equalsIgnoreCase(landToBuy)) {
                     //richiedi prezzo alla banca                    
-                    int cardPrice = this.gameManager.bank.getPriceOfCard(
+                    int cardPrice = this.gameManager.getBank().getPriceOfCard(
                             RegionType.valueOf(type));
                     //paga se puo
                     if (shepherd[0].ifPossiblePay(cardPrice)) {
                         //carta scquistabile
                         //recupero la carta dal banco
-                        Card card = this.gameManager.bank.getCard(
+                        Card card = this.gameManager.getBank().getCard(
                                 RegionType.valueOf(type));
 
                         //la do al pastore
@@ -624,7 +625,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             //controllo i dati sul pastore,sul tipo di ovino e sulla regione
             shepherdIndex = convertAndCheckShepherd(shepherdNumber);
             type = convertAndCheckOvineType(otherOvineType);
-            matingRegion = gameManager.map.convertStringToRegion(regionToMate);
+            matingRegion = gameManager.getMap().convertStringToRegion(
+                    regionToMate);
 
         } catch (ShepherdNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
@@ -715,7 +717,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             //controllo i dati sul pastore,sul tipo di ovino e sulla regione
             shepherdIndex = convertAndCheckShepherd(shepherdNumber);
             type = convertAndCheckOvineType(typeToKill);
-            regionOfTheMurder = gameManager.map.convertStringToRegion(region);
+            regionOfTheMurder = gameManager.getMap().convertStringToRegion(
+                    region);
 
         } catch (ShepherdNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
@@ -860,7 +863,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     private Street convertAndCheckStreet(String stringedStreet) throws
             StreetNotFoundException, BusyStreetException {
-        Street chosenStreet = gameManager.map.convertStringToStreet(
+        Street chosenStreet = gameManager.getMap().convertStringToStreet(
                 stringedStreet);
         DebugLogger.println("Conversione strada effettuata con successo");
         //se la strada è occuapata

@@ -15,6 +15,12 @@ import java.util.logging.Logger;
  */
 public class Client {
 
+    /**
+     * Starts the client asking the nickName, the type of connection and the
+     * type of view preferred
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         final String ip = "localhost";

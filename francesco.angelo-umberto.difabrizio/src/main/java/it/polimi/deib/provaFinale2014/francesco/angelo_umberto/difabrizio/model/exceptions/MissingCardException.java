@@ -5,10 +5,15 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
  * @author francesco.angelo-umberto.difabrizio
  */
 public class MissingCardException extends  Exception{
-
+    /**
+     * throws the exception
+     */
     public MissingCardException() {
     }
-
+    /**
+     * throws the exceptino with a message
+     * @param message message
+     */
     public MissingCardException(String message) {
         super(message);
     }

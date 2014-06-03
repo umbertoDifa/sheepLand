@@ -38,7 +38,7 @@ public class GameManager implements Runnable {
      * The map of a certain game. It holds the charateristics of the region and
      * of the streets as well as the position of the blackSheep and the wolf
      */
-    protected final Map map;
+    private final Map map;
     private List<Player> players = new ArrayList<Player>();
     private String[] clientNickNames;
     private final int playersNumber;
@@ -46,7 +46,7 @@ public class GameManager implements Runnable {
      * It's the controller of the trasmission, it has the duty of use the right
      * trasmission between server and client (rmi or socket)
      */
-    protected TrasmissionController controller;
+    private final TrasmissionController controller;
     /**
      * rappresenterà il segnalino indicante il primo giocatore del giro
      */
@@ -63,7 +63,7 @@ public class GameManager implements Runnable {
      * It's the bank which stores fences and cards so that the game manager can
      * take them during the game
      */
-    protected final Bank bank;  //per permettere a player di usarlo
+    private final Bank bank;  //per permettere a player di usarlo
 
     /**
      * Creates a game manager connecting it to a given list of clientNickNames
@@ -126,6 +126,18 @@ public class GameManager implements Runnable {
             //TODO chiamare una funzione per avviasare il server
             //oppure lo faccio io ovvero setto il nickName offline
         }
+    }
+
+    public TrasmissionController getController() {
+        return controller;
+    }
+
+    public Map getMap() {
+        return map;
+    }
+
+    public Bank getBank() {
+        return bank;
     }
 
     /**
