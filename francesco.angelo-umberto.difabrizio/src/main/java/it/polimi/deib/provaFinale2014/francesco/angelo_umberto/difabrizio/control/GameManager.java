@@ -20,7 +20,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.networ
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -396,6 +395,10 @@ public class GameManager implements Runnable {
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
+            
+            //before starting anyone shift the last action is setted 
+            //to none of the possibles
+            players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
             lastRound = this.executeShift(currentPlayer);
 
             //aggiorno il player che gioca 

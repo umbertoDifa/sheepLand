@@ -36,7 +36,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     private final GameManager gameManager;
     private final String playerNickName;
-
+    protected int lastAction;
+    private final String sameActionError = "Non puoi compiere la stessa azione in due volte consecutive";
     /**
      * Lista di azioni che un player può fare, si aggiorna ad ogni azione del
      * turno
@@ -101,7 +102,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         possibleAction = "";
 
         for (OvineType type : OvineType.values()) {
-            if (canMoveOvine(type)) {
+            if (canMoveOvine(type) && lastAction != ActionConstants.MOVE_OVINE.getValue()) {
                 possibleAction += "1-Sposta ovino,";
                 break;
             }
@@ -110,16 +111,16 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         possibleAction += "2-Sposta pastore,";
 
         //aggiungi acquisto carta se possibile
-        if (canBuyCard()) {
+        if (canBuyCard() && lastAction != ActionConstants.BUY_LAND.getValue()) {
             possibleAction += "3-Compra terreno,";
         }
-        if (canMateSheep()) {
+        if (canMateSheep() && lastAction != ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue()) {
             possibleAction += "4-Accoppia pecore,";
         }
-        if (canMateSheepWithRam()) {
+        if (canMateSheepWithRam() && lastAction != ActionConstants.MATE_SHEEP_WITH_RAM.getValue()) {
             possibleAction += "5-Accoppia montone e pecora,";
         }
-        if (canKillOvine()) {
+        if (canKillOvine() && lastAction != ActionConstants.KILL_OVINE.getValue()) {
             possibleAction += "6-Abbatti ovino";
         }
 
@@ -225,7 +226,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @return
      */
-    public String moveOvine(String beginRegion, String finishRegion, String type) {
+    public String moveOvine(String beginRegion, String finishRegion, String type) {        
 
         Region startRegion;
         Region endRegion;
@@ -269,6 +270,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 DebugLogger.println("ovino rimosso");
                 //e aggiungi, proprio quello rimosso nella regione d'arrivo
                 endRegion.addOvine(movedOvine);
+                lastAction = ActionConstants.MOVE_OVINE.getValue();
                 return "Ovino mosso";
             }
         }
@@ -374,7 +376,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 return "Recinti terminati";
             }
             DebugLogger.println("Pastore posizionato");
-
+            lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
             return "Pastore spostato,0";
         } else if (currentShepherd.ifPossiblePay(
                 GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
@@ -388,6 +390,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                         ex.getMessage(), ex);
                 return "Recinti terminati";
             }
+            lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
             return "Pastore spostato," + GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue();
 
         }
@@ -405,7 +408,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @return "Carta acquistata,[type],[price]" or an error string
      */
     public String buyLand(String landToBuy) {
-
+        
         //creo lista delle possibili regioni da comprare di un pastore
         List<String> possibleRegionsType = new ArrayList<String>();
 
@@ -431,6 +434,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
                         //la do al pastore
                         this.shepherd[0].addCard(card);
+                        lastAction = ActionConstants.BUY_LAND.getValue();
                         return "Carta acquistata," + type + "," + cardPrice;
                     } else {
                         return "Non hai abbastanza soldi per pagare la carta";
@@ -465,6 +469,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     public String mateSheepWith(String shepherdNumber, String regionToMate,
                                 String otherOvineType) {
 
+        
         int shepherdIndex;
         String type;
         Region matingRegion;
@@ -512,15 +517,17 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 if (type.equalsIgnoreCase(OvineType.SHEEP.toString())) {
 
                     matingRegion.addOvine(new Ovine(OvineType.SHEEP));
+                    lastAction = ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue();
                     return "Accoppiamento eseguito," + OvineType.SHEEP.toString();
 
                 } else if (type.equalsIgnoreCase(OvineType.RAM.toString())) {
 
                     matingRegion.addOvine(new Ovine(OvineType.LAMB));
+                    lastAction = ActionConstants.MATE_SHEEP_WITH_RAM.getValue();
                     return "Accoppiamento eseguito," + OvineType.LAMB.toString();
                 }
             } else {
-
+                lastAction = ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue();
                 return "Il valore del dado è diverso dalla strada del pastore";
             }
         }
@@ -528,7 +535,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     }
 
     public String killOvine(String shepherdNumber, String region,
-                            String typeToKill) {
+                            String typeToKill) {        
         int shepherdIndex;
         int numbOfShepherdToPay;
         List<Shepherd> shepherdToPay = new ArrayList<Shepherd>();
@@ -575,6 +582,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //lancio il dado del pastore se è come la sua strada
         int diceValue = Dice.roll();
         if (diceValue != shepherd[shepherdIndex].getStreet().getValue()) {
+            lastAction = ActionConstants.KILL_OVINE.getValue();
             return "Il valore del dado è diverso dalla strada del pastore";
         }
 
@@ -604,6 +612,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             try {
                 //ammazza l'ovino
                 regionOfTheMurder.removeOvine(OvineType.valueOf(type));
+                lastAction = ActionConstants.KILL_OVINE.getValue();
                 return "Ovino ucciso," + numbOfShepherdToPay;
             } catch (NoOvineException ex) {
                 //non può succedere perchè ho verificato prima che esista
@@ -613,6 +622,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
 
         } else {
+            lastAction = ActionConstants.KILL_OVINE.getValue();
             return "Non puoi pagare il silenzio degli altri pastori";
         }
 
@@ -648,39 +658,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             regions.addAll(street.getNeighbourRegions());
         }
         return regions;
-    }
-
-    /**
-     *
-     * @param street
-     *
-     * @return vero se il giocatore ha un pastore nella strada passata
-     */
-    private boolean hasShepherdIn(Street street) {
-        //per ogni suo pastore
-        for (Shepherd possibleShepherd : this.shepherd) {
-            if (possibleShepherd.getStreet().equals(street)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     *
-     * @param sheepherd
-     *
-     * @return ritorna vero se il pastore è del giocatore
-     */
-    private boolean ownsShepherd(Shepherd sheepherd) {
-        //per ogni patore del giocatore
-        for (Shepherd myShepherd : this.shepherd) {
-            //se corrisponde al pastore passato
-            if (myShepherd == sheepherd) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
