@@ -399,6 +399,10 @@ public class GameManager implements Runnable {
             //before starting anyone shift the last action is setted 
             //to none of the possibles
             players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
+            
+            //the shepherd used is set to none too
+            players.get(currentPlayer).lastShepherd = null;
+            
             lastRound = this.executeShift(currentPlayer);
 
             //aggiorno il player che gioca 
