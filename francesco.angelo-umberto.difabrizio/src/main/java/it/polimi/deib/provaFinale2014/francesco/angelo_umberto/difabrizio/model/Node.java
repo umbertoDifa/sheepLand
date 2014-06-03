@@ -17,7 +17,7 @@ public abstract class Node {
      * Aggiunge un link bidirezionale tra due nodi: il chiamante e il parametro
      * @param node Nodo con cui collegarsi
      */
-    public void connectTo(Node node){
+    protected void connectTo(Node node){
         this.addNeighbour(node);
         node.addNeighbour(this);
     }

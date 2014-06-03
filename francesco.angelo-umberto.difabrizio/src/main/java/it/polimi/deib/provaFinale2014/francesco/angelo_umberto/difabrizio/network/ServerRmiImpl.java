@@ -63,12 +63,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     /**
      * Thread del server
      */
-    Thread myThread;
+    private Thread myThread;
 
     /**
      * Executes the threads which manage the games
      */
-    ExecutorService executor = Executors.newCachedThreadPool();
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * The number of players waiting for a mach to start during an rmi
@@ -79,7 +79,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
      * It represents the number of active games. Since it's static it can be
      * modified by any thread which decrements it before dying
      */
-    protected static int activatedGames = 0;
+    private static int activatedGames = 0;
 
     private final int port;
     private final String serverName;
@@ -105,7 +105,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
     }
 
-    public void start() {
+    protected void start() {
         myThread.start();
     }
 

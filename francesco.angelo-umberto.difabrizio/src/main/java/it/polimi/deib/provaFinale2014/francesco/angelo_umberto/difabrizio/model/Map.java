@@ -451,7 +451,7 @@ public class Map {
         throw new NodeNotFoundException("Il nodo cercato non esiste");
     }
 
-    public int numOfOvineIn(RegionType type) {
+    public int numberOfOvineIn(RegionType type) {
         int numOvines = 0;
         //per ogni regione
         for (Node region : regions) {

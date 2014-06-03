@@ -107,11 +107,10 @@ public class Region extends Node {
     }
 
     /**
+     *It says if it is possible to meet a sheep with an other type of animal
+     * @param mateType Type of animal to meet the sheep with
      *
-     * @param mateType
-     *
-     * @return ritorna vero sse trova sia una pecora sia un ovino di tipo
-     *         mateType
+     * @return true if they can mate, false if not
      */
     public boolean isPossibleToMeetSheepWith(OvineType mateType) {
         //piouttosto che fare due for preferisco farne uno è 

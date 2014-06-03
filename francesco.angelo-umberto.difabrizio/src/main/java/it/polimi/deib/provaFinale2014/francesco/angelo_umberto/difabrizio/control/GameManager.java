@@ -33,12 +33,12 @@ import java.util.logging.Logger;
  */
 public class GameManager implements Runnable {
 
-    Thread myThread;
+   private  Thread myThread;
 
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
     private String[] clientNickNames;
-    protected final int playersNumber;
+    private final int playersNumber;
     protected TrasmissionController controller;
     /**
      * rappresenterà il segnalino indicante il primo giocatore del giro
@@ -325,7 +325,7 @@ public class GameManager implements Runnable {
         }
     }
 
-    public void startGame() throws RemoteException {
+    private void startGame() throws RemoteException {
         DebugLogger.println("SetUpGameAvviato");
         this.SetUpGame();
 
@@ -615,7 +615,7 @@ public class GameManager implements Runnable {
      *
      * @return player corrispondente al pastore
      */
-    protected String getPlayerNickNameByShepherd(Shepherd shepherd) {
+    private String getPlayerNickNameByShepherd(Shepherd shepherd) {
         for (Player player : players) {
             for (int i = 0; i < shepherd4player; i++) {
                 if (player.shepherd[i] == shepherd) {
@@ -637,7 +637,7 @@ public class GameManager implements Runnable {
             for (RegionType type : RegionType.values()) {
                 //aggiungo al suo punteggio num di pecore in quel tipo di regione per num di carte di quel tipo
                 classification[1][i] += player.shepherd[0].numOfMyCardsOfType(
-                        type) * map.numOfOvineIn(type);
+                        type) * map.numberOfOvineIn(type);
             }
             i++;
         }

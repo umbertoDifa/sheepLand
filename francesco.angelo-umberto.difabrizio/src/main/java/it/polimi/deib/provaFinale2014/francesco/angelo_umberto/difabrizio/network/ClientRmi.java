@@ -28,7 +28,7 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     private ServerRmi serverRmi;
     private PlayerRemote playerRmi;
-    Registry registry;
+    private Registry registry;
 
     public ClientRmi(String ip, int port, String nameServer, TypeOfViewController view,
                      String nickName) throws RemoteException {
@@ -40,7 +40,7 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     }
 
-    public void startClient() {
+    protected void startClient() {
         try {
             registry = LocateRegistry.getRegistry(ip, port);
 

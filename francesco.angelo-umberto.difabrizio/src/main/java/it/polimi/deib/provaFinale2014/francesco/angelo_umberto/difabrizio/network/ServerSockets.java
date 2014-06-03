@@ -74,7 +74,7 @@ public class ServerSockets implements Runnable {
      * It represents the number of active games. Since it's static it can be
      * modified by any thread which decrements it before dying
      */
-    protected static int activatedGames = 0;
+    private static int activatedGames = 0;
 
     private final PrintWriter stdOut = new PrintWriter(System.out);
     
@@ -82,14 +82,14 @@ public class ServerSockets implements Runnable {
     /**
      * Executes the threads which manage the games
      */
-    ExecutorService executor = Executors.newCachedThreadPool();
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     protected static HashMap<String, SocketClientProxy> NickSocketMap = new HashMap<String, SocketClientProxy>();
 
     /**
      * Thread del server
      */
-    Thread myThread;
+    private Thread myThread;
 
     public ServerSockets(int port) {
         myThread = new Thread(this);
@@ -107,7 +107,7 @@ public class ServerSockets implements Runnable {
 
     }
 
-    public void start() {
+    protected void start() {
         myThread.start();
     }
 

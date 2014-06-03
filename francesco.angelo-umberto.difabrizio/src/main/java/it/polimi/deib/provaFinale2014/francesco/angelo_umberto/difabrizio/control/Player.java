@@ -81,7 +81,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @throws java.rmi.RemoteException
      */
-    public void chooseAndMakeAction() throws RemoteException {
+    protected void chooseAndMakeAction() throws RemoteException {
 
         boolean outcomeOk;
         createActionList();
@@ -503,35 +503,35 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return "La regione non confina con il pastore indicato";
         }
 
-        boolean canMate = false;
-        //se il tipo per l'accoppiamento non è una pecora
-        if (OvineType.valueOf(type) != OvineType.SHEEP) {
+//        boolean canMate = false;
+//        //se il tipo per l'accoppiamento non è una pecora
+//        if (OvineType.valueOf(type) != OvineType.SHEEP) {
+//
+//            //controllo che la regione contienga una pecora e l'altro tipo di ovino
+//            if (matingRegion.hasOvine(OvineType.SHEEP) && matingRegion.hasOvine(
+//                    OvineType.valueOf(type))) {
+//                canMate = true;
+//            }
+//        } else {
+//            //conto le pecore
+//            int numbOfSheep = 0;
+//
+//            for (Shepherd shphd : shepherd) {
+//                for (Region region : shphd.getStreet().getNeighbourRegions()) {
+//                    for (Ovine ovine : region.getMyOvines()) {
+//                        if (ovine.getType() == OvineType.SHEEP) {
+//                            numbOfSheep++;
+//                        }
+//                    }
+//                    if (numbOfSheep >= 2) {
+//                        canMate = true;
+//                    }
+//                }
+//            }
+//
+//        }
 
-            //controllo che la regione contienga una pecora e l'altro tipo di ovino
-            if (matingRegion.hasOvine(OvineType.SHEEP) && matingRegion.hasOvine(
-                    OvineType.valueOf(type))) {
-                canMate = true;
-            }
-        } else {
-            //conto le pecore
-            int numbOfSheep = 0;
-
-            for (Shepherd shphd : shepherd) {
-                for (Region region : shphd.getStreet().getNeighbourRegions()) {
-                    for (Ovine ovine : region.getMyOvines()) {
-                        if (ovine.getType() == OvineType.SHEEP) {
-                            numbOfSheep++;
-                        }
-                    }
-                    if (numbOfSheep >= 2) {
-                        canMate = true;
-                    }
-                }
-            }
-
-        }
-
-        if (canMate) {
+        if (matingRegion.isPossibleToMeetSheepWith(OvineType.valueOf(type))) {
             //lancio il dado
             int diceValue = Dice.roll();
             if (diceValue == shepherd[shepherdIndex].getStreet().getValue()) {
@@ -723,7 +723,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @throws StreetNotFoundException
      * @throws BusyStreetException
      */
-    public Street convertAndCheckStreet(String stringedStreet) throws
+    private Street convertAndCheckStreet(String stringedStreet) throws
             StreetNotFoundException, BusyStreetException {
         Street chosenStreet = gameManager.map.convertStringToStreet(
                 stringedStreet);

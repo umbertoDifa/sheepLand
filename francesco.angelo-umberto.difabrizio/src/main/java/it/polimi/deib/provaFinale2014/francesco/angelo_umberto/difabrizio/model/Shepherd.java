@@ -102,7 +102,7 @@ public class Shepherd {
      * Rimuove una carta precisa da quelle appartenenti al pastore
      * @param card Carta da rimuovere
      */
-    public void removeCard(Card card) {
+    protected void removeCard(Card card) {
         this.myCards.remove(card);
     }
     

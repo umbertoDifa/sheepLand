@@ -30,7 +30,7 @@ public enum RegionType {
      * 
      * @return Il tipo default di regione(montagna)
      */
-    public static RegionType getDefaultRegionType(){
+    protected static RegionType getDefaultRegionType(){
         return MOUNTAIN;
     }
     /**
@@ -46,7 +46,7 @@ public enum RegionType {
      * Restitutisce una regione a caso. Tranne sheepsburg
      * @return Un tipo a caso di regione
      */
-    public static RegionType getRandomRegionType() {
+    protected static RegionType getRandomRegionType() {
         //prendi un numero a caso appartenente al totale dei valori dell'enum
         int choice = random.nextInt(size-1);
         //ritorno la region corrispondente

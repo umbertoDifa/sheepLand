@@ -43,7 +43,7 @@ public class SocketClientProxy {
      *
      * @param message
      */
-    public void send(String message) {
+    protected void send(String message) {
         toClient.println(message);
         //flusha lo stream e controlla eventuali errori
         toClient.checkError();
@@ -55,7 +55,7 @@ public class SocketClientProxy {
      *
      * @return la stringa ricevuta dal client
      */
-    public String receive() {
+    protected String receive() {
         //TODO:gestisci queste eccez
         String answer = fromClient.nextLine();
         return answer;

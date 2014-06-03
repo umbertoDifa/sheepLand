@@ -34,7 +34,7 @@ public class ClientSocket {
         this.nickName = nickName;
     }
 
-    public void startClient() {
+    protected void startClient() {
 
         try {
             //creo socket server
@@ -135,7 +135,7 @@ public class ClientSocket {
         }
     }
 
-    public void refreshRegion() {
+    private void refreshRegion() {
         //ricevo i nuovi parametri
         received = receiveString();
         token = received.split(",");
@@ -145,7 +145,7 @@ public class ClientSocket {
                 Integer.parseInt(token[3]));
     }
 
-    public void refreshStreet() {
+    private void refreshStreet() {
         received = receiveString();
         token = received.split(",");
 
@@ -153,7 +153,7 @@ public class ClientSocket {
                 token[1]), token[2]);
     }
 
-    public void refreshGameParameters() {
+    private void refreshGameParameters() {
         received = receiveString();
         token = received.split(",");
 
@@ -161,31 +161,31 @@ public class ClientSocket {
                 Integer.parseInt(token[2]));
     }
 
-    public void refreshCurrentPlayer() {
+    private void refreshCurrentPlayer() {
         //ricevo il nickName
         received = receiveString();
         view.refereshCurrentPlayer(received);
     }
 
-    public void refreshCard() {
+    private void refreshCard() {
         received = receiveString();
         token = received.split(",");
         view.refereshCard(token[0], Integer.parseInt(token[1]));
     }
 
-    public void refreshBlackSheep() {
+    private void refreshBlackSheep() {
         received = receiveString();
 
         view.refreshBlackSheep(received);
     }
 
-    public void refreshWolf() {
+    private void refreshWolf() {
         received = receiveString();
 
         view.refreshWolf(received);
     }
 
-    public void refreshMoveShepherd() {
+    private void refreshMoveShepherd() {
         received = receiveString();
 
         token = received.split(",");
@@ -222,7 +222,7 @@ public class ClientSocket {
         view.refreshMoveOvine(token[0], token[1], token[2], token[3]);
     }
 
-    public void setUpShepherd() {
+    private void setUpShepherd() {
         String shepherdIndex = receiveString();
 
         //chiedo strada dalla view
@@ -241,7 +241,7 @@ public class ClientSocket {
         }
     }
 
-    public void chooseAction() {
+    private void chooseAction() {
         //receive possible actions
         String actions = receiveString();
 
@@ -260,7 +260,7 @@ public class ClientSocket {
         sendString("" + view.chooseAction(availableAcions, actionsName));
     }
 
-    public void moveOvine() {
+    private void moveOvine() {
         //ottengo i parametri stratRegion, endRegion e Type dalla view
         String parameters = view.moveOvine();
 
@@ -278,7 +278,7 @@ public class ClientSocket {
         }
     }
 
-    public void moveShepherd() {
+    private void moveShepherd() {
         String result = view.askMoveShepherd();
 
         sendString(result);
@@ -294,7 +294,7 @@ public class ClientSocket {
         }
     }
 
-    public void buyLand() {
+    private void buyLand() {
         //inivio al server il territorio da acquistare
         sendString(view.askBuyLand());
 
@@ -310,7 +310,7 @@ public class ClientSocket {
 
     }
 
-    public void mateSheepWith() {
+    private void mateSheepWith() {
         String parameters = view.askMateSheepWith();
         sendString(parameters);
 
@@ -330,7 +330,7 @@ public class ClientSocket {
 
     }
 
-    public void killOvine() {
+    private void killOvine() {
         String parameters = view.askKilOvine();
         sendString(parameters);
 
@@ -347,7 +347,7 @@ public class ClientSocket {
         }
     }
 
-    public void welcome() {
+    private void welcome() {
         view.showWelcome();
     }
 
