@@ -53,11 +53,7 @@ public class GuiView implements TypeOfViewController, ActionListener {
     public int chooseAction(int[] availableActions,
             String[] availableStringedActions) {
         return gui.chooseAction(availableActions);
-    }
-
-    public void moveOvine(String type, String startRegion, String endRegion) {
-
-    }
+    }   
 
     public void moveShepherd(String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -132,16 +128,17 @@ public class GuiView implements TypeOfViewController, ActionListener {
     public String askKilOvine() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    public void showKillOvine(String region, String type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
 
     public void refreshKillOvine(String killer, String region, String type,String outcome) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void refreshMoney(String money) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showKillOvine(String region, String type, String shepherdPayed) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

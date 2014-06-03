@@ -44,7 +44,7 @@ public abstract class TrasmissionController {
 
     public abstract void refreshSpecialAnimal(SpecialAnimal animal,String movementResult) throws RemoteException;
     
-    public abstract void refreshMoney() throws RemoteException;
+    public abstract void refreshMoney(String nickName) throws RemoteException;
 
     /**
      * It refreshes to all the player except the nickName player, the action

@@ -254,8 +254,8 @@ public class CommandLineView implements TypeOfViewController {
                 "Hai acquistato la carta " + boughLand + " per " + price + " danari");
     }
 
-    public void showKillOvine(String region, String type) {
-        showInfo("Hai ucciso un " + type + " nella regione " + region);
+    public void showKillOvine(String region, String type,String shepherdPayed) {
+        showInfo("Hai ucciso un " + type + " nella regione " + region+" pagando "+shepherdPayed+" pastori per il silenzio");
     }
 
     public void showMoveShepherd(String priceToMove) {

@@ -584,7 +584,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return ex.getMessage();
         }
         
-        DebugLogger.println("controlli fatti");
         
         //se il pastore confina con la regione indicata
         boolean canKill = false;
@@ -592,9 +591,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             if (reg == regionOfTheMurder) {
                 canKill = true;
             }
-        }
-        
-        DebugLogger.println("controllo regione confinante");
+        }       
         
         if (!canKill) {
             return "La regione inserita non confina col tuo pastore";
@@ -604,7 +601,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return "Non esiste nessun " + type + " nella regione " + region;
         }
         
-        DebugLogger.println("controllo ovino esistente");
         
         //lancio il dado del pastore se è come la sua strada
         int diceValue = Dice.roll();
@@ -612,39 +608,32 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return "Il valore del dado è diverso dalla strada del pastore";
         }
         
-        DebugLogger.println("lancio dado pastore effettuato");
         
         //lancio il dado degli altri giocatori
         numbOfShepherdToPay = 0;        
         for (Street street : shepherd[shepherdIndex].getStreet().getNeighbourStreets()) {
-            if (street.hasShepherd() && Dice.roll() >= GameConstants.MIN_DICE_VALUE_TO_PAY_SILENCE.getValue()) {
+            if (street.hasShepherd() && Dice.roll() >=GameConstants.MIN_DICE_VALUE_TO_PAY_SILENCE.getValue()) {
                 //aumento il numero di pastori da pagare e lo inserisco nella lista
                 numbOfShepherdToPay++;
                 shepherdToPay.add(street.getShepherd());
             }
         }
         
-        DebugLogger.println("lancio dado degli altri giocatori");
-
         //calcolo se il pastore può pagare
         if (shepherd[0].ifPossiblePay(
                 numbOfShepherdToPay * GameConstants.PRICE_OF_SILENCE.getValue())) {
             //paga gli altri player
             
-            DebugLogger.println("pastore ha pagato il silenzio");
             DebugLogger.println("pastore paga "+shepherdToPay.size()+" pastori");
             
             for(Shepherd shp : shepherdToPay){
                 shp.getWallet().setAmount(shp.getWallet().getAmount() + GameConstants.PRICE_OF_SILENCE.getValue());
             }
             
-            try {
-                
-                DebugLogger.println("uccido l'ovino");
-                
+            try {                                
                 //ammazza l'ovino
                 regionOfTheMurder.removeOvine(OvineType.valueOf(type));
-                return "Ovino ucciso";
+                return "Ovino ucciso,"+numbOfShepherdToPay;
             } catch (NoOvineException ex) {
                 //non può succedere perchè ho verificato prima che esista
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,

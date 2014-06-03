@@ -23,11 +23,15 @@ public class Client {
 
         Scanner stdIn = new Scanner(System.in);
         PrintWriter stdOut = new PrintWriter(System.out);
+        String nickName;
+        do {
+            stdOut.println("Inserisci il tuo nickName:");
+            stdOut.flush();
 
-        stdOut.println("Inserisci il tuo nickName:");
-        stdOut.flush();
-
-        String nickName = stdIn.nextLine();
+            nickName = stdIn.nextLine();
+        } while ("".equals(nickName));
+        //da evitare come la peste la stringa vuota come nickname
+        //esplodono i satelliti della nasa
 
         boolean valid = false;
 

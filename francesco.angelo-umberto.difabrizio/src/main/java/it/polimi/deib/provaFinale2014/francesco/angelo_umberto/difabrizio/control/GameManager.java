@@ -379,9 +379,11 @@ public class GameManager implements Runnable {
                 controller.refreshStreet(client, i, fence, shepherdName);
             }
         }
-        
+        for (String client : clientNickNames) {
+            //broadcast money        
+            controller.refreshMoney(client);
+        }
         //broadcast money        
-        controller.refreshMoney();
 
     }
 
@@ -539,7 +541,6 @@ public class GameManager implements Runnable {
 //
 //        return chosenRegion;
 //    }
-   
     private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
@@ -548,7 +549,7 @@ public class GameManager implements Runnable {
         //cerco la strada che dovrebbe attraversare
         Street potentialWalkthroughStreet;
         int streetValue = Dice.roll();
-        
+
         try {
             startRegionIndex = map.getNodeIndex(
                     actualAnimalRegion);
@@ -582,7 +583,7 @@ public class GameManager implements Runnable {
             //non può accadere
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "nok" + ex.getMessage(), ex);
-           controller.refreshSpecialAnimal(animal,
+            controller.refreshSpecialAnimal(animal,
                     "nok" + "," + streetValue + "," + startRegionIndex);
         }
     }

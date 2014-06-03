@@ -253,7 +253,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshMoney() throws RemoteException {
+    public void refreshMoney(String nickName) throws RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

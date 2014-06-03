@@ -336,10 +336,12 @@ public class ClientSocket {
 
         //ottengo i lrisultato dell'operazione
         String result = receiveString();
-        DebugLogger.println(result);
+
         token = parameters.split(",");
-        if ("Ovino ucciso".equals(result)) {
-            view.showKillOvine(token[1], token[2]);
+        
+        if (result.contains("Ovino ucciso")) {
+            String[] tokenResult = result.split(",");
+            view.showKillOvine(token[1], token[2],tokenResult[1]);
         } else {
             view.showInfo(result);
         }

@@ -5,7 +5,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
-import java.rmi.RemoteException;
 import java.util.Map;
 
 public class SocketTrasmission extends TrasmissionController {
@@ -241,6 +240,9 @@ public class SocketTrasmission extends TrasmissionController {
         if (result.contains("Pastore spostato")) {
             //invia conferma riepilogativa agli utenti
             refreshMoveShepherd(nickName, token[0], token[1]);
+            
+            //invia refresh portafoglio
+            refreshMoney(nickName);
             return true;
         }
         return false;
@@ -261,6 +263,8 @@ public class SocketTrasmission extends TrasmissionController {
 
         if (result.contains("Carta acquistata")) {
             refreshBuyLand(nickName, token[1], token[2]);
+            //aggiorno i soldi del compratore
+            refreshMoney(nickName);
             return true;
         }
         return false;
@@ -277,11 +281,18 @@ public class SocketTrasmission extends TrasmissionController {
         DebugLogger.println(result);
         //invio risultato
         ServerSockets.NickSocketMap.get(nickName).send(result);
-        if ("Ovino ucciso".equals(result)) {
+        if (result.contains("Ovino ucciso")) {
 
             refreshKillOvine(nickName, token[1], token[2], "ok");
-            return true;
-        } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
+            
+            //se l'azione ha successo aggiorna i portafogli remoti
+            for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+                String nick = (String) pairs.getKey();
+                refreshMoney(nick);
+            }
+
+                return true;
+            }else if ("Non puoi pagare il silenzio degli altri pastori".equals(
                 result)) {
 
             refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
@@ -292,8 +303,10 @@ public class SocketTrasmission extends TrasmissionController {
             refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
             return true;
         }
-        return false;
-    }
+            return false;
+        }
+
+    
 
     public boolean askMateSheepWith(String nickName, String type) {
         ServerSockets.NickSocketMap.get(nickName).send("MateSheepWith");
@@ -368,13 +381,12 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshMoney() throws RemoteException {
-        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
-            String nickName = (String) pairs.getKey();
-            ServerSockets.NickSocketMap.get(nickName).send("RefreshMoney");
-            ServerSockets.NickSocketMap.get(nickName).send(""+
-                    super.getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
-        }
+    public void refreshMoney(String nickName) {
+
+        ServerSockets.NickSocketMap.get(nickName).send("RefreshMoney");
+        ServerSockets.NickSocketMap.get(nickName).send(""
+                + super.getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
+
     }
 
 }

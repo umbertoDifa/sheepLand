@@ -22,7 +22,7 @@ public interface TypeOfViewController {
     
     public void showMateSheepWith(String region, String otherType, String newType);
     
-    public void showKillOvine(String region, String type);
+    public void showKillOvine(String region, String type,String shepherdPayed);
 
     public String setUpShepherd(int idShepherd);
 
