@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CommandLineView implements TypeOfView {
+public class CommandLineView implements TypeOfViewController {
 
     private final PrintWriter stdOut = new PrintWriter(System.out);
     private final Scanner stdIn = new Scanner(System.in);
@@ -204,10 +204,25 @@ public class CommandLineView implements TypeOfView {
     public String askMoveShepherd() {
         showInfo("Scegliere quale pastore muovere:");
         String idShepherd = stdIn.nextLine();
+
         showInfo(
                 "Scegliere in quale strada spostare il pastore " + idShepherd + ":");
         String stringedStreet = stdIn.nextLine();
+
         return idShepherd + "," + stringedStreet;
+    }
+
+    public String askKilOvine() {
+        showInfo("Scegliere quale pastore ucciderà l'ovino:");
+        String idShepherd = stdIn.nextLine();
+
+        showInfo("Scegliere in quale regione uccidere:");
+        String stringedRegion = stdIn.nextLine();
+
+        showInfo("Scegliere che tipo di ovino uccidere:");
+        String type = stdIn.nextLine();
+
+        return idShepherd + "," + stringedRegion + "," + type;
     }
 
     public String askMateSheepWith() {
@@ -216,7 +231,7 @@ public class CommandLineView implements TypeOfView {
 
         showInfo("Scegli la regione dell'accoppiamento:");
         String region = stdIn.nextLine();
-       
+
         return idShepherd + "," + region;
     }
 
@@ -239,6 +254,10 @@ public class CommandLineView implements TypeOfView {
                 "Hai acquistato la carta " + boughLand + " per " + price + " danari");
     }
 
+    public void showKillOvine(String region, String type) {
+        showInfo("Hai ucciso un "+type+" nella regione "+region);
+    }
+
     public void showMoveShepherd(String priceToMove) {
         showInfo("Pastore spostato pagando " + priceToMove + " denari");
     }
@@ -249,10 +268,26 @@ public class CommandLineView implements TypeOfView {
     }
 
     public void refreshMateSheepWith(String nickName, String region,
-                                     String otherType, String newType) {
-        showInfo(
-                "Il giocatore " + nickName + " ha accoppiato una pecora con un "
-                + otherType + " nella regione " + region + " ed è nato un " + newType);
+                                     String otherType, String newType,
+                                     String outcome) {
+        if ("ok".equals(outcome)) {
+            showInfo(
+                    "Il giocatore " + nickName + " ha accoppiato una pecora con un "
+                    + otherType + " nella regione " + region + " ed è nato un " + newType + "!");
+        } else {
+            showInfo(
+                    "Il giocatore " + nickName + " ha tentato di accoppiare una pecora con un " + otherType + " ma ha fallito!");
+        }
+
+    }
+    
+    
+    public void refreshKillOvine(String killer, String region, String type,String outcome) {
+        if("ok".equals(outcome)){
+            showInfo("Il giocatore "+killer+" ha ucciso un ovino "+type+" nella regione "+ region + "e ti ha pagato 2 denari");
+        }else{
+            showInfo("Il giocatore "+killer+" ha tentato di uccidere un "+type+" nella regione "+region);
+        }
     }
 
     public void showMateSheepWith(String region, String otherType,
@@ -261,5 +296,6 @@ public class CommandLineView implements TypeOfView {
                 "Hai fatto accoppiare una pecora con un " + otherType
                 + " nella regione " + region + " ed è nato un " + newType);
     }
+
 
 }

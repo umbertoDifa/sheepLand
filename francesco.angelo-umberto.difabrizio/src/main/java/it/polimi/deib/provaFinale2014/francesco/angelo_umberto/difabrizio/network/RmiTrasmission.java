@@ -116,7 +116,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshKillOvine(String nickName) {
+    public void refreshKillOvine(String nickName,String region,String type,String outcome) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -188,7 +188,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public String askKillOvine(String nickName) {
+    public boolean askKillOvine(String nickName) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -247,7 +247,7 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public void refreshMateSheepWith(String nickName, String region,
-                                     String otherType, String newType) throws
+                                     String otherType, String newType,String outcome) throws
                                                                               RemoteException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

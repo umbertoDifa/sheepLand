@@ -3,7 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GuiView implements TypeOfView, ActionListener {
+public class GuiView implements TypeOfViewController, ActionListener {
 
     private final MyGui gui;
     
@@ -116,7 +116,7 @@ public class GuiView implements TypeOfView, ActionListener {
     }
 
     public void refreshMateSheepWith(String nickName, String region,
-                                    String otherType, String newType) {
+                                    String otherType, String newType,String outcome) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -126,6 +126,18 @@ public class GuiView implements TypeOfView, ActionListener {
 
     public void showMateSheepWith(String region, String otherType,
                                   String newType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askKilOvine() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showKillOvine(String region, String type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshKillOvine(String killer, String region, String type,String outcome) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -75,13 +75,8 @@ public class BlackSheepTest {
 
         //metto delle fence       
         map.getStreets()[14].setFence(new Fence(false));
-        try {
-            map.getBlackSheep().moveThrough(map.convertStringToStreet("14"),
-                    map.convertStringToRegion("10"));
-            fail("La pecora nera non può attraversare cancelli");
-        } catch (CannotMoveBlackSheepException e) {
-            //tutto ok
-        }
+        
+       
         
         map.getBlackSheep().moveThrough(map.convertStringToStreet("9"),
                 map.convertStringToRegion("7"));
@@ -90,13 +85,7 @@ public class BlackSheepTest {
         map.getStreets()[2].setShepherd(new Shepherd(
                 GameConstants.STANDARD_WALLET_AMMOUNT.getValue()));
         
-        try {
-            map.getBlackSheep().moveThrough(map.convertStringToStreet("2"),
-                    map.convertStringToRegion("4"));
-            fail("La pecora nera non può attraversare pastori");
-        } catch (CannotMoveBlackSheepException e) {
-            //tutto ok
-        }
+        
         
         assertSame(map.getBlackSheep().getMyRegion(), map.convertStringToRegion(
                 "7"));

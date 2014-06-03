@@ -117,7 +117,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         if (canMateSheepWithRam()) {
             possibleAction += "5-Accoppia montone e pecora,";
         }
-        possibleAction += "6-Abbatti pecora";
+        if (canKillOvine()) {
+            possibleAction += "6-Abbatti ovino";
+        }
 
     }
 
@@ -195,6 +197,17 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
         }
 
+        return false;
+    }
+
+    private boolean canKillOvine() {
+        for (Shepherd shphd : shepherd) {
+            for (Region region : shphd.getStreet().getNeighbourRegions()) {
+                if (!region.getMyOvines().isEmpty()) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -454,7 +467,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         String type;
         Region matingRegion;
 
-        
         try {
             //controllo i dati sul pastore,sul tipo di ovino e sulla regione
             shepherdIndex = convertAndCheckShepherd(shepherdNumber);
@@ -476,8 +488,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return ex.getMessage();
         }
 
-        
-
         //controllo se la regione chiesta confina con la strada del pastore indicato 
         boolean regionOk = false;
 
@@ -491,7 +501,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return "La regione non confina con il pastore indicato";
         }
 
-        
         boolean canMate = false;
         //se il tipo per l'accoppiamento non è una pecora
         if (OvineType.valueOf(type) != OvineType.SHEEP) {
@@ -519,119 +528,132 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
 
         }
-        
+
         if (canMate) {
             //lancio il dado
             int diceValue = Dice.roll();
             if (diceValue == shepherd[shepherdIndex].getStreet().getValue()) {
-                
+
                 //aggiungo un ovino alla regione in base al tipo dell'altro ovino
                 if (type.equalsIgnoreCase(OvineType.SHEEP.toString())) {
-                    
+
                     matingRegion.addOvine(new Ovine(OvineType.SHEEP));
                     return "Accoppiamento eseguito," + OvineType.SHEEP.toString();
 
                 } else if (type.equalsIgnoreCase(OvineType.RAM.toString())) {
-                    
+
                     matingRegion.addOvine(new Ovine(OvineType.LAMB));
                     return "Accoppiamento eseguito," + OvineType.LAMB.toString();
                 }
             } else {
-                
+
                 return "Il valore del dado è diverso dalla strada del pastore";
             }
         }
         return "Non è possibile l'accoppiamento nella regione indicata";
     }
 
-    public void killOvine() {
-//        Region chosenRegion;
-//        int randomValue;
-//        List<Shepherd> neighbourShepherds = new ArrayList<Shepherd>();
-//        int sumToPay = 0;
-//        String errorMessage = "";
-//        OvineType chosenOvineType = null;
-//
-//        //chiedi se lanciare e lancia il dado
-//        randomValue = this.gameManager.askAndThrowDice(playerNickName);
-//
-//        //per ogni strada del giocatore
-//        for (Street street : this.getShepherdsStreets()) {
-//            //se ha valore uguale al risultato del dado
-//            if ((street.getValue() == randomValue)) {
-//                try {
-//                    //scegliere regione da attaccare
-//                    chosenRegion = this.gameManager.askAboutRegion(
-//                            playerNickName,
-//                            "scegliere la regione da attaccare");
-//
-//                    //se ci sono animali
-//                    if (!chosenRegion.getMyOvines().isEmpty()) {
-//                        //per ogni strada vicina alla strada del pastore
-//                        for (Street nearStreet : street.getNeighbourStreets()) {
-//                            //se ha un pastore e non è dell'attaccante
-//                            if ((nearStreet.getShepherd() != null) && !(this.ownsShepherd(
-//                                    nearStreet.getShepherd()))) {
-//                                //aggiungilo ai pastori vicini
-//                                neighbourShepherds.add(nearStreet.getShepherd());
-//                            }
-//                        }
-//                        //per ogni pastore vicino
-//                        for (Shepherd neighbourShepherd : neighbourShepherds) {
-//                            //chiedi se lanciare al player corrispondente e lancia il dado
-//                            randomValue = this.gameManager.askAndThrowDice(
-//                                    this.gameManager.getPlayerByShepherd(
-//                                            neighbourShepherd).playerNickName);
-//                            //se ha fatto più di 5, 5 compreso
-//                            if (randomValue >= 5) {
-//                                //aggiorna valore da pagare
-//                                sumToPay += 2;
-//                            }
-//                        }
-//                        //se può pagare il silenzio
-//                        if (this.shepherd[0].ifPossiblePay(sumToPay)) {
-//                            while (true) {
-//                                //chiedi tipo d ovino
-//                                this.gameManager.server.talkTo(
-//                                        playerNickName, "che tipo di ovino?");
-//                                //se presente nella regione scelta
-//                                try {
-//                                    //rimuovilo
-//                                    chosenRegion.removeOvine(chosenOvineType);
-//                                } catch (NoOvineException ex) {
-//                                    //riprovare o annullare azione?
-//                                    this.gameManager.askCancelOrRetry(
-//                                            playerNickName,
-//                                            chosenOvineType + "non presente");
-//                                    Logger
-//                                            .getLogger(Player.class
-//                                                    .getName()).log(
-//                                                    Level.SEVERE,
-//                                                    ex.getMessage(), ex);
-//                                }
-//                            }
-//                        } else {
-//                            errorMessage = "Non puoi pagare il silezio dei tuoi vicini.";
-//                        }
-//                    } else {
-//                        errorMessage = "Non ci sono animali da abbattere in questa regione.";
-//                    }
-//                } catch (RegionNotFoundException e) {
-//                    errorMessage = e.getMessage();
-//                    Logger
-//                            .getLogger(Player.class
-//                                    .getName()).log(
-//                                    Level.SEVERE, e.getMessage(), e);
-//                } catch (ActionCancelledException e) {
-//                    errorMessage = e.getMessage();
-//                    Logger
-//                            .getLogger(Player.class
-//                                    .getName()).log(
-//                                    Level.SEVERE, e.getMessage(), e);
-//                }
-//            }
-//        }
-//        errorMessage = "Non hai strade di quel valore";
+    public String killOvine(String shepherdNumber, String region,
+                            String typeToKill) {
+        int shepherdIndex;
+        int numbOfShepherdToPay;
+        List<Shepherd> shepherdToPay = new ArrayList<Shepherd>();
+        String type;
+        Region regionOfTheMurder;
+
+        try {
+            //controllo i dati sul pastore,sul tipo di ovino e sulla regione
+            shepherdIndex = convertAndCheckShepherd(shepherdNumber);
+            type = convertAndCheckOvineType(typeToKill);
+            regionOfTheMurder = gameManager.map.convertStringToRegion(region);
+        } catch (ShepherdNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return ex.getMessage();
+        } catch (OvineNotFoundExeption ex) {
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
+            return ex.getMessage();
+        } catch (RegionNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
+            return ex.getMessage();
+        }
+        
+        DebugLogger.println("controlli fatti");
+        
+        //se il pastore confina con la regione indicata
+        boolean canKill = false;
+        for (Region reg : shepherd[shepherdIndex].getStreet().getNeighbourRegions()) {
+            if (reg == regionOfTheMurder) {
+                canKill = true;
+            }
+        }
+        
+        DebugLogger.println("controllo regione confinante");
+        
+        if (!canKill) {
+            return "La regione inserita non confina col tuo pastore";
+        }
+        //se c'è un ovino di quel tipo nella regione chiesta
+        if (!regionOfTheMurder.hasOvine(OvineType.valueOf(type))) {
+            return "Non esiste nessun " + type + " nella regione " + region;
+        }
+        
+        DebugLogger.println("controllo ovino esistente");
+        
+        //lancio il dado del pastore se è come la sua strada
+        int diceValue = Dice.roll();
+        if (diceValue != shepherd[shepherdIndex].getStreet().getValue()) {
+            return "Il valore del dado è diverso dalla strada del pastore";
+        }
+        
+        DebugLogger.println("lancio dado pastore effettuato");
+        
+        //lancio il dado degli altri giocatori
+        numbOfShepherdToPay = 0;        
+        for (Street street : shepherd[shepherdIndex].getStreet().getNeighbourStreets()) {
+            if (street.hasShepherd() && Dice.roll() >= GameConstants.MIN_DICE_VALUE_TO_PAY_SILENCE.getValue()) {
+                //aumento il numero di pastori da pagare e lo inserisco nella lista
+                numbOfShepherdToPay++;
+                shepherdToPay.add(street.getShepherd());
+            }
+        }
+        
+        DebugLogger.println("lancio dado degli altri giocatori");
+
+        //calcolo se il pastore può pagare
+        if (shepherd[0].ifPossiblePay(
+                numbOfShepherdToPay * GameConstants.PRICE_OF_SILENCE.getValue())) {
+            //paga gli altri player
+            
+            DebugLogger.println("pastore ha pagato il silenzio");
+            DebugLogger.println("pastore paga "+shepherdToPay.size()+" pastori");
+            
+            for(Shepherd shp : shepherdToPay){
+                shp.getWallet().setAmount(shp.getWallet().getAmount() + GameConstants.PRICE_OF_SILENCE.getValue());
+            }
+            
+            try {
+                
+                DebugLogger.println("uccido l'ovino");
+                
+                //ammazza l'ovino
+                regionOfTheMurder.removeOvine(OvineType.valueOf(type));
+                return "Ovino ucciso";
+            } catch (NoOvineException ex) {
+                //non può succedere perchè ho verificato prima che esista
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                return ex.getMessage();
+            }
+
+        } else {
+            return "Non puoi pagare il silenzio degli altri pastori";
+        }
+
     }
 
     public void sellCards() {

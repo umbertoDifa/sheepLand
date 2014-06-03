@@ -4,7 +4,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
  *
  * @author Francesco
  */
-public interface TypeOfView {
+public interface TypeOfViewController {
 
     public void showWelcome();
 
@@ -21,6 +21,8 @@ public interface TypeOfView {
     public void showMoveOvine(String startRegion, String endRegion, String type);
     
     public void showMateSheepWith(String region, String otherType, String newType);
+    
+    public void showKillOvine(String region, String type);
 
     public String setUpShepherd(int idShepherd);
 
@@ -34,6 +36,8 @@ public interface TypeOfView {
                                     String streetIndex);
 
     public void refreshBuyLand(String buyer, String land, String price);
+    
+    public void refreshKillOvine(String killer, String region, String type,String outcome);
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player);
@@ -50,7 +54,7 @@ public interface TypeOfView {
                             String[] availableStringedActions);
 
     public void refreshMateSheepWith(String nickName, String region,
-                                    String otherType, String newType);
+                                    String otherType, String newType,String outcome);
 
     public void refreshMoveOvine(String nickName, String type,
                                  String startRegion,
@@ -88,5 +92,12 @@ public interface TypeOfView {
      * @return shepherd,region
      */
     public String askMateSheepWith();
+    
+    /**
+     * Asks the player to insert shepherdNear the region of the ovine to kill,
+     * region where to kill the ovine and type to kill in case of success
+     * @return ShepherdIndex,region,type
+     */
+    public String askKilOvine();
 
 }

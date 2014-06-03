@@ -70,7 +70,19 @@ public enum GameConstants {
     /**
      * The age when the lamb evolves to ram or sheep
      */
-    LAMB_EVOLUTION_AGE(2);
+    LAMB_EVOLUTION_AGE(2),
+    /**
+     * It's the minimum value of the dice so that a shepherd has to pay
+     * the other players to be silent in case of killing an ovine
+     */
+    MIN_DICE_VALUE_TO_PAY_SILENCE(5),
+    /**
+     * Price that a shepherd has to pay in order to get the silence of an other
+     * player
+     */
+    PRICE_OF_SILENCE(2);
+    
+    
     
     private final int value;
 

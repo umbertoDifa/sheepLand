@@ -1,6 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfViewController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,7 +15,7 @@ public class ClientSocket {
     //server info
     private final String ip;
     private final int port;
-    private final TypeOfView view;
+    private final TypeOfViewController view;
     private final String nickName;
 
     //canali di comunicazione
@@ -26,7 +26,8 @@ public class ClientSocket {
     private String[] token;
     private String received;
 
-    public ClientSocket(String ip, int port, TypeOfView view, String nickName) {
+    public ClientSocket(String ip, int port, TypeOfViewController view,
+                        String nickName) {
         this.ip = ip;
         this.port = port;
         this.view = view;
@@ -47,7 +48,7 @@ public class ClientSocket {
             serverOut = new PrintWriter(socket.getOutputStream());
 
             DebugLogger.println(
-                    "Canali di comunicazione impostati\nAttento ordine dal server");
+                    "Canali di comunicazione impostati");
 
             DebugLogger.println("Invio nickName");
             serverOut.println(nickName);
@@ -105,6 +106,8 @@ public class ClientSocket {
                     refreshMoveOvine();
                 } else if ("RefreshMateSheepWith".equals(received)) {
                     refreshMateSheepWith();
+                } else if ("RefreshKillOvine".equals(received)) {
+                    refreshKillOvine();
                 } else if ("RefreshWolf".equals(received)) {
                     refreshWolf();
                 } else if ("SetUpShepherd".equals(received)) {
@@ -193,8 +196,18 @@ public class ClientSocket {
 
         token = received.split(",");
 
-        view.refreshMateSheepWith(token[0], token[1], token[2], token[3]);
+        view.refreshMateSheepWith(token[0], token[1], token[2], token[3],
+                token[4]);
     }
+    
+    private void refreshKillOvine() {
+       received = receiveString();
+       
+       token = received.split(",");
+       
+       view.refreshKillOvine(token[0], token[1], token[2], token[3]);
+    }
+
 
     private void refreshBuyLand() {
         received = receiveString();
@@ -305,7 +318,7 @@ public class ClientSocket {
         DebugLogger.println(result);
         String[] resultTokens = result.split(",");
         //resultTokens1 è il tipo creato, resultTokens2 è il tipo accoppiato con la pecora
-        if (result.contains("Accoppiamento eseguito")) {            
+        if (result.contains("Accoppiamento eseguito")) {
             token = parameters.split(",");
             //token 1 è la regione
             //che mi rimanda il risultato              
@@ -317,11 +330,23 @@ public class ClientSocket {
     }
 
     public void killOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String parameters = view.askKilOvine();
+        sendString(parameters);
+
+        //ottengo i lrisultato dell'operazione
+        String result = receiveString();
+        DebugLogger.println(result);
+        token = parameters.split(",");
+        if ("Ovino ucciso".equals(result)) {
+            view.showKillOvine(token[1], token[2]);
+        } else {
+            view.showInfo(result);
+        }
     }
 
     public void welcome() {
         view.showWelcome();
     }
 
+    
 }

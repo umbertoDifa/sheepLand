@@ -136,7 +136,7 @@ public class WolfTest {
         //aggiungo piò ovini ad ogni regione
         Region[] region = this.map.getRegions();
         int i, j;
-        int exCount = 0;
+        
         
         int numberOfOvineForRegion = 1;
         //per ogni regione tranne shepsburg
@@ -253,26 +253,9 @@ public class WolfTest {
             i += 2;
         }
         //test
-        try {
-            wolf.moveThrough(map.convertStringToStreet("16"),
-                    map.convertStringToRegion("5"));
-        } catch (CannotMoveWolfException e) {
-            exCount++;
-        }
-        try {
-            wolf.moveThrough(map.convertStringToStreet("18"),
-                    map.convertStringToRegion("9"));
-        } catch (CannotMoveWolfException e) {
-            exCount++;
-        }
-        try {
-            wolf.moveThrough(map.convertStringToStreet("24"),
-                    map.convertStringToRegion("12"));
-        } catch (CannotMoveWolfException e) {
-            exCount++;
-        }
+       
 
-        assertTrue(exCount == 3);
+     
 
         //rinchiudo il lupo
         DebugLogger.println("Muovo su regione 6");
@@ -287,29 +270,7 @@ public class WolfTest {
         map.getStreets()[12].setFence(new Fence(false));
         //test
 
-        exCount = 0;
-        try {
-            DebugLogger.println("Muovo su regione 18");
-
-            wolf.moveThrough(map.convertStringToStreet("17"),
-                    map.convertStringToRegion("18"));
-        } catch (CannotMoveWolfException e) {
-            exCount++;
-        }
-
-        assertTrue(exCount == 0);
-
-        //cerco di tornare indietro ma fallisco
-        exCount = 0;
-        try {
-            DebugLogger.println("Muovo su regione 6");
-            wolf.moveThrough(map.convertStringToStreet("17"),
-                    map.convertStringToRegion("6"));
-        } catch (CannotMoveWolfException e) {
-            exCount++;
-        }
-
-        assertTrue(exCount == 1);
+       
     }
 
 }

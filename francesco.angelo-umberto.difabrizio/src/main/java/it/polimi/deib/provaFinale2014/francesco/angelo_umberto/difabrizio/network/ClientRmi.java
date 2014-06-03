@@ -2,7 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfView;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfViewController;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -24,13 +24,13 @@ public class ClientRmi extends UnicastRemoteObject implements
     private final int port;
     private final String nameServer;
 
-    private final TypeOfView view;
+    private final TypeOfViewController view;
 
     private ServerRmi serverRmi;
     private PlayerRemote playerRmi;
     Registry registry;
 
-    public ClientRmi(String ip, int port, String nameServer, TypeOfView view,
+    public ClientRmi(String ip, int port, String nameServer, TypeOfViewController view,
                      String nickName) throws RemoteException {
         this.nickName = nickName;
         this.nameServer = nameServer;
