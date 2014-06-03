@@ -22,10 +22,14 @@ public enum GameConstants {
      * Carte per ogni tipo di regione
      */
     NUM_CARDS_FOR_REGION_TYPE(5),
+     /**
+     * Numero di recinti finali
+     */
+    NUM_FINAL_FENCES(12),
     /**
      * Numero di recinti, finali + non finali
      */
-    NUM_FENCES(32),
+    NUM_FENCES(NUM_FINAL_FENCES.value + 3),//FIXME was 20
     /**
      * Numero di regioni per ogni tipo di terreno
      */
@@ -38,10 +42,7 @@ public enum GameConstants {
      * Numero di regioni, compresa shepsburg
      */
     NUM_REGIONS(19),
-    /**
-     * Numero di recinti finali
-     */
-    NUM_FINAL_FENCES(12),
+   
     /**
      * Numero di azioni che possono essere fatte in un turno da un giocatore
      */
@@ -71,6 +72,11 @@ public enum GameConstants {
      * The age when the lamb evolves to ram or sheep
      */
     LAMB_EVOLUTION_AGE(2),
+    /**
+     * The value of the blacksheep when making the rank and counting the sheeps
+     * in the regions
+     */
+    BLACKSHEEP_WEIGHT(2),
     /**
      * It's the minimum value of the dice so that a shepherd has to pay
      * the other players to be silent in case of killing an ovine

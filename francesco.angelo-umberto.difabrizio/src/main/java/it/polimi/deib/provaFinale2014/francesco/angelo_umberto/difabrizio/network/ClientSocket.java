@@ -126,6 +126,10 @@ public class ClientSocket {
                     mateSheepWith();
                 } else if ("KillOvine".equals(received)) {
                     killOvine();
+                } else if ("ShowMyRank".equals(received)){
+                    showMyRank();
+                } else if ("Classification".equals(received)){
+                    showClassification();
                 }
             }
         } catch (NoSuchElementException ex) {
@@ -353,6 +357,17 @@ public class ClientSocket {
 
     private void refreshMoney() {
         view.refreshMoney(receiveString());
+    }
+
+    private void showMyRank() {
+        received = receiveString();
+        token = received.split(",");
+        
+        view.showMyRank(Boolean.parseBoolean(token[0]), token[1]);
+    }
+
+    private void showClassification() {
+        view.showClassification(receiveString());
     }
 
 }

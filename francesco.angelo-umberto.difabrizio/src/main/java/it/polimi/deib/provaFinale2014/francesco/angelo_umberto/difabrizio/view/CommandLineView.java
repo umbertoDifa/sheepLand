@@ -254,8 +254,9 @@ public class CommandLineView implements TypeOfViewController {
                 "Hai acquistato la carta " + boughLand + " per " + price + " danari");
     }
 
-    public void showKillOvine(String region, String type,String shepherdPayed) {
-        showInfo("Hai ucciso un " + type + " nella regione " + region+" pagando "+shepherdPayed+" pastori per il silenzio");
+    public void showKillOvine(String region, String type, String shepherdPayed) {
+        showInfo(
+                "Hai ucciso un " + type + " nella regione " + region + " pagando " + shepherdPayed + " pastori per il silenzio");
     }
 
     public void showMoveShepherd(String priceToMove) {
@@ -285,7 +286,7 @@ public class CommandLineView implements TypeOfViewController {
                                  String outcome) {
         if ("ok".equals(outcome)) {
             showInfo(
-                    "Il giocatore " + killer + " ha ucciso un ovino " + type + " nella regione " + region );
+                    "Il giocatore " + killer + " ha ucciso un ovino " + type + " nella regione " + region);
         } else {
             showInfo(
                     "Il giocatore " + killer + " ha tentato di uccidere un " + type + " nella regione " + region);
@@ -301,6 +302,23 @@ public class CommandLineView implements TypeOfViewController {
 
     public void refreshMoney(String money) {
         showInfo("Ora hai " + money + " denari");
+    }
+
+    public void showMyRank(Boolean winner, String rank) {
+        if (winner) {
+            showInfo("Hai vinto con " + rank + " punti!");
+        } else {
+            showInfo("Hai perso con " + rank + " punti!");
+        }
+    }
+
+    public void showClassification(String classification) {
+        showInfo("Classifica: ");
+        String[] token = classification.split(",");
+        for (int i = 0; i < token.length - 1; i++) {
+            showInfo("Giocatore :" + token[i] + " punteggio: " + token[i + 1]);
+            i++;
+        }
     }
 
 }

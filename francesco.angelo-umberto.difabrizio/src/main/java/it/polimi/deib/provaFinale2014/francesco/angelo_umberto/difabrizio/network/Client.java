@@ -29,7 +29,8 @@ public class Client {
             stdOut.flush();
 
             nickName = stdIn.nextLine();
-        } while ("".equals(nickName));
+        } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                ":"));
         //da evitare come la peste la stringa vuota come nickname
         //esplodono i satelliti della nasa
 

@@ -22,6 +22,14 @@ public interface TypeOfViewController {
     
     public void showMateSheepWith(String region, String otherType, String newType);
     
+    public void showMyRank(Boolean winner, String rank);
+    
+    /**
+     * Una stringa della classfica in cui si alternano nome del player, punteggio
+     * @param classification classifica stringhizzata
+     */
+    public void showClassification(String classification);
+    
     public void showKillOvine(String region, String type,String shepherdPayed);
 
     public String setUpShepherd(int idShepherd);

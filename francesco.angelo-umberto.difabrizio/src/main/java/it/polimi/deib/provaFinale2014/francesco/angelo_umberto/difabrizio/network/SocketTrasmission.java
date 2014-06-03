@@ -240,7 +240,7 @@ public class SocketTrasmission extends TrasmissionController {
         if (result.contains("Pastore spostato")) {
             //invia conferma riepilogativa agli utenti
             refreshMoveShepherd(nickName, token[0], token[1]);
-            
+
             //invia refresh portafoglio
             refreshMoney(nickName);
             return true;
@@ -284,15 +284,15 @@ public class SocketTrasmission extends TrasmissionController {
         if (result.contains("Ovino ucciso")) {
 
             refreshKillOvine(nickName, token[1], token[2], "ok");
-            
+
             //se l'azione ha successo aggiorna i portafogli remoti
             for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
                 String nick = (String) pairs.getKey();
                 refreshMoney(nick);
             }
 
-                return true;
-            }else if ("Non puoi pagare il silenzio degli altri pastori".equals(
+            return true;
+        } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
                 result)) {
 
             refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
@@ -303,10 +303,8 @@ public class SocketTrasmission extends TrasmissionController {
             refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
             return true;
         }
-            return false;
-        }
-
-    
+        return false;
+    }
 
     public boolean askMateSheepWith(String nickName, String type) {
         ServerSockets.NickSocketMap.get(nickName).send("MateSheepWith");
@@ -387,6 +385,22 @@ public class SocketTrasmission extends TrasmissionController {
         ServerSockets.NickSocketMap.get(nickName).send(""
                 + super.getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
 
+    }
+
+    @Override
+    public void sendRank(boolean winner, String nickName, int score) {
+        DebugLogger.println("Send result to " + nickName);
+        ServerSockets.NickSocketMap.get(nickName).send("ShowMyRank");
+        ServerSockets.NickSocketMap.get(nickName).send(winner + "," + score);
+    }
+
+    @Override
+    public void sendClassification(String classification) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            ServerSockets.NickSocketMap.get(nickName).send("Classification");
+            ServerSockets.NickSocketMap.get(nickName).send(classification);
+        }
     }
 
 }

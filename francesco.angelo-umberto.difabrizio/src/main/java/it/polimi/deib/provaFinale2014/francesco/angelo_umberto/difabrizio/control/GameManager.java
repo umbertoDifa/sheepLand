@@ -20,6 +20,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.networ
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
  */
 public class GameManager implements Runnable {
 
-   private  Thread myThread;
+    private Thread myThread;
 
     protected final Map map;
     private List<Player> players = new ArrayList<Player>();
@@ -289,7 +290,7 @@ public class GameManager implements Runnable {
     }
 
     private void playTheGame() throws RemoteException {
-        int[][] classification = new int[2][playersNumber];
+        int[][] classification;
         int numOfWinners = 1;
 
         try {
@@ -312,16 +313,17 @@ public class GameManager implements Runnable {
             int i;
             //per tutti i vincitori
             for (i = 0; i < numOfWinners; i++) {
-//                this.server.sendTo(clientNickNames[classification[0][i]],
-//                        "hai vinto! con" + classification[1][i]);
+                controller.sendRank(true, clientNickNames[classification[0][i]],
+                        classification[1][i]);
             }
             //per tutti gli altri
             for (; i < playersNumber; i++) {
-//                this.server.sendTo(clientNickNames[classification[0][i]],
-//                        "hai perso! con" + classification[1][i]);
+                controller.sendRank(false, clientNickNames[classification[0][i]],
+                        classification[1][i]);
+
             }
 
-//            this.server.broadcastMessage(printResults(classification));
+            controller.sendClassification(classificationToString(classification));
         }
     }
 
@@ -390,15 +392,11 @@ public class GameManager implements Runnable {
     private void executeRounds() throws FinishedFencesException, RemoteException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
-        int numberOfShiftsMade = 0;
 
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
             lastRound = this.executeShift(currentPlayer);
-
-            //aggiorno il numero di giri
-            numberOfShiftsMade++;
 
             //aggiorno il player che gioca 
             currentPlayer++;
@@ -406,7 +404,6 @@ public class GameManager implements Runnable {
             currentPlayer %= this.playersNumber;
 
             evolveLambs();
-            broadcastInitialConditions();
 
             //controllo se ho finito il giro
             //se il prossimo a giocare è il primo del giro
@@ -417,8 +414,9 @@ public class GameManager implements Runnable {
                 DebugLogger.println("muovo lupo");
                 this.moveSpecialAnimal(this.map.getWolf());
                 DebugLogger.println("lupo mosso");
-
             }
+
+            broadcastInitialConditions();
         }//while
     }
 
@@ -445,102 +443,6 @@ public class GameManager implements Runnable {
         return this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue();
     }
 
-    /**
-     * Chiede al giocatore corrispondente all playerHashCode, in quale strada
-     * posizionare il pastore il cui id è idShepherd
-     *
-     * @param playerName
-     * @param idShepherd
-     *
-     * @return
-     *
-     * @throws StreetNotFoundException se la strada non esiste
-     * @throws BusyStreetException     se la strada è occupata
-     */
-//    protected Street askStreet(String playerName, int idShepherd) throws
-//            StreetNotFoundException,
-//            BusyStreetException {
-//        String errorString = "Strada già occupata, prego riprovare:";
-//
-//        DebugLogger.println("Chiedo una strada in askStreet");
-//
-//        //raccogli decisione
-//        String stringedStreet = this.server.talkTo(playerName,
-//                "In quale strada vuoi posizionare il pastore " + Integer.toString(
-//                        idShepherd + 1) + " ?");
-//        DebugLogger.println("Risposta sulla strada ottenuta");
-//        //traducila in oggetto steet 
-//        Street chosenStreet = map.convertStringToStreet(stringedStreet);
-//        DebugLogger.println("Conversione strada effettuata");
-//        //se la strada è occuapata
-//        if (!chosenStreet.isFree()) {
-//            throw new BusyStreetException(errorString);
-//            //solleva eccezione
-//        }
-//        //altrimenti ritorna la strada
-//        return chosenStreet;
-//    }
-    /**
-     * Chiede, mandandogli la stringa message, al giocatore corrispondente all
-     * hashCode, qual'è l'id del pastore da muovere tra i suoi numShepherd
-     * pastori. Il metodo dev'essere invocato con numShepherd maggiore di zero.
-     *
-     * @param playerNickName
-     *
-     * @return id pastore scelto
-     */
-//    protected int askIdShepherd(String playerNickName) {
-//        int idShepherd;
-//        String errorMessage;
-//
-//        DebugLogger.println("chiedo id pastore da muovere");
-//        while (true) {
-//            try {
-//                //chiedi quale pastore muovere
-//                idShepherd = Integer.parseInt(this.server.talkTo(
-//                        playerNickName, "Quale pastore vuoi muovere?"));
-//
-//                //se l'id è valido
-//                if (idShepherd > 0 && idShepherd <= shepherd4player) {
-//                    this.server.sendTo(playerNickName, "pastore selezionato ok");
-//                    break;
-//                }
-//                errorMessage = "Non esiste il pastore chiesto, prego riprovare.";
-//
-//            } catch (NumberFormatException e) {
-//                Logger.getLogger(DebugLogger.class
-//                        .getName()).log(
-//                                Level.SEVERE, e.getMessage(), e);
-//                errorMessage = "La stringa inserita non identifica un pastore, prego riprovare.";
-//            }
-//
-//            this.server.sendTo(playerNickName, errorMessage);
-//        }
-//
-//        //la risposta sarà 1 o 2 quindi lo ricalibro sulla lunghezza dell'array                   
-//        return --idShepherd;
-//    }
-//    /**
-//     * Chiede al player inviandogli la stringa message un id regione
-//     *
-//     * @param playerNickName
-//     * @param message
-//     *
-//     * @return Regione corrispondente
-//     *
-//     * @throws RegionNotFoundException
-//     */
-//    protected Region askAboutRegion(String playerNickName, String message)
-//            throws
-//            RegionNotFoundException {
-//        Region chosenRegion;
-//        String stringedRegion = this.server.talkTo(playerNickName, message);
-//        chosenRegion = map.convertStringToRegion(stringedRegion);
-//        DebugLogger.println("regione ok");
-//        this.server.sendTo(playerNickName, "regione ok");
-//
-//        return chosenRegion;
-//    }
     private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
@@ -627,6 +529,8 @@ public class GameManager implements Runnable {
     }
 
     private int[][] calculatePoints() {
+        DebugLogger.println("Calculate points");
+
         int[][] classification = new int[2][playersNumber];
         int tmp1, tmp2;
         //per ogni giocatore
@@ -639,6 +543,11 @@ public class GameManager implements Runnable {
                 classification[1][i] += player.shepherd[0].numOfMyCardsOfType(
                         type) * map.numberOfOvineIn(type);
             }
+            //aggiungo i soldi avanzati
+            classification[1][i] += player.shepherd[0].getWallet().getAmount();
+
+            DebugLogger.println(
+                    "player " + clientNickNames[i] + " punti " + classification[1][i]);
             i++;
         }
 
@@ -659,11 +568,12 @@ public class GameManager implements Runnable {
         return classification;
     }
 
-    private String printResults(int[][] classification) {
+    private String classificationToString(int[][] classification) {
         String result = "";
         for (int i = 0; i < playersNumber; i++) {
-            result += i + "posto: player" + classification[0][i] + "con" + classification[1][i];
+            result += clientNickNames[classification[0][i]] + "," + classification[1][i] + ",";
         }
+        DebugLogger.println("creta classifica stringhizzata " + result);
         return result;
     }
 

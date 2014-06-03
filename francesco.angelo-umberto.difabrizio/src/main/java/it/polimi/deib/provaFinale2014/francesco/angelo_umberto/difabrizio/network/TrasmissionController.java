@@ -105,4 +105,7 @@ public abstract class TrasmissionController {
         return nick2PlayerMap;
     }
 
+    public abstract void sendRank(boolean winner, String nickName, int score) throws RemoteException;
+    
+    public abstract void sendClassification(String classification) throws RemoteException;
 }
