@@ -293,15 +293,11 @@ public class SocketTrasmission extends TrasmissionController {
 
             return true;
         } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
-                result)) {
-
+                result) || "Il valore del dado è diverso dalla strada del pastore".equals(
+                        result)) {
             refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
             return true;
-        } else if ("Il valore del dado è diverso dalla strada del pastore".equals(
-                result)) {
 
-            refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
-            return true;
         }
         return false;
     }

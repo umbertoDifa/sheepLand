@@ -8,7 +8,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +29,12 @@ public class ClientRmi extends UnicastRemoteObject implements
     private PlayerRemote playerRmi;
     private Registry registry;
 
-    public ClientRmi(String ip, int port, String nameServer, TypeOfViewController view,
+    private String[] token;
+    String parameters;
+    String result;
+
+    public ClientRmi(String ip, int port, String nameServer,
+                     TypeOfViewController view,
                      String nickName) throws RemoteException {
         this.nickName = nickName;
         this.nameServer = nameServer;
@@ -88,7 +92,7 @@ public class ClientRmi extends UnicastRemoteObject implements
         view.refereshCurrentPlayer(currenPlayer);
     }
 
-    public void refereshCard(String type, int value) {
+    public void refreshCard(String type, int value) {
         view.refereshCard(type, value);
     }
 
@@ -102,14 +106,15 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     public String setUpShepherd(int idShepherd) throws RemoteException {
         String chosenStreet = view.setUpShepherd(idShepherd);
-        String result;
 
         result = playerRmi.setShepherdRemote(idShepherd, chosenStreet);
 
-        view.showInfo(result);
-        if (result.contains("Patore posizionato corretamente!")) {
+        token = result.split(",");
+        if (result.contains("Pastore posizionato correttamente!")) {
+            view.showSetShepherd("" + idShepherd, chosenStreet);
             return chosenStreet;
         }
+        view.showInfo(token[0]);
         return null;
     }
 
@@ -123,69 +128,88 @@ public class ClientRmi extends UnicastRemoteObject implements
      *         with the number of the action concatenated with null
      */
     public String chooseAction(String actions) {
+        //receive possible actions      
         String[] possibleActions = actions.split(",");
 
         int[] availableAcions = new int[possibleActions.length];
         String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
-            String[] token = possibleActions[i].split("-");
+            token = possibleActions[i].split("-");
+
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
         }
 
+        //ottengo la risposta dallo user
         int choice = view.chooseAction(availableAcions, actionsName);
         try {
             switch (choice) {
                 case 1:
                     return "1," + this.moveOvine();
 
-                //TODO completare
+                case 2:
+                    return "2," + this.moveShepherd();
+                case 3:
+                    return "3," + this.buyLand();
+                case 4:
+                    return "4," + this.mateSheepWith("sheep");
+                case 5:
+                    return "5," + this.mateSheepWith("ram");
+                case 6:
+                    return "6," + this.killOvine();
+
             }
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        ex.getMessage(), ex);         
+                    ex.getMessage(), ex);
             //TODO gestire quando il client tenta di eseguire un metodo sul server
             //ma fallisce
         }
-        return null; //FIXME
+        return null;
     }
 
     private String moveOvine() throws RemoteException {
-        String parameters = view.moveOvine();
-        String[] token = parameters.split(",");
+        parameters = view.moveOvine();
 
-        String result = playerRmi.moveOvineRemote(token[0], token[1], token[2]);
-        view.showInfo(result);
+        token = parameters.split(",");
+
+        result = playerRmi.moveOvineRemote(token[0], token[1], token[2]);
+
         //se l'azione è andata a buon fine
-        if ("Ovino mosso!".equals(result)) {
-            //ritorna la stringa dei parametri tipo,arrivo,partenza
+        if ("Ovino mosso".equals(result)) {
+            view.showMoveOvine(token[0], token[1], token[2]);
+            //ritorna la stringa dei parametri partenza,arrivo,tipo
             return parameters;
         }
+        view.showInfo(result);
         //altrimenti null
         return null;
     }
 
-    public void refreshMoveOvine(int startRegionIndex, int endRegionIndex,
-                                 String type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshMoveOvine(String nickNameMover, String startRegion,
+                                 String endRegion, String ovineType) {
+        view.refreshMoveOvine(nickNameMover, ovineType, startRegion, endRegion);
     }
 
-    public boolean moveShepherd() {
-        String result;
+    private String moveShepherd() {
         try {
-            result = view.askMoveShepherd();
-            String[] token = result.split(",");
+            parameters = view.askMoveShepherd();
+            token = parameters.split(",");
+
             result = playerRmi.moveShepherdRemote(token[0], token[1]);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            return false;
+            return null;
         }
-        if (result.contains("pastore posizionato")) {
-            return true;
+        if (result.contains("Pastore spostato")) {
+            token = result.split(",");
+            view.showMoveShepherd(token[1]);
+            return parameters;
         }
-        return false;
+        view.showInfo(result);
+        return null;
     }
 
     public void refreshMoveShepherd(String nickName, String indexShepherd,
@@ -193,29 +217,93 @@ public class ClientRmi extends UnicastRemoteObject implements
         view.refreshMoveShepherd(nickName, indexShepherd, newStreet);
     }
 
-    public void buyLand() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshBuyLand(String nickNameBuyer, String boughtLand,
+                               String price) throws RemoteException {
+        view.refreshBuyLand(nickNameBuyer, boughtLand, price);
     }
 
-    public void mateSheepWith() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private String buyLand() {
+        parameters = view.askBuyLand();
+
+        try {
+            result = playerRmi.buyLandRemote(parameters);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return null;
+        }
+        token = result.split(",");
+        if (result.contains("Carta acquistata")) {
+            view.showBoughtLand(token[1], token[2]);
+            return result;
+        }
+        view.showInfo(token[0]);
+        return null;
     }
 
-    public void refreshMateSheepWith(int regionIndex, String ovineType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private String mateSheepWith(String ovineType) {
+        parameters = view.askMateSheepWith();
+
+        token = parameters.split(",");
+        try {
+            result = playerRmi.mateSheepWithRemote(token[0], token[1],
+                    ovineType);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return null;
+        }
+        String[] resultTokens = result.split(",");
+        if (result.contains("Accoppiamento eseguito")) {
+            view.showMateSheepWith(token[1], ovineType, resultTokens[1]);
+            return token[1] + "," + ovineType + "," + resultTokens[1] + ",ok";
+        } else if ("Il valore del dado è diverso dalla strada del pastore".equals(
+                result)) {
+            view.showInfo(resultTokens[0]);
+            return token[1] + "," + ovineType + "," + token[0] + "," + ",nok";
+        }
+        return null;
     }
 
-    public void killOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshMateSheepWith(String nickNameMater, String region,
+                                     String otherType, String newType,
+                                     String outcome) {
+        view.refreshMateSheepWith(nickName, region, otherType, newType, outcome);
     }
 
-    public void refreshKillOvine(int regionIndex) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    private String killOvine() {
+        parameters = view.askKillOvine();
 
-    public void refereshCards(List<String> myCards) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }   
+        DebugLogger.println("parametri" + parameters);
+
+        token = parameters.split(",");
+
+        try {
+            result = playerRmi.killOvineRemote(token[0], token[1], token[2]);
+        } catch (RemoteException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return null;
+        }
+
+        
+
+        if (result.contains("Ovino ucciso")) {
+            String[] tokenResult = result.split(",");
+
+            view.showKillOvine(token[1], token[2], tokenResult[1]);
+
+            return token[1] + "," + token[2] + "," + ",ok";
+        } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
+                result) || "Il valore del dado è diverso dalla strada del pastore".equals(
+                        result)) {
+            view.showInfo(result);
+
+            return token[1] + "," + token[2] + "," + ",nok";
+        }
+        view.showInfo(result);
+        return null;
+    }
 
     public void disconnect(String message) {
         view.showInfo(message);
@@ -239,6 +327,24 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     public void connectPlayer(PlayerRemote player) throws RemoteException {
         this.playerRmi = player;
+    }
+
+    public void refreshMoney(String money) throws RemoteException {
+        view.refreshMoney(money);
+    }
+
+    public void showMyRank(String winner, String rank) throws RemoteException {
+        view.showMyRank(Boolean.parseBoolean(winner), rank);
+    }
+
+    public void showClassification(String classification) throws RemoteException {
+        view.showClassification(classification);
+    }
+
+    public void refreshKillOvine(String nickNameKiller, String region,
+                                 String type, String outcome) throws
+            RemoteException {
+        view.refreshKillOvine(type, region, type, outcome);
     }
 
 }

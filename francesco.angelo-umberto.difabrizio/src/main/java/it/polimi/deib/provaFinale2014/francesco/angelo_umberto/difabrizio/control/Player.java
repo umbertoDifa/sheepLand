@@ -528,20 +528,17 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @return "Carta acquistata,[type],[price]" or an error string
      */
     public String buyLand(String landToBuy) {
-
+        
+        if(landToBuy.equalsIgnoreCase(RegionType.SHEEPSBURG.toString())){
+            return "Non puoi comprare sheepsburg!";
+        }
+        
         //creo lista delle possibili regioni da comprare di un pastore
         List<String> possibleRegionsType = new ArrayList<String>();
 
         //creo la lista dei pastori corrispondenti a certi tipi di regione
         List<Shepherd> possibleShepherd = new ArrayList<Shepherd>();
 
-        //OLD
-//        //per ogni regione confinante con i pastori del giocatore
-//        for (Region region : getShepherdsRegion()) {
-//            //aggiungila ai tipi di regione possibili
-//            possibleRegionsType.add(region.getType().toString());
-//           
-//      
         List<Street> possibleStreets;
 
         if (lastShepherd == null) {
@@ -963,6 +960,17 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     public String buyLandRemote(String regionType) throws RemoteException {
         return buyLand(regionType);
+    }
+
+    public String mateSheepWithRemote(String shepherdNumber, String regionToMate,
+                                      String otherOvineType) throws
+            RemoteException {
+        return mateSheepWith(shepherdNumber, regionToMate, otherOvineType);
+    }
+
+    public String killOvineRemote(String shepherdNumber, String region,
+                                  String typeToKill) throws RemoteException {
+        return killOvine(shepherdNumber, region, typeToKill);
     }
 
 }

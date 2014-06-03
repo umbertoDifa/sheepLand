@@ -343,10 +343,15 @@ public class GameManager implements Runnable {
             //stilo la classifica in ordine decrescente
             classification = this.calculatePoints();
 
+            DebugLogger.println("prima while");
+
             //calcolo quanti sono al primo posto a parimerito
+            //TODO ripensarlo
             while (classification[1][numOfWinners] == classification[1][numOfWinners + 1]) {
                 numOfWinners++;
             }
+
+            DebugLogger.println("calcolo vincitori eff");
 
             int i;
             //per tutti i vincitori
@@ -360,7 +365,7 @@ public class GameManager implements Runnable {
                         classification[1][i]);
 
             }
-
+            DebugLogger.println("invio classifica");
             controller.sendClassification(classificationToString(classification));
         }
     }

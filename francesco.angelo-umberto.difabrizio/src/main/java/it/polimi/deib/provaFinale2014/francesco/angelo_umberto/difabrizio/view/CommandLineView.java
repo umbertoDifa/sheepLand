@@ -212,7 +212,7 @@ public class CommandLineView implements TypeOfViewController {
         return idShepherd + "," + stringedStreet;
     }
 
-    public String askKilOvine() {
+    public String askKillOvine() {
         showInfo("Scegliere quale pastore ucciderà l'ovino:");
         String idShepherd = stdIn.nextLine();
 

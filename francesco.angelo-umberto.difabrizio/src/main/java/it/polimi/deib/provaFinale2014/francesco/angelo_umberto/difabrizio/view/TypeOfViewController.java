@@ -108,6 +108,6 @@ public interface TypeOfViewController {
      * region where to kill the ovine and type to kill in case of success
      * @return ShepherdIndex,region,type
      */
-    public String askKilOvine();
+    public String askKillOvine();
 
 }

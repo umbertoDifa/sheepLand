@@ -60,4 +60,26 @@ public interface PlayerRemote extends Remote {
      * @throws RemoteException
      */
     public String buyLandRemote(String regionType) throws RemoteException;
+    
+    /**
+     * Interface to call mateSheepWith method of the player
+     * @param shepherdNumber
+     * @param regionToMate
+     * @param otherOvineType
+     * @return
+     * @throws RemoteException 
+     */
+    public String mateSheepWithRemote(String shepherdNumber, String regionToMate,
+                                String otherOvineType) throws RemoteException;
+    
+    /**
+     * Interface to call the method killOvineRemote of player
+     * @param shepherdNumber
+     * @param region
+     * @param typeToKill
+     * @return
+     * @throws RemoteException 
+     */
+    public String killOvineRemote(String shepherdNumber, String region,
+                            String typeToKill) throws RemoteException;
 }

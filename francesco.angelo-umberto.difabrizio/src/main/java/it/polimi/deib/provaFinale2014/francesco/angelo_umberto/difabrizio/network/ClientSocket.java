@@ -320,7 +320,6 @@ public class ClientSocket {
 
         //ottengo i lrisultato dell'operazione
         String result = receiveString();
-        DebugLogger.println(result);
         String[] resultTokens = result.split(",");
         //resultTokens1 è il tipo creato, resultTokens2 è il tipo accoppiato con la pecora
         if (result.contains("Accoppiamento eseguito")) {
@@ -335,7 +334,7 @@ public class ClientSocket {
     }
 
     private void killOvine() {
-        String parameters = view.askKilOvine();
+        String parameters = view.askKillOvine();
         sendString(parameters);
 
         //ottengo i lrisultato dell'operazione

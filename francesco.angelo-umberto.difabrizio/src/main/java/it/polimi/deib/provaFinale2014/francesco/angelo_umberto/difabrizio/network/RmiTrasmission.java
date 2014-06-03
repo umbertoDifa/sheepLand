@@ -1,6 +1,8 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.BlackSheep;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -64,15 +66,26 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshCurrentPlayer(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshCurrentPlayer(String nickNamePlayer) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            try {
+                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refereshCurrentPlayer(
+                        nickNamePlayer);
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+
+            }
+
+        }
     }
 
     @Override
     public void refreshCard(String nickName, String card, int value) throws
             RemoteException {
         try {
-            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refereshCard(
+            ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshCard(
                     card, value);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -81,14 +94,6 @@ public class RmiTrasmission extends TrasmissionController {
                     "Il player:" + nickName + " si è disconnesso");
         }
 
-    }
-
-    private void refreshBlackSheep(String movementResult) {
-        //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshBlackSheep(regionIndex);
-    }
-
-    private void refreshWolf(String movementResult) {
-        //ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshWolf(regionIndex);
     }
 
     @Override
@@ -116,8 +121,24 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshKillOvine(String nickName,String region,String type,String outcome) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshKillOvine(String nickNameKiller, String region,
+                                 String type,
+                                 String outcome) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNameKiller)) {
+                try {
+                    ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshKillOvine(
+                            nickNameKiller, region, type, outcome);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+
+                }
+            }
+
+        }
     }
 
     @Override
@@ -126,6 +147,7 @@ public class RmiTrasmission extends TrasmissionController {
         try {
             String chosenStreet = ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().setUpShepherd(
                     shepherdIndex);
+
             //invia conferma riepilogativa agli utenti
             if (chosenStreet != null) {
                 refreshMoveShepherd(nickName, "" + shepherdIndex, chosenStreet);
@@ -146,6 +168,7 @@ public class RmiTrasmission extends TrasmissionController {
         try {
             String action = ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().chooseAction(
                     possibleActions);
+            DebugLogger.println("ricevuto: " + action);
             if (!action.contains("null")) {
                 //tokenizza 
                 String token[] = action.split(",");
@@ -158,9 +181,21 @@ public class RmiTrasmission extends TrasmissionController {
                     case '2':
                         refreshMoveShepherd(nickName, token[1], token[2]);
                         return true;
-
+                    case '3':
+                        refreshBuyLand(nickName, token[2], token[3]);
+                        return true;
+                    case '4':
+                        refreshMateSheepWith(nickName, token[1], token[2],
+                                token[3], token[4]);
+                        return true;
+                    case '5':
+                        refreshMateSheepWith(nickName, token[1], token[2],
+                                token[3], token[4]);
+                        return true;
+                    case '6':
+                        refreshKillOvine(nickName, token[1], token[2], token[3]);
+                        return true;
                 }
-                //ritorna true
             }
             return false;
 
@@ -193,7 +228,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public boolean askMateSheepWith(String nickName,String type) {
+    public boolean askMateSheepWith(String nickName, String type) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -208,9 +243,24 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshMoveOvine(String nickName, String startRegion,
+    public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNameMover)) {
+                try {
+                    ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshMoveOvine(
+                            nickNameMover, startRegion, endRegion, ovineType);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+
+                }
+            }
+
+        }
+
     }
 
     @Override
@@ -234,38 +284,122 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
-                               String price) throws
+                               String price) throws RemoteException {
+
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNameBuyer)) {
+                try {
+                    ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshBuyLand(
+                            nickNameBuyer, boughtLand, price);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+
+                }
+            }
+
+        }
+
+    }
+
+    @Override
+    public void refreshSpecialAnimal(SpecialAnimal animal, String movementResult)
+            throws
             RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (animal instanceof BlackSheep) {
+            this.refreshBlackSheep(movementResult);
+        } else if (animal instanceof Wolf) {
+            this.refreshWolf(movementResult);
+        }
     }
 
     @Override
-    public void refreshSpecialAnimal(SpecialAnimal animal,String movementResult) throws
-                                                                  RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public void refreshMateSheepWith(String nickNameMater, String region,
+                                     String otherType, String newType,
+                                     String outcome) throws
+            RemoteException {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (!nickName.equals(nickNameMater)) {
+                try {
+                    ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshMateSheepWith(
+                            nickNameMater, region, otherType, newType, outcome);
+                } catch (RemoteException ex) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
 
-    @Override
-    public void refreshMateSheepWith(String nickName, String region,
-                                     String otherType, String newType,String outcome) throws
-                                                                              RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            }
+
+        }
+
     }
 
     @Override
     public void refreshMoney(String nickName) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshMoney(
+                ""
+                + super.getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
     }
 
     @Override
     public void sendRank(boolean winner, String nickName, int score) throws
-                                                                            RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            RemoteException {
+        ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().showMyRank(
+                "" + winner, "" + score);
     }
 
     @Override
     public void sendClassification(String classification) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            try {
+                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().showClassification(
+                        classification);
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class
+                        .getName()).log(Level.SEVERE,
+                                ex.getMessage(), ex);
+
+            }
+
+        }
+    }
+
+    private void refreshBlackSheep(String movementResult) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            try {
+                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshBlackSheep(
+                        movementResult);
+
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class
+                        .getName()).log(Level.SEVERE,
+                                ex.getMessage(), ex);
+
+            }
+
+        }
+    }
+
+    private void refreshWolf(String movementResult) {
+        for (Map.Entry pairs : super.getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            try {
+                ServerRmiImpl.NickClientRmiMap.get(nickName).getClientRmi().refreshWolf(
+                        movementResult);
+
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class
+                        .getName()).log(Level.SEVERE,
+                                ex.getMessage(), ex);
+
+            }
+
+        }
     }
 
 }

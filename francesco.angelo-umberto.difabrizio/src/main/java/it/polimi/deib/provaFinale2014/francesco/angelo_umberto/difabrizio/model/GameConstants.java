@@ -29,7 +29,7 @@ public enum GameConstants {
     /**
      * Numero di recinti, finali + non finali
      */
-    NUM_FENCES(NUM_FINAL_FENCES.value + 20),
+    NUM_FENCES(NUM_FINAL_FENCES.value + 3),//FIXME was 20
     /**
      * Numero di regioni per ogni tipo di terreno
      */
