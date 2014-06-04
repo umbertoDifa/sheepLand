@@ -49,6 +49,7 @@ public class MyGui implements MouseListener {
     private String[] nickNames;
     private Street[] streets;
     private InfoPanel infoPanel;
+    private int buttonSelected;
 
     public MyGui() {
         setUpNickNames();
@@ -279,23 +280,23 @@ public class MyGui implements MouseListener {
      * @param availableActionsIndex
      * @return
      */
-//    public int chooseAction(int[] availableActionsIndex) {
-//        //per ogni azione possibile
-//        for (int availableActionIndex : availableActionsIndex) {
-//            //abilito il corrispondente jButton FIXME
-//            actionsJButtons[availableActionIndex - 1].setEnabled(true);
-//        }
-//
-//        //finchè la pressione di uno di questi bottoni
-//        //non cambia la var bottomSelected faccio ;
-//        while (buttonSelected < 0) {
-//            ;
-//        }
-//        int choice = buttonSelected;
-//        //risetto
-//        buttonSelected = -1;
-//        return choice;
-//    }
+    public int chooseAction(int[] availableActionsIndex) {
+        //per ogni azione possibile
+        for (int availableActionIndex : availableActionsIndex) {
+            //abilito il corrispondente jButton FIXME
+            actions[availableActionIndex - 1].setEnabled(true);
+        }
+
+        //finchè la pressione di uno di questi bottoni
+        //non cambia la var bottomSelected faccio ;
+        while (buttonSelected < 0) {
+            ;
+        }
+        int choice = buttonSelected;
+        //risetto
+        buttonSelected = -1;
+        return choice;
+    }
     public static void addComponentsToPane(Container panelFather, JPanel panelSon, int x, int y) {
 
         panelFather.setLayout(null);
