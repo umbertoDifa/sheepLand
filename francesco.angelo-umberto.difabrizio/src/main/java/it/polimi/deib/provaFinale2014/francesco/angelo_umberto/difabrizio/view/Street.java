@@ -20,7 +20,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener{
     }
     
     /**
-     * rimuove l'img di sfondo
+     * remove the background image
      */
     public void clear(){
         this.setUp(null);
@@ -30,8 +30,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener{
     
     public void mouseClicked(MouseEvent e) {
         System.out.println("strada clickata, dentro la catch dell evento");
-    //    this.setMySize(this.getPreferredSize().width+10,this.getPreferredSize().height+10);
-     //   this.setUp(shepherds.get(2), 24, 24);
+     //   FIX ME
         clear();
         repaint();
     }
@@ -45,18 +44,16 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener{
     }
 
     public void mouseEntered(MouseEvent e) {
-        this.setUp(".\\images\\shepherd3b.png", 100, 100);
-        revalidate();
-        repaint();
     }
 
     public void mouseExited(MouseEvent e) {
-        clear();
-        this.setUp(shepherds.get(0), 24, 24);
-        revalidate();
-        repaint();
     }
     
+    /**
+     * set the background image corrisponding to
+     * the name of the shepherd
+     * @param string 
+     */
     public void setImage(String string){
         if("fence".equals(string)){
             this.setUp(fence);
@@ -70,6 +67,29 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener{
             this.setUp(shepherds.get(3));
         }
     }
-
+    
+    /**
+     * set the background image
+     * @param newImage image to set
+     */
+    public void setImage(Image newImage){
+        this.setUp(newImage);
+    }
+    
+    /**
+     * return the current background image
+     * @return 
+     */
+    public Image getImage(){
+        return this.getImage();
+    }
+    
+    /**
+     * return true iff the street is empty
+     * @return 
+     */
+    public boolean isEmpty(){
+        return (this.getImage() == null);
+    }
     
 }
