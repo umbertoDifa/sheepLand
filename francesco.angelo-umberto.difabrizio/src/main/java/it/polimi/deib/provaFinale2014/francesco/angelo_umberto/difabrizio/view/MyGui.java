@@ -48,6 +48,7 @@ public class MyGui implements MouseListener {
     private final MyFont font = new MyFont();
     private String[] nickNames;
     private Street[] streets;
+    private InfoPanel infoPanel;
 
     public MyGui() {
         setUpNickNames();
@@ -91,6 +92,7 @@ public class MyGui implements MouseListener {
         frame = new JFrame();
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         mainJPanel = new JPanel();
+        infoPanel = new InfoPanel();
         actionsJPanel = new JPanel();
         cardsJPanel = new JPanel();
         mapJPanel = new Map();
@@ -133,9 +135,9 @@ public class MyGui implements MouseListener {
         cardsJPanels[4].setUp(".\\images\\lake2.png", 139, 91, 105, 104);
         cardsJPanels[5].setUp(".\\images\\plain2.png", 139, 91, 105, 104);
 
-        playersJPanels[0].setUp(".\\images\\giocatore4.png", 145, 81, 200, 99);
-        playersJPanels[1].setUp(".\\images\\giocatore5.png", 145, 81, 200, 99);
-        playersJPanels[2].setUp(".\\images\\giocatore6.png", 145, 81, 200, 99);
+        playersJPanels[0].setUp(".\\images\\giocatore1.png", 145, 81, 200, 99);
+        playersJPanels[1].setUp(".\\images\\giocatore2.png", 145, 81, 200, 99);
+        playersJPanels[2].setUp(".\\images\\giocatore3.png", 145, 81, 200, 99);
         playersJPanels[3].setUp(".\\images\\giocatore4.png", 145, 81, 200, 99);
 
         fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
@@ -146,7 +148,9 @@ public class MyGui implements MouseListener {
         
         //setto la struttura
         frame.setLayout(new BorderLayout());
-        frame.setContentPane(mainJPanel);
+       // frame.setContentPane(mainJPanel);
+        frame.getContentPane().add(mainJPanel, 0 );
+    //    frame.getLayeredPane().add(infoPanel, 2 );
         mainJPanel.setLayout(new FlowLayout());
         mainJPanel.add(cardsJPanel);
         mainJPanel.add(mapJPanel);
@@ -200,7 +204,8 @@ public class MyGui implements MouseListener {
         mainJPanel.setMaximumSize(mainJPanel.getPreferredSize());
         sxBar.setPreferredSize(new Dimension((68 + 10) * 3,
                 (((72 + 10) * actions.length) + (99 + 10) * playersJPanels.length) - 90));
-
+        infoPanel.setPreferredSize(new Dimension(200, 200));
+        
         //aggiungo this come listener per le azioni
         for (Action action : actions) {
             action.addMouseListener(this);
@@ -306,10 +311,19 @@ public class MyGui implements MouseListener {
     private void setUpImagePool() {
         //TODO creare ultime 2 pedine dei giocatori e modificare qui path
         ImagePool.add(".\\images\\shepherd1.png", "shepherd1");
-        ImagePool.add(".\\images\\shepherd1.png", "shepherd2");
-        ImagePool.add(".\\images\\shepherd2.png", "shepherd3");
-        ImagePool.add(".\\images\\shepherd2.png", "shepherd4");
+        ImagePool.add(".\\images\\shepherd2.png", "shepherd2");
+        ImagePool.add(".\\images\\shepherd3.png", "shepherd3");
+        ImagePool.add(".\\images\\shepherd4.png", "shepherd4");
         ImagePool.add(".\\images\\fence2.png", "fence");
+    }
+    
+    /**
+     * abilita le azioni corripondenti ai numeri nell array intActions
+     * @param intActions 
+     */
+    public void setActionEnabled(int[] intActions){
+        for(int i=0; i<intActions.length; i++)
+            actions[i].setEnabled(true);
     }
 
 }

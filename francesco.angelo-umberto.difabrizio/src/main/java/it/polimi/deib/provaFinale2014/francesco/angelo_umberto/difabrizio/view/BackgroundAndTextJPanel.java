@@ -25,12 +25,12 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     private int width;
     private int height;
 
-    public BackgroundAndTextJPanel(Font font, String text) {
+    protected BackgroundAndTextJPanel(Font font, String text) {
         textLabel = new JLabel(text);
         this.font = font;
     }
 
-    public BackgroundAndTextJPanel() {
+    protected BackgroundAndTextJPanel() {
     }
 
     /**
@@ -41,7 +41,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      * @param xText
      * @param yText
      */
-    public void setUp(String imgPath, int xText, int yText, int width, int height) {
+    protected void setUp(String imgPath, int xText, int yText, int width, int height) {
         this.height = height;
         this.width = width;
         //setto struttura
@@ -73,17 +73,18 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
 
     }
 
-    public void setUp(String imgPath, int width, int height) {
+    protected void setUp(String imgPath, int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setUp(imgPath, 0, 0, width, height);
     }
 
-    public void setUp(Image image, int width, int height) {
+    protected void setUp(Image image, int width, int height) {
         setPreferredSize(new Dimension(width, height));
+        setSize(width, height);
         setUp(image);
     }
 
-    public void setUp(Image image) {
+    protected void setUp(Image image) {
         this.image = image;
         repaint();
     }
@@ -98,6 +99,11 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         }
     }
 
+    protected void setText(String text){
+        textLabel.setText(text);
+    }
+    
+    //FIX ME
     protected void setMySize(int w, int h) {
         this.width = w;
         this.height = h;
@@ -115,7 +121,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         setOpaque(false);
-        super.paintComponent(g);
+      //  super.paintComponent(g);
         if (image != null) {
             g.drawImage(image, 0, 0, this);
         }
