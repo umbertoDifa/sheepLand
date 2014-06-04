@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,22 +17,24 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
+    public static HashMap<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
+
     /**
      * Main method, creates a serverMangager and starts it
      *
      * @param args
      */
     public static void main(String[] args) {
-        //creo un server su una certa porta
+        String SERVER_NAME = "sheepland";
 
-        String answer;
-        int choice;
-        int port = 5050;
-        String serverName = "sheepland";
+        int socketPort = NetworkConstants.PORT_SOCKET.getValue();
+        int rmiPort = NetworkConstants.PORT_RMI.getValue();
 
         Scanner stdIn = new Scanner(System.in);
         PrintWriter stdOut = new PrintWriter(System.out);
 
+        String answer;
+        int choice;
         boolean stringValid = false;
 
         //DEBUG ON/OFF
@@ -48,11 +51,12 @@ public class ServerManager {
 
                 if (choice == 1) {
                     stringValid = true;
-                    ServerSockets server = new ServerSockets(port);
+                    ServerSockets server = new ServerSockets(socketPort);
                     server.start();
                 } else if (choice == 2) {
                     stringValid = true;
-                    ServerRmiImpl server = new ServerRmiImpl(serverName, port);
+                    ServerRmiImpl server = new ServerRmiImpl(SERVER_NAME,
+                            rmiPort);
                     server.start();
                 } else {
                     stdOut.println("La scelta inserita non è valida\n");

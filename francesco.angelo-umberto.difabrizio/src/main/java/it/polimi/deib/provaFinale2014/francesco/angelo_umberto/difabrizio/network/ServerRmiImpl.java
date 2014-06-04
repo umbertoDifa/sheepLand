@@ -88,8 +88,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     /**
      * Lista dei nickNames dei client che sono in coda per iniziare una partita
      */
-    private List<String> clientNickNames = new ArrayList<String>();
-    protected static HashMap<String, RmiClientProxy> NickClientRmiMap = new HashMap<String, RmiClientProxy>();
+    private List<String> clientNickNames = new ArrayList<String>();    
 
     public ServerRmiImpl(String serverName, int port) throws
             RemoteException {
@@ -137,7 +136,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     public void connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException {
         //se il client che tenta di connettersi non esiste
-        if (!NickClientRmiMap.containsKey(nickName)) {
+        if (!ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
 
             //se ci sono partite da poter avviare
             if (activatedGames < maxNumberOfGames) {
@@ -146,7 +145,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 clientNickNames.add(nickName);
                 DebugLogger.println(nickName+": added");
                 
-                NickClientRmiMap.put(nickName, new RmiClientProxy(client));
+                ServerManager.Nick2ClientProxyMap.put(nickName, new RmiClientProxy(client));
                 //se è il primo player
                 if (numberOfPlayers == 1) {
                     timer = new Timer();
@@ -162,7 +161,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 //comunque vada lo mappo
             } else {
                 DebugLogger.println("Client rifiutato");
-                RmiClientProxy clientToReject = (RmiClientProxy) NickClientRmiMap.get(
+                RmiClientProxy clientToReject = (RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName);
                 clientToReject.getClientRmi().disconnect(
                         "Il server è pieno riporavare più tardi");
@@ -190,7 +189,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                     "Ci scusiamo, non ci sono abbastanza giocatori per una partita");
             //elimina il loro record dai giocatori attivi
             for (String client : clientNickNames) {
-                NickClientRmiMap.remove(client);
+                ServerManager.Nick2ClientProxyMap.remove(client);
             }
         }
         //comunque vada svuota la lista dei socket
@@ -204,7 +203,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         DebugLogger.println("Rifiuto Client.");
 
         //per tutti i client
-        for (Map.Entry pairs : NickClientRmiMap.entrySet()) {
+        for (Map.Entry pairs : ServerManager.Nick2ClientProxyMap.entrySet()) {
             //se il loro nick è tra quelli in lista di attesa
             String nick = (String) pairs.getKey();
             if (clientNickNames.contains(nick)) {

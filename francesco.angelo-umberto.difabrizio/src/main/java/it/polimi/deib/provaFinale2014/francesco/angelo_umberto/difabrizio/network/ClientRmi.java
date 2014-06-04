@@ -15,8 +15,7 @@ import java.util.logging.Logger;
  *
  * @author Umberto
  */
-public class ClientRmi extends UnicastRemoteObject implements
-        ClientInterfaceRemote {
+public class ClientRmi implements ClientInterfaceRemote {
 
     private final String nickName;
     private final String ip;
@@ -46,6 +45,7 @@ public class ClientRmi extends UnicastRemoteObject implements
 
     protected void startClient() {
         try {
+            UnicastRemoteObject.exportObject(this, 0);
             registry = LocateRegistry.getRegistry(ip, port);
 
             //crea uno skeleton affinche il server possa chiamare dei metodi su di te
@@ -285,8 +285,6 @@ public class ClientRmi extends UnicastRemoteObject implements
                     ex.getMessage(), ex);
             return null;
         }
-
-        
 
         if (result.contains("Ovino ucciso")) {
             String[] tokenResult = result.split(",");

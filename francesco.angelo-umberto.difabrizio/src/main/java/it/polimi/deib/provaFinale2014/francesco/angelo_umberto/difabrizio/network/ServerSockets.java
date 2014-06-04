@@ -82,9 +82,7 @@ public class ServerSockets implements Runnable {
     /**
      * Executes the threads which manage the games
      */
-    private ExecutorService executor = Executors.newCachedThreadPool();
-
-    protected static HashMap<String, SocketClientProxy> NickSocketMap = new HashMap<String, SocketClientProxy>();
+    private ExecutorService executor = Executors.newCachedThreadPool();    
 
     /**
      * Thread del server
@@ -215,7 +213,7 @@ public class ServerSockets implements Runnable {
                     "Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.");
             //elimina il loro record dai giocatori attivi
             for (String client : clientNickNames) {
-                NickSocketMap.remove(client);
+                ServerManager.Nick2ClientProxyMap.remove(client);
             }
 
         }
@@ -232,12 +230,12 @@ public class ServerSockets implements Runnable {
 
     private boolean isNewPlayer(String nickName) {
 
-        if (NickSocketMap.containsKey(nickName)) {
+        if (ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
             DebugLogger.println("NickName alredy in use");
             return false;
         } else {
             //aggiungilo alla map
-            NickSocketMap.put(nickName, new SocketClientProxy(clientSocket));
+            ServerManager.Nick2ClientProxyMap.put(nickName, new SocketClientProxy(clientSocket));
             //aggiungilo ai client in connessione
             clientNickNames.add(nickName);
             DebugLogger.println("nickName " + nickName + " added");
@@ -254,7 +252,7 @@ public class ServerSockets implements Runnable {
         DebugLogger.println("Rifiuto Client.");
 
         //per tutti i client
-        for (Map.Entry pairs : NickSocketMap.entrySet()) {
+        for (Map.Entry pairs : ServerManager.Nick2ClientProxyMap.entrySet()) {
             //se il loro nick è tra quelli in lista di attesa
             String nick = (String) pairs.getKey();
             if (clientNickNames.contains(nick)) {

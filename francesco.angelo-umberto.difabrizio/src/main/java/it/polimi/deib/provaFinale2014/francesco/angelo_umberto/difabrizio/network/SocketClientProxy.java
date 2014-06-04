@@ -1,8 +1,10 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,28 +15,28 @@ import java.util.logging.Logger;
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class SocketClientProxy {
+public class SocketClientProxy extends ClientProxy {
 
     private final Socket socket;
     private Scanner fromClient;
     private PrintWriter toClient;
-   
-    private int status;
-    
+
     public SocketClientProxy(Socket socket) {
+        super();
+
         this.socket = socket;
         try {
             //inizializzo stream out
             this.toClient = new PrintWriter(this.socket.getOutputStream());
-            
+
             //inizializzo streamo in
             this.fromClient = new Scanner(this.socket.getInputStream());
         } catch (IOException ex) {
             //se fallisce la creazione di un canale di scambio dati
-            System.err.println(ex.getMessage()); 
+            System.err.println(ex.getMessage());
             //TODO: provalo
             Logger.getLogger(ServerManager.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
+                    Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -46,8 +48,11 @@ public class SocketClientProxy {
     protected void send(String message) {
         toClient.println(message);
         //flusha lo stream e controlla eventuali errori
-        toClient.checkError();
-        //TODO: gestisci un errore se lo stream si sputtana
+        if (toClient.checkError()) {
+            DebugLogger.println(
+                    "C'è stato un errore inviando al client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE.getValue());
+        }
     }
 
     /**
@@ -57,8 +62,14 @@ public class SocketClientProxy {
      */
     protected String receive() {
         //TODO:gestisci queste eccez
-        String answer = fromClient.nextLine();
-        return answer;
+        try {
+            String answer = fromClient.nextLine();
+            return answer;
+        } catch (NoSuchElementException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+        }
+        return null;
     }
 
 }

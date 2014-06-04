@@ -24,7 +24,10 @@ public class Client {
     public static void main(String[] args) {
 
         final String ip = "localhost";
-        final int port = 5050;
+        
+        final int rmiPort = NetworkConstants.PORT_RMI.getValue();
+        final int socketPort = NetworkConstants.PORT_SOCKET.getValue();
+        
         final String nameServer = "sheepland";
 
         Scanner stdIn = new Scanner(System.in);
@@ -54,13 +57,13 @@ public class Client {
             if ("1".equals(typeOfConnection)) {
                 if ("1".equals(typeOfInterface)) {
                     //Socket - CLC
-                    ClientSocket client = new ClientSocket(ip, port,
+                    ClientSocket client = new ClientSocket(ip, socketPort,
                             new CommandLineView(), nickName);
                     client.startClient();
                     valid = true;
                 } else if ("2".equals(typeOfInterface)) {
                     //Socket - GUI
-                    ClientSocket client = new ClientSocket(ip, port,
+                    ClientSocket client = new ClientSocket(ip, socketPort,
                             new GuiView(), nickName);
                     client.startClient();
                     valid = true;
@@ -70,7 +73,7 @@ public class Client {
                     //Rmi - CLC
                     ClientRmi client;
                     try {
-                        client = new ClientRmi(ip, port, nameServer,
+                        client = new ClientRmi(ip, rmiPort, nameServer,
                                 new CommandLineView(),
                                 nickName);
                         client.startClient();
@@ -86,7 +89,7 @@ public class Client {
                     //rmi -GUI
                     ClientRmi client;
                     try {
-                        client = new ClientRmi(ip, port, nameServer,
+                        client = new ClientRmi(ip, rmiPort, nameServer,
                                 new GuiView(),
                                 nickName);
                         client.startClient();

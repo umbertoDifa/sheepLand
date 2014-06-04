@@ -17,7 +17,6 @@ public class DebugLogger {
     public static void println(String debugPrint) {
         //se il debug è attivo
         if (DEBUG) {
-
             //stampa la stringa
             System.out.println("debug: " + debugPrint);
         }

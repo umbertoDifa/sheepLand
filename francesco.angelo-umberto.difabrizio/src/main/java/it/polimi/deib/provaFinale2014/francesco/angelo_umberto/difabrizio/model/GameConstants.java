@@ -22,14 +22,14 @@ public enum GameConstants {
      * Carte per ogni tipo di regione
      */
     NUM_CARDS_FOR_REGION_TYPE(5),
-     /**
+    /**
      * Numero di recinti finali
      */
     NUM_FINAL_FENCES(12),
     /**
      * Numero di recinti, finali + non finali
      */
-    NUM_FENCES(NUM_FINAL_FENCES.value + 3),//FIXME was 20
+    NUM_FENCES(NUM_FINAL_FENCES.value + 20),
     /**
      * Numero di regioni per ogni tipo di terreno
      */
@@ -42,7 +42,6 @@ public enum GameConstants {
      * Numero di regioni, compresa shepsburg
      */
     NUM_REGIONS(19),
-   
     /**
      * Numero di azioni che possono essere fatte in un turno da un giocatore
      */
@@ -78,8 +77,8 @@ public enum GameConstants {
      */
     BLACKSHEEP_WEIGHT(2),
     /**
-     * It's the minimum value of the dice so that a shepherd has to pay
-     * the other players to be silent in case of killing an ovine
+     * It's the minimum value of the dice so that a shepherd has to pay the
+     * other players to be silent in case of killing an ovine
      */
     MIN_DICE_VALUE_TO_PAY_SILENCE(5),
     /**
@@ -87,9 +86,7 @@ public enum GameConstants {
      * player
      */
     PRICE_OF_SILENCE(2);
-    
-    
-    
+
     private final int value;
 
     GameConstants(int value) {

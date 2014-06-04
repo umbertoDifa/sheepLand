@@ -149,46 +149,8 @@ public class WolfTest {
 
         //faccio un percorso 18 -2 -15 -17         
         DebugLogger.println("Controllo iniziale");
-        for (i = 0; i < numberOfOvineForRegion + 1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 18 c'è " + map.getRegions()[18].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 18");
-                break;
-            }
-        }
-        for (i = 0; i < numberOfOvineForRegion + 1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 2 c'è " + map.getRegions()[2].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 2");
-                break;
-            }
-        }
-        for (i = 0; i < numberOfOvineForRegion + 1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 15 c'è " + map.getRegions()[15].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 15");
-                break;
-            }
-        }
-        for (i = 0; i < numberOfOvineForRegion + 1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 17 c'è " + map.getRegions()[17].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 17");
-                break;
-            }
-        }
+    
+       
 
         wolf.moveThrough(map.convertStringToStreet("23"),
                 map.convertStringToRegion("2"));
@@ -204,47 +166,8 @@ public class WolfTest {
         wolf.moveThrough(map.convertStringToStreet("23"),
                 map.convertStringToRegion("18"));
 
-        DebugLogger.println("Controllo finale");
-        for (i = 0; i < numberOfOvineForRegion+1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 18 c'è " + map.getRegions()[18].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 18");
-                break;
-            }
-        }
-        for (i = 0; i < numberOfOvineForRegion+1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 2 c'è " + map.getRegions()[2].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 2");
-                break;
-            }
-        }
-        for (i = 0; i < numberOfOvineForRegion+1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 15 c'è " + map.getRegions()[15].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 15");
-                break;
-            }
-        }
-        for (i = 0; i < numberOfOvineForRegion+1; i++) {
-            try {
-                DebugLogger.println(
-                        "In 17 c'è " + map.getRegions()[17].getMyOvines().get(
-                                i).getType());
-            } catch (IndexOutOfBoundsException e) {
-                DebugLogger.println("Nessun animale in 17");
-                break;
-            }
-        }
+       
+      
 
         //il lupo è dinuovo in 18
         //aggiungo fence a tutte le strade pari
