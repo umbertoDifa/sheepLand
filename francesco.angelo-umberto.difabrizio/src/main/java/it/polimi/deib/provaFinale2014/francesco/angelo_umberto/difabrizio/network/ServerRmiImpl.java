@@ -107,7 +107,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
     }
 
-    public void connect(ClientInterfaceRemote client, String nickName) throws
+    public boolean connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException {
         //se il client che tenta di connettersi non esiste
         if (!ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
@@ -132,7 +132,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                     timer.stopTimer();
                     startGame();
                 }
-
+                return true;
                 //comunque vada lo mappo
             } else {
                 DebugLogger.println("Client rifiutato");
@@ -141,18 +141,15 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 clientToReject.getClientRmi().disconnect(
                         "Il server è pieno riporavare più tardi");
                 clientNickNames.clear();
+                return false;
             }
         } else {
             if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
                 DebugLogger.println("Client già in gioco");
                 //rigettalo
-                RmiClientProxy clientToReject = (RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
-                        nickName);
-
-                clientToReject.getClientRmi().disconnect(
+                client.disconnect(
                         "Il giocatore con il nickName inserito è già online");
-
-                clientNickNames.clear();
+                return false;
             } else {
                 //il client deve riconnettersi
                 //rimuovo la vecchia instanza
@@ -167,6 +164,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
                         true);
                 DebugLogger.println(nickName + " settato refresh");
+                return true;
             }
         }
     }

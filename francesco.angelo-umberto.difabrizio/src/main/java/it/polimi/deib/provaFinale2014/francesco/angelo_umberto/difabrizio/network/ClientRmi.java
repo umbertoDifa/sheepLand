@@ -31,12 +31,12 @@ public class ClientRmi implements ClientInterfaceRemote {
     private Registry registry;
 
     private String[] token;
-    String parameters;
-    String result;
+    private String parameters;
+    private String result;
+    private boolean connectionResult;
 
     public ClientRmi(String ip, int port, String nameServer,
                      TypeOfViewController view) throws RemoteException {
-        this.nickName = nickName;
         this.nameServer = nameServer;
         this.port = port;
         this.ip = ip;
@@ -45,6 +45,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     }
 
     protected void startClient() {
+
         try {
             UnicastRemoteObject.exportObject(this, 0);
             registry = LocateRegistry.getRegistry(ip, port);
@@ -58,24 +59,27 @@ public class ClientRmi implements ClientInterfaceRemote {
 
             DebugLogger.println(
                     "Canali di comunicazione impostati");
-
             do {
-                stdOut.println("Inserisci il tuo nickName:");
-                stdOut.flush();
 
-                nickName = stdIn.nextLine();
-            } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
-                    ":"));
-            //da evitare come la peste la stringa vuota come nickname
-            //esplodono i satelliti della nasa
-            
-            
+                do {
+                    stdOut.println("Inserisci il tuo nickName:");
+                    stdOut.flush();
+
+                    nickName = stdIn.nextLine();
+                } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                        ":"));
+                //da evitare come la peste la stringa vuota come nickname
+                //esplodono i satelliti della nasa
+
+                DebugLogger.println("Invio nickName");
+
+                //connettiti
+                connectionResult = serverRmi.connect(this, nickName);
+
+            } while (connectionResult == false);
+
             //crea uno skeleton affinche il server possa chiamare dei metodi su di te
             registry.rebind(nickName, this);
-            DebugLogger.println("Invio nickName");
-            
-            //connettiti
-            serverRmi.connect(this, nickName);
 
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -84,13 +88,7 @@ public class ClientRmi implements ClientInterfaceRemote {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "Il server non è ancora bounded " + ex.getMessage(), ex);
         }
-        try {
-            registry.rebind(nickName, this);
-        } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "Il client non è riuscito a fare il bind" + ex.getMessage(),
-                    ex);
-        }
+
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
@@ -325,17 +323,20 @@ public class ClientRmi implements ClientInterfaceRemote {
 
     public void disconnect(String message) {
         view.showInfo(message);
-        try {
-            UnicastRemoteObject.unexportObject(this, true);
-            registry.unbind(nickName);
-        } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(),
-                    ex);
-        } catch (NotBoundException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(),
-                    ex);
+        if (connectionResult == true) {
+            try {
+                UnicastRemoteObject.unexportObject(this, true);
+                registry.unbind(nickName);
+            } catch (RemoteException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+            } catch (NotBoundException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+            }
+            synchronized (Client.lock) {
+                Client.lock.notify();
+            }
         }
     }
 
