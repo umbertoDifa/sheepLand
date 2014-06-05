@@ -91,12 +91,12 @@ public abstract class TrasmissionController {
 
     //ritorna una stringa corripondente o a una strada o il risultato della chiamata RMI
     public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex)
-            throws RemoteException, TmpPlayerDisconnectedException;
+            throws RemoteException, PlayerDisconnectedException;
 
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
     public abstract boolean askChooseAction(String nickName,
                                             String possibleActions) throws
-            RemoteException, TmpPlayerDisconnectedException;
+            RemoteException, PlayerDisconnectedException;
 
     public HashMap<String, Player> getNick2PlayerMap() {
         return nick2PlayerMap;

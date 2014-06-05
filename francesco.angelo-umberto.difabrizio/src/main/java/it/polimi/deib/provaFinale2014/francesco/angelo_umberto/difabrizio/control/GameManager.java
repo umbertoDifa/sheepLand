@@ -19,7 +19,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TmpPlayerDisconnectedException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.PlayerDisconnectedException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -272,7 +272,7 @@ public class GameManager implements Runnable {
                 for (j = 0; j < this.shepherd4player; j++) {
                     players.get(currentPlayer).setMyshepherd(j);
                 }
-            } catch (TmpPlayerDisconnectedException ex) {
+            } catch (PlayerDisconnectedException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
                 //player disconnesso salto i suoi pastori
@@ -480,7 +480,7 @@ public class GameManager implements Runnable {
                 players.get(currentPlayer).lastShepherd = null;
                 
                     lastRound = this.executeShift(currentPlayer);
-                } catch (TmpPlayerDisconnectedException ex) {
+                } catch (PlayerDisconnectedException ex) {
                     //il giocatore si disconnette durante il suo turno
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
@@ -530,7 +530,7 @@ public class GameManager implements Runnable {
         currentPlayer %= this.playersNumber;
     }
 
-    private void handleReconnection() throws RemoteException, TmpPlayerDisconnectedException {
+    private void handleReconnection() throws RemoteException, PlayerDisconnectedException {
         //controllo se il player ha bisogno di un refresh
         if (ServerManager.Nick2ClientProxyMap.get(
                 clientNickNames[currentPlayer]).needRefresh()) {
@@ -554,7 +554,7 @@ public class GameManager implements Runnable {
 
     private boolean executeShift(int player) throws FinishedFencesException,
                                                     RemoteException,
-                                                    TmpPlayerDisconnectedException {
+                                                    PlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
         controller.refreshCurrentPlayer(clientNickNames[player]);

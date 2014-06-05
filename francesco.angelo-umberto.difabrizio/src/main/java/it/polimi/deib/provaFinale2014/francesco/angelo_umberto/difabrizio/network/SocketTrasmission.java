@@ -172,7 +172,7 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
-    public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws TmpPlayerDisconnectedException{
+    public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws PlayerDisconnectedException{
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "SetUpShepherd");
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
@@ -203,7 +203,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     public boolean askChooseAction(String nickName, String possibleActions)
-            throws TmpPlayerDisconnectedException {
+            throws PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "ChooseAction");
         DebugLogger.println("choose action inviata a " + nickName);
@@ -234,7 +234,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askMoveOvine(String nickName) throws
-            TmpPlayerDisconnectedException {
+            PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "MoveOvine");
 
@@ -257,7 +257,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askMoveSheperd(String nickName) throws
-            TmpPlayerDisconnectedException {
+            PlayerDisconnectedException {
 
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "MoveShepherd");
@@ -288,7 +288,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askBuyLand(String nickName) throws
-            TmpPlayerDisconnectedException {
+            PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "BuyLand");
         String landToBuy = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
@@ -313,7 +313,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askKillOvine(String nickName) throws
-            TmpPlayerDisconnectedException {
+            PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "KillOvine");
         String parameters = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
@@ -349,7 +349,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askMateSheepWith(String nickName, String type) throws
-            TmpPlayerDisconnectedException {
+            PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "MateSheepWith");
         String parameters = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(

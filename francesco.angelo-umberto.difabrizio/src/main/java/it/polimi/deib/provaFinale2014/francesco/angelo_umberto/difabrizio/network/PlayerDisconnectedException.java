@@ -5,12 +5,12 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
  *
  * @author francesco.angelo-umberto.difabrizio
  */
-public class TmpPlayerDisconnectedException extends Exception {
+public class PlayerDisconnectedException extends Exception {
 
     /**
      * Throws the exception
      */
-    public TmpPlayerDisconnectedException() {
+    public PlayerDisconnectedException() {
     }
 
     /**
@@ -18,7 +18,7 @@ public class TmpPlayerDisconnectedException extends Exception {
      *
      * @param message Message
      */
-    public TmpPlayerDisconnectedException(String message) {
+    public PlayerDisconnectedException(String message) {
         super(message);
     }
 
