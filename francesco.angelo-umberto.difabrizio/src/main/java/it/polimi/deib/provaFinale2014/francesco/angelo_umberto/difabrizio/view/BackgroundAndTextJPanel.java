@@ -18,7 +18,7 @@ import javax.swing.JPanel;
  */
 public abstract class BackgroundAndTextJPanel extends JPanel {
 
-    private JLabel textLabel;
+    private JLabel textLabel = new JLabel();
     Font font;
     Image image;
     private int delta;
@@ -26,7 +26,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     private int height;
 
     protected BackgroundAndTextJPanel(Font font, String text) {
-        textLabel = new JLabel(text);
+        textLabel.setText(text);
         this.font = font;
     }
 
@@ -34,24 +34,25 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     }
 
     /**
-     * imposta l img corrispondente al path come sfondo del panel e centra il
-     * testo in base al centro delle coordinate xText yText
+     * set the panel's background image corrisponding to the path center the
+     * Label with xText, yText
      *
      * @param imgPath
      * @param xText
      * @param yText
      */
     protected void setUp(String imgPath, int xText, int yText, int width, int height) {
+        //salvo le dimensioni
         this.height = height;
         this.width = width;
-        //setto struttura
+
+        //setto immagine di sfondo e colore di sfondo
+        this.setImage(imgPath);
         this.setBackground(new Color(0, 0, 0, 0));
 
-        this.setImage(imgPath);
-
         //se ha testo
-        if (textLabel != null) {
-            //imposto la posizione del testo
+        if (textLabel.getText() != "") {
+            //aggiungo il label e setto la posizione del testo rispetto al panel
             this.setLayout(null);
             this.add(textLabel);
             Insets insets = getInsets();
@@ -60,10 +61,10 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
             int horizontalAlign = (int) getAlignmentY();
             //centrandolo rispetto le coord xText e yText
             textLabel.setBounds((xText + insets.left + horizontalAlign - width / 2),
-                    (yText + insets.top + verticalAlign - (font.getSize() / 2)),
-                    width, font.getSize());
+                    (yText + insets.top + verticalAlign - (28 / 2)),
+                    width, 28);
 
-            //imposto font
+            //imposto font e colore font
             textLabel.setFont(font);
             textLabel.setForeground(Color.WHITE);
         }
@@ -73,22 +74,47 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
 
     }
 
+    /**
+     * set the background image corrisponding to the path, and set the dimension
+     * of the panel
+     *
+     * @param imgPath
+     * @param width
+     * @param height
+     */
     protected void setUp(String imgPath, int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setUp(imgPath, 0, 0, width, height);
     }
 
+    /**
+     * set the background image and set the dimension of the panel
+     *
+     * @param image
+     * @param width
+     * @param height
+     */
     protected void setUp(Image image, int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setSize(width, height);
         setUp(image);
     }
 
+    /**
+     * set the only background image
+     *
+     * @param image
+     */
     protected void setUp(Image image) {
         this.image = image;
         repaint();
     }
 
+    /**
+     * set only the background image corrispondig to the path
+     *
+     * @param imgPath
+     */
     private void setImage(String imgPath) {
         try {
             image = ImageIO.read(new File(imgPath));
@@ -99,16 +125,22 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         }
     }
 
-    protected void setText(String text){
+    /**
+     * set the Label's text
+     *
+     * @param text
+     */
+    protected void setText(String text) {
         textLabel.setText(text);
     }
-    
-    //FIX ME
-    protected void setMySize(int w, int h) {
-        this.width = w;
-        this.height = h;
-    }
 
+    /**
+     * add a Panel, positioning it with x,y referred to this
+     *
+     * @param sonPanel
+     * @param x
+     * @param y
+     */
     protected void addPanel(JPanel sonPanel, int x, int y) {
         //  this.setLayout(null);
         this.add(sonPanel);
@@ -118,10 +150,16 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
                 (y + (int) sonPanel.getAlignmentX()), (int) size.getWidth(), (int) size.getHeight());
     }
 
+    /**
+     * override paintComponent to set the background image if it exists,
+     * otherwise clear the background image
+     *
+     * @param g
+     */
     @Override
     protected void paintComponent(Graphics g) {
         setOpaque(false);
-      //  super.paintComponent(g);
+        //  super.paintComponent(g);
         if (image != null) {
             g.drawImage(image, 0, 0, this);
         }
