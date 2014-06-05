@@ -321,4 +321,13 @@ public class CommandLineView implements TypeOfViewController {
         }
     }
 
+    public void specialAnimalInitialCondition(String region) {
+        String[] token = region.split(",");
+        if ("Wolf".equals(token[0])) {
+            showInfo("Il lupo si trova nella regione " + token[1]);
+        } else if ("BlackSheep".equals(token[0])) {
+            showInfo("La pecora nera si trova nella regione " + token[1]);
+        }
+    }
+
 }

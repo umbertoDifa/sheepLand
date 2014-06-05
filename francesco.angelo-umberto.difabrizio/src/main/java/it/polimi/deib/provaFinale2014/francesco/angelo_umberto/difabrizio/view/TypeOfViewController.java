@@ -59,6 +59,8 @@ public interface TypeOfViewController {
     public void refreshBlackSheep(String result);
 
     public void refreshWolf(String result);
+    
+    public void specialAnimalInitialCondition(String region);  
 
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions);

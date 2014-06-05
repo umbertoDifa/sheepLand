@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  * @author francesco.angelo-umberto.difabrizio
  */
 public class GameManager implements Runnable {
-    
+
     private final Thread myThread;
     /**
      * The map of a certain game. It holds the charateristics of the region and
@@ -75,7 +75,7 @@ public class GameManager implements Runnable {
      */
     public GameManager(List<String> clientNickNames,
                        TrasmissionController controller) {
-        
+
         this.controller = controller;
         //salvo il numero di player
         this.playersNumber = clientNickNames.size();
@@ -105,9 +105,9 @@ public class GameManager implements Runnable {
                     ex.getMessage(), ex);
             //TODO stesso discorso della run()
         }
-        
+
         controller.setNick2PlayerMap(this.clientNickNames, players);
-        
+
         myThread = new Thread(this);
     }
 
@@ -117,7 +117,7 @@ public class GameManager implements Runnable {
     public void start() {
         myThread.start();
     }
-    
+
     public void run() {
         try {
             this.startGame();
@@ -128,15 +128,15 @@ public class GameManager implements Runnable {
             //oppure lo faccio io ovvero setto il nickName offline
         }
     }
-    
+
     public TrasmissionController getController() {
         return controller;
     }
-    
+
     public Map getMap() {
         return map;
     }
-    
+
     public Bank getBank() {
         return bank;
     }
@@ -166,52 +166,52 @@ public class GameManager implements Runnable {
      */
     private void SetUpGame() throws RemoteException {
         DebugLogger.println("Avvio partita");
-        
+
         controller.broadcastStartGame();
-        
+
         DebugLogger.println("SetUpMap Avviato");
         this.setUpMap();
-        
+
         DebugLogger.println("SetUpAnimals Avviato");
         this.setUpAnimals();
-        
+
         DebugLogger.println("SetUpcards Avviato");
         this.setUpCards();
-        
+
         DebugLogger.println("SetUpFences Avviato");
         this.setUpFences();
-        
+
         DebugLogger.println("SetUpShift Avviato");
         this.setUpShift();
         DebugLogger.println(
                 "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
-        
+
         DebugLogger.println("SetUpinitial Avviato");
         this.setUpInitialCards();
-        
+
         DebugLogger.println("broadcastinitial conditions");
-        
+
         for (String client : clientNickNames) {
             this.broadcastInitialConditions(client);
         }
-        
+
         DebugLogger.println("brodcast cards");
         this.brodcastCards();
-        
+
         this.setUpShepherds();
         DebugLogger.println("SetUpshpherds terminato");
-        
+
     }
-    
+
     private void brodcastCards() throws RemoteException {
         for (int i = 0; i < playersNumber; i++) {
             refreshCards(i);
         }
     }
-    
+
     private void refreshCards(int indexOfPlayer) throws RemoteException {
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
-        
+
         for (int j = 0; j < numberOfCards; j++) {
             Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
                     j);
@@ -219,17 +219,17 @@ public class GameManager implements Runnable {
                     card.getType().toString(), card.getValue());
         }
     }
-    
+
     private void setUpInitialCards() {
-        
+
         for (int i = 0; i < clientNickNames.length; i++) {
             //aggiungi la carta prendendola dalle carte iniziali della banca
             Card initialCard = this.bank.getInitialCard();
-            
+
             this.players.get(i).shepherd[0].addCard(
                     initialCard);
         }
-        
+
     }
 
     /**
@@ -277,7 +277,7 @@ public class GameManager implements Runnable {
             }//for pastori
         }//for giocatori
     }
-    
+
     private void setUpShift() {
         //creo oggetto random
         Random random = new Random();
@@ -330,23 +330,23 @@ public class GameManager implements Runnable {
             }
         }
     }
-    
+
     private void playTheGame() throws RemoteException {
         int[][] classification;
         int numOfWinners = 1;
-        
+
         try {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
         } catch (FinishedFencesException ex) {
-            
+
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         } finally {
             //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
             //stilo la classifica in ordine decrescente
             classification = this.calculatePoints();
-            
+
             DebugLogger.println("prima while");
 
             //calcolo quanti sono al primo posto a parimerito
@@ -354,9 +354,9 @@ public class GameManager implements Runnable {
                 if (classification[1][i] == classification[1][i + 1]) {
                     numOfWinners++;
                 }
-            
+
             DebugLogger.println("calcolo vincitori eff");
-            
+
             int i;
             //per tutti i vincitori
             for (i = 0; i < numOfWinners; i++) {
@@ -367,29 +367,27 @@ public class GameManager implements Runnable {
             for (; i < playersNumber; i++) {
                 controller.sendRank(false, clientNickNames[classification[0][i]],
                         classification[1][i]);
-                
+
             }
             DebugLogger.println("invio classifica");
             controller.sendClassification(classificationToString(classification));
         }
     }
-    
+
     private void startGame() throws RemoteException {
         DebugLogger.println("SetUpGameAvviato");
         this.SetUpGame();
-        
+
         DebugLogger.println("SetUpGame Effettuato");
         this.playTheGame();
 
         //gameFinished
     }
-    
+
     private void broadcastInitialConditions(String client) throws
             RemoteException {
 
-        //broadcast regions
         int numbOfSheep, numbOfLamb, numbOfRam;
-        
         for (int i = 0; i < this.map.getRegions().length; i++) {
             numbOfLamb = 0;
             numbOfRam = 0;
@@ -408,13 +406,10 @@ public class GameManager implements Runnable {
 
             controller.refreshRegion(client, i, numbOfSheep,
                     numbOfRam, numbOfLamb);
-            
-        }
 
-        //broadcast streets
+        }   //broadcast streets
         boolean fence;
         String shepherdName;
-        
         int streetsNumber = this.map.getStreets().length;
         for (int i = 0; i < streetsNumber; i++) {
             Street street = this.map.getStreets()[i];
@@ -423,23 +418,36 @@ public class GameManager implements Runnable {
             if (street.hasFence()) {
                 fence = true;
             } else if (street.hasShepherd()) {
-                shepherdName = getPlayerNickNameByShepherd(street.getShepherd());
+                shepherdName = getPlayerNickNameByShepherd(
+                        street.getShepherd());
             }
-            
-            controller.refreshStreet(client, i, fence, shepherdName);
-            
-        }
 
-        //broadcast money        
+            controller.refreshStreet(client, i, fence, shepherdName);
+
+        }   //broadcast money
         controller.refreshMoney(client);
 
-        //broadcast money        
+        try {
+            //broadcast wolf position
+            controller.refreshSpecialAnimalInitialPosition(client,
+                    map.getWolf(), "" + map.getNodeIndex(
+                            map.getWolf().getMyRegion()));
+            //broadcast blacksheep position
+            controller.refreshSpecialAnimalInitialPosition(client,
+                    map.getBlackSheep(), "" + map.getNodeIndex(
+                            map.getBlackSheep().getMyRegion()));
+
+        } catch (NodeNotFoundException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(),
+                    ex);
+        }
     }
-    
+
     private void executeRounds() throws FinishedFencesException, RemoteException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
-        
+
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
@@ -451,7 +459,7 @@ public class GameManager implements Runnable {
                 //controllo se il player ha bisogno di un refresh
                 if (ServerManager.Nick2ClientProxyMap.get(
                         clientNickNames[currentPlayer]).needRefresh()) {
-                    
+
                     this.broadcastInitialConditions(
                             clientNickNames[currentPlayer]);
                 }
@@ -462,11 +470,11 @@ public class GameManager implements Runnable {
 
                 //the shepherd used is set to none too
                 players.get(currentPlayer).lastShepherd = null;
-                
+
                 lastRound = this.executeShift(currentPlayer);
-                
+
                 nextPlayer();
-                
+
                 evolveLambs();
 
                 //controllo se ho finito il giro
@@ -478,13 +486,8 @@ public class GameManager implements Runnable {
                     DebugLogger.println("muovo lupo");
                     this.moveSpecialAnimal(this.map.getWolf());
                     DebugLogger.println("lupo mosso");
-                }
+                }               
 
-                //refresho le condizioni a tutti
-                for (String client : clientNickNames) {
-                    this.broadcastInitialConditions(client);
-                }
-                
             } else {
                 DebugLogger.println(
                         "Player offline:" + clientNickNames[currentPlayer]);
@@ -492,30 +495,30 @@ public class GameManager implements Runnable {
                 //skip player
                 nextPlayer();
             }
-            
+
         }//while
     }
-    
+
     private void nextPlayer() {
         //aggiorno il player che gioca 
         currentPlayer++;
         //conto in modulo playersNumber
         currentPlayer %= this.playersNumber;
     }
-    
+
     private boolean executeShift(int player) throws FinishedFencesException,
                                                     RemoteException {
         DebugLogger.println("Broadcast giocatore di turno");
-        
+
         controller.refreshCurrentPlayer(clientNickNames[player]);
-        
+
         DebugLogger.println("Muovo pecora nera");
         //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
 
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
-            
+
             DebugLogger.println(
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
@@ -525,7 +528,7 @@ public class GameManager implements Runnable {
         //se sono finiti i recinti normali chiamo l'ultimo giro
         return this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue();
     }
-    
+
     private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
@@ -534,11 +537,11 @@ public class GameManager implements Runnable {
         //cerco la strada che dovrebbe attraversare
         Street potentialWalkthroughStreet;
         int streetValue = Dice.roll();
-        
+
         try {
             startRegionIndex = map.getNodeIndex(
                     actualAnimalRegion);
-            
+
             potentialWalkthroughStreet = this.map.getStreetByValue(
                     actualAnimalRegion, streetValue);
 
@@ -572,7 +575,7 @@ public class GameManager implements Runnable {
                     "nok" + "," + streetValue + "," + startRegionIndex);
         }
     }
-    
+
     private void startMarket() {
         //iteratore sui player
         int i;
@@ -610,10 +613,10 @@ public class GameManager implements Runnable {
         }
         return null;
     }
-    
+
     private int[][] calculatePoints() {
         DebugLogger.println("Calculate points");
-        
+
         int[][] classification = new int[2][playersNumber];
         int tmp1, tmp2;
         //per ogni giocatore
@@ -628,7 +631,7 @@ public class GameManager implements Runnable {
             }
             //aggiungo i soldi avanzati
             classification[1][i] += player.shepherd[0].getWallet().getAmount();
-            
+
             DebugLogger.println(
                     "player " + clientNickNames[i] + " punti " + classification[1][i]);
             i++;
@@ -647,10 +650,10 @@ public class GameManager implements Runnable {
                 }
             }
         }
-        
+
         return classification;
     }
-    
+
     private String classificationToString(int[][] classification) {
         String result = "";
         for (int i = 0; i < playersNumber; i++) {
@@ -659,7 +662,7 @@ public class GameManager implements Runnable {
         DebugLogger.println("creta classifica stringhizzata " + result);
         return result;
     }
-    
+
     private void evolveLambs() {
         //per tutti gli ovini che sono agnelli
         for (Region region : this.map.getRegions()) {
@@ -675,7 +678,7 @@ public class GameManager implements Runnable {
                         ovine.setAge(ovine.getAge() + 1);
                     }
                 }
-                
+
             }
         }
     }

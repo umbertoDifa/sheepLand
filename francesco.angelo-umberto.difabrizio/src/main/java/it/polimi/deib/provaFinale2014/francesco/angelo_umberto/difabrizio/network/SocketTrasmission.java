@@ -442,4 +442,14 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    @Override
+    public void refreshSpecialAnimalInitialPosition(String nickName,
+                                                    SpecialAnimal animal,
+                                                    String region) {
+        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send("SpecialAnimalInitialPosition");
+        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
+                animal.toString() + ","
+                + region);
+    }
+
 }

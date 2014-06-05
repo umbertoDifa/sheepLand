@@ -34,8 +34,8 @@ public class SocketClientProxy extends ClientProxy {
         } catch (IOException ex) {
             //se fallisce la creazione di un canale di scambio dati
             System.err.println(ex.getMessage());
-            //TODO: provalo
-            Logger.getLogger(ServerManager.class.getName()).log(
+
+            Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         }
     }

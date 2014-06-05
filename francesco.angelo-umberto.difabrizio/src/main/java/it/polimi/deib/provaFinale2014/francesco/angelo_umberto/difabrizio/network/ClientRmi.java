@@ -345,4 +345,9 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshKillOvine(type, region, type, outcome);
     }
 
+    public void refreshSpecialAnimalInitialPosition(String position) throws
+            RemoteException {
+        view.specialAnimalInitialCondition(position);
+    }
+
 }

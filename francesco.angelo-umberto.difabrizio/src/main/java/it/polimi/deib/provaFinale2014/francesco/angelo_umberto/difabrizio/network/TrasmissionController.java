@@ -45,6 +45,8 @@ public abstract class TrasmissionController {
     public abstract void refreshSpecialAnimal(SpecialAnimal animal,
                                               String movementResult) throws
             RemoteException;
+    
+    public abstract void refreshSpecialAnimalInitialPosition(String client, SpecialAnimal animal, String region) throws RemoteException;
 
     public abstract void refreshMoney(String nickName) throws RemoteException;
 

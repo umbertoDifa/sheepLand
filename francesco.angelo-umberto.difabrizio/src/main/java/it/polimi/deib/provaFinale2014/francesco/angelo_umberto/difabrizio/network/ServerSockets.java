@@ -77,12 +77,12 @@ public class ServerSockets implements Runnable {
     private static int activatedGames = 0;
 
     private final PrintWriter stdOut = new PrintWriter(System.out);
-    
+
     private final int maxNumberOfGames;
     /**
      * Executes the threads which manage the games
      */
-    private ExecutorService executor = Executors.newCachedThreadPool();    
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * Thread del server
@@ -128,7 +128,7 @@ public class ServerSockets implements Runnable {
 
         stdOut.println("Server pronto");
         stdOut.flush();
-        
+
         this.handleClientRequest();
     }
 
@@ -169,13 +169,30 @@ public class ServerSockets implements Runnable {
                             startGame();
                         }
                     } else {
-                        //TODO handle reconnection
+                        if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
+                            DebugLogger.println("Client già in gioco");
+                            //rigettalo
+                            rejectNameSake(clientSocket);
+                        } else {
+                            //il client deve riconnettersi
+                            //rimuovo la vecchia instanza
+                            DebugLogger.println("Client tenta di riconnettersi");
+                            ServerManager.Nick2ClientProxyMap.remove(nickName);
+                            DebugLogger.println(nickName + " rimosso");
+                            //metto il nuovo
+                            ServerManager.Nick2ClientProxyMap.put(nickName,
+                                    new SocketClientProxy(clientSocket));
+                            DebugLogger.println(nickName + " aggiunto");
+                            //setto il refresh
+                            ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
+                                    true);
+                            DebugLogger.println(nickName + " settato refresh");
+                        }
                     }
                 } else {
                     //se le partite attivate sono il massimo
                     DebugLogger.println("Client rifiutato");
-                    handleClientRejection(
-                            "Il server è pieno, riprova più tardi");
+
                     clientNickNames.clear();
 
                 }
@@ -224,18 +241,26 @@ public class ServerSockets implements Runnable {
     }
 
     private String getNickName() throws IOException {
-        Scanner fromClient = new Scanner(clientSocket.getInputStream());
-        return fromClient.nextLine();
+        Scanner fromLastClient = new Scanner(clientSocket.getInputStream());
+        return fromLastClient.nextLine();
     }
 
+    /**
+     * Controlla se il player è gia in gioco, se è nuovo lo aggiunge ai player
+     * in lista
+     *
+     * @param nickName
+     *
+     * @return true se nuovo giocatore, false altrimenti
+     */
     private boolean isNewPlayer(String nickName) {
 
         if (ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
-            DebugLogger.println("NickName alredy in use");
             return false;
         } else {
             //aggiungilo alla map
-            ServerManager.Nick2ClientProxyMap.put(nickName, new SocketClientProxy(clientSocket));
+            ServerManager.Nick2ClientProxyMap.put(nickName,
+                    new SocketClientProxy(clientSocket));
             //aggiungilo ai client in connessione
             clientNickNames.add(nickName);
             DebugLogger.println("nickName " + nickName + " added");
@@ -261,6 +286,21 @@ public class ServerSockets implements Runnable {
             }
 
         }
+    }
+
+    private void rejectNameSake(Socket client) {
+        PrintWriter toClient;
+        try {
+            toClient = new PrintWriter(client.getOutputStream());
+            toClient.println(
+                    "Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick");
+            toClient.flush();
+        } catch (IOException ex) {
+            //poco male il client si è disconnesso prima di ricevere il rifiuto
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    null, ex);
+        }
+
     }
 
     /**
