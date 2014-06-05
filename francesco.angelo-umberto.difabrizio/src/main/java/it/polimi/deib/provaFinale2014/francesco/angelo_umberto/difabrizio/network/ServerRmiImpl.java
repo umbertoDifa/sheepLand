@@ -142,7 +142,33 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                         "Il server è pieno riporavare più tardi");
                 clientNickNames.clear();
             }
-        }//TODO handle reconnection
+        } else {
+            if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
+                DebugLogger.println("Client già in gioco");
+                //rigettalo
+                RmiClientProxy clientToReject = (RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        nickName);
+
+                clientToReject.getClientRmi().disconnect(
+                        "Il giocatore con il nickName inserito è già online");
+
+                clientNickNames.clear();
+            } else {
+                //il client deve riconnettersi
+                //rimuovo la vecchia instanza
+                DebugLogger.println("Client tenta di riconnettersi");
+                ServerManager.Nick2ClientProxyMap.remove(nickName);
+                DebugLogger.println(nickName + " rimosso");
+                //metto il nuovo
+                ServerManager.Nick2ClientProxyMap.put(nickName,
+                        new RmiClientProxy(client));
+                DebugLogger.println(nickName + " aggiunto");
+                //setto il refresh
+                ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
+                        true);
+                DebugLogger.println(nickName + " settato refresh");
+            }
+        }
     }
 
     private void startGame() {

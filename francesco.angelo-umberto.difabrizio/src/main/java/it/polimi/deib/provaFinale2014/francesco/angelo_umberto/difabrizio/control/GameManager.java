@@ -19,7 +19,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.playerDisconnectedException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TmpPlayerDisconnectedException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -261,24 +261,23 @@ public class GameManager implements Runnable {
      */
     private void setUpShepherds() throws RemoteException {
         int i;//indice giocatori
-        int j;//indice pastori
-        boolean outcomeOk;
+        int j;//indice pastori     
 
         //per ogni playerint 
         for (i = 0; i < this.playersNumber; i++) {
             //setto il player corrente
             currentPlayer = (firstPlayer + i) % playersNumber;
-
             //per ogni suo pastore
-            for (j = 0; j < this.shepherd4player; j++) {
-                outcomeOk = false;
-                while (!outcomeOk) {
-                    //prova a chiedere la strada per il j-esimo pastore                    
-                    outcomeOk = controller.askSetUpShepherd(
-                            clientNickNames[currentPlayer], j);
-                }//while               
-            }//for pastori
-        }//for giocatori
+            try {
+                for (j = 0; j < this.shepherd4player; j++) {
+                    players.get(currentPlayer).setMyshepherd(j);
+                }
+            } catch (TmpPlayerDisconnectedException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(
+                        Level.SEVERE, ex.getMessage(), ex);
+                //player disconnesso salto i suoi pastori
+            }
+        }
     }
 
     private void setUpShift() {
@@ -346,36 +345,32 @@ public class GameManager implements Runnable {
 
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
-        } finally {
-            //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
-            //stilo la classifica in ordine decrescente
-            classification = this.calculatePoints();
-
-            DebugLogger.println("prima while");
-
-            //calcolo quanti sono al primo posto a parimerito
-            for (int i = 0; i < classification[1].length - 1; i++)
-                if (classification[1][i] == classification[1][i + 1]) {
-                    numOfWinners++;
-                }
-
-            DebugLogger.println("calcolo vincitori eff");
-
-            int i;
-            //per tutti i vincitori
-            for (i = 0; i < numOfWinners; i++) {
-                controller.sendRank(true, clientNickNames[classification[0][i]],
-                        classification[1][i]);
-            }
-            //per tutti gli altri
-            for (; i < playersNumber; i++) {
-                controller.sendRank(false, clientNickNames[classification[0][i]],
-                        classification[1][i]);
-
-            }
-            DebugLogger.println("invio classifica");
-            controller.sendClassification(classificationToString(classification));
         }
+        //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
+        //stilo la classifica in ordine decrescente
+        classification = this.calculatePoints();
+
+        //calcolo quanti sono al primo posto a parimerito
+        for (int i = 0; i < classification[1].length - 1; i++)
+            if (classification[1][i] == classification[1][i + 1]) {
+                numOfWinners++;
+            }
+
+        int i;
+        //per tutti i vincitori
+        for (i = 0; i < numOfWinners; i++) {
+            controller.sendRank(true, clientNickNames[classification[0][i]],
+                    classification[1][i]);
+        }
+        //per tutti gli altri
+        for (; i < playersNumber; i++) {
+            controller.sendRank(false, clientNickNames[classification[0][i]],
+                    classification[1][i]);
+
+        }
+        DebugLogger.println("invio classifica");
+        controller.sendClassification(classificationToString(classification));
+
     }
 
     private void startGame() throws RemoteException {
@@ -474,17 +469,8 @@ public class GameManager implements Runnable {
             //se il player è Online
             if (ServerManager.Nick2ClientProxyMap.get(
                     clientNickNames[currentPlayer]).isOnline()) {
-
-                //controllo se il player ha bisogno di un refresh
-                if (ServerManager.Nick2ClientProxyMap.get(
-                        clientNickNames[currentPlayer]).needRefresh()) {
-                    //avvio il player che è tornato in partita
-                    controller.broadcastStartGame(clientNickNames[currentPlayer]);
-
-                    //lo aggiorno
-                    this.broadcastInitialConditions(
-                            clientNickNames[currentPlayer]);
-                }
+                try {
+                handleReconnection();
 
                 //before starting anyone shift the last action is setted 
                 //to none of the possibles
@@ -492,10 +478,9 @@ public class GameManager implements Runnable {
 
                 //the shepherd used is set to none too
                 players.get(currentPlayer).lastShepherd = null;
-
-                try {
+                
                     lastRound = this.executeShift(currentPlayer);
-                } catch (playerDisconnectedException ex) {
+                } catch (TmpPlayerDisconnectedException ex) {
                     //il giocatore si disconnette durante il suo turno
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
@@ -503,7 +488,6 @@ public class GameManager implements Runnable {
                     controller.refreshPlayerDisconnected(
                             clientNickNames[currentPlayer]);
                 }
-                //TODO gestire tutti i player disconnessi
                 nextPlayer();
 
                 evolveLambs();
@@ -546,9 +530,31 @@ public class GameManager implements Runnable {
         currentPlayer %= this.playersNumber;
     }
 
+    private void handleReconnection() throws RemoteException, TmpPlayerDisconnectedException {
+        //controllo se il player ha bisogno di un refresh
+        if (ServerManager.Nick2ClientProxyMap.get(
+                clientNickNames[currentPlayer]).needRefresh()) {
+            //avvio il player che è tornato in partita
+            controller.broadcastStartGame(clientNickNames[currentPlayer]);
+
+            //gli chiedo di settare tutti i pastori che non aveva settato
+            int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
+                    clientNickNames[currentPlayer]).getNumberOfShepherdStillToSet();
+
+            for (int i = 0; i < shepherdToSet; i++) {
+                players.get(currentPlayer).setMyshepherd(
+                        shepherd4player - shepherdToSet + i);
+            }
+            //lo aggiorno
+            this.broadcastInitialConditions(
+                    clientNickNames[currentPlayer]);
+        }
+
+    }
+
     private boolean executeShift(int player) throws FinishedFencesException,
                                                     RemoteException,
-                                                    playerDisconnectedException {
+                                                    TmpPlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
         controller.refreshCurrentPlayer(clientNickNames[player]);
@@ -598,20 +604,24 @@ public class GameManager implements Runnable {
             controller.refreshSpecialAnimal(animal,
                     result + "," + streetValue + "," + startRegionIndex + "," + map.getNodeIndex(
                             endRegion));
+
         } catch (StreetNotFoundException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "nok" + ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            "nok" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
                     "nok" + "," + streetValue + "," + startRegionIndex);
         } catch (RegionNotFoundException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "nok" + ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            "nok" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
                     "nok" + "," + streetValue + "," + startRegionIndex);
         } catch (NodeNotFoundException ex) {
             //non può accadere
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "nok" + ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            "nok" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
                     "nok" + "," + streetValue + "," + startRegionIndex);
         }

@@ -219,7 +219,7 @@ public class CommandLineView implements TypeOfViewController {
         showInfo("Scegliere in quale regione uccidere:");
         String stringedRegion = stdIn.nextLine();
         
-        showInfo("Scegliere che tipo di ovino uccidere:");
+        showInfo("Scegliere che tipo di ovino uccidere:\n-Lamb\n-Ram\n-Sheep");
         String type = stdIn.nextLine();
         
         return idShepherd + "," + stringedRegion + "," + type;
@@ -245,7 +245,7 @@ public class CommandLineView implements TypeOfViewController {
     }
     
     public String askBuyLand() {
-        showInfo("Che territorio vuoi comprare?");
+        showInfo("Che territorio vuoi comprare?\n-Plain\n-Countryside\n-Hill\n-Mountain\n-Desert\n-Lake");
         return stdIn.nextLine();
     }
     

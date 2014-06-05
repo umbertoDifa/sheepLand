@@ -18,7 +18,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.playerDisconnectedException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TmpPlayerDisconnectedException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -121,12 +121,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * finchè il risultato non è valido
      *
      * @throws java.rmi.RemoteException
-     * @throws playerDisconnectedException if the player disconnects in his
+     * @throws TmpPlayerDisconnectedException if the player disconnects in his
      *                                     shift more than a maximum number of
      *                                     chances
      */
     protected void chooseAndMakeAction() throws RemoteException,
-                                                playerDisconnectedException {
+                                                TmpPlayerDisconnectedException {
 
         boolean outcomeOk;
         createActionList();
@@ -144,7 +144,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 outcomeOk = gameManager.getController().askChooseAction(
                         playerNickName,
                         possibleAction);
-            } catch (playerDisconnectedException ex) {
+            } catch (TmpPlayerDisconnectedException ex) {
                 DebugLogger.println(
                         "giocatore" + this.playerNickName + " disconnesso");
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -155,7 +155,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
                 //controllo il numero di volte che si è disconnesso nello stesso turno
                 if (numberOfDisconnections >= ControlConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
-                    throw new playerDisconnectedException(
+                    throw new TmpPlayerDisconnectedException(
                             "Il giocatore si è disconnesso");
                 }
 
@@ -447,6 +447,59 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         shepherd[indexShepherd].moveTo(chosenStreet);
 
         return "Pastore posizionato correttamente!";
+    }
+
+    protected void setMyshepherd(int shepherdIndex) throws RemoteException,
+                                                           TmpPlayerDisconnectedException {
+        boolean outcomeOk;
+        int numberOfDisconnections;
+        outcomeOk = false;
+
+        //do la possibilità al giocatore corrente di disconnettersi resettando
+        //il numero  di disconnessioni
+        numberOfDisconnections = 0;
+
+        while (!outcomeOk) {
+            try {
+                //se il player si era disconnesso gli rimando il benvenuto
+                if (ServerManager.Nick2ClientProxyMap.get(
+                        playerNickName).needRefresh()) {
+                    gameManager.getController().broadcastStartGame(
+                            playerNickName);
+                }
+                //prova a chiedere la strada per il j-esimo pastore                    
+                outcomeOk = gameManager.getController().askSetUpShepherd(
+                        playerNickName, shepherdIndex);
+            } catch (TmpPlayerDisconnectedException ex) {
+                DebugLogger.println(
+                        "giocatore" + playerNickName + " disconnesso");
+                Logger.getLogger(DebugLogger.class.getName()).log(
+                        Level.SEVERE, ex.getMessage(), ex);
+
+                //se il player si disconnette
+                outcomeOk = false;
+                numberOfDisconnections++;
+
+                //controllo il numero di volte che si è disconnesso nello stesso turno
+                if (numberOfDisconnections >= ControlConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                    //salvo quanti pastori deve ancora settare
+                    ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
+                            gameManager.shepherd4player - shepherdIndex);
+                    throw new TmpPlayerDisconnectedException(
+                            "giocatore disconnesso durante set up pastore");
+                }
+
+                //se ha ancora chances lo metto in pausa
+                try {
+                    Thread.sleep(
+                            ControlConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+                } catch (InterruptedException ex1) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex1.getMessage(), ex1);
+                }
+            }
+        }//while
     }
 
     /**

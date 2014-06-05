@@ -6,8 +6,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SocketTrasmission extends TrasmissionController {
 
@@ -174,43 +172,38 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
-    public boolean askSetUpShepherd(String nickName, int shepherdIndex) {
+    public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws TmpPlayerDisconnectedException{
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "SetUpShepherd");
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "" + shepherdIndex);
         //ricevo la stringa della strada
         String chosenStringedStreet;
-        try {
-            chosenStringedStreet = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
-                    nickName)).receive();
-            //tento di eseguire la setShepherd
-            String result = super.getNick2PlayerMap().get(nickName).setShepherd(
-                    shepherdIndex, chosenStringedStreet);
 
-            //invio il risultato qualsiasi sia
-            ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
-                    result + ","
-                    + shepherdIndex + "," + chosenStringedStreet);
+        chosenStringedStreet = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                nickName)).receive();
+        //tento di eseguire la setShepherd
+        String result = super.getNick2PlayerMap().get(nickName).setShepherd(
+                shepherdIndex, chosenStringedStreet);
 
-            //ritorno il successo o meno dell'operazione
-            if (result.contains("Pastore posizionato correttamente!")) {
-                //refresho
-                refreshMoveShepherd(nickName, "" + shepherdIndex,
-                        chosenStringedStreet);
-                return true;
-            }
-        } catch (playerDisconnectedException ex) {
-            //FIXME catch temporanea va gestita nel game manager
-            Logger.getLogger(SocketTrasmission.class.getName()).log(Level.SEVERE,
-                    null, ex);
+        //invio il risultato qualsiasi sia
+        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
+                result + ","
+                + shepherdIndex + "," + chosenStringedStreet);
+
+        //ritorno il successo o meno dell'operazione
+        if (result.contains("Pastore posizionato correttamente!")) {
+            //refresho
+            refreshMoveShepherd(nickName, "" + shepherdIndex,
+                    chosenStringedStreet);
+            return true;
         }
 
         return false;
     }
 
     public boolean askChooseAction(String nickName, String possibleActions)
-            throws playerDisconnectedException {
+            throws TmpPlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "ChooseAction");
         DebugLogger.println("choose action inviata a " + nickName);
@@ -241,14 +234,14 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askMoveOvine(String nickName) throws
-            playerDisconnectedException {
+            TmpPlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "MoveOvine");
 
         //ricevo i parametri
         String result = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
-        String[] token = result.split(",",-1);
+        String[] token = result.split(",", -1);
 
         result = super.getNick2PlayerMap().get(nickName).moveOvine(token[0],
                 token[1], token[2]);
@@ -264,7 +257,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askMoveSheperd(String nickName) throws
-            playerDisconnectedException {
+            TmpPlayerDisconnectedException {
 
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "MoveShepherd");
@@ -272,7 +265,7 @@ public class SocketTrasmission extends TrasmissionController {
         String result = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
 
-        String[] token = result.split(",",-1);
+        String[] token = result.split(",", -1);
 
         //eseguo
         result = super.getNick2PlayerMap().get(nickName).moveShepherd(token[0],
@@ -295,7 +288,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askBuyLand(String nickName) throws
-            playerDisconnectedException {
+            TmpPlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "BuyLand");
         String landToBuy = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
@@ -308,7 +301,7 @@ public class SocketTrasmission extends TrasmissionController {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 result);
 
-        String[] token = result.split(",",-1);
+        String[] token = result.split(",", -1);
 
         if (result.contains("Carta acquistata")) {
             refreshBuyLand(nickName, token[1], token[2]);
@@ -320,13 +313,13 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askKillOvine(String nickName) throws
-            playerDisconnectedException {
+            TmpPlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "KillOvine");
         String parameters = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
         DebugLogger.println(parameters);
-        String[] token = parameters.split(",",-1);
+        String[] token = parameters.split(",", -1);
         String result = super.getNick2PlayerMap().get(nickName).killOvine(
                 token[0], token[1], token[2]);
 
@@ -356,7 +349,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     private boolean askMateSheepWith(String nickName, String type) throws
-            playerDisconnectedException {
+            TmpPlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 "MateSheepWith");
         String parameters = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
@@ -365,7 +358,7 @@ public class SocketTrasmission extends TrasmissionController {
         DebugLogger.println(parameters);
 
         //splitto i parametri
-        String[] token = parameters.split(",",-1);
+        String[] token = parameters.split(",", -1);
         String shepherd = token[0];
         String region = token[1];
 
@@ -375,7 +368,7 @@ public class SocketTrasmission extends TrasmissionController {
         DebugLogger.println(result);
 
         if (result.contains("Accoppiamento eseguito")) {
-            token = result.split(",",-1);
+            token = result.split(",", -1);
             //token1 ha il tipo creato
 
             DebugLogger.println(

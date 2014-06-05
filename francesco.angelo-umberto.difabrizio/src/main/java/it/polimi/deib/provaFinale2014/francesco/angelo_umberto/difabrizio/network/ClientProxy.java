@@ -8,10 +8,12 @@ public class ClientProxy {
 
     private int status;
     private boolean refreshNeeded;
+    private int numberOfShepherdStillToSet;
 
     public ClientProxy() {
         this.status = NetworkConstants.ONLINE.getValue();
         this.refreshNeeded = false;
+        this.numberOfShepherdStillToSet = 0;
     }
 
     public boolean isOnline() {
@@ -26,12 +28,20 @@ public class ClientProxy {
         return false;
     }
 
+    public int getNumberOfShepherdStillToSet() {
+        return numberOfShepherdStillToSet;
+    }
+
     protected void setStatus(int status) {
         this.status = status;
     }
 
     protected void setRefreshNeeded(boolean refresh) {
         this.refreshNeeded = refresh;
+    }
+
+    public void setNumberOfShepherdStillToSet(int shepherdStillToSet) {
+        this.numberOfShepherdStillToSet = shepherdStillToSet;
     }
 
 }

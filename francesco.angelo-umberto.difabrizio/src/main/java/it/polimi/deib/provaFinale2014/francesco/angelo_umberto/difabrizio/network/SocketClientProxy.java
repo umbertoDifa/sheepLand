@@ -60,10 +60,10 @@ public class SocketClientProxy extends ClientProxy {
      *
      * @return la stringa ricevuta dal client
      *
-     * @throws playerDisconnectedException if the player disconnects during is
+     * @throws TmpPlayerDisconnectedException if the player disconnects during is
      *                                     own shift
      */
-    protected String receive() throws playerDisconnectedException {
+    protected String receive() throws TmpPlayerDisconnectedException {
         //TODO:gestisci queste eccez
         try {
             String answer = fromClient.nextLine();
@@ -74,7 +74,7 @@ public class SocketClientProxy extends ClientProxy {
             DebugLogger.println(
                     "C'è stato un errore ricevendo dal client lo status è posto su offline");
             super.setStatus(NetworkConstants.OFFLINE.getValue());
-            throw new playerDisconnectedException("Il player si è disconnesso");
+            throw new TmpPlayerDisconnectedException("Il player si è disconnesso");
         }
     }
 

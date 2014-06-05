@@ -161,6 +161,10 @@ public class ServerSockets implements Runnable {
                         //il client deve riconnettersi
                         //rimuovo la vecchia instanza
                         DebugLogger.println("Client tenta di riconnettersi");
+                        //salvo se aveva pastori da mettere
+                        int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
+                                nickName).getNumberOfShepherdStillToSet();
+
                         ServerManager.Nick2ClientProxyMap.remove(nickName);
                         DebugLogger.println(nickName + " rimosso");
                         //metto il nuovo
@@ -171,6 +175,11 @@ public class ServerSockets implements Runnable {
                         ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
                                 true);
                         DebugLogger.println(nickName + " settato refresh");
+
+                        ServerManager.Nick2ClientProxyMap.get(nickName).setNumberOfShepherdStillToSet(
+                                shepherdToSet);
+                        DebugLogger.println(
+                                nickName + " settato pastori da mettere a " + shepherdToSet);
                     }
                 }
 

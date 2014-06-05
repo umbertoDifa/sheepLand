@@ -20,7 +20,8 @@ public abstract class TrasmissionController {
         }
     }
 
-    public abstract void broadcastStartGame(String nickName) throws RemoteException;
+    public abstract void broadcastStartGame(String nickName) throws
+            RemoteException;
 
     public abstract void refreshRegion(String nickName, int regionIndex,
                                        int numbOfSheep, int numbOfRam,
@@ -90,12 +91,12 @@ public abstract class TrasmissionController {
 
     //ritorna una stringa corripondente o a una strada o il risultato della chiamata RMI
     public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex)
-            throws RemoteException;
+            throws RemoteException, TmpPlayerDisconnectedException;
 
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
     public abstract boolean askChooseAction(String nickName,
                                             String possibleActions) throws
-            RemoteException, playerDisconnectedException;
+            RemoteException, TmpPlayerDisconnectedException;
 
     public HashMap<String, Player> getNick2PlayerMap() {
         return nick2PlayerMap;
