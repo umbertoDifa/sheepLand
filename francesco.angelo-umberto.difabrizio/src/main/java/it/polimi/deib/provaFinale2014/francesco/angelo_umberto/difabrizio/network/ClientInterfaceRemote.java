@@ -49,6 +49,8 @@ public interface ClientInterfaceRemote extends Remote {
             RemoteException;
     
     public void refreshSpecialAnimalInitialPosition(String position) throws RemoteException;
+    
+    public void refreshPlayerDisconnected(String player) throws RemoteException;
 
     public void refreshMoney(String money) throws RemoteException;
 

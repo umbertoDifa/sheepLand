@@ -114,7 +114,8 @@ public class ClientSocket {
                     refreshKillOvine();
                 } else if ("RefreshWolf".equals(received)) {
                     refreshWolf();
-                
+                } else if ("RefreshPlayerDisconnected".equals(received)) {
+                    refreshPlayerDisconnected();
                 } else if ("SpecialAnimalInitialPosition".equals(received)) {
                     specialAnimalInitialCondition();
                 } else if ("SetUpShepherd".equals(received)) {
@@ -376,6 +377,10 @@ public class ClientSocket {
     
     private void specialAnimalInitialCondition() {
         view.specialAnimalInitialCondition(receiveString());
+    }
+    
+    private void refreshPlayerDisconnected() {
+        view.refreshPlayerDisconnected(receiveString());
     }
     
 }

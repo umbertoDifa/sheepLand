@@ -19,18 +19,21 @@ public interface TypeOfViewController {
     public void showMoveShepherd(String priceToMove);
 
     public void showMoveOvine(String startRegion, String endRegion, String type);
-    
-    public void showMateSheepWith(String region, String otherType, String newType);
-    
+
+    public void showMateSheepWith(String region, String otherType,
+                                  String newType);
+
     public void showMyRank(Boolean winner, String rank);
-    
+
     /**
-     * Una stringa della classfica in cui si alternano nome del player, punteggio
+     * Una stringa della classfica in cui si alternano nome del player,
+     * punteggio
+     *
      * @param classification classifica stringhizzata
      */
     public void showClassification(String classification);
-    
-    public void showKillOvine(String region, String type,String shepherdPayed);
+
+    public void showKillOvine(String region, String type, String shepherdPayed);
 
     public String setUpShepherd(int idShepherd);
 
@@ -44,12 +47,13 @@ public interface TypeOfViewController {
                                     String streetIndex);
 
     public void refreshBuyLand(String buyer, String land, String price);
-    
-    public void refreshKillOvine(String killer, String region, String type,String outcome);
+
+    public void refreshKillOvine(String killer, String region, String type,
+                                 String outcome);
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player);
-    
+
     public void refreshMoney(String money);
 
     public void refereshCurrentPlayer(String currenPlayer);
@@ -59,14 +63,17 @@ public interface TypeOfViewController {
     public void refreshBlackSheep(String result);
 
     public void refreshWolf(String result);
-    
-    public void specialAnimalInitialCondition(String region);  
+
+    public void refreshPlayerDisconnected(String player);
+
+    public void specialAnimalInitialCondition(String region);
 
     public int chooseAction(int[] availableActions,
                             String[] availableStringedActions);
 
     public void refreshMateSheepWith(String nickName, String region,
-                                    String otherType, String newType,String outcome);
+                                     String otherType, String newType,
+                                     String outcome);
 
     public void refreshMoveOvine(String nickName, String type,
                                  String startRegion,
@@ -97,17 +104,19 @@ public interface TypeOfViewController {
      * @return
      */
     public String askBuyLand();
-    
+
     /**
-     * Asks the player to choose a shepherd and a region.
-     * Then returns this information
+     * Asks the player to choose a shepherd and a region. Then returns this
+     * information
+     *
      * @return shepherd,region
      */
     public String askMateSheepWith();
-    
+
     /**
      * Asks the player to insert shepherdNear the region of the ovine to kill,
      * region where to kill the ovine and type to kill in case of success
+     *
      * @return ShepherdIndex,region,type
      */
     public String askKillOvine();

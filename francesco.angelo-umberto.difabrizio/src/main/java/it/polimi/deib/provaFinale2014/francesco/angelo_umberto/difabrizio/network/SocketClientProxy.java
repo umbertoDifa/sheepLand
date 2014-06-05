@@ -59,8 +59,11 @@ public class SocketClientProxy extends ClientProxy {
      * Riceve un messaggio dal client
      *
      * @return la stringa ricevuta dal client
+     *
+     * @throws playerDisconnectedException if the player disconnects during is
+     *                                     own shift
      */
-    protected String receive() {
+    protected String receive() throws playerDisconnectedException {
         //TODO:gestisci queste eccez
         try {
             String answer = fromClient.nextLine();
@@ -68,8 +71,11 @@ public class SocketClientProxy extends ClientProxy {
         } catch (NoSuchElementException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
+            DebugLogger.println(
+                    "C'è stato un errore ricevendo dal client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE.getValue());
+            throw new playerDisconnectedException("Il player si è disconnesso");
         }
-        return null;
     }
 
 }

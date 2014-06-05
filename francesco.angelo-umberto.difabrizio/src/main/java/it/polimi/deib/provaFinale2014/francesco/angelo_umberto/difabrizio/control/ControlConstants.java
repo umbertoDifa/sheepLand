@@ -19,13 +19,22 @@ public enum ControlConstants {
     /**
      * Indica quanti pastori ha ogni giocatore durante un gioco normale
      */
-    STANDARD_SHEPHERD_FOR_PLAYER(1);
+    STANDARD_SHEPHERD_FOR_PLAYER(1),
+    /**
+     * Player has 10 seconds to reconnect during is own turn
+     */
+    TIMEOUT_PLAYER_RECONNECTION(15000),
+    /**
+     * How many times can the player disconnect in his own turn without losing
+     * his shift
+     */
+    MAX_NUMBER_OF_DISCONNETIONS(2);
     private final int value;
 
     ControlConstants(int value) {
         this.value = value;
-    }        
-    
+    }
+
     /**
      * @return Valore corrispondente alla costante in questione
      */

@@ -350,4 +350,8 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.specialAnimalInitialCondition(position);
     }
 
+    public void refreshPlayerDisconnected(String player) throws RemoteException {
+        view.refreshPlayerDisconnected(player);
+    }
+
 }

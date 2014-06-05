@@ -20,7 +20,7 @@ public abstract class TrasmissionController {
         }
     }
 
-    public abstract void broadcastStartGame() throws RemoteException;
+    public abstract void broadcastStartGame(String nickName) throws RemoteException;
 
     public abstract void refreshRegion(String nickName, int regionIndex,
                                        int numbOfSheep, int numbOfRam,
@@ -45,10 +45,16 @@ public abstract class TrasmissionController {
     public abstract void refreshSpecialAnimal(SpecialAnimal animal,
                                               String movementResult) throws
             RemoteException;
-    
-    public abstract void refreshSpecialAnimalInitialPosition(String client, SpecialAnimal animal, String region) throws RemoteException;
+
+    public abstract void refreshSpecialAnimalInitialPosition(String client,
+                                                             SpecialAnimal animal,
+                                                             String region)
+            throws RemoteException;
 
     public abstract void refreshMoney(String nickName) throws RemoteException;
+
+    public abstract void refreshPlayerDisconnected(String nickNameDisconnected)
+            throws RemoteException;
 
     /**
      * It refreshes to all the player except the nickName player, the action
@@ -89,7 +95,7 @@ public abstract class TrasmissionController {
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
     public abstract boolean askChooseAction(String nickName,
                                             String possibleActions) throws
-            RemoteException;
+            RemoteException, playerDisconnectedException;
 
     public HashMap<String, Player> getNick2PlayerMap() {
         return nick2PlayerMap;

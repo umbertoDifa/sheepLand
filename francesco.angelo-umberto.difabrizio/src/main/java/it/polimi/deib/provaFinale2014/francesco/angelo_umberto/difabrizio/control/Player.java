@@ -17,6 +17,8 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.OvineNotFoundExeption;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.playerDisconnectedException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -119,17 +121,56 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * finchè il risultato non è valido
      *
      * @throws java.rmi.RemoteException
+     * @throws playerDisconnectedException if the player disconnects in his
+     *                                     shift more than a maximum number of
+     *                                     chances
      */
-    protected void chooseAndMakeAction() throws RemoteException {
+    protected void chooseAndMakeAction() throws RemoteException,
+                                                playerDisconnectedException {
 
         boolean outcomeOk;
         createActionList();
+        int numberOfDisconnections = 0;
+
         do {
-            //raccogli la scelta
-            outcomeOk = gameManager.getController().askChooseAction(
-                    playerNickName,
-                    possibleAction);
+            try {
+                //se il player si era disconnesso gli rimando il benvenuto
+                if (ServerManager.Nick2ClientProxyMap.get(
+                        playerNickName).needRefresh()) {
+                    gameManager.getController().broadcastStartGame(
+                            playerNickName);
+                }
+                //raccogli la scelta
+                outcomeOk = gameManager.getController().askChooseAction(
+                        playerNickName,
+                        possibleAction);
+            } catch (playerDisconnectedException ex) {
+                DebugLogger.println(
+                        "giocatore" + this.playerNickName + " disconnesso");
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                //se il player si disconnette
+                outcomeOk = false;
+                numberOfDisconnections++;
+
+                //controllo il numero di volte che si è disconnesso nello stesso turno
+                if (numberOfDisconnections >= ControlConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                    throw new playerDisconnectedException(
+                            "Il giocatore si è disconnesso");
+                }
+
+                //se ha ancora chances lo metto in pausa
+                try {
+                    Thread.sleep(
+                            ControlConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+                } catch (InterruptedException ex1) {
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex1.getMessage(), ex1);
+                }
+            }
         } while (!outcomeOk);
+
     }
 
     /**
@@ -528,11 +569,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @return "Carta acquistata,[type],[price]" or an error string
      */
     public String buyLand(String landToBuy) {
-        
-        if(landToBuy.equalsIgnoreCase(RegionType.SHEEPSBURG.toString())){
+
+        if (landToBuy.equalsIgnoreCase(RegionType.SHEEPSBURG.toString())) {
             return "Non puoi comprare sheepsburg!";
         }
-        
+
         //creo lista delle possibili regioni da comprare di un pastore
         List<String> possibleRegionsType = new ArrayList<String>();
 

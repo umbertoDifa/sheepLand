@@ -18,6 +18,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.playerDisconnectedException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -166,8 +167,9 @@ public class GameManager implements Runnable {
      */
     private void SetUpGame() throws RemoteException {
         DebugLogger.println("Avvio partita");
-
-        controller.broadcastStartGame();
+        for (String client : clientNickNames) {
+            controller.broadcastStartGame(client);
+        }
 
         DebugLogger.println("SetUpMap Avviato");
         this.setUpMap();
@@ -471,8 +473,17 @@ public class GameManager implements Runnable {
                 //the shepherd used is set to none too
                 players.get(currentPlayer).lastShepherd = null;
 
-                lastRound = this.executeShift(currentPlayer);
-
+                try {
+                    lastRound = this.executeShift(currentPlayer);
+                } catch (playerDisconnectedException ex) {
+                    //il giocatore si disconnette durante il suo turno
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            null, ex);
+                    controller.refreshPlayerDisconnected(
+                            clientNickNames[currentPlayer]);
+                }
+                //TODO gestire tutti i player disconnessi
                 nextPlayer();
 
                 evolveLambs();
@@ -486,13 +497,15 @@ public class GameManager implements Runnable {
                     DebugLogger.println("muovo lupo");
                     this.moveSpecialAnimal(this.map.getWolf());
                     DebugLogger.println("lupo mosso");
-                }               
+                }
 
             } else {
                 DebugLogger.println(
                         "Player offline:" + clientNickNames[currentPlayer]);
                 //player offline
                 //skip player
+                controller.refreshPlayerDisconnected(
+                        clientNickNames[currentPlayer]);
                 nextPlayer();
             }
 
@@ -507,7 +520,8 @@ public class GameManager implements Runnable {
     }
 
     private boolean executeShift(int player) throws FinishedFencesException,
-                                                    RemoteException {
+                                                    RemoteException,
+                                                    playerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
         controller.refreshCurrentPlayer(clientNickNames[player]);
