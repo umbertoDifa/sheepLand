@@ -3,11 +3,13 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfViewController;
+import java.io.PrintWriter;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class ClientRmi implements ClientInterfaceRemote {
 
-    private final String nickName;
+    private String nickName;
     private final String ip;
     private final int port;
     private final String nameServer;
@@ -33,8 +35,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     String result;
 
     public ClientRmi(String ip, int port, String nameServer,
-                     TypeOfViewController view,
-                     String nickName) throws RemoteException {
+                     TypeOfViewController view) throws RemoteException {
         this.nickName = nickName;
         this.nameServer = nameServer;
         this.port = port;
@@ -48,13 +49,32 @@ public class ClientRmi implements ClientInterfaceRemote {
             UnicastRemoteObject.exportObject(this, 0);
             registry = LocateRegistry.getRegistry(ip, port);
 
-            //crea uno skeleton affinche il server possa chiamare dei metodi su di te
-            registry.rebind(nickName, this);
-
             //cerco l'oggetto nel registry
             serverRmi = (ServerRmi) registry.lookup(
                     nameServer);
 
+            Scanner stdIn = new Scanner(System.in);
+            PrintWriter stdOut = new PrintWriter(System.out);
+
+            DebugLogger.println(
+                    "Canali di comunicazione impostati");
+
+            do {
+                stdOut.println("Inserisci il tuo nickName:");
+                stdOut.flush();
+
+                nickName = stdIn.nextLine();
+            } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                    ":"));
+            //da evitare come la peste la stringa vuota come nickname
+            //esplodono i satelliti della nasa
+            
+            
+            //crea uno skeleton affinche il server possa chiamare dei metodi su di te
+            registry.rebind(nickName, this);
+            DebugLogger.println("Invio nickName");
+            
+            //connettiti
             serverRmi.connect(this, nickName);
 
         } catch (RemoteException ex) {

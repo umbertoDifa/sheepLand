@@ -24,24 +24,14 @@ public class Client {
     public static void main(String[] args) {
 
         final String ip = "localhost";
-        
+
         final int rmiPort = NetworkConstants.PORT_RMI.getValue();
         final int socketPort = NetworkConstants.PORT_SOCKET.getValue();
-        
+
         final String nameServer = "sheepland";
 
         Scanner stdIn = new Scanner(System.in);
         PrintWriter stdOut = new PrintWriter(System.out);
-        String nickName;
-        do {
-            stdOut.println("Inserisci il tuo nickName:");
-            stdOut.flush();
-
-            nickName = stdIn.nextLine();
-        } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
-                ":"));
-        //da evitare come la peste la stringa vuota come nickname
-        //esplodono i satelliti della nasa
 
         boolean valid = false;
 
@@ -58,13 +48,13 @@ public class Client {
                 if ("1".equals(typeOfInterface)) {
                     //Socket - CLC
                     ClientSocket client = new ClientSocket(ip, socketPort,
-                            new CommandLineView(), nickName);
+                            new CommandLineView());
                     client.startClient();
                     valid = true;
                 } else if ("2".equals(typeOfInterface)) {
                     //Socket - GUI
                     ClientSocket client = new ClientSocket(ip, socketPort,
-                            new GuiView(), nickName);
+                            new GuiView());
                     client.startClient();
                     valid = true;
                 }
@@ -74,8 +64,7 @@ public class Client {
                     ClientRmi client;
                     try {
                         client = new ClientRmi(ip, rmiPort, nameServer,
-                                new CommandLineView(),
-                                nickName);
+                                new CommandLineView());
                         client.startClient();
                         DebugLogger.println("Client remoto attivo");
                     } catch (RemoteException ex) {
@@ -90,8 +79,7 @@ public class Client {
                     ClientRmi client;
                     try {
                         client = new ClientRmi(ip, rmiPort, nameServer,
-                                new GuiView(),
-                                nickName);
+                                new GuiView());
                         client.startClient();
                         DebugLogger.println("Client remoto attivo");
                     } catch (RemoteException ex) {

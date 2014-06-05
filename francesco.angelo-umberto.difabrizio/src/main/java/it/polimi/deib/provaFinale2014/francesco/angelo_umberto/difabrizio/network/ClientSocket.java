@@ -16,7 +16,7 @@ public class ClientSocket {
     private final String ip;
     private final int port;
     private final TypeOfViewController view;
-    private final String nickName;
+    private String nickName;
 
     //canali di comunicazione
     private Scanner serverIn;
@@ -26,17 +26,33 @@ public class ClientSocket {
     private String[] token;
     private String received;
 
-    public ClientSocket(String ip, int port, TypeOfViewController view,
-                        String nickName) {
+    public ClientSocket(String ip, int port, TypeOfViewController view) {
         this.ip = ip;
         this.port = port;
         this.view = view;
-        this.nickName = nickName;
     }
 
     protected void startClient() {
 
-        try {
+        try {            
+            Scanner stdIn = new Scanner(System.in);
+            PrintWriter stdOut = new PrintWriter(System.out);
+
+            DebugLogger.println(
+                    "Canali di comunicazione impostati");
+
+            do {
+                stdOut.println("Inserisci il tuo nickName:");
+                stdOut.flush();
+
+                nickName = stdIn.nextLine();
+            } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                    ":"));
+            //da evitare come la peste la stringa vuota come nickname
+            //esplodono i satelliti della nasa
+            
+            DebugLogger.println("Invio nickName");
+            
             //creo socket server
             Socket socket = new Socket(ip, port);
             DebugLogger.println("Connessione stabilita");
@@ -46,11 +62,7 @@ public class ClientSocket {
 
             //creo printwriter verso server
             serverOut = new PrintWriter(socket.getOutputStream());
-
-            DebugLogger.println(
-                    "Canali di comunicazione impostati");
-
-            DebugLogger.println("Invio nickName");
+            
             serverOut.println(nickName);
             serverOut.flush();
 

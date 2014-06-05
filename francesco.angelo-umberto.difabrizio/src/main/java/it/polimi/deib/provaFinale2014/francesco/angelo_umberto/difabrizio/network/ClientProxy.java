@@ -21,11 +21,7 @@ public class ClientProxy {
     }
 
     public boolean needRefresh() {
-        if (refreshNeeded) {
-            refreshNeeded = false;
-            return true;
-        }
-        return false;
+        return refreshNeeded;
     }
 
     public int getNumberOfShepherdStillToSet() {
@@ -36,7 +32,7 @@ public class ClientProxy {
         this.status = status;
     }
 
-    protected void setRefreshNeeded(boolean refresh) {
+    public void setRefreshNeeded(boolean refresh) {
         this.refreshNeeded = refresh;
     }
 

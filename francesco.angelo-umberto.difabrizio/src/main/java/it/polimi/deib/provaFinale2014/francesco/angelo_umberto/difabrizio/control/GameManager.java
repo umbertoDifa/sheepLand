@@ -276,6 +276,9 @@ public class GameManager implements Runnable {
                 Logger.getLogger(DebugLogger.class.getName()).log(
                         Level.SEVERE, ex.getMessage(), ex);
                 //player disconnesso salto i suoi pastori
+
+                controller.refreshPlayerDisconnected(
+                        clientNickNames[currentPlayer]);
             }
         }
     }
@@ -454,6 +457,9 @@ public class GameManager implements Runnable {
                     ex.getMessage(),
                     ex);
         }
+
+        //broadcast nickNames
+        //broadcast shepherd
     }
 
     private void executeRounds() throws FinishedFencesException, RemoteException,
@@ -462,7 +468,7 @@ public class GameManager implements Runnable {
         boolean lastRound = false;
         int playerOffline = 0;
 
-        while (!(lastRound && currentPlayer == this.firstPlayer)) {
+        while (!(lastRound && roundComplete())) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
 
@@ -470,21 +476,24 @@ public class GameManager implements Runnable {
             if (ServerManager.Nick2ClientProxyMap.get(
                     clientNickNames[currentPlayer]).isOnline()) {
                 try {
-                handleReconnection();
+                    handleReconnection();
 
-                //before starting anyone shift the last action is setted 
-                //to none of the possibles
-                players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
+                    //there's a player online at least
+                    playerOffline = 1;
 
-                //the shepherd used is set to none too
-                players.get(currentPlayer).lastShepherd = null;
-                
+                    //before starting anyone shift the last action is setted 
+                    //to none of the possibles
+                    players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
+
+                    //the shepherd used is set to none too
+                    players.get(currentPlayer).lastShepherd = null;
+
                     lastRound = this.executeShift(currentPlayer);
                 } catch (PlayerDisconnectedException ex) {
                     //il giocatore si disconnette durante il suo turno
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
-                            null, ex);
+                            ex.getMessage(), ex);
                     controller.refreshPlayerDisconnected(
                             clientNickNames[currentPlayer]);
                 }
@@ -523,6 +532,29 @@ public class GameManager implements Runnable {
         }//while
     }
 
+    private boolean roundComplete() {
+        if (ServerManager.Nick2ClientProxyMap.get(
+                clientNickNames[firstPlayer]).isOnline()) {
+            return currentPlayer == this.firstPlayer;
+        }
+        int temporaryFirstPlayer;
+
+        for (int i = 0; i < this.playersNumber; i++) {
+            //aggiorno il firstPlayer temporaneo
+            temporaryFirstPlayer = (this.firstPlayer + 1) % this.playersNumber;
+
+            if (ServerManager.Nick2ClientProxyMap.get(
+                    clientNickNames[temporaryFirstPlayer]).isOnline()) {
+                return currentPlayer == temporaryFirstPlayer;
+            }
+        }
+        
+        //se ho girato tutti i player e nessuno è online
+        // ritorno false e sarà l'execute rounds ad accorgersi di dover terminare
+        //la partita senza client
+        return false;
+    }
+
     private void nextPlayer() {
         //aggiorno il player che gioca 
         currentPlayer++;
@@ -530,10 +562,16 @@ public class GameManager implements Runnable {
         currentPlayer %= this.playersNumber;
     }
 
-    private void handleReconnection() throws RemoteException, PlayerDisconnectedException {
+    private void handleReconnection() throws RemoteException,
+                                             PlayerDisconnectedException {
         //controllo se il player ha bisogno di un refresh
         if (ServerManager.Nick2ClientProxyMap.get(
                 clientNickNames[currentPlayer]).needRefresh()) {
+
+            //setto il needRefresh a false
+            ServerManager.Nick2ClientProxyMap.get(
+                    clientNickNames[currentPlayer]).setRefreshNeeded(false);
+
             //avvio il player che è tornato in partita
             controller.broadcastStartGame(clientNickNames[currentPlayer]);
 
@@ -548,6 +586,7 @@ public class GameManager implements Runnable {
             //lo aggiorno
             this.broadcastInitialConditions(
                     clientNickNames[currentPlayer]);
+
         }
 
     }

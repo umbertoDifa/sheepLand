@@ -137,9 +137,18 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //se il player si era disconnesso gli rimando il benvenuto
                 if (ServerManager.Nick2ClientProxyMap.get(
                         playerNickName).needRefresh()) {
+                    //setto il needRefresh a false
+                    ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
+                            false);
+
+                    DebugLogger.println(
+                            "il giocatore " + playerNickName + " ha bisogno di un avvio gioco prima di ricominciare a giocare");
+
                     gameManager.getController().broadcastStartGame(
                             playerNickName);
+
                 }
+
                 //raccogli la scelta
                 outcomeOk = gameManager.getController().askChooseAction(
                         playerNickName,
@@ -155,6 +164,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
                 //controllo il numero di volte che si è disconnesso nello stesso turno
                 if (numberOfDisconnections >= ControlConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                    gameManager.getController().refreshPlayerDisconnected(
+                            playerNickName);
+
                     throw new PlayerDisconnectedException(
                             "Il giocatore si è disconnesso");
                 }
@@ -464,9 +476,22 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //se il player si era disconnesso gli rimando il benvenuto
                 if (ServerManager.Nick2ClientProxyMap.get(
                         playerNickName).needRefresh()) {
+
+                    //setto il needRefresh a false
+                    ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
+                            false);
+
+                    DebugLogger.println(
+                            "il giocatore " + playerNickName + "ha bisogno di un start game");
+
                     gameManager.getController().broadcastStartGame(
                             playerNickName);
+
                 }
+
+                DebugLogger.println(
+                        "chiedo posizionamento del pastore " + shepherdIndex + " al giocatore " + playerNickName);
+
                 //prova a chiedere la strada per il j-esimo pastore                    
                 outcomeOk = gameManager.getController().askSetUpShepherd(
                         playerNickName, shepherdIndex);
@@ -485,6 +510,10 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     //salvo quanti pastori deve ancora settare
                     ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
                             gameManager.shepherd4player - shepherdIndex);
+                    
+                    gameManager.getController().refreshPlayerDisconnected(
+                            playerNickName);
+                    
                     throw new PlayerDisconnectedException(
                             "giocatore disconnesso durante set up pastore");
                 }

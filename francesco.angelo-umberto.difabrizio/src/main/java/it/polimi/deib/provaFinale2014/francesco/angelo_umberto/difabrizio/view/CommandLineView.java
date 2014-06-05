@@ -177,8 +177,7 @@ public class CommandLineView implements TypeOfViewController {
             } catch (NumberFormatException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         ex.getMessage(), ex);
-                showInfo("Azione non valida.\nPrego riprovare.");
-                
+                showInfo("Azione non valida.\nPrego riprovare.");                
             }
         } while (!correct);
         return action;
