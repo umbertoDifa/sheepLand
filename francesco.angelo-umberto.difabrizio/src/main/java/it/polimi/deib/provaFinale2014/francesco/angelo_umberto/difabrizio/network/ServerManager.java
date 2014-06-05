@@ -18,7 +18,12 @@ import java.util.logging.Logger;
 public class ServerManager {
 
     public static HashMap<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
-
+    /**
+     * It represents the number of active games. Since it's static it can be
+     * modified by any thread which decrements it before dying
+     */
+    public static int activatedGames = 0;
+    
     /**
      * Main method, creates a serverMangager and starts it
      *

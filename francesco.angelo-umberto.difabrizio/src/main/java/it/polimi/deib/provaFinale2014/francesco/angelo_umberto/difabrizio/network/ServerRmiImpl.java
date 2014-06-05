@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.ControlConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
@@ -8,7 +9,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -18,27 +18,6 @@ import java.util.logging.Logger;
 
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                                                                   Runnable {
-
-    //constanti generiche
-    private final int MILLISECONDS_IN_SECONDS = 1000;
-
-    //costanti di default per i costruttori
-    /**
-     * Default seconds to wait before timeout the clients connection to a game
-     */
-    private static final int DEFAULT_TIMEOUT_ACCEPT = 15;
-    /**
-     * The default minimum number of clients for a game
-     */
-    private static final int DEFAULT_MIN_CLIENTS_FOR_GAME = 2;
-    /**
-     * The default maximum number of clients for a game
-     */
-    private static final int DEFAULT_MAX_CLIENTS_FOR_GAME = 4;
-    /**
-     * The maximum number of games that a server can activate simultaniusly
-     */
-    private static final int DEFAULT_MAX_GAMES = 3;
 
     private final int maxNumberOfGames;
     private final int maxClientsForGame;
@@ -75,11 +54,6 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
      * connection
      */
     private int numberOfPlayers;
-    /**
-     * It represents the number of active games. Since it's static it can be
-     * modified by any thread which decrements it before dying
-     */
-    private static int activatedGames = 0;
 
     private final int port;
     private final String serverName;
@@ -88,7 +62,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     /**
      * Lista dei nickNames dei client che sono in coda per iniziare una partita
      */
-    private List<String> clientNickNames = new ArrayList<String>();    
+    private List<String> clientNickNames = new ArrayList<String>();
 
     public ServerRmiImpl(String serverName, int port) throws
             RemoteException {
@@ -97,11 +71,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         this.port = port;
         this.serverName = serverName;
 
-        this.maxNumberOfGames = DEFAULT_MAX_GAMES;
-        this.maxClientsForGame = DEFAULT_MAX_CLIENTS_FOR_GAME;
-        this.minClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
-        this.secondsBeforeAcceptTimeout = DEFAULT_TIMEOUT_ACCEPT;
-        this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
+        this.maxNumberOfGames = ControlConstants.DEFAULT_MAX_GAMES.getValue();
+        this.maxClientsForGame = ControlConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
+        this.minClientsForGame = ControlConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
+        this.secondsBeforeAcceptTimeout = ControlConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
+        this.timeoutAccept = secondsBeforeAcceptTimeout * ControlConstants.MILLISECONDS_IN_SECONDS.getValue();
     }
 
     protected void start() {
@@ -139,13 +113,14 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         if (!ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
 
             //se ci sono partite da poter avviare
-            if (activatedGames < maxNumberOfGames) {
-                
+            if (ServerManager.activatedGames < maxNumberOfGames) {
+
                 numberOfPlayers++;
                 clientNickNames.add(nickName);
-                DebugLogger.println(nickName+": added");
-                
-                ServerManager.Nick2ClientProxyMap.put(nickName, new RmiClientProxy(client));
+                DebugLogger.println(nickName + ": added");
+
+                ServerManager.Nick2ClientProxyMap.put(nickName,
+                        new RmiClientProxy(client));
                 //se è il primo player
                 if (numberOfPlayers == 1) {
                     timer = new Timer();
@@ -178,10 +153,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
             executor.submit(new GameManager(clientNickNames,
                     new RmiTrasmission()));
-            
-            activatedGames++;
-            
-            stdOut.println("Partita numero " + activatedGames + " avviata.");
+
+            ServerManager.activatedGames++;
+
+            stdOut.println(
+                    "Numero di partite attive " + ServerManager.activatedGames);
             stdOut.flush();
 
         } else {
@@ -195,7 +171,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         //comunque vada svuota la lista dei socket
         clientNickNames.clear();
         numberOfPlayers = 0;
-        
+
         DebugLogger.println("Lista client:" + clientNickNames.toString());
     }
 

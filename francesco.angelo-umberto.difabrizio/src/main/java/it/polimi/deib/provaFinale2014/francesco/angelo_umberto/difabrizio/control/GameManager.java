@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.UnexpectedEndOfGameException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
@@ -333,7 +334,8 @@ public class GameManager implements Runnable {
         }
     }
 
-    private void playTheGame() throws RemoteException {
+    private void playTheGame() throws RemoteException,
+                                      UnexpectedEndOfGameException {
         int[][] classification;
         int numOfWinners = 1;
 
@@ -381,9 +383,22 @@ public class GameManager implements Runnable {
         this.SetUpGame();
 
         DebugLogger.println("SetUpGame Effettuato");
-        this.playTheGame();
-
+        try {
+            this.playTheGame();
+        } catch (UnexpectedEndOfGameException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+        }
         //gameFinished
+        DebugLogger.println("Gioco terminato");
+
+        //elimo i nickName dalla mappa
+        for (String client : clientNickNames) {
+            ServerManager.Nick2ClientProxyMap.remove(client);
+        }
+
+        //diminuisco il numero di partite attive
+        ServerManager.activatedGames--;
     }
 
     private void broadcastInitialConditions(String client) throws
@@ -446,9 +461,11 @@ public class GameManager implements Runnable {
         }
     }
 
-    private void executeRounds() throws FinishedFencesException, RemoteException {
+    private void executeRounds() throws FinishedFencesException, RemoteException,
+                                        UnexpectedEndOfGameException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
+        int playerOffline = 0;
 
         while (!(lastRound && currentPlayer == this.firstPlayer)) {
             //prova a fare un turno
@@ -461,7 +478,10 @@ public class GameManager implements Runnable {
                 //controllo se il player ha bisogno di un refresh
                 if (ServerManager.Nick2ClientProxyMap.get(
                         clientNickNames[currentPlayer]).needRefresh()) {
+                    //avvio il player che è tornato in partita
+                    controller.broadcastStartGame(clientNickNames[currentPlayer]);
 
+                    //lo aggiorno
                     this.broadcastInitialConditions(
                             clientNickNames[currentPlayer]);
                 }
@@ -503,9 +523,16 @@ public class GameManager implements Runnable {
                 DebugLogger.println(
                         "Player offline:" + clientNickNames[currentPlayer]);
                 //player offline
-                //skip player
+                playerOffline++;
+
+                //skip player               
                 controller.refreshPlayerDisconnected(
                         clientNickNames[currentPlayer]);
+                if (playerOffline == this.playersNumber) {
+                    //tutti i player sono offline termino la partita
+                    throw new UnexpectedEndOfGameException(
+                            "Tutti i player si sono disconnesi, la partita termina");
+                }
                 nextPlayer();
             }
 

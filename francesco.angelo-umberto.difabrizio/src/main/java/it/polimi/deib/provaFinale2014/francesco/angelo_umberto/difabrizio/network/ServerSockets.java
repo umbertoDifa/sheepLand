@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.ControlConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
@@ -7,7 +8,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -21,27 +21,6 @@ import java.util.logging.Logger;
  * @author francesco.angelo-umberto.difabrizio
  */
 public class ServerSockets implements Runnable {
-
-    //constanti generiche
-    private final int MILLISECONDS_IN_SECONDS = 1000;
-
-    //costanti di default per i costruttori
-    /**
-     * Default seconds to wait before timeout the clients connection to a game
-     */
-    private static final int DEFAULT_TIMEOUT_ACCEPT = 15;
-    /**
-     * The default minimum number of clients for a game
-     */
-    private static final int DEFAULT_MIN_CLIENTS_FOR_GAME = 2;
-    /**
-     * The default maximum number of clients for a game
-     */
-    private static final int DEFAULT_MAX_CLIENTS_FOR_GAME = 4;
-    /**
-     * The maximum number of games that a server can activate simultaniusly
-     */
-    private static final int DEFAULT_MAX_GAMES = 3;
 
     private final int maxClientsForGame;
     private final int minClientsForGame;
@@ -70,12 +49,6 @@ public class ServerSockets implements Runnable {
      */
     private List<String> clientNickNames = new ArrayList<String>();
 
-    /**
-     * It represents the number of active games. Since it's static it can be
-     * modified by any thread which decrements it before dying
-     */
-    private static int activatedGames = 0;
-
     private final PrintWriter stdOut = new PrintWriter(System.out);
 
     private final int maxNumberOfGames;
@@ -94,11 +67,11 @@ public class ServerSockets implements Runnable {
 
         this.port = port;
 
-        this.maxNumberOfGames = DEFAULT_MAX_GAMES;
-        this.maxClientsForGame = DEFAULT_MAX_CLIENTS_FOR_GAME;
-        this.minClientsForGame = DEFAULT_MIN_CLIENTS_FOR_GAME;
-        this.secondsBeforeAcceptTimeout = DEFAULT_TIMEOUT_ACCEPT;
-        this.timeoutAccept = secondsBeforeAcceptTimeout * MILLISECONDS_IN_SECONDS;
+        this.maxNumberOfGames = ControlConstants.DEFAULT_MAX_GAMES.getValue();
+        this.maxClientsForGame = ControlConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
+        this.minClientsForGame = ControlConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
+        this.secondsBeforeAcceptTimeout = ControlConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
+        this.timeoutAccept = secondsBeforeAcceptTimeout * ControlConstants.MILLISECONDS_IN_SECONDS.getValue();
 
         //turn off debug
         DebugLogger.turnOffExceptionLog();
@@ -148,10 +121,10 @@ public class ServerSockets implements Runnable {
                 DebugLogger.println("Chiedo nick");
                 String nickName = getNickName();
 
-                //se non ho attivato tutte le partite
-                if (activatedGames < maxNumberOfGames) {
+                if (isNewPlayer(nickName)) {
 
-                    if (isNewPlayer(nickName)) {
+                    //se non ho attivato tutte le partite
+                    if (ServerManager.activatedGames < maxNumberOfGames) {
                         DebugLogger.println("Client accettato");
 
                         //se è il primo client
@@ -169,32 +142,36 @@ public class ServerSockets implements Runnable {
                             startGame();
                         }
                     } else {
-                        if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
-                            DebugLogger.println("Client già in gioco");
-                            //rigettalo
-                            rejectNameSake(clientSocket);
-                        } else {
-                            //il client deve riconnettersi
-                            //rimuovo la vecchia instanza
-                            DebugLogger.println("Client tenta di riconnettersi");
-                            ServerManager.Nick2ClientProxyMap.remove(nickName);
-                            DebugLogger.println(nickName + " rimosso");
-                            //metto il nuovo
-                            ServerManager.Nick2ClientProxyMap.put(nickName,
-                                    new SocketClientProxy(clientSocket));
-                            DebugLogger.println(nickName + " aggiunto");
-                            //setto il refresh
-                            ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
-                                    true);
-                            DebugLogger.println(nickName + " settato refresh");
-                        }
+                        //se le partite attivate sono il massimo
+                        DebugLogger.println("Client rifiutato");
+
+                        // rifiuto client
+                        handleClientRejection(
+                                "Ci sono troppe partite attive riprovare più tardi");
+                        ServerManager.Nick2ClientProxyMap.remove(nickName);
+                        clientNickNames.clear();
+
                     }
                 } else {
-                    //se le partite attivate sono il massimo
-                    DebugLogger.println("Client rifiutato");
-
-                    clientNickNames.clear();
-
+                    if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
+                        DebugLogger.println("Client già in gioco");
+                        //rigettalo
+                        rejectNameSake(clientSocket);
+                    } else {
+                        //il client deve riconnettersi
+                        //rimuovo la vecchia instanza
+                        DebugLogger.println("Client tenta di riconnettersi");
+                        ServerManager.Nick2ClientProxyMap.remove(nickName);
+                        DebugLogger.println(nickName + " rimosso");
+                        //metto il nuovo
+                        ServerManager.Nick2ClientProxyMap.put(nickName,
+                                new SocketClientProxy(clientSocket));
+                        DebugLogger.println(nickName + " aggiunto");
+                        //setto il refresh
+                        ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
+                                true);
+                        DebugLogger.println(nickName + " settato refresh");
+                    }
                 }
 
             } catch (IOException ex) {
@@ -220,9 +197,10 @@ public class ServerSockets implements Runnable {
                     new SocketTrasmission()));
 
             //aumento i giochi attivi
-            activatedGames++;
+            ServerManager.activatedGames++;
 
-            stdOut.println("Partita numero " + activatedGames + " avviata.");
+            stdOut.println(
+                    "numero di partite attive " + ServerManager.activatedGames);
             stdOut.flush();
         } else {
             //se non ci sono abbastanza giocatori
