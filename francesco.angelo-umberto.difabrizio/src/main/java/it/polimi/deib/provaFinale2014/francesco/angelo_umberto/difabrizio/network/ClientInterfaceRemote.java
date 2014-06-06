@@ -19,7 +19,7 @@ public interface ClientInterfaceRemote extends Remote {
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb) throws RemoteException;
 
-    public void refreshStreet(int streetIndex, boolean Fence,
+    public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd) throws RemoteException;
 
     public void refreshMoveShepherd(String nickNameMover, String shepherdIndex,

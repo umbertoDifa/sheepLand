@@ -28,7 +28,7 @@ public class Street extends Node {
      * @return Vero se e solo se la strada è occupata da un recinto
      */
     public boolean hasFence() {
-        return (this.fence != null);
+        return this.fence != null;
     }
 
     /**
@@ -36,7 +36,7 @@ public class Street extends Node {
      * @return Vero se e solo se la strada è occupata da un pastore
      */
     public boolean hasShepherd() {
-        return (this.shepherd != null);
+        return this.shepherd != null;
     }
 
     /**
@@ -62,7 +62,7 @@ public class Street extends Node {
      * @return Vero se e solo non è occupata da un recinto o da un pastore
      */
     public boolean isFree() {
-        return (!this.hasFence() && !this.hasShepherd());
+        return !this.hasFence() && !this.hasShepherd();
     }
 
     /**

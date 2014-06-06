@@ -55,9 +55,8 @@ public abstract class Node {
         List<Street> neighbourStreets = new ArrayList<Street>();
 
         for (Node node : possibleStreets) {
-            if ((node instanceof Street)) {
-                neighbourStreets.add((Street) node);
-            }
+            if ((node instanceof Street)) 
+                neighbourStreets.add((Street) node);            
         }
         return neighbourStreets;
     }
@@ -71,9 +70,8 @@ public abstract class Node {
         List<Region> neighbourRegions = new ArrayList<Region>();
 
         for (Node node : possibleRegions) {
-            if ((node instanceof Region)) {
-                neighbourRegions.add((Region) node);
-            }
+            if ((node instanceof Region)) 
+                neighbourRegions.add((Region) node);            
         }
         return neighbourRegions;
     }

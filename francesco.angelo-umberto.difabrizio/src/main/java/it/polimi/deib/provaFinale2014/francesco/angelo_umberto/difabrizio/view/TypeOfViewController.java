@@ -42,7 +42,7 @@ public interface TypeOfViewController {
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb);
 
-    public void refreshStreet(int streetIndex, boolean Fence,
+    public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd);
 
     public void refreshMoveShepherd(String nickNameMover, String shepherdIndex,

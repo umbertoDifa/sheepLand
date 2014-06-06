@@ -45,9 +45,8 @@ public enum ControlConstants {
     /**
      * The maximum number of games that a server can activate simultaniusly
      */
-    DEFAULT_MAX_GAMES(2);//FIXME
+    DEFAULT_MAX_GAMES(10);
 
-    ;
     private final int value;
 
     ControlConstants(int value) {

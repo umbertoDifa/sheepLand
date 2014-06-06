@@ -4,6 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
-    public static HashMap<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
+    public static Map<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
     /**
      * It represents the number of active games. Since it's static it can be
      * modified by any thread which decrements it before dying
@@ -30,7 +31,7 @@ public class ServerManager {
      * @param args
      */
     public static void main(String[] args) {
-        String SERVER_NAME = "sheepland";
+        String serverName = "sheepland";
 
         int socketPort = NetworkConstants.PORT_SOCKET.getValue();
         int rmiPort = NetworkConstants.PORT_RMI.getValue();
@@ -60,7 +61,7 @@ public class ServerManager {
                     server.start();
                 } else if (choice == 2) {
                     stringValid = true;
-                    ServerRmiImpl server = new ServerRmiImpl(SERVER_NAME,
+                    ServerRmiImpl server = new ServerRmiImpl(serverName,
                             rmiPort);
                     server.start();
                 } else {
@@ -87,4 +88,7 @@ public class ServerManager {
 
     }
 
+    private ServerManager() {
+    }
+    
 }

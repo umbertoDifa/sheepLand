@@ -96,9 +96,9 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshRegion(regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
     }
 
-    public void refreshStreet(int streetIndex, boolean Fence,
+    public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd) {
-        view.refreshStreet(streetIndex, Fence, nickShepherd);
+        view.refreshStreet(streetIndex, fence, nickShepherd);
     }
 
     public void refreshGameParameters(int numbOfPlayers, String firstPlayer,
@@ -127,7 +127,7 @@ public class ClientRmi implements ClientInterfaceRemote {
 
         result = playerRmi.setShepherdRemote(idShepherd, chosenStreet);
 
-        token = result.split(",",-1);
+        token = result.split(",", -1);
         if (result.contains("Pastore posizionato correttamente!")) {
             view.showSetShepherd("" + idShepherd, chosenStreet);
             return chosenStreet;
@@ -147,13 +147,13 @@ public class ClientRmi implements ClientInterfaceRemote {
      */
     public String chooseAction(String actions) {
         //receive possible actions      
-        String[] possibleActions = actions.split(",",-1);
+        String[] possibleActions = actions.split(",", -1);
 
         int[] availableAcions = new int[possibleActions.length];
         String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
-            token = possibleActions[i].split("-",-1);
+            token = possibleActions[i].split("-", -1);
 
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
@@ -176,6 +176,8 @@ public class ClientRmi implements ClientInterfaceRemote {
                     return "5," + this.mateSheepWith("ram");
                 case 6:
                     return "6," + this.killOvine();
+                default:
+                    return "0," + "null";
 
             }
         } catch (RemoteException ex) {
@@ -190,7 +192,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     private String moveOvine() throws RemoteException {
         parameters = view.moveOvine();
 
-        token = parameters.split(",",-1);
+        token = parameters.split(",", -1);
 
         result = playerRmi.moveOvineRemote(token[0], token[1], token[2]);
 
@@ -213,7 +215,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     private String moveShepherd() {
         try {
             parameters = view.askMoveShepherd();
-            token = parameters.split(",",-1);
+            token = parameters.split(",", -1);
 
             result = playerRmi.moveShepherdRemote(token[0], token[1]);
         } catch (RemoteException ex) {
@@ -222,7 +224,7 @@ public class ClientRmi implements ClientInterfaceRemote {
             return null;
         }
         if (result.contains("Pastore spostato")) {
-            token = result.split(",",-1);
+            token = result.split(",", -1);
             view.showMoveShepherd(token[1]);
             return parameters;
         }
@@ -250,7 +252,7 @@ public class ClientRmi implements ClientInterfaceRemote {
                     ex.getMessage(), ex);
             return null;
         }
-        token = result.split(",",-1);
+        token = result.split(",", -1);
         if (result.contains("Carta acquistata")) {
             view.showBoughtLand(token[1], token[2]);
             return result;
@@ -262,7 +264,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     private String mateSheepWith(String ovineType) {
         parameters = view.askMateSheepWith();
 
-        token = parameters.split(",",-1);
+        token = parameters.split(",", -1);
         try {
             result = playerRmi.mateSheepWithRemote(token[0], token[1],
                     ovineType);
@@ -271,7 +273,7 @@ public class ClientRmi implements ClientInterfaceRemote {
                     ex.getMessage(), ex);
             return null;
         }
-        String[] resultTokens = result.split(",",-1);
+        String[] resultTokens = result.split(",", -1);
         if (result.contains("Accoppiamento eseguito")) {
             view.showMateSheepWith(token[1], ovineType, resultTokens[1]);
             return token[1] + "," + ovineType + "," + resultTokens[1] + ",ok";
@@ -294,7 +296,7 @@ public class ClientRmi implements ClientInterfaceRemote {
 
         DebugLogger.println("parametri" + parameters);
 
-        token = parameters.split(",",-1);
+        token = parameters.split(",", -1);
 
         try {
             result = playerRmi.killOvineRemote(token[0], token[1], token[2]);
@@ -305,7 +307,7 @@ public class ClientRmi implements ClientInterfaceRemote {
         }
 
         if (result.contains("Ovino ucciso")) {
-            String[] tokenResult = result.split(",",-1);
+            String[] tokenResult = result.split(",", -1);
 
             view.showKillOvine(token[1], token[2], tokenResult[1]);
 
@@ -334,8 +336,8 @@ public class ClientRmi implements ClientInterfaceRemote {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         ex.getMessage(), ex);
             }
-            synchronized (Client.lock) {
-                Client.lock.notify();
+            synchronized (Client.LOCK) {
+                Client.LOCK.notify();
             }
         }
     }

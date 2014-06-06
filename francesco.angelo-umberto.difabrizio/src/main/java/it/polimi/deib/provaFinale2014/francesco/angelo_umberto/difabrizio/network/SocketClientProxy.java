@@ -33,15 +33,14 @@ public class SocketClientProxy extends ClientProxy {
             this.fromClient = new Scanner(this.socket.getInputStream());
         } catch (IOException ex) {
             //se fallisce la creazione di un canale di scambio dati
-            System.err.println(ex.getMessage());
-
             Logger.getLogger(DebugLogger.class.getName()).log(
                     Level.SEVERE, ex.getMessage(), ex);
         }
     }
-    
+
     /**
      * Returns the socket
+     *
      * @return the socket of this client
      */
     public Socket getSocket() {

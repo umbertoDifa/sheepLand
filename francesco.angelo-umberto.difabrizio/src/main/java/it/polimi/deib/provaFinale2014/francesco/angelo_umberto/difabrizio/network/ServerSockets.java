@@ -91,10 +91,8 @@ public class ServerSockets implements Runnable {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            System.err.println(e.getMessage());
             // porta non disponibile
-            Logger.getLogger(DebugLogger.class.getName()).log(
-                    Level.SEVERE,
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     "Impossibile creare il serverSocket " + e.getMessage(), e);
             return;
         }

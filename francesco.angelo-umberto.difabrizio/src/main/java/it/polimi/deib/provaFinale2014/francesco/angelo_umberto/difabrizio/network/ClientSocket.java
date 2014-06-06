@@ -82,7 +82,7 @@ public class ClientSocket {
         } catch (IOException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            System.out.println("Il server è spento, impossibile connettersi");
+            view.showInfo("Il server è spento, impossibile connettersi");
         }
     }
 

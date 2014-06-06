@@ -82,7 +82,8 @@ public class SocketTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameBuyer) && canPlayerReceive(nickName)) {
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
-                        nickName)).send(MessageProtocol.BUY_LAND_REFRESH.toString());
+                        nickName)).send(
+                                MessageProtocol.BUY_LAND_REFRESH.toString());
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).send(
                                 nickNameBuyer + "," + boughtLand + "," + price);
@@ -243,8 +244,9 @@ public class SocketTrasmission extends TrasmissionController {
                 return askMateSheepWith(nickName, OvineType.RAM.toString());
             case 6:
                 return askKillOvine(nickName);
+            default:
+                return false;
         }
-        return false;
     }
 
     private boolean askMoveOvine(String nickName) throws
@@ -392,8 +394,8 @@ public class SocketTrasmission extends TrasmissionController {
 
             refreshMateSheepWith(nickName, region, type, token[1], "ok");
             return true;
-        } else if (result.equals(
-                "Il valore del dado è diverso dalla strada del pastore")) {
+        } else if ("Il valore del dado è diverso dalla strada del pastore".equals(
+                result)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     result);
             refreshMateSheepWith(nickName, region, type, token[1], "nok");
@@ -417,7 +419,7 @@ public class SocketTrasmission extends TrasmissionController {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     "Avvio gioco");
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
-                   MessageProtocol.WELCOME.toString());
+                    MessageProtocol.WELCOME.toString());
         }
 
     }
@@ -499,13 +501,13 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void UnexpectedendOfGame() {
+    public void unexpectedEndOfGame() {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName)) {
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).send(
-                                MessageProtocol.UNEXPECTED_END_OF_GAME.toString());                
+                                MessageProtocol.UNEXPECTED_END_OF_GAME.toString());
             }
 
         }

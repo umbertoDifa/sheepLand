@@ -163,7 +163,7 @@ public class GameManager implements Runnable {
      * Metodo principale che viene invocato dal server thread per creare tutti
      * gli oggetti di una partita e avviarla
      */
-    private void SetUpGame() {
+    private void setUpGame() {
         DebugLogger.println("Avvio partita");
         for (String client : clientNickNames) {
             controller.broadcastStartGame(client);
@@ -209,7 +209,7 @@ public class GameManager implements Runnable {
         }
     }
 
-    private void refreshCards(int indexOfPlayer)  {
+    private void refreshCards(int indexOfPlayer) {
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
 
         for (int j = 0; j < numberOfCards; j++) {
@@ -238,7 +238,7 @@ public class GameManager implements Runnable {
      * e lupo a sheepsburg
      */
     private void setUpAnimals() {
-        int SHEEPSBURG_ID = 18;
+        int sheepsburgIndex = 18;
         //recupera l'array delle regioni
         Region[] region = this.map.getRegions();
 
@@ -249,8 +249,8 @@ public class GameManager implements Runnable {
         }
 
         //posiziono lupo e pecora nera a sheepsburg
-        map.getBlackSheep().setAt(map.getRegions()[SHEEPSBURG_ID]);
-        map.getWolf().setAt(map.getRegions()[SHEEPSBURG_ID]);
+        map.getBlackSheep().setAt(map.getRegions()[sheepsburgIndex]);
+        map.getWolf().setAt(map.getRegions()[sheepsburgIndex]);
     }
 
     /**
@@ -350,10 +350,11 @@ public class GameManager implements Runnable {
         classification = this.calculatePoints();
 
         //calcolo quanti sono al primo posto a parimerito
-        for (int i = 0; i < classification[1].length - 1; i++)
+        for (int i = 0; i < classification[1].length - 1; i++) {
             if (classification[1][i] == classification[1][i + 1]) {
                 numOfWinners++;
             }
+        }
 
         int i;
         //per tutti i vincitori
@@ -374,7 +375,7 @@ public class GameManager implements Runnable {
 
     private void startGame() {
         DebugLogger.println("SetUpGameAvviato");
-        this.SetUpGame();
+        this.setUpGame();
 
         DebugLogger.println("SetUpGame Effettuato");
         try {
@@ -385,11 +386,11 @@ public class GameManager implements Runnable {
             //avvioso tutti i player della fine del gioco improvvisa
             //questo perchè se c'è solo un giocatore in partita la chiudo
             //però lo devo avvisare
-            controller.UnexpectedendOfGame();
+            controller.unexpectedEndOfGame();
         }
         //gameFinished
-        DebugLogger.println("Gioco terminato");                        
-        
+        DebugLogger.println("Gioco terminato");
+
         //elimo i nickName dalla mappa e se sono socket chiudo il socket
         for (String client : clientNickNames) {
             try {
@@ -516,9 +517,9 @@ public class GameManager implements Runnable {
                 //controllo se ho finito il giro
                 //se il prossimo a giocare è il primo del giro
                 if (currentPlayer == this.firstPlayer) {
-                    //1)avvio il market  
+                    //avvio il market  
                     //FIXME this.startMarket();
-                    //2)muovo il lupo
+                    //muovo il lupo
                     DebugLogger.println("muovo lupo");
                     this.moveSpecialAnimal(this.map.getWolf());
                     DebugLogger.println("lupo mosso");

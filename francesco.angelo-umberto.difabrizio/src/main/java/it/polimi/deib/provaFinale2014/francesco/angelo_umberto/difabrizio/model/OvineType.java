@@ -22,9 +22,9 @@ public enum OvineType {
      */
     LAMB;
     //size dell'enum cached così non la ricalco ogni volta
-    private static final int size = OvineType.values().length;
+    private static final int SIZE = OvineType.values().length;
     //oggetto random cached
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     /**
      *
@@ -40,7 +40,7 @@ public enum OvineType {
      */
     protected static OvineType getRandomOvineType() {
         //prendi un numero a caso appartenente al totale dei valori dell'enum
-        int choice = random.nextInt(size);
+        int choice = RANDOM.nextInt(SIZE);
         //ritorno l'ovino corrispondente
         return OvineType.values()[choice];
     }
@@ -55,7 +55,7 @@ public enum OvineType {
         int choice;
         do {
             //prendi un numero a caso appartenente al totale dei valori dell'enum
-            choice = random.nextInt(size);
+            choice = RANDOM.nextInt(SIZE);
             //finchè è uguale a lamb
         } while (OvineType.values()[choice] == OvineType.LAMB);
 

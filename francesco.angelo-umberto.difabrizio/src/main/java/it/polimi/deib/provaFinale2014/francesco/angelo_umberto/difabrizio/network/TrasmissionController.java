@@ -5,6 +5,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public abstract class TrasmissionController {
 
-    private final HashMap<String, Player> nick2PlayerMap = new HashMap<String, Player>();
+    private final Map<String, Player> nick2PlayerMap = new HashMap<String, Player>();
 
     public void setNick2PlayerMap(String[] nickNames, List<Player> players) {
         for (int i = 0; i < nickNames.length; i++) {
@@ -96,9 +97,9 @@ public abstract class TrasmissionController {
                                             String possibleActions) throws
             PlayerDisconnectedException;
     
-    public abstract void UnexpectedendOfGame();
+    public abstract void unexpectedEndOfGame();
 
-    protected HashMap<String, Player> getNick2PlayerMap() {
+    protected Map<String, Player> getNick2PlayerMap() {
         return nick2PlayerMap;
     }
 

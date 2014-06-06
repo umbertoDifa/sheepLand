@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class Client {
 
-    protected static final Object lock = new Object();
+    protected static final Object LOCK = new Object();
 
     /**
      * Starts the client asking the nickName, the type of connection and the
@@ -74,8 +74,8 @@ public class Client {
                                     new CommandLineView());
                             client.startClient();
                             DebugLogger.println("Client remoto attivo");
-                            synchronized (lock) {
-                                lock.wait();
+                            synchronized (LOCK) {
+                                LOCK.wait();
                             }
                         } catch (RemoteException ex) {
                             Logger.getLogger(DebugLogger.class.getName()).log(
@@ -122,4 +122,9 @@ public class Client {
 
         } while ("S".equalsIgnoreCase(answer));
     }
+
+    private Client() {
+    }
+    
+    
 }

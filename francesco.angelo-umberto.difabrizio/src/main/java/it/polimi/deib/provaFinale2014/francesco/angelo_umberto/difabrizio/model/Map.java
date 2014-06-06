@@ -498,42 +498,4 @@ public class Map {
         return numOvines;
     }
 
-//    public LandData createLandData() {
-//        int i;
-//        LandData landData = new LandData();
-//
-//        landData.clean();
-//
-//        //per ogni regione
-//        for (i = 0; i < GameConstants.NUM_REGIONS.getValue(); i++) {
-//            //creo il RegionData
-//            RegionData regionData = new RegionData();
-//
-//            Region region = (Region) regions[i];
-//            //per ogni ovino di quella regione aggiorno il RegionData
-//            for (Ovine ovine : region.getMyOvines()) {
-//                if (ovine.getType() == OvineType.SHEEP) {
-//                    regionData.addSheep();
-//                } else if (ovine.getType() == OvineType.RAM) {
-//                    regionData.addRam();
-//                } else {
-//                    regionData.addLamb();
-//                }
-//            }
-//
-//            landData.addRegion(regionData);//TODO funziona?
-//        }
-//        
-//        //per ogni strada
-//        for(i = 0; i < GameConstants.NUM_STREETS.getValue(); i++){
-//            StreetData streetData = new StreetData();
-//            
-//            Street street = (Street) streets[i];
-//            if(street.hasFence()){
-//                streetData.putFence();
-//            }else if(street.hasShepherd()){
-//                streetData.setShepherd(null);
-//            }
-//        }
-//    }
 }

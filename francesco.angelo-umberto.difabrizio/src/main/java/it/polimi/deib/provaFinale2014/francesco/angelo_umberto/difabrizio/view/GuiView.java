@@ -24,7 +24,7 @@ public class GuiView implements TypeOfViewController, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshStreet(int streetIndex, boolean Fence,
+    public void refreshStreet(int streetIndex, boolean fence,
             String nickShepherd) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

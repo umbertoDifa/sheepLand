@@ -67,7 +67,7 @@ public class Region extends Node {
     public boolean isAllFenced() {
         List<Street> endStreets = this.getNeighbourStreets();
         //per ogni strada limitrofa
-        
+
         for (Street s : endStreets) {
             //ritorno false se non ha un recinto
             if (!s.hasFence()) {
@@ -83,6 +83,7 @@ public class Region extends Node {
      * It removes an ovine of the specified type from a region and returns it
      *
      * @param type Tipo di ovino da cercare
+     *
      * @return Removed Ovine
      *
      * @throws NoOvineException If that ovine type does not exist
@@ -94,10 +95,10 @@ public class Region extends Node {
             //il primo ovino che trovi del tipo che ti interessa 
             if (this.myOvines.get(i).getType() == type) {
                 //salva il riferimento all'ovino che stai per uccidere
-                Ovine ovineToRemove =this.myOvines.get(i);
+                Ovine ovineToRemove = this.myOvines.get(i);
                 //rimuovilo 
                 this.myOvines.remove(i);
-                
+
                 //ritorna l'ovino rimosso
                 return ovineToRemove;
             }
@@ -107,7 +108,8 @@ public class Region extends Node {
     }
 
     /**
-     *It says if it is possible to meet a sheep with an other type of animal
+     * It says if it is possible to meet a sheep with an other type of animal
+     *
      * @param mateType Type of animal to meet the sheep with
      *
      * @return true if they can mate, false if not
@@ -153,8 +155,7 @@ public class Region extends Node {
         //per ogni ovino nella regione
         for (Ovine ovine : this.getMyOvines()) {
             //se del tipo thisOvineType
-            if (ovine.getType() == thisOvineType) //ritorna vero
-            {
+            if (ovine.getType() == thisOvineType) {
                 return true;
             }
         }

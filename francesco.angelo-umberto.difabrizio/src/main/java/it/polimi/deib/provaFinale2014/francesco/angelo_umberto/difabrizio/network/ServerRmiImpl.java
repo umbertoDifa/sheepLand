@@ -221,10 +221,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 RmiClientProxy clientProxy = (RmiClientProxy) pairs.getValue();
                 try {
                     clientProxy.getClientRmi().disconnect(message);
-                } catch (RemoteException ex) {
+                } catch (RemoteException e) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
+                            Level.SEVERE, e.getMessage(), e);
                     //poco male il client che dovevamo rifiutare si è gia disconnesso
                 }
             }

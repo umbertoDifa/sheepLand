@@ -53,7 +53,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * action in the current shift
      */
     protected Shepherd lastShepherd;
-    private final String noSameShepherdString = "Non è possibile muovere due pastori diversi nello stesso turno";
+    private static final String noSameShepherdString = "Non è possibile muovere due pastori diversi nello stesso turno";
 
     /**
      * Lista di azioni che un player può fare, si aggiorna ad ogni azione del
@@ -229,11 +229,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return false;
         } else {
             //cerca fra le regioni confinanti dell'ultimo pastore
-            for (Region region : lastShepherd.getStreet().getNeighbourRegions())
+            for (Region region : lastShepherd.getStreet().getNeighbourRegions()) {
                 //se in almeno una c'è almeno un ovino di quel tipo
                 if (region.hasOvine(ovine)) {
                     return true;
                 }
+            }
             return false;
         }
     }
@@ -552,7 +553,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @return
      */
-    //aggiustare. convertire il parametro sringato della strada
     public String moveShepherd(String shepherdNumber, String newStreet) {
         DebugLogger.println(
                 "Inizio move shepherd col pastore: " + shepherdNumber);
@@ -593,7 +593,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return ex.getMessage();
         }
 
-//se strada free ed esiste ed è vicina o posso pagare
+        //se strada free ed esiste ed è vicina o posso pagare
         if (startStreet.isNeighbour(endStreet)) {
             //muovilo
             currentShepherd.moveTo(endStreet);
@@ -840,12 +840,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(), ex);
             return ex.getMessage();
-        } catch (OvineNotFoundExeption ex) {
+        } catch (RegionNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(), ex);
             return ex.getMessage();
-        } catch (RegionNotFoundException ex) {
+        } catch (OvineNotFoundExeption ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(), ex);
