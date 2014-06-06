@@ -102,57 +102,107 @@ public class ClientSocket {
                 received = receiveString();
                 DebugLogger.println(received);
 
-                if ("Welcome".equals(received)) {
+                if (MessageProtocol.WELCOME.equals(MessageProtocol.valueOf(
+                        received))) {
                     welcome();
-                } else if ("RefreshRegion".equals(received)) {
+                } else if (MessageProtocol.REGION.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshRegion();
-                } else if ("RefreshStreet".equals(received)) {
+                } else if (MessageProtocol.STREET.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshStreet();
-                } else if ("RefreshGameParameters".equals(received)) {
+                } else if (MessageProtocol.GAME_PARAMETERS.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshGameParameters();
-                } else if ("RefreshMoney".equals(received)) {
+                } else if (MessageProtocol.MONEY.equals(MessageProtocol.valueOf(
+                        received))) {
                     refreshMoney();
-                } else if ("RefreshCurrentPlayer".equals(received)) {
+                } else if (MessageProtocol.CURRENT_PLAYER.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshCurrentPlayer();
-                } else if ("RefreshCard".equals(received)) {
+                } else if (MessageProtocol.CARD.equals(MessageProtocol.valueOf(
+                        received))) {
                     refreshCard();
-                } else if ("RefreshBlackSheep".equals(received)) {
+                } else if (MessageProtocol.BLACK_SHEEP_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshBlackSheep();
-                } else if ("RefreshMoveShepherd".equals(received)) {
+                } else if (MessageProtocol.MOVE_SHEPHERD_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshMoveShepherd();
-                } else if ("RefreshBuyLand".equals(received)) {
+                } else if (MessageProtocol.BUY_LAND_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshBuyLand();
-                } else if ("RefreshMoveOvine".equals(received)) {
+                } else if (MessageProtocol.MOVE_OVINE_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshMoveOvine();
-                } else if ("RefreshMateSheepWith".equals(received)) {
+                } else if (MessageProtocol.MATE_SHEEP_WITH_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshMateSheepWith();
-                } else if ("RefreshKillOvine".equals(received)) {
+                } else if (MessageProtocol.KILL_OVINE_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshKillOvine();
-                } else if ("RefreshWolf".equals(received)) {
+                } else if (MessageProtocol.WOLF_REFRESH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshWolf();
-                } else if ("RefreshPlayerDisconnected".equals(received)) {
+                } else if (MessageProtocol.PLAYER_DISCONNECTED.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     refreshPlayerDisconnected();
-                } else if ("SpecialAnimalInitialPosition".equals(received)) {
-                    specialAnimalInitialCondition();
-                } else if ("SetUpShepherd".equals(received)) {
+                } else if (MessageProtocol.SPECIAL_ANIMAL_POSITION.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
+                    specialAnimalInitialPosition();
+                } else if (MessageProtocol.SET_UP_SHEPHERD.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     setUpShepherd();
-                } else if ("ChooseAction".equals(received)) {
+                } else if (MessageProtocol.CHOOSE_ACTION.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     chooseAction();
-                } else if ("MoveOvine".equals(received)) {
+                } else if (MessageProtocol.MOVE_OVINE.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     moveOvine();
-                } else if ("MoveShepherd".equals(received)) {
+                } else if (MessageProtocol.MOVE_SHEPHERD.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     moveShepherd();
-                } else if ("BuyLand".equals(received)) {
+                } else if (MessageProtocol.BUY_LAND.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     buyLand();
-                } else if ("MateSheepWith".equals(received)) {
+                } else if (MessageProtocol.MATE_SHEEP_WITH.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     mateSheepWith();
-                } else if ("KillOvine".equals(received)) {
-                } else if ("UnexpectedEndOfGame".equals(received)) {
+                } else if (MessageProtocol.KILL_OVINE.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
+                    killOvine();
+                } else if (MessageProtocol.UNEXPECTED_END_OF_GAME.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     unexpectedEndOfGame();
                     endOfGame = true;
-                } else if ("ShowMyRank".equals(received)) {
+                } else if (MessageProtocol.SHOW_MY_RANK.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     showMyRank();
-                } else if ("Classification".equals(received)) {
+                } else if (MessageProtocol.CLASSIFICATION.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
                     showClassification();
                 }
             }
@@ -393,7 +443,7 @@ public class ClientSocket {
         view.showClassification(receiveString());
     }
 
-    private void specialAnimalInitialCondition() {
+    private void specialAnimalInitialPosition() {
         view.specialAnimalInitialCondition(receiveString());
     }
 
