@@ -39,6 +39,14 @@ public class SocketClientProxy extends ClientProxy {
                     Level.SEVERE, ex.getMessage(), ex);
         }
     }
+    
+    /**
+     * Returns the socket
+     * @return the socket of this client
+     */
+    public Socket getSocket() {
+        return socket;
+    }
 
     /**
      * Manda un messaggio al client attraverso il proprio socket

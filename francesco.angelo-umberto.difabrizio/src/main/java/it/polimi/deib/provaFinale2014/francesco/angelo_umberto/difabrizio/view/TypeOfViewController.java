@@ -33,6 +33,8 @@ public interface TypeOfViewController {
      */
     public void showClassification(String classification);
 
+    public void showUnexpectedEndOfGame();
+    
     public void showKillOvine(String region, String type, String shepherdPayed);
 
     public String setUpShepherd(int idShepherd);

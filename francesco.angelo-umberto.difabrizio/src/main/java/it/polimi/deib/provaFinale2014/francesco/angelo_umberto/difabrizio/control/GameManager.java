@@ -20,7 +20,9 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.PlayerDisconnectedException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.SocketClientProxy;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,14 +123,9 @@ public class GameManager implements Runnable {
     }
 
     public void run() {
-        try {
-            this.startGame();
-        } catch (RemoteException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
-            //TODO chiamare una funzione per avviasare il server
-            //oppure lo faccio io ovvero setto il nickName offline
-        }
+
+        this.startGame();
+
     }
 
     public TrasmissionController getController() {
@@ -166,7 +163,7 @@ public class GameManager implements Runnable {
      * Metodo principale che viene invocato dal server thread per creare tutti
      * gli oggetti di una partita e avviarla
      */
-    private void SetUpGame() throws RemoteException {
+    private void SetUpGame() {
         DebugLogger.println("Avvio partita");
         for (String client : clientNickNames) {
             controller.broadcastStartGame(client);
@@ -206,13 +203,13 @@ public class GameManager implements Runnable {
 
     }
 
-    private void brodcastCards() throws RemoteException {
+    private void brodcastCards() {
         for (int i = 0; i < playersNumber; i++) {
             refreshCards(i);
         }
     }
 
-    private void refreshCards(int indexOfPlayer) throws RemoteException {
+    private void refreshCards(int indexOfPlayer)  {
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
 
         for (int j = 0; j < numberOfCards; j++) {
@@ -259,7 +256,7 @@ public class GameManager implements Runnable {
     /**
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
-    private void setUpShepherds() throws RemoteException {
+    private void setUpShepherds() {
         int i;//indice giocatori
         int j;//indice pastori     
 
@@ -336,8 +333,7 @@ public class GameManager implements Runnable {
         }
     }
 
-    private void playTheGame() throws RemoteException,
-                                      UnexpectedEndOfGameException {
+    private void playTheGame() throws UnexpectedEndOfGameException {
         int[][] classification;
         int numOfWinners = 1;
 
@@ -376,7 +372,7 @@ public class GameManager implements Runnable {
 
     }
 
-    private void startGame() throws RemoteException {
+    private void startGame() {
         DebugLogger.println("SetUpGameAvviato");
         this.SetUpGame();
 
@@ -386,21 +382,37 @@ public class GameManager implements Runnable {
         } catch (UnexpectedEndOfGameException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
+            //avvioso tutti i player della fine del gioco improvvisa
+            //questo perchè se c'è solo un giocatore in partita la chiudo
+            //però lo devo avvisare
+            controller.UnexpectedendOfGame();
         }
         //gameFinished
-        DebugLogger.println("Gioco terminato");
-
-        //elimo i nickName dalla mappa
+        DebugLogger.println("Gioco terminato");                        
+        
+        //elimo i nickName dalla mappa e se sono socket chiudo il socket
         for (String client : clientNickNames) {
-            ServerManager.Nick2ClientProxyMap.remove(client);
+            try {
+                if (ServerManager.Nick2ClientProxyMap.get(
+                        client) instanceof SocketClientProxy) {
+                    ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                            client)).getSocket().close();
+                }
+
+                ServerManager.Nick2ClientProxyMap.remove(client);
+            } catch (IOException ex) {
+                //il client che stavo eliminando ha già chiuso il socket
+                //poco male
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+            }
         }
 
         //diminuisco il numero di partite attive
         ServerManager.activatedGames--;
     }
 
-    private void broadcastInitialConditions(String client) throws
-            RemoteException {
+    private void broadcastInitialConditions(String client) {
 
         int numbOfSheep, numbOfLamb, numbOfRam;
         for (int i = 0; i < this.map.getRegions().length; i++) {
@@ -462,7 +474,7 @@ public class GameManager implements Runnable {
         //broadcast shepherd
     }
 
-    private void executeRounds() throws FinishedFencesException, RemoteException,
+    private void executeRounds() throws FinishedFencesException,
                                         UnexpectedEndOfGameException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
@@ -548,7 +560,7 @@ public class GameManager implements Runnable {
                 return currentPlayer == temporaryFirstPlayer;
             }
         }
-        
+
         //se ho girato tutti i player e nessuno è online
         // ritorno false e sarà l'execute rounds ad accorgersi di dover terminare
         //la partita senza client
@@ -562,8 +574,7 @@ public class GameManager implements Runnable {
         currentPlayer %= this.playersNumber;
     }
 
-    private void handleReconnection() throws RemoteException,
-                                             PlayerDisconnectedException {
+    private void handleReconnection() throws PlayerDisconnectedException {
         //controllo se il player ha bisogno di un refresh
         if (ServerManager.Nick2ClientProxyMap.get(
                 clientNickNames[currentPlayer]).needRefresh()) {
@@ -575,6 +586,9 @@ public class GameManager implements Runnable {
             //avvio il player che è tornato in partita
             controller.broadcastStartGame(clientNickNames[currentPlayer]);
 
+            //lo aggiorno
+            this.broadcastInitialConditions(clientNickNames[currentPlayer]);
+
             //gli chiedo di settare tutti i pastori che non aveva settato
             int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
                     clientNickNames[currentPlayer]).getNumberOfShepherdStillToSet();
@@ -583,16 +597,12 @@ public class GameManager implements Runnable {
                 players.get(currentPlayer).setMyshepherd(
                         shepherd4player - shepherdToSet + i);
             }
-            //lo aggiorno
-            this.broadcastInitialConditions(
-                    clientNickNames[currentPlayer]);
 
         }
 
     }
 
     private boolean executeShift(int player) throws FinishedFencesException,
-                                                    RemoteException,
                                                     PlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
@@ -615,7 +625,7 @@ public class GameManager implements Runnable {
         return this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue();
     }
 
-    private void moveSpecialAnimal(SpecialAnimal animal) throws RemoteException {
+    private void moveSpecialAnimal(SpecialAnimal animal) {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
         int startRegionIndex = 0;

@@ -120,13 +120,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * può scegliere al massimo una. Il player deve scegliere e fare un'azione
      * finchè il risultato non è valido
      *
-     * @throws java.rmi.RemoteException
      * @throws PlayerDisconnectedException if the player disconnects in his
      *                                     shift more than a maximum number of
      *                                     chances
      */
-    protected void chooseAndMakeAction() throws RemoteException,
-                                                PlayerDisconnectedException {
+    protected void chooseAndMakeAction() throws PlayerDisconnectedException {
 
         boolean outcomeOk;
         createActionList();
@@ -461,8 +459,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return "Pastore posizionato correttamente!";
     }
 
-    protected void setMyshepherd(int shepherdIndex) throws RemoteException,
-                                                           PlayerDisconnectedException {
+    protected void setMyshepherd(int shepherdIndex) throws
+            PlayerDisconnectedException {
         boolean outcomeOk;
         int numberOfDisconnections;
         outcomeOk = false;
@@ -510,10 +508,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     //salvo quanti pastori deve ancora settare
                     ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
                             gameManager.shepherd4player - shepherdIndex);
-                    
-                    gameManager.getController().refreshPlayerDisconnected(
-                            playerNickName);
-                    
+
                     throw new PlayerDisconnectedException(
                             "giocatore disconnesso durante set up pastore");
                 }

@@ -20,42 +20,46 @@ public abstract class TrasmissionController {
         }
     }
 
-    public abstract void broadcastStartGame(String nickName) throws
-            RemoteException;
+    /**
+     * Verifico che il giocatore sia online e non abbia bisogno di refresh
+     *
+     * @param nickName giocatore di cui controllare lo stato
+     *
+     * @return true se il giocatore è online e aggiornato, false altrimenti
+     */
+    protected boolean canPlayerReceive(String nickName) {
+        return ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()
+                && !ServerManager.Nick2ClientProxyMap.get(nickName).needRefresh();
+    }
+
+    public abstract void broadcastStartGame(String nickName);
 
     public abstract void refreshRegion(String nickName, int regionIndex,
                                        int numbOfSheep, int numbOfRam,
-                                       int numbOfLamb) throws RemoteException;
+                                       int numbOfLamb);
 
     public abstract void refreshStreet(String nickName, int streetIndex,
                                        boolean fence,
-                                       String nickNameOfShepherdPlayer) throws
-            RemoteException;
+                                       String nickNameOfShepherdPlayer);
 
     public abstract void refreshGameParameters(String nickName,
                                                int numbOfPlayers,
-                                               int shepherd4player) throws
-            RemoteException;
+                                               int shepherd4player);
 
-    public abstract void refreshCurrentPlayer(String nickName) throws
-            RemoteException;
+    public abstract void refreshCurrentPlayer(String nickName);
 
-    public abstract void refreshCard(String nickName, String card, int value)
-            throws RemoteException;
+    public abstract void refreshCard(String nickName, String card, int value);
 
     public abstract void refreshSpecialAnimal(SpecialAnimal animal,
-                                              String movementResult) throws
-            RemoteException;
+                                              String movementResult);
 
     public abstract void refreshSpecialAnimalInitialPosition(String client,
                                                              SpecialAnimal animal,
-                                                             String region)
-            throws RemoteException;
+                                                             String region);
 
-    public abstract void refreshMoney(String nickName) throws RemoteException;
+    public abstract void refreshMoney(String nickName);
 
-    public abstract void refreshPlayerDisconnected(String nickNameDisconnected)
-            throws RemoteException;
+    public abstract void refreshPlayerDisconnected(String nickNameDisconnected);
 
     /**
      * It refreshes to all the player except the nickName player, the action
@@ -65,46 +69,40 @@ public abstract class TrasmissionController {
      * @param startRegion Region where the ovine was before moving
      * @param endRegion   Region of the ovine after the move
      * @param ovineType   Type of ovine which was moved
-     *
-     * @throws RemoteException
      */
     public abstract void refreshMoveOvine(String nickName, String startRegion,
-                                          String endRegion, String ovineType)
-            throws RemoteException;
+                                          String endRegion, String ovineType);
 
     public abstract void refreshMoveShepherd(String nickNameMover,
                                              String shepherdIndex,
-                                             String newStreet) throws
-            RemoteException;
+                                             String newStreet);
 
     public abstract void refreshBuyLand(String nickNameBuyer, String boughtLand,
                                         String price) throws RemoteException;
 
     public abstract void refreshMateSheepWith(String nickName, String region,
                                               String otherType, String newType,
-                                              String outcome) throws
-            RemoteException;
+                                              String outcome);
 
     public abstract void refreshKillOvine(String nickName, String region,
-                                          String type, String outcome) throws
-            RemoteException;
+                                          String type, String outcome);
 
     //ritorna una stringa corripondente o a una strada o il risultato della chiamata RMI
     public abstract boolean askSetUpShepherd(String nickName, int shepherdIndex)
-            throws RemoteException, PlayerDisconnectedException;
+            throws PlayerDisconnectedException;
 
     //ritorna una stringa corrispondente all'azione scelta, sia per socket che rmi
     public abstract boolean askChooseAction(String nickName,
                                             String possibleActions) throws
-            RemoteException, PlayerDisconnectedException;
+            PlayerDisconnectedException;
+    
+    public abstract void UnexpectedendOfGame();
 
-    public HashMap<String, Player> getNick2PlayerMap() {
+    protected HashMap<String, Player> getNick2PlayerMap() {
         return nick2PlayerMap;
     }
 
-    public abstract void sendRank(boolean winner, String nickName, int score)
-            throws RemoteException;
+    public abstract void sendRank(boolean winner, String nickName, int score);
 
-    public abstract void sendClassification(String classification) throws
-            RemoteException;
+    public abstract void sendClassification(String classification);
 }

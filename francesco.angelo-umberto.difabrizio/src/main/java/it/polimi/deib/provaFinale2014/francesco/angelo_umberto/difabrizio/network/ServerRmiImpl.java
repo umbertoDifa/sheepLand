@@ -154,6 +154,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 //il client deve riconnettersi
                 //rimuovo la vecchia instanza
                 DebugLogger.println("Client tenta di riconnettersi");
+
+                //salvo se aveva pastori da mettere
+                int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
+                        nickName).getNumberOfShepherdStillToSet();
+
                 ServerManager.Nick2ClientProxyMap.remove(nickName);
                 DebugLogger.println(nickName + " rimosso");
                 //metto il nuovo
@@ -164,6 +169,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
                         true);
                 DebugLogger.println(nickName + " settato refresh");
+
+                //setto i pastori mancanti
+                ServerManager.Nick2ClientProxyMap.get(nickName).setNumberOfShepherdStillToSet(
+                        shepherdToSet);
+                DebugLogger.println(
+                        nickName + " settato pastori da mettere a " + shepherdToSet);
                 return true;
             }
         }

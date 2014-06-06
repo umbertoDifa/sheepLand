@@ -148,6 +148,8 @@ public class ServerSockets implements Runnable {
                         // rifiuto client
                         handleClientRejection(
                                 "Ci sono troppe partite attive riprovare più tardi");
+                        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                                nickName)).getSocket().close();
                         ServerManager.Nick2ClientProxyMap.remove(nickName);
                         clientNickNames.clear();
 
@@ -166,15 +168,14 @@ public class ServerSockets implements Runnable {
                                 nickName).getNumberOfShepherdStillToSet();
 
                         ServerManager.Nick2ClientProxyMap.remove(nickName);
-                        DebugLogger.println(nickName + " rimosso");
+
                         //metto il nuovo
                         ServerManager.Nick2ClientProxyMap.put(nickName,
                                 new SocketClientProxy(clientSocket));
-                        DebugLogger.println(nickName + " aggiunto");
+
                         //setto il refresh
                         ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
                                 true);
-                        DebugLogger.println(nickName + " settato refresh");
 
                         ServerManager.Nick2ClientProxyMap.get(nickName).setNumberOfShepherdStillToSet(
                                 shepherdToSet);
@@ -270,6 +271,15 @@ public class ServerSockets implements Runnable {
             if (clientNickNames.contains(nick)) {
                 SocketClientProxy client = (SocketClientProxy) pairs.getValue();
                 client.send(message);
+                try {
+                    client.getSocket().close();
+                } catch (IOException ex) {
+                    //se non riesco a chiudere un socket con un client che dovevo
+                    //rifiutare poco male
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE,
+                            ex.getMessage(), ex);
+                }
             }
 
         }
@@ -282,10 +292,11 @@ public class ServerSockets implements Runnable {
             toClient.println(
                     "Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick");
             toClient.flush();
+            client.close();
         } catch (IOException ex) {
             //poco male il client si è disconnesso prima di ricevere il rifiuto
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    null, ex);
+                    ex.getMessage(), ex);
         }
 
     }

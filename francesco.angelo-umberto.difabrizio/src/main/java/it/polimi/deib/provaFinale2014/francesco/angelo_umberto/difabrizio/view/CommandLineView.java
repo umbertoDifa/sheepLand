@@ -244,7 +244,8 @@ public class CommandLineView implements TypeOfViewController {
     }
     
     public String askBuyLand() {
-        showInfo("Che territorio vuoi comprare?\n-Plain\n-Countryside\n-Hill\n-Mountain\n-Desert\n-Lake");
+        showInfo(
+                "Che territorio vuoi comprare?\n-Plain\n-Countryside\n-Hill\n-Mountain\n-Desert\n-Lake");
         return stdIn.nextLine();
     }
     
@@ -331,6 +332,10 @@ public class CommandLineView implements TypeOfViewController {
     
     public void refreshPlayerDisconnected(String player) {
         showInfo("Il giocatore " + player + " si è disconnesso");
+    }
+    
+    public void showUnexpectedEndOfGame() {
+        showInfo("Il gioco è terminato per mancanza di giocatori, si scusiamo.");
     }
     
 }

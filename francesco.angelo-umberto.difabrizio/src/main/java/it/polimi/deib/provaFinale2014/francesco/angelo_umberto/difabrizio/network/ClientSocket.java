@@ -34,7 +34,7 @@ public class ClientSocket {
 
     protected void startClient() {
 
-        try {            
+        try {
             Scanner stdIn = new Scanner(System.in);
             PrintWriter stdOut = new PrintWriter(System.out);
 
@@ -50,9 +50,9 @@ public class ClientSocket {
                     ":"));
             //da evitare come la peste la stringa vuota come nickname
             //esplodono i satelliti della nasa
-            
+
             DebugLogger.println("Invio nickName");
-            
+
             //creo socket server
             Socket socket = new Socket(ip, port);
             DebugLogger.println("Connessione stabilita");
@@ -62,7 +62,7 @@ public class ClientSocket {
 
             //creo printwriter verso server
             serverOut = new PrintWriter(socket.getOutputStream());
-            
+
             serverOut.println(nickName);
             serverOut.flush();
 
@@ -96,8 +96,9 @@ public class ClientSocket {
     }
 
     private void waitCommand() {
+        boolean endOfGame = false;
         try {
-            while (true) {
+            while (!endOfGame) {
                 received = receiveString();
                 DebugLogger.println(received);
 
@@ -146,7 +147,9 @@ public class ClientSocket {
                 } else if ("MateSheepWith".equals(received)) {
                     mateSheepWith();
                 } else if ("KillOvine".equals(received)) {
-                    killOvine();
+                } else if ("UnexpectedEndOfGame".equals(received)) {
+                    unexpectedEndOfGame();
+                    endOfGame = true;
                 } else if ("ShowMyRank".equals(received)) {
                     showMyRank();
                 } else if ("Classification".equals(received)) {
@@ -396,6 +399,10 @@ public class ClientSocket {
 
     private void refreshPlayerDisconnected() {
         view.refreshPlayerDisconnected(receiveString());
+    }
+
+    private void unexpectedEndOfGame() {
+        view.showUnexpectedEndOfGame();
     }
 
 }
