@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.PlayerRemote;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.ShepherdNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
@@ -17,6 +18,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.OvineNotFoundExeption;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.NetworkConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.PlayerDisconnectedException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
@@ -161,7 +163,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 numberOfDisconnections++;
 
                 //controllo il numero di volte che si è disconnesso nello stesso turno
-                if (numberOfDisconnections >= ControlConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
                     gameManager.getController().refreshPlayerDisconnected(
                             playerNickName);
 
@@ -172,7 +174,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //se ha ancora chances lo metto in pausa
                 try {
                     Thread.sleep(
-                            ControlConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+                            NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
                 } catch (InterruptedException ex1) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,
@@ -505,7 +507,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 numberOfDisconnections++;
 
                 //controllo il numero di volte che si è disconnesso nello stesso turno
-                if (numberOfDisconnections >= ControlConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
                     //salvo quanti pastori deve ancora settare
                     ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
                             gameManager.shepherd4player - shepherdIndex);
@@ -517,7 +519,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //se ha ancora chances lo metto in pausa
                 try {
                     Thread.sleep(
-                            ControlConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+                            NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
                 } catch (InterruptedException ex1) {
                     Logger.getLogger(DebugLogger.class.getName()).log(
                             Level.SEVERE,

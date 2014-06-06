@@ -89,9 +89,7 @@ public interface TypeOfViewController {
      *
      * @return
      */
-    public String moveOvine();
-
-    public void moveShepherd(String startRegion, String endRegion);
+    public String askMoveOvine();
 
     /**
      * Asks to the player which shepherd to move and in which streeet

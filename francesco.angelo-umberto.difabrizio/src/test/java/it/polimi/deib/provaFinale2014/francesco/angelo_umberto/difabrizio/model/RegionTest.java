@@ -201,7 +201,7 @@ public class RegionTest {
         //considerando la mappa e che già ci sono recinti nella regione 3
         Region region2 = new Region();
         try {
-            region2 = (Region) map.convertStringToRegion(stringedRegion2);//converto l'id in regione
+            region2 = map.convertStringToRegion(stringedRegion2);//converto l'id in regione
             map.getStreetByValue(region2, 3).setFence(new Fence(false)); //prendo la strada con valore 3 e ci metto un recinto
         } catch (RegionNotFoundException ex) {
             fail("Regione2 non trovata, ma ti pare??");

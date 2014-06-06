@@ -26,7 +26,7 @@ public class CommandLineView implements TypeOfViewController {
                               String nickShepherd) {
         stdOut.print("La strada " + streetIndex + " è ");
 
-        if (fence == true) {
+        if (fence) {
             stdOut.println(" recintata");
             stdOut.flush();
 
@@ -65,7 +65,7 @@ public class CommandLineView implements TypeOfViewController {
         if ("ok".equalsIgnoreCase(outcome)) {
             String endRegion = token[3];
             showInfo(
-                    "La pecora nera si è spostata dalla regione " + startRegion
+                    "La pecora nera si è spostata da la regione " + startRegion
                     + " alla regione " + endRegion + " passando per la strada di valore " + diceValue);
         } else if ("nok".equalsIgnoreCase(outcome)) {
             showInfo(
@@ -89,7 +89,7 @@ public class CommandLineView implements TypeOfViewController {
             if ("ok".equalsIgnoreCase(fence)) {
                 showInfo(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
-                        + " passando per la strada di valore " + diceValue + " e saltando la recinzione!");
+                        + " passando sulla strada di valore " + diceValue + " e saltando la recinzione!");
             } else {
                 showInfo(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
@@ -112,7 +112,7 @@ public class CommandLineView implements TypeOfViewController {
         return stdIn.nextLine();
     }
 
-    public String moveOvine() {
+    public String askMoveOvine() {
         showInfo("Inserisci il tipo di ovino da spostare:");
         String type = stdIn.nextLine();
 
@@ -155,32 +155,32 @@ public class CommandLineView implements TypeOfViewController {
         }
         String choice;
         int action = -1;
-        boolean correct = false;
-        boolean actionFound;
+        boolean rightFormat;
 
         do {
-
             showInfo("Scegli un azione tra:\n" + stringToPrint);
             choice = stdIn.nextLine();
             try {
                 action = Integer.parseInt(choice);
-                actionFound = false;
-                for (int i = 0; i < availableActions.length && !actionFound; i++) {
-                    if (availableActions[i] == action) {
-                        correct = true;
-                        actionFound = true;
-                    }
-                }
-                if (!actionFound) {
-                    showInfo("Azione non valida.\nPrego riprovare.");
-                }
+                rightFormat = true;
             } catch (NumberFormatException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         ex.getMessage(), ex);
                 showInfo("Azione non valida.\nPrego riprovare.");
+                rightFormat = false;
             }
-        } while (!correct);
+        } while (!rightFormat || !actionExists(availableActions, action));
         return action;
+    }
+
+    private boolean actionExists(int[] availableActions, int action) {
+        for (int i = 0; i < availableActions.length; i++) {
+            if (availableActions[i] == action) {
+                return true;
+            }
+        }
+        showInfo("Azione non esistente.\nPrego riporvare:");
+        return false;
     }
 
     public void showInfo(String info) {

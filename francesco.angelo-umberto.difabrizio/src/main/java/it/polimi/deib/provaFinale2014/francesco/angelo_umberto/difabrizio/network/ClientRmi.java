@@ -1,6 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.PlayerRemote;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfViewController;
 import java.io.PrintWriter;
@@ -190,7 +189,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     }
 
     private String moveOvine() throws RemoteException {
-        parameters = view.moveOvine();
+        parameters = view.askMoveOvine();
 
         token = parameters.split(",", -1);
 

@@ -1,6 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.ControlConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
@@ -67,11 +66,11 @@ public class ServerSockets implements Runnable {
 
         this.port = port;
 
-        this.maxNumberOfGames = ControlConstants.DEFAULT_MAX_GAMES.getValue();
-        this.maxClientsForGame = ControlConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
-        this.minClientsForGame = ControlConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
-        this.secondsBeforeAcceptTimeout = ControlConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
-        this.timeoutAccept = secondsBeforeAcceptTimeout * ControlConstants.MILLISECONDS_IN_SECONDS.getValue();
+        this.maxNumberOfGames = NetworkConstants.DEFAULT_MAX_GAMES.getValue();
+        this.maxClientsForGame = NetworkConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
+        this.minClientsForGame = NetworkConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
+        this.secondsBeforeAcceptTimeout = NetworkConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
+        this.timeoutAccept = secondsBeforeAcceptTimeout * NetworkConstants.MILLISECONDS_IN_SECONDS.getValue();
 
         //turn off debug
         DebugLogger.turnOffExceptionLog();
@@ -92,8 +91,7 @@ public class ServerSockets implements Runnable {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             // porta non disponibile
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    "Impossibile creare il serverSocket " + e.getMessage(), e);
+            Logger.getLogger(DebugLogger.class.getName()).log(                    Level.SEVERE,                    "Impossibile creare il serverSocket " + e.getMessage(), e);
             return;
         }
 
@@ -305,14 +303,14 @@ public class ServerSockets implements Runnable {
      */
     private class Timer implements Runnable {
 
-        private final Thread myThread;
+        private final Thread thread;
 
         public Timer() {
-            this.myThread = new Thread(this);
+            this.thread = new Thread(this);
         }
 
         public void startTimer() {
-            this.myThread.start();
+            this.thread.start();
         }
 
         public void run() {
@@ -334,7 +332,7 @@ public class ServerSockets implements Runnable {
         }
 
         public void stopTimer() {
-            this.myThread.interrupt();
+            this.thread.interrupt();
             DebugLogger.println("Timer fermato");
 
         }

@@ -340,7 +340,7 @@ public class ClientSocket {
 
     private void moveOvine() {
         //ottengo i parametri stratRegion, endRegion e Type dalla view
-        String parameters = view.moveOvine();
+        String parameters = view.askMoveOvine();
 
         //li mando al server per far eseguire l'azione
         sendString(parameters);

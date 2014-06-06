@@ -1,6 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.ControlConstants;
+
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
@@ -71,11 +71,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         this.port = port;
         this.serverName = serverName;
 
-        this.maxNumberOfGames = ControlConstants.DEFAULT_MAX_GAMES.getValue();
-        this.maxClientsForGame = ControlConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
-        this.minClientsForGame = ControlConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
-        this.secondsBeforeAcceptTimeout = ControlConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
-        this.timeoutAccept = secondsBeforeAcceptTimeout * ControlConstants.MILLISECONDS_IN_SECONDS.getValue();
+        this.maxNumberOfGames = NetworkConstants.DEFAULT_MAX_GAMES.getValue();
+        this.maxClientsForGame = NetworkConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
+        this.minClientsForGame = NetworkConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
+        this.secondsBeforeAcceptTimeout = NetworkConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
+        this.timeoutAccept = secondsBeforeAcceptTimeout * NetworkConstants.MILLISECONDS_IN_SECONDS.getValue();
     }
 
     protected void start() {
