@@ -24,6 +24,8 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     private int delta;
     private int width;
     private int height;
+    private int xImage = 0;
+    private int yImage = 0;
 
     protected BackgroundAndTextJPanel(Font font, String text) {
         textLabel.setText(text);
@@ -85,23 +87,12 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected void setUp(String imgPath, int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setUp(imgPath, 0, 0, width, height);
+
     }
 
     /**
-     * set the background image and set the dimension of the panel
-     *
-     * @param image
-     * @param width
-     * @param height
-     */
-    protected void setUp(Image image, int width, int height) {
-        setPreferredSize(new Dimension(width, height));
-        setSize(width, height);
-        setUp(image);
-    }
-
-    /**
-     * set the only background image
+     * set the only background image WARNING funziona solo per cambiare img
+     * source. non imposta dimensioni
      *
      * @param image
      */
@@ -117,11 +108,15 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      */
     private void setImage(String imgPath) {
         try {
-            image = ImageIO.read(new File(imgPath));
-            System.out.println("immagine impostata");
+            if (imgPath != null) {
+                image = ImageIO.read(new File(imgPath));
+                System.out.println("immagine impostata");
+            } else {
+                image = null;
+            }
         } catch (IOException ex) {
             image = null;
-            System.out.println("immagine non impostata");
+            System.out.println("immagine non impostata" + imgPath);
         }
     }
 
@@ -146,8 +141,8 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         this.add(sonPanel);
         Insets insets = getInsets();
         Dimension size = sonPanel.getPreferredSize();
-        sonPanel.setBounds((x + (int) sonPanel.getAlignmentY()),
-                (y + (int) sonPanel.getAlignmentX()), (int) size.getWidth(), (int) size.getHeight());
+        sonPanel.setBounds((x + (int) sonPanel.getAlignmentY() + insets.left),
+                (y + (int) sonPanel.getAlignmentX() + insets.top), (int) size.getWidth(), (int) size.getHeight());
     }
 
     /**
@@ -161,7 +156,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         setOpaque(false);
         //  super.paintComponent(g);
         if (image != null) {
-            g.drawImage(image, 0, 0, this);
+            g.drawImage(image, xImage, yImage, this);
         }
         super.paintComponent(g);
     }

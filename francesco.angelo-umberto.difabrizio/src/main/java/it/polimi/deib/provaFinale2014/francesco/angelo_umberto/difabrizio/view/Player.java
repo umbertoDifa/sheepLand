@@ -3,6 +3,9 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -11,7 +14,7 @@ import javax.swing.JTextArea;
  *
  * @author Francesco
  */
-class Player extends BackgroundAndTextJPanel {
+class Player extends BackgroundAndTextJPanel implements MouseListener{
 
     private JTextArea moneyText;
 
@@ -33,8 +36,28 @@ class Player extends BackgroundAndTextJPanel {
         this.setLayout(null);
         MyGui.addComponentsToPane(this, moneyPanel, xText2, yText2);
     }
-
+    
     public void setAmount(int amount){
         moneyText.setText(String.valueOf(amount));
+    }
+    
+    public void isYourShift(){
+        
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        isYourShift();
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
     }
 }

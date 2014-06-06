@@ -46,6 +46,10 @@ public enum GameConstants {
      * Numero di azioni che possono essere fatte in un turno da un giocatore
      */
     NUM_ACTIONS(3),
+        /**
+     * Numero di azioni totali tra cui scegliere
+     */
+    NUM_TOT_ACTIONS(5),
     /**
      * Valore iniziale del portafoglio quando i giocatori sono più del minimo
      */

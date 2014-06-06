@@ -1,6 +1,7 @@
 
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -44,10 +45,13 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener{
     }
 
     public void mouseEntered(MouseEvent e) {
+        this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     public void mouseExited(MouseEvent e) {
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
+    
     
     /**
      * set the background image corrisponding to
@@ -91,5 +95,8 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener{
     public boolean isEmpty(){
         return (this.getImage() == null);
     }
-    
+ 
+    protected void setFence(){
+        setImage("fence");
+    }
 }

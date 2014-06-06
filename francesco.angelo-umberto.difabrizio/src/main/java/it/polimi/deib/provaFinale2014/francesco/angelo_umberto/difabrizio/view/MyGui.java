@@ -1,5 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -17,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 /**
  *
@@ -33,19 +36,15 @@ public class MyGui implements MouseListener {
     private Map mapJPanel;
     private Card fenceJPanel;
     private Player[] playersJPanels;
-    private JPanel sxBar;
+    private JPanel dxBar;
     private JPanel playersJPanel;
-    private int NUM_OF_REGIONS;
-    private final int NUM_OF_CARDS = 6;
-    private final int NUM_OF_ACTIONS = 5;
-    private final int NUM_OF_FENCES = 20;
     private final int NUM_OF_PLAYERS = 4;
     private final int SHEPHERD4PLAYERS = 1;
     private final int ray = 12;
     int xStreetPoints[] = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
     int yStreetPoints[] = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
-    int xRegionPoints[] = {0, 100, 0, 100};
-    int yRegionPoints[] = {0, 50, 50, 0};
+    int xRegionBoxes[] = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
+    int yRegionBoxes[] = {131, 269, 349, 111, 73, 226, 194, 134, 185, 243, 285, 412, 349, 490, 549, 488, 410, 420, 292};
     Ellipse2D[] streetShape = new Ellipse2D[xStreetPoints.length];
     private final Color backgroundColor = new Color(35, 161, 246);
     private final Color noneColor = new Color(0, 0, 0, 0);
@@ -57,12 +56,20 @@ public class MyGui implements MouseListener {
     private JComponent mainPanel2;
     private JLayeredPane layeredPane;
     private List<Integer> holder = new LinkedList<Integer>();
+    private RegionBox[] regionBoxes;
 
     public MyGui() {
         setUpNickNames();
         setUpMap();
         setUpImagePool();
         setUpFrame();
+        for (int i = 0; i < xRegionBoxes.length; i++) {
+            regionBoxes[i].add("sheep");
+            regionBoxes[i].add("blacksheep");
+            regionBoxes[i].add("ram");
+            regionBoxes[i].add("lamb");
+            regionBoxes[i].add("wolf");
+        }
     }
 
     public void setUpNickNames() {
@@ -107,17 +114,17 @@ public class MyGui implements MouseListener {
         actionsJPanel = new JPanel();
         cardsJPanel = new JPanel();
         mapJPanel = new Map();
-        actions = new Action[NUM_OF_ACTIONS];
-        cardsJPanels = new Card[NUM_OF_CARDS];
+        actions = new Action[GameConstants.NUM_TOT_ACTIONS.getValue()];
+        cardsJPanels = new Card[RegionType.values().length];
         for (int i = 0; i < actions.length; i++) {
             actions[i] = new Action();
         }
         for (int i = 0; i < cardsJPanels.length; i++) {
             cardsJPanels[i] = new Card(font.getFont(), "0");
         }
-        sxBar = new JPanel();
+        dxBar = new JPanel();
         playersJPanel = new JPanel();
-        fenceJPanel = new Card(font.getFont(), String.valueOf(NUM_OF_FENCES));
+        fenceJPanel = new Card(font.getFont(), String.valueOf(GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()));
         playersJPanels = new Player[NUM_OF_PLAYERS];
         for (int i = 0; i < NUM_OF_PLAYERS; i++) {
             playersJPanels[i] = new Player(nickNames[i], font.getFont());
@@ -130,9 +137,13 @@ public class MyGui implements MouseListener {
         for (int i = 0; i < xStreetPoints.length; i++) {
             streets[i] = new Street(ImagePool.getByName("fence"), imgShepherds);
         }
+        regionBoxes = new RegionBox[xRegionBoxes.length];
+        for (int i = 0; i < xRegionBoxes.length; i++) {
+            regionBoxes[i] = new RegionBox();
+        }
 
         //aggiungo immagini
-        mapJPanel.setUp(".\\images\\Game_Board_big.jpg", 487, 700);
+        mapJPanel.setUp(".\\images\\Game_Board_big.jpg", 487, 900);
         actions[0].setUp(".\\images\\moveSheep.png", 68, 72);
         actions[1].setUp(".\\images\\moveShepherd.png", 68, 72);
         actions[2].setUp(".\\images\\buyLand.png", 68, 72);
@@ -153,17 +164,16 @@ public class MyGui implements MouseListener {
 
         fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
 
-        setUpInfoPanel();
-
         for (Street street : streets) {
-            street.setUp(".\\images\\shepherd1.png", 2 * ray, 2 * ray);
+            street.setUp(".\\images\\shepherd3.png", 2 * ray, 2 * ray);
+        }
+
+        for (RegionBox region : regionBoxes) {
+            region.setUp((String) null, 52, 78);
         }
 
         //setto la struttura
         frame.setLayout(new BorderLayout());
-        // frame.setContentPane(mainJPanel);
-
-        //frame.getLayeredPane().add(infoPanel, 2 );
         layeredPane.setPreferredSize(new Dimension(900, 800));
         layeredPane.add(mainJPanel, 1);
         layeredPane.add(infoPanel, 0);
@@ -171,20 +181,22 @@ public class MyGui implements MouseListener {
         mainJPanel.setLayout(new FlowLayout());
         mainJPanel.add(cardsJPanel);
         mainJPanel.add(mapJPanel);
-        mainJPanel.add(sxBar);
-        sxBar.setLayout(new FlowLayout());
-        sxBar.add(playersJPanel);
-        sxBar.add(actionsJPanel);
+        mainJPanel.add(dxBar);
+        dxBar.setLayout(new FlowLayout());
+        dxBar.add(playersJPanel);
+        dxBar.add(actionsJPanel);
         addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
         mapJPanel.setLayout(null);
         for (int i = 0; i < streets.length; i++) {
             mapJPanel.addPanel(streets[i], xStreetPoints[i] - 10, yStreetPoints[i] - 10);
         }
+        for (int i = 0; i < regionBoxes.length; i++) {
+            mapJPanel.addPanel(regionBoxes[i], xRegionBoxes[i] - 10, yRegionBoxes[i] - 10);
+        }
 
-        FlowLayout f = new FlowLayout(FlowLayout.LEFT, 0, 0);
-        f.setVgap(12);
-        cardsJPanel.setLayout(f);
+        cardsJPanel.setLayout(new FlowLayout());
         actionsJPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        playersJPanel.setLayout(new FlowLayout());
         for (Player player : playersJPanels) {
             playersJPanel.add(player);
         }
@@ -215,22 +227,28 @@ public class MyGui implements MouseListener {
             player.setBackground(noneColor);
         }
         playersJPanel.setBackground(noneColor);
-        sxBar.setBackground(noneColor);
+        dxBar.setBackground(noneColor);
         mainPanel2.setOpaque(true);
         infoPanel.setBackground(noneColor);
+        for (RegionBox region : regionBoxes) {
+            region.setBackground(Color.MAGENTA);
+        }
 
         //setto dimensioni
         actionsJPanel.setPreferredSize(new Dimension((68 + 10) * 3, (72 + 10) * actions.length));
-        playersJPanel.setPreferredSize(new Dimension(200, (99 + 10) * playersJPanels.length));
+        playersJPanel.setPreferredSize(new Dimension(220, (99 + 10) * playersJPanels.length));
         cardsJPanel.setPreferredSize(new Dimension(105, (116 + 10) * cardsJPanels.length));
         mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
         mainJPanel.setBounds(0, 0, 900, 800);
-        sxBar.setPreferredSize(new Dimension((68 + 10) * 3,
+        dxBar.setPreferredSize(new Dimension((68 + 10) * 3,
                 (((72 + 10) * actions.length) + (99 + 10) * playersJPanels.length) - 90));
         //      layeredPane.setPreferredSize(new Dimension(800, 800));
         //    mainPanel2.setPreferredSize(new Dimension(800, 800));
         infoPanel.setPreferredSize(new Dimension(232, 444));
-        infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (290), 232, 444);
+        infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
+//        for (RegionBox region : regionBoxes) {
+//            region.setPreferredSize(new Dimension(51, 76));
+//        }
 
         //aggiungo this come listener per le azioni
         for (Action action : actions) {
@@ -246,9 +264,17 @@ public class MyGui implements MouseListener {
             street.addMouseListener(this);
         }
 
-        //nascondo dei componenti
-      //  hideInfoPanel();
+        for (Card card : cardsJPanels) {
+            card.addMouseListener(this);
+        }
 
+        for (Player player : playersJPanels) {
+            player.addMouseListener(player);
+        }
+        infoPanel.addMouseListener(infoPanel);
+
+        //nascondo dei componenti
+        //  hideInfoPanel();
         frame.pack();
         frame.setVisible(true);
     }
@@ -263,7 +289,6 @@ public class MyGui implements MouseListener {
         });
     }
 
-  
     public void mouseClicked(MouseEvent e) {
         synchronized (holder) {
             if (e.getSource() instanceof Action) {
@@ -273,6 +298,7 @@ public class MyGui implements MouseListener {
                         actions[i].removeMouseListener(this);
                         holder.add(i);
                         holder.notify();
+                        System.out.println("aggiunto a holder azione " + i);
                     }
                 }
             } else if (e.getSource() instanceof Street) {
@@ -282,36 +308,22 @@ public class MyGui implements MouseListener {
                         streets[i].removeMouseListener(this);
                         holder.add(i);
                         holder.notify();
+                        System.out.println("aggiunto a holder strada " + i);
+                    }
+                }
+            } else if (e.getSource() instanceof Card) {
+                for (int i = 0; i < cardsJPanels.length; i++) {
+                    if (e.getSource().equals(cardsJPanels[i])) {
+                        System.out.println("carta terreno " + i + "selezionata");
+                        cardsJPanels[i].removeMouseListener(this);
+                        holder.add(i);
+                        holder.notify();
+                        System.out.println("aggiunto a holder carta terreno " + i);
                     }
                 }
             }
-        }
-    }
 
-    /**
-     * quando MyGui ascolta un evento MouseEvent) controlla se il click è su una
-     * strada, su un pulsante regione, o su una regione. comunica risposta
-     * (TODO) e rimuove this dal MouseListeners che ha generato l evento
-     *
-     * @param e
-     */
-    public void mouseClicked1(MouseEvent e) {
-        System.out.println("click: " + e.getX() + " " + e.getY());
-
-        if (e.getSource() instanceof Action) {
-            for (int i = 0; i < actions.length; i++) {
-                if (e.getSource().equals(actions[i])) {
-                    System.out.println("azione " + i + "selezionata");
-                    actions[i].removeMouseListener(this);
-                }
-            }
-        } else if (e.getSource() instanceof Street) {
-            for (int i = 0; i < streets.length; i++) {
-                if (e.getSource().equals(streets[i])) {
-                    System.out.println("strada " + i + "selezionata");
-                    streets[i].removeMouseListener(this);
-                }
-            }
+            System.out.println(e.getX() + " , " + e.getY());
         }
     }
 
@@ -354,6 +366,24 @@ public class MyGui implements MouseListener {
         return choice;
     }
 
+    public int askBuyLand(int[] availableLand) throws InterruptedException {
+        for (int i = 0; i < availableLand.length; i++) {
+            cardsJPanels[i].addMouseListener(this);
+        }
+        int result;
+        synchronized (holder) {
+            // wait for answer
+            while (holder.isEmpty()) {
+                holder.wait();
+            }
+
+            //la risposta che accetto è la prima
+            result = holder.remove(0);
+            System.out.println("prelevato da holder carta terreno" + result);
+        }
+        return result;
+    }
+
     /**
      * posiziona il panel figlio nel panel padre, posizionando l'angolo sx del
      * figlio a x,y rispetto al padre
@@ -385,6 +415,11 @@ public class MyGui implements MouseListener {
         ImagePool.add(".\\images\\shepherd3.png", "shepherd3");
         ImagePool.add(".\\images\\shepherd4.png", "shepherd4");
         ImagePool.add(".\\images\\fence2.png", "fence");
+        ImagePool.add(".\\images\\sheep2.png", "sheep");
+        ImagePool.add(".\\images\\wolf2.png", "wolf");
+        ImagePool.add(".\\images\\blacksheep.png", "blacksheep");
+        ImagePool.add(".\\images\\ram.png", "ram");
+        ImagePool.add(".\\images\\lamb.png", "lamb");
     }
 
     /**
@@ -433,7 +468,7 @@ public class MyGui implements MouseListener {
 
     protected void moveShepherd(int idStartStreet, int idEndStreet) {
         Image shepherdImage = streets[idStartStreet].getImage();
-        streets[idStartStreet].clear();
+        streets[idStartStreet].setFence();
         streets[idEndStreet].setImage(shepherdImage);
     }
 
@@ -466,18 +501,25 @@ public class MyGui implements MouseListener {
             while (holder.isEmpty()) {
                 holder.wait();
             }
-            
+
             //la risposta che accetto è la prima
             result = holder.remove(0);
+            System.out.println("prelevato da holder strada " + result);
         }
         return String.valueOf(result);
     }
-    
-    private void setMoney(int idShepherd, int amount){
+
+    private void setMoney(int idShepherd, int amount) {
         playersJPanels[idShepherd].setAmount(amount);
     }
 
-    private void setNumberTypeCard(int idTypeCard, int tot){
+    private void setNumberTypeCard(int idTypeCard, int tot) {
         cardsJPanels[idTypeCard].setText(String.valueOf(tot));
     }
+
+    private void showDice(int result) {
+        infoPanel.setVisible(true);
+        infoPanel.setDice(result);
+    }
+
 }
