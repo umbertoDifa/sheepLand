@@ -33,7 +33,7 @@ public class SocketTrasmission extends TrasmissionController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void refreshCurrentPlayer(String nickNamePlayer) {
+    public void brodcastCurrentPlayer(String nickNamePlayer) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNamePlayer) && ServerManager.Nick2ClientProxyMap.get(
@@ -414,7 +414,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void broadcastStartGame(String nickName) {
+    public void refreshStartGame(String nickName) {
         if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     "Avvio gioco");
@@ -485,7 +485,7 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshPlayerDisconnected(String nickNameDisconnected) {
+    public void brodcastPlayerDisconnected(String nickNameDisconnected) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameDisconnected) && canPlayerReceive(

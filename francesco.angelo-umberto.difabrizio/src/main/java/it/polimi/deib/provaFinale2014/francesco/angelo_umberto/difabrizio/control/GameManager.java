@@ -59,7 +59,7 @@ public class GameManager implements Runnable {
     /**
      * It's the player currently playing
      */
-    protected int currentPlayer;
+    private int currentPlayer;
     /**
      * It's the number of shepherd that each player has
      */
@@ -68,7 +68,7 @@ public class GameManager implements Runnable {
      * It's the bank which stores fences and cards so that the game manager can
      * take them during the game
      */
-    private final Bank bank;  //per permettere a player di usarlo
+    private final Bank bank;
 
     /**
      * Creates a game manager connecting it to a given list of clientNickNames
@@ -165,42 +165,44 @@ public class GameManager implements Runnable {
      */
     private void setUpGame() {
         DebugLogger.println("Avvio partita");
-        for (String client : clientNickNames) {
-            controller.broadcastStartGame(client);
-        }
 
-        DebugLogger.println("SetUpMap Avviato");
-        this.setUpMap();
+        brodcastStartGame();
 
-        DebugLogger.println("SetUpAnimals Avviato");
-        this.setUpAnimals();
+        setUpMap();
 
-        DebugLogger.println("SetUpcards Avviato");
-        this.setUpCards();
+        setUpAnimals();
 
-        DebugLogger.println("SetUpFences Avviato");
-        this.setUpFences();
+        setUpCards();
 
-        DebugLogger.println("SetUpShift Avviato");
-        this.setUpShift();
+        setUpFences();
+
+        setUpShift();
+
         DebugLogger.println(
                 "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
 
-        DebugLogger.println("SetUpinitial Avviato");
-        this.setUpInitialCards();
+        setUpInitialCards();
 
-        DebugLogger.println("broadcastinitial conditions");
+        brodcastInitialCondition();
 
-        for (String client : clientNickNames) {
-            this.broadcastInitialConditions(client);
-        }
-
-        DebugLogger.println("brodcast cards");
-        this.brodcastCards();
+        brodcastCards();
 
         this.setUpShepherds();
+
         DebugLogger.println("SetUpshpherds terminato");
 
+    }
+
+    private void brodcastStartGame() {
+        for (String client : clientNickNames) {
+            controller.refreshStartGame(client);
+        }
+    }
+
+    private void brodcastInitialCondition() {
+        for (String client : clientNickNames) {
+            this.refreshInitialConditions(client);
+        }
     }
 
     private void brodcastCards() {
@@ -257,13 +259,14 @@ public class GameManager implements Runnable {
      * Chiede ad ogni giocatore dove posizionare il proprio pastore
      */
     private void setUpShepherds() {
-        int i;//indice giocatori
-        int j;//indice pastori     
+        int i;
+        int j;
 
-        //per ogni playerint 
+        //per ogni player 
         for (i = 0; i < this.playersNumber; i++) {
             //setto il player corrente
             currentPlayer = (firstPlayer + i) % playersNumber;
+
             //per ogni suo pastore
             try {
                 for (j = 0; j < this.shepherd4player; j++) {
@@ -274,7 +277,7 @@ public class GameManager implements Runnable {
                         Level.SEVERE, ex.getMessage(), ex);
                 //player disconnesso salto i suoi pastori
 
-                controller.refreshPlayerDisconnected(
+                controller.brodcastPlayerDisconnected(
                         clientNickNames[currentPlayer]);
             }
         }
@@ -362,13 +365,16 @@ public class GameManager implements Runnable {
             controller.sendRank(true, clientNickNames[classification[0][i]],
                     classification[1][i]);
         }
+
         //per tutti gli altri
         for (; i < playersNumber; i++) {
             controller.sendRank(false, clientNickNames[classification[0][i]],
                     classification[1][i]);
 
         }
+
         DebugLogger.println("invio classifica");
+
         controller.sendClassification(classificationToString(classification));
 
     }
@@ -388,6 +394,7 @@ public class GameManager implements Runnable {
             //però lo devo avvisare
             controller.unexpectedEndOfGame();
         }
+
         //gameFinished
         DebugLogger.println("Gioco terminato");
 
@@ -413,8 +420,7 @@ public class GameManager implements Runnable {
         ServerManager.activatedGames--;
     }
 
-    private void broadcastInitialConditions(String client) {
-
+    private void refreshRegions(String client) {
         int numbOfSheep, numbOfLamb, numbOfRam;
         for (int i = 0; i < this.map.getRegions().length; i++) {
             numbOfLamb = 0;
@@ -430,12 +436,13 @@ public class GameManager implements Runnable {
                     numbOfRam++;
                 }
             }
-            //refersh la regione a tutti i client
-
             controller.refreshRegion(client, i, numbOfSheep,
                     numbOfRam, numbOfLamb);
+        }
 
-        }   //broadcast streets
+    }
+
+    private void refreshStreets(String client) {
         boolean fence;
         String shepherdName;
         int streetsNumber = this.map.getStreets().length;
@@ -449,18 +456,17 @@ public class GameManager implements Runnable {
                 shepherdName = getPlayerNickNameByShepherd(
                         street.getShepherd());
             }
-
             controller.refreshStreet(client, i, fence, shepherdName);
+        }
+    }
 
-        }   //broadcast money
-        controller.refreshMoney(client);
-
+    private void refreshSpecialAnimals(String client) {
         try {
-            //broadcast wolf position
+            //refresh wolf position
             controller.refreshSpecialAnimalInitialPosition(client,
                     map.getWolf(), "" + map.getNodeIndex(
                             map.getWolf().getMyRegion()));
-            //broadcast blacksheep position
+            //refresh blacksheep position
             controller.refreshSpecialAnimalInitialPosition(client,
                     map.getBlackSheep(), "" + map.getNodeIndex(
                             map.getBlackSheep().getMyRegion()));
@@ -470,6 +476,18 @@ public class GameManager implements Runnable {
                     ex.getMessage(),
                     ex);
         }
+
+    }
+
+    private void refreshInitialConditions(String client) {
+
+        refreshRegions(client);
+
+        refreshStreets(client);
+
+        controller.refreshMoney(client);
+
+        refreshSpecialAnimals(client);
 
         //broadcast nickNames
         //broadcast shepherd
@@ -505,9 +523,9 @@ public class GameManager implements Runnable {
                 } catch (PlayerDisconnectedException ex) {
                     //il giocatore si disconnette durante il suo turno
                     Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE,
-                            ex.getMessage(), ex);
-                    controller.refreshPlayerDisconnected(
+                            Level.SEVERE, ex.getMessage(), ex);
+
+                    controller.brodcastPlayerDisconnected(
                             clientNickNames[currentPlayer]);
                 }
                 nextPlayer();
@@ -532,17 +550,18 @@ public class GameManager implements Runnable {
                 playerOffline++;
 
                 //skip player               
-                controller.refreshPlayerDisconnected(
+                controller.brodcastPlayerDisconnected(
                         clientNickNames[currentPlayer]);
+
                 if (playerOffline == this.playersNumber) {
                     //tutti i player sono offline termino la partita
                     throw new UnexpectedEndOfGameException(
                             "Tutti i player si sono disconnesi, la partita termina");
                 }
+
                 nextPlayer();
             }
-
-        }//while
+        }
     }
 
     private boolean roundComplete() {
@@ -585,10 +604,10 @@ public class GameManager implements Runnable {
                     clientNickNames[currentPlayer]).setRefreshNeeded(false);
 
             //avvio il player che è tornato in partita
-            controller.broadcastStartGame(clientNickNames[currentPlayer]);
+            controller.refreshStartGame(clientNickNames[currentPlayer]);
 
             //lo aggiorno
-            this.broadcastInitialConditions(clientNickNames[currentPlayer]);
+            this.refreshInitialConditions(clientNickNames[currentPlayer]);
 
             //gli chiedo di settare tutti i pastori che non aveva settato
             int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
@@ -607,7 +626,7 @@ public class GameManager implements Runnable {
                                                     PlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
-        controller.refreshCurrentPlayer(clientNickNames[player]);
+        controller.brodcastCurrentPlayer(clientNickNames[player]);
 
         DebugLogger.println("Muovo pecora nera");
         //muovo la pecora nera
@@ -765,22 +784,20 @@ public class GameManager implements Runnable {
     }
 
     private void evolveLambs() {
-        //per tutti gli ovini che sono agnelli
-        for (Region region : this.map.getRegions()) {
-            for (Ovine ovine : region.getMyOvines()) {
-                if (ovine.getType() == OvineType.LAMB) {
-                    //se l'età è quella della trasformazione
-                    if (ovine.getAge() == GameConstants.LAMB_EVOLUTION_AGE.getValue()) {
-                        //trasformalo
-                        ovine.setType(OvineType.getRandomLambEvolution());
-                    } else {
-                        //altrimenti
-                        //aumenta l'età
-                        ovine.setAge(ovine.getAge() + 1);
-                    }
+        //per tutti gli ovini sulla mappa
+        for (Ovine ovine : map.getAllOvines()) {
+            if (ovine.getType() == OvineType.LAMB) {
+                //se l'età è quella della trasformazione
+                if (ovine.getAge() == GameConstants.LAMB_EVOLUTION_AGE.getValue()) {
+                    //trasformalo
+                    ovine.setType(OvineType.getRandomLambEvolution());
+                } else {
+                    //altrimenti
+                    //aumenta l'età
+                    ovine.setAge(ovine.getAge() + 1);
                 }
-
             }
+
         }
     }
 }

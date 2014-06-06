@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -496,6 +497,22 @@ public class Map {
             numOvines += GameConstants.BLACKSHEEP_WEIGHT.getValue();
         }
         return numOvines;
+    }
+    
+    /**
+     * Checks every region to get all the ovines in the map
+     * @return All the ovines int the map
+     */
+    public List<Ovine> getAllOvines(){
+        List<Ovine> ovineList = new ArrayList<Ovine>();
+        
+        for(Region region : this.getRegions()){                       
+            for(Ovine ovine : region.getMyOvines()){
+                ovineList.add(ovine);
+            }
+        }
+        
+        return ovineList;
     }
 
 }

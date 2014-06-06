@@ -33,7 +33,7 @@ public abstract class TrasmissionController {
                 && !ServerManager.Nick2ClientProxyMap.get(nickName).needRefresh();
     }
 
-    public abstract void broadcastStartGame(String nickName);
+    public abstract void refreshStartGame(String nickName);
 
     public abstract void refreshRegion(String nickName, int regionIndex,
                                        int numbOfSheep, int numbOfRam,
@@ -47,7 +47,7 @@ public abstract class TrasmissionController {
                                                int numbOfPlayers,
                                                int shepherd4player);
 
-    public abstract void refreshCurrentPlayer(String nickName);
+    public abstract void brodcastCurrentPlayer(String nickName);
 
     public abstract void refreshCard(String nickName, String card, int value);
 
@@ -60,7 +60,7 @@ public abstract class TrasmissionController {
 
     public abstract void refreshMoney(String nickName);
 
-    public abstract void refreshPlayerDisconnected(String nickNameDisconnected);
+    public abstract void brodcastPlayerDisconnected(String nickNameDisconnected);
 
     /**
      * It refreshes to all the player except the nickName player, the action

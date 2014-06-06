@@ -63,7 +63,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshCurrentPlayer(String nickNamePlayer) {
+    public void brodcastCurrentPlayer(String nickNamePlayer) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName) && !nickName.equals(nickNamePlayer)) {
@@ -242,7 +242,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void broadcastStartGame(String nickName) {
+    public void refreshStartGame(String nickName) {
 
         if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
             try {
@@ -432,7 +432,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshPlayerDisconnected(String nickNameDisconnected) {
+    public void brodcastPlayerDisconnected(String nickNameDisconnected) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameDisconnected) && canPlayerReceive(

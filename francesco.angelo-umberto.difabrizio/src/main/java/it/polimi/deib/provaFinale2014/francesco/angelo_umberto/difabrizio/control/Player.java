@@ -144,7 +144,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     DebugLogger.println(
                             "il giocatore " + playerNickName + " ha bisogno di un avvio gioco prima di ricominciare a giocare");
 
-                    gameManager.getController().broadcastStartGame(
+                    gameManager.getController().refreshStartGame(
                             playerNickName);
 
                 }
@@ -164,7 +164,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
                 //controllo il numero di volte che si è disconnesso nello stesso turno
                 if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
-                    gameManager.getController().refreshPlayerDisconnected(
+                    gameManager.getController().brodcastPlayerDisconnected(
                             playerNickName);
 
                     throw new PlayerDisconnectedException(
@@ -284,19 +284,18 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             shphArray[0] = lastShepherd;
         }
 
-        for (Shepherd shphd : shphArray) {
-            for (Region region : shphd.getStreet().getNeighbourRegions()) {
-                numbOfSheep = 0;
-                for (Ovine ovine : region.getMyOvines()) {
-                    if (ovine.getType() == OvineType.SHEEP) {
-                        numbOfSheep++;
-                    }
-                }
-                if (numbOfSheep >= 2) {
-                    return true;
+        for (Region region : getShepherdsRegion(shphArray)) {
+            numbOfSheep = 0;
+            for (Ovine ovine : region.getMyOvines()) {
+                if (ovine.getType() == OvineType.SHEEP) {
+                    numbOfSheep++;
                 }
             }
+            if (numbOfSheep >= 2) {
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -312,21 +311,20 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             shphArray[0] = lastShepherd;
         }
 
-        for (Shepherd shphd : shphArray) {
-            for (Region region : shphd.getStreet().getNeighbourRegions()) {
-                numbOfRam = 0;
-                numbOfSheep = 0;
-                for (Ovine ovine : region.getMyOvines()) {
-                    if (ovine.getType() == OvineType.SHEEP) {
-                        numbOfSheep++;
-                    } else if (ovine.getType() == OvineType.RAM) {
-                        numbOfRam++;
-                    }
-                }
-                if (numbOfRam >= 1 && numbOfSheep >= 1) {
-                    return true;
+        for (Region region : getShepherdsRegion(shphArray)) {
+            numbOfRam = 0;
+            numbOfSheep = 0;
+            for (Ovine ovine : region.getMyOvines()) {
+                if (ovine.getType() == OvineType.SHEEP) {
+                    numbOfSheep++;
+                } else if (ovine.getType() == OvineType.RAM) {
+                    numbOfRam++;
                 }
             }
+            if (numbOfRam >= 1 && numbOfSheep >= 1) {
+                return true;
+            }
+
         }
 
         return false;
@@ -343,13 +341,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             shphArray[0] = lastShepherd;
         }
 
-        for (Shepherd shphd : shphArray) {
-            for (Region region : shphd.getStreet().getNeighbourRegions()) {
-                if (!region.getMyOvines().isEmpty()) {
-                    return true;
-                }
+        for (Region region : getShepherdsRegion(shphArray)) {
+            if (!region.getMyOvines().isEmpty()) {
+                return true;
             }
         }
+
         return false;
 
     }
@@ -485,7 +482,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     DebugLogger.println(
                             "il giocatore " + playerNickName + "ha bisogno di un start game");
 
-                    gameManager.getController().broadcastStartGame(
+                    gameManager.getController().refreshStartGame(
                             playerNickName);
 
                 }
@@ -959,12 +956,27 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     }
 
     private List<Region> getShepherdsRegion() {
-        List<Region> regions = new ArrayList<Region>();
+        return getShepherdsRegion(this.shepherd);
+    }
 
-        for (Street street : getShepherdsStreets()) {
-            regions.addAll(street.getNeighbourRegions());
+    /**
+     * Given an array of shepherd return all the regions neighbour with those
+     * shepherds
+     *
+     * @param shphdArray Array of shepherds
+     *
+     * @return Regions neighbour with the shepherds streets
+     */
+    private List<Region> getShepherdsRegion(Shepherd[] shphdArray) {
+        List<Region> neighbourRegions = new ArrayList<Region>();
+
+        for (Shepherd shphd : shphdArray) {
+            for (Region region : shphd.getStreet().getNeighbourRegions()) {
+                neighbourRegions.add(region);
+            }
         }
-        return regions;
+
+        return neighbourRegions;
     }
 
     /**
