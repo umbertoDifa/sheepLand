@@ -44,8 +44,8 @@ public class GameManager implements Runnable {
      * of the streets as well as the position of the blackSheep and the wolf
      */
     private final Map map;
-    private List<Player> players = new ArrayList<Player>();
-    private String[] clientNickNames;
+    private final List<Player> players = new ArrayList<Player>();
+    private final String[] clientNickNames;
     private final int playersNumber;
     /**
      * It's the controller of the trasmission, it has the duty of use the right
@@ -127,15 +127,24 @@ public class GameManager implements Runnable {
         this.startGame();
 
     }
-
+    /**
+     * Returns the trasmission controller of a certain gameManager
+     * @return the Trasmission controller
+     */
     public TrasmissionController getController() {
         return controller;
     }
-
+    /**
+     * Returns the map of a given gam
+     * @return The map of the game
+     */
     public Map getMap() {
         return map;
     }
-
+    /**
+     * Returns the bank of the game
+     * @return the bank
+     */
     public Bank getBank() {
         return bank;
     }
@@ -463,11 +472,11 @@ public class GameManager implements Runnable {
     private void refreshSpecialAnimals(String client) {
         try {
             //refresh wolf position
-            controller.refreshSpecialAnimalInitialPosition(client,
+            controller.refreshSpecialAnimalPosition(client,
                     map.getWolf(), "" + map.getNodeIndex(
                             map.getWolf().getMyRegion()));
             //refresh blacksheep position
-            controller.refreshSpecialAnimalInitialPosition(client,
+            controller.refreshSpecialAnimalPosition(client,
                     map.getBlackSheep(), "" + map.getNodeIndex(
                             map.getBlackSheep().getMyRegion()));
 

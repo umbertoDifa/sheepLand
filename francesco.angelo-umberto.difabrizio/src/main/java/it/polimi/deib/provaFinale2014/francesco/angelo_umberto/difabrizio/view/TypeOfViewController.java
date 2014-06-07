@@ -70,7 +70,7 @@ public interface TypeOfViewController {
 
     public void specialAnimalInitialCondition(String region);
 
-    public int chooseAction(int[] availableActions,
+    public String chooseAction(int[] availableActions,
                             String[] availableStringedActions);
 
     public void refreshMateSheepWith(String nickName, String region,

@@ -10,6 +10,11 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Creates a socket version of the client to play the game
+ *
+ * @author Umberto
+ */
 public class ClientSocket {
 
     //server info
@@ -26,12 +31,24 @@ public class ClientSocket {
     private String[] token;
     private String received;
 
+    /**
+     * Creates a client socket
+     *
+     * @param ip   The server ip
+     * @param port The server port
+     * @param view The kind of view chosen by the user
+     */
     public ClientSocket(String ip, int port, TypeOfViewController view) {
         this.ip = ip;
         this.port = port;
         this.view = view;
     }
 
+    /**
+     * Starts a client that asks the nickName to the user and sends it to the
+     * server. Depending on the server answer the client starts a game or
+     * terminates
+     */
     protected void startClient() {
 
         try {
@@ -334,8 +351,36 @@ public class ClientSocket {
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
         }
+
+        boolean rightFormat;
+        String choice;
+        int action = -1;
+
+        do {
+            choice = view.chooseAction(availableAcions, possibleActions);
+            try {
+                action = Integer.parseInt(choice);
+                rightFormat = true;
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                view.showInfo("Azione non valida.\nPrego riprovare.");
+                rightFormat = false;
+            }
+        } while (!rightFormat || !actionExists(availableAcions, action));
+
         //invio l'intero ritornato
-        sendString("" + view.chooseAction(availableAcions, actionsName));
+        sendString(choice);
+    }
+
+    private boolean actionExists(int[] availableActions, int action) {
+        for (int i = 0; i < availableActions.length; i++) {
+            if (availableActions[i] == action) {
+                return true;
+            }
+        }
+        view.showInfo("Azione non esistente.\nPrego riporvare:");
+        return false;
     }
 
     private void moveOvine() {

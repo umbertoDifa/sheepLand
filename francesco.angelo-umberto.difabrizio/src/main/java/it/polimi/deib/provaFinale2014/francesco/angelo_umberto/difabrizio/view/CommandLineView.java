@@ -147,40 +147,16 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
-    public int chooseAction(int[] availableActions,
-                            String[] availableStringedActions) {
+    public String chooseAction(int[] availableActions,
+                               String[] availableStringedActions) {
         String stringToPrint = "";
         for (int i = 0; i < availableActions.length; i++) {
             stringToPrint += String.valueOf(availableActions[i]) + "- " + availableStringedActions[i] + " \n";
         }
-        String choice;
-        int action = -1;
-        boolean rightFormat;
 
-        do {
-            showInfo("Scegli un azione tra:\n" + stringToPrint);
-            choice = stdIn.nextLine();
-            try {
-                action = Integer.parseInt(choice);
-                rightFormat = true;
-            } catch (NumberFormatException ex) {
-                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        ex.getMessage(), ex);
-                showInfo("Azione non valida.\nPrego riprovare.");
-                rightFormat = false;
-            }
-        } while (!rightFormat || !actionExists(availableActions, action));
-        return action;
-    }
+        showInfo("Scegli un azione tra:\n" + stringToPrint);
+        return stdIn.nextLine();
 
-    private boolean actionExists(int[] availableActions, int action) {
-        for (int i = 0; i < availableActions.length; i++) {
-            if (availableActions[i] == action) {
-                return true;
-            }
-        }
-        showInfo("Azione non esistente.\nPrego riporvare:");
-        return false;
     }
 
     public void showInfo(String info) {

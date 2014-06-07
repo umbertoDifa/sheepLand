@@ -58,7 +58,7 @@ public class SocketClientProxy extends ClientProxy {
         if (toClient.checkError()) {
             DebugLogger.println(
                     "C'è stato un errore inviando al client lo status è posto su offline");
-            super.setStatus(NetworkConstants.OFFLINE.getValue());
+            super.setStatus(NetworkConstants.OFFLINE);
         }
     }
 
@@ -80,7 +80,7 @@ public class SocketClientProxy extends ClientProxy {
                     ex.getMessage(), ex);
             DebugLogger.println(
                     "C'è stato un errore ricevendo dal client lo status è posto su offline");
-            super.setStatus(NetworkConstants.OFFLINE.getValue());
+            super.setStatus(NetworkConstants.OFFLINE);
             throw new PlayerDisconnectedException("Il player si è disconnesso");
         }
     }

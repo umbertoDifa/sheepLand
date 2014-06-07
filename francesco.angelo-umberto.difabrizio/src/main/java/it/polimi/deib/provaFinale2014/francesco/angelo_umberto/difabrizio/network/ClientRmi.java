@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * It's the RMI version of the client. It's used to comunicate with the user and
+ * to send and receive commands to/from the server
  *
  * @author Umberto
  */
@@ -34,8 +36,16 @@ public class ClientRmi implements ClientInterfaceRemote {
     private String result;
     private boolean connectionResult;
 
+    /**
+     * Creates an rmi client setting it's variables.
+     *
+     * @param ip         The ip to which it will connect to find the server
+     * @param port       The port to search the server
+     * @param nameServer The name to which the server is binded
+     * @param view       The kind of view wanted by the user
+     */
     public ClientRmi(String ip, int port, String nameServer,
-                     TypeOfViewController view) throws RemoteException {
+                     TypeOfViewController view) {
         this.nameServer = nameServer;
         this.port = port;
         this.ip = ip;
@@ -43,6 +53,12 @@ public class ClientRmi implements ClientInterfaceRemote {
 
     }
 
+    /**
+     * Starts the client by connecting to the server after asking to the user
+     * the nickname. It keeps asking the nickName to the user till it's a valid
+     * one. Creates a skeleton of its self so that the server can call remote
+     * methods on it
+     */
     protected void startClient() {
 
         try {
@@ -90,37 +106,89 @@ public class ClientRmi implements ClientInterfaceRemote {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param regionIndex
+     * @param numbOfSheep
+     * @param numbOfRam
+     * @param numbOfLamb
+     */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb) {
         view.refreshRegion(regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param streetIndex
+     * @param fence
+     * @param nickShepherd
+     */
     public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd) {
         view.refreshStreet(streetIndex, fence, nickShepherd);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param numbOfPlayers
+     * @param firstPlayer
+     * @param shepherd4player
+     */
     public void refreshGameParameters(int numbOfPlayers, String firstPlayer,
                                       int shepherd4player) {
         view.refereshGameParameters(numbOfPlayers, firstPlayer, shepherd4player);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param currenPlayer
+     */
     public void refereshCurrentPlayer(String currenPlayer) {
         view.refereshCurrentPlayer(currenPlayer);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param type
+     * @param value
+     */
     public void refreshCard(String type, int value) {
         view.refereshCard(type, value);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param regionIndex
+     */
     public void refreshBlackSheep(String regionIndex) {
         view.refreshBlackSheep(regionIndex);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param regionIndex
+     */
     public void refreshWolf(String regionIndex) {
         view.refreshWolf(regionIndex);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param idShepherd
+     *
+     * @return
+     *
+     * @throws RemoteException
+     */
     public String setUpShepherd(int idShepherd) throws RemoteException {
         String chosenStreet = view.setUpShepherd(idShepherd);
 
@@ -136,13 +204,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     }
 
     /**
-     * It ask the player to choose an action and makes it by calling the right
-     * method.
-     *
-     * @param actions Actions that ca be chosen
-     *
-     * @return A string with the number of the action and the result or a string
-     *         with the number of the action concatenated with null
+     * {@inheritDoc }
      */
     public String chooseAction(String actions) {
         //receive possible actions      
@@ -158,10 +220,26 @@ public class ClientRmi implements ClientInterfaceRemote {
             actionsName[i] = token[1];
         }
 
-        //ottengo la risposta dallo user
-        int choice = view.chooseAction(availableAcions, actionsName);
+        // ottengo il risultato e lo controllo
+        boolean rightFormat;
+        String choice;
+        int action = -1;
+
+        do {
+            choice = view.chooseAction(availableAcions, possibleActions);
+            try {
+                action = Integer.parseInt(choice);
+                rightFormat = true;
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                view.showInfo("Azione non valida.\nPrego riprovare.");
+                rightFormat = false;
+            }
+        } while (!rightFormat || !actionExists(availableAcions, action));
+
         try {
-            switch (choice) {
+            switch (Integer.parseInt(choice)) {
                 case 1:
                     return "1," + this.moveOvine();
 
@@ -181,11 +259,20 @@ public class ClientRmi implements ClientInterfaceRemote {
             }
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
-            //TODO gestire quando il client tenta di eseguire un metodo sul server
-            //ma fallisce
+                    ex.getMessage(), ex);   
+            this.disconnect("Il server è offline, la partita termina");
         }
         return null;
+    }
+
+    private boolean actionExists(int[] availableActions, int action) {
+        for (int i = 0; i < availableActions.length; i++) {
+            if (availableActions[i] == action) {
+                return true;
+            }
+        }
+        view.showInfo("Azione non esistente.\nPrego riporvare:");
+        return false;
     }
 
     private String moveOvine() throws RemoteException {
@@ -206,6 +293,14 @@ public class ClientRmi implements ClientInterfaceRemote {
         return null;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameMover
+     * @param startRegion
+     * @param endRegion
+     * @param ovineType
+     */
     public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) {
         view.refreshMoveOvine(nickNameMover, ovineType, startRegion, endRegion);
@@ -231,11 +326,23 @@ public class ClientRmi implements ClientInterfaceRemote {
         return null;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param indexShepherd
+     * @param newStreet
+     */
     public void refreshMoveShepherd(String nickName, String indexShepherd,
                                     String newStreet) {
         view.refreshMoveShepherd(nickName, indexShepherd, newStreet);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @throws java.rmi.RemoteException
+     */
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
                                String price) throws RemoteException {
         view.refreshBuyLand(nickNameBuyer, boughtLand, price);
@@ -284,6 +391,15 @@ public class ClientRmi implements ClientInterfaceRemote {
         return null;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameMater
+     * @param region
+     * @param otherType
+     * @param newType
+     * @param outcome
+     */
     public void refreshMateSheepWith(String nickNameMater, String region,
                                      String otherType, String newType,
                                      String outcome) {
@@ -322,6 +438,11 @@ public class ClientRmi implements ClientInterfaceRemote {
         return null;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param message
+     */
     public void disconnect(String message) {
         view.showInfo(message);
         if (connectionResult == true) {
@@ -341,37 +462,95 @@ public class ClientRmi implements ClientInterfaceRemote {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @throws RemoteException
+     */
     public void welcome() throws RemoteException {
         view.showWelcome();
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param player
+     *
+     * @throws RemoteException
+     */
     public void connectPlayer(PlayerRemote player) throws RemoteException {
         this.playerRmi = player;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param money
+     *
+     * @throws RemoteException
+     */
     public void refreshMoney(String money) throws RemoteException {
         view.refreshMoney(money);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param winner
+     * @param rank
+     *
+     * @throws RemoteException
+     */
     public void showMyRank(String winner, String rank) throws RemoteException {
         view.showMyRank(Boolean.parseBoolean(winner), rank);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param classification
+     *
+     * @throws RemoteException
+     */
     public void showClassification(String classification) throws RemoteException {
         view.showClassification(classification);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameKiller
+     * @param region
+     * @param type
+     * @param outcome
+     *
+     * @throws RemoteException
+     */
     public void refreshKillOvine(String nickNameKiller, String region,
                                  String type, String outcome) throws
             RemoteException {
         view.refreshKillOvine(type, region, type, outcome);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param position
+     *
+     * @throws RemoteException
+     */
     public void refreshSpecialAnimalInitialPosition(String position) throws
             RemoteException {
         view.specialAnimalInitialCondition(position);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param player
+     *
+     * @throws RemoteException
+     */
     public void refreshPlayerDisconnected(String player) throws RemoteException {
         view.refreshPlayerDisconnected(player);
     }

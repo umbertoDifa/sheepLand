@@ -10,11 +10,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * It's the client manager, it ask the user which kind of connections it prefers
+ * and which kind of guy then starts the righ client
  *
  * @author francesco.angelo-umberto.difabrizio
  */
 public class Client {
 
+    /**
+     * The lock is used so that after a player finishes a game the lock is
+     * released and the client manager asks to the player if he wants to play
+     * again.
+     */
     protected static final Object LOCK = new Object();
 
     /**
@@ -77,10 +84,6 @@ public class Client {
                             synchronized (LOCK) {
                                 LOCK.wait();
                             }
-                        } catch (RemoteException ex) {
-                            Logger.getLogger(DebugLogger.class.getName()).log(
-                                    Level.SEVERE,
-                                    ex.getMessage(), ex);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(DebugLogger.class.getName()).log(
                                     Level.SEVERE,
@@ -96,12 +99,14 @@ public class Client {
                                     new GuiView());
                             client.startClient();
                             DebugLogger.println("Client remoto attivo");
-                        } catch (RemoteException ex) {
+                            synchronized (LOCK) {
+                                LOCK.wait();
+                            }
+                        } catch (InterruptedException ex) {
                             Logger.getLogger(DebugLogger.class.getName()).log(
                                     Level.SEVERE,
-                                    ex.getMessage(), ex);
+                                    null, ex);
                         }
-
                         valid = true;
                     }
                 }
@@ -125,6 +130,5 @@ public class Client {
 
     private Client() {
     }
-    
-    
+
 }
