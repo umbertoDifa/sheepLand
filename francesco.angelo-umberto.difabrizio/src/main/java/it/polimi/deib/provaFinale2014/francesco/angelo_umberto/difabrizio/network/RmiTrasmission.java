@@ -17,6 +17,15 @@ import java.util.logging.Logger;
  */
 public class RmiTrasmission extends TrasmissionController {
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param regionIndex
+     * @param numbOfSheep
+     * @param numbOfRam
+     * @param numbOfLamb
+     */
     @Override
     public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
                               int numbOfRam, int numbOfLamb) {
@@ -32,6 +41,14 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param streetIndex
+     * @param fence
+     * @param nickNameOfShepherdPlayer
+     */
     @Override
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
                               String nickNameOfShepherdPlayer) {
@@ -47,6 +64,13 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param numbOfPlayers
+     * @param shepherd4player
+     */
     @Override
     public void refreshGameParameters(String nickName, int numbOfPlayers,
                                       int shepherd4player) {
@@ -62,6 +86,11 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNamePlayer
+     */
     @Override
     public void brodcastCurrentPlayer(String nickNamePlayer) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -79,6 +108,13 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param card
+     * @param value
+     */
     @Override
     public void refreshCard(String nickName, String card, int value) {
         if (canPlayerReceive(nickName)) {
@@ -93,6 +129,13 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameMover
+     * @param shepherdInedx
+     * @param newStreet
+     */
     @Override
     public void refreshMoveShepherd(String nickNameMover, String shepherdInedx,
                                     String newStreet) {
@@ -114,6 +157,14 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameKiller
+     * @param region
+     * @param type
+     * @param outcome
+     */
     @Override
     public void refreshKillOvine(String nickNameKiller, String region,
                                  String type,
@@ -135,6 +186,16 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param shepherdIndex
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
     @Override
     public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws
             PlayerDisconnectedException {
@@ -160,6 +221,16 @@ public class RmiTrasmission extends TrasmissionController {
         return false;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param possibleActions
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
     @Override
     public boolean askChooseAction(String nickName, String possibleActions)
             throws PlayerDisconnectedException {
@@ -241,6 +312,11 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     */
     @Override
     public void refreshStartGame(String nickName) {
 
@@ -256,9 +332,16 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameBuyer
+     * @param boughtLand
+     * @param price
+     */
     @Override
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
-                               String price) throws RemoteException {
+                               String price) {
 
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -277,6 +360,12 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param animal
+     * @param movementResult
+     */
     @Override
     public void refreshSpecialAnimal(SpecialAnimal animal, String movementResult) {
         if (animal instanceof BlackSheep) {
@@ -286,6 +375,15 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameMater
+     * @param region
+     * @param otherType
+     * @param newType
+     * @param outcome
+     */
     @Override
     public void refreshMateSheepWith(String nickNameMater, String region,
                                      String otherType, String newType,
@@ -307,6 +405,11 @@ public class RmiTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     */
     @Override
     public void refreshMoney(String nickName) {
         if (canPlayerReceive(nickName)) {
@@ -323,6 +426,13 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param winner
+     * @param nickName
+     * @param score
+     */
     @Override
     public void sendRank(boolean winner, String nickName, int score
     ) {
@@ -338,6 +448,11 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param classification
+     */
     @Override
     public void sendClassification(String classification
     ) {
@@ -396,6 +511,9 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public void unexpectedEndOfGame() {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -415,9 +533,9 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshSpecialAnimalInitialPosition(String nickName,
-                                                    SpecialAnimal animal,
-                                                    String region) {
+    public void refreshSpecialAnimalPosition(String nickName,
+                                             SpecialAnimal animal,
+                                             String region) {
         if (canPlayerReceive(nickName)) {
             try {
                 ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshSpecialAnimalInitialPosition(
@@ -455,7 +573,7 @@ public class RmiTrasmission extends TrasmissionController {
                 ex.getMessage(), ex);
 
         ServerManager.Nick2ClientProxyMap.get(nickName).setStatus(
-                NetworkConstants.OFFLINE.getValue());
+                NetworkConstants.OFFLINE);
 
         DebugLogger.println(
                 "Il player:" + nickName + " si è disconnesso, lo setto su offline");

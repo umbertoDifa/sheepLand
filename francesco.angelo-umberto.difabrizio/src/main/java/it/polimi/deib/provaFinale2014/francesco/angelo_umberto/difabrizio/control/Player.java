@@ -459,6 +459,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return "Pastore posizionato correttamente!";
     }
 
+    /**
+     * Asks the player to set his shepherd whose index is given in the arguments
+     *
+     * @param shepherdIndex The shepherd to set
+     *
+     * @throws PlayerDisconnectedException If the player disconnects while
+     *                                     putting his shepherd on the map
+     */
     protected void setMyshepherd(int shepherdIndex) throws
             PlayerDisconnectedException {
         boolean outcomeOk;

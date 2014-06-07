@@ -7,8 +7,23 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.Map;
 
+/**
+ * It deals with the trasmission between sockets, checkink everytime if a player
+ * is online an refreshed before sending information to him.
+ *
+ * @author Umberto
+ */
 public class SocketTrasmission extends TrasmissionController {
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param regionIndex
+     * @param numbOfSheep
+     * @param numbOfRam
+     * @param numbOfLamb
+     */
     public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
                               int numbOfRam, int numbOfLamb) {
         if (canPlayerReceive(nickName)) {
@@ -19,6 +34,14 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param streetIndex
+     * @param fence
+     * @param nickNameOfShepherdPlayer
+     */
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
                               String nickNameOfShepherdPlayer) {
         if (canPlayerReceive(nickName)) {
@@ -29,10 +52,11 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
-    public void refreshGameParameters(String nickName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNamePlayer
+     */
     public void brodcastCurrentPlayer(String nickNamePlayer) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -49,6 +73,13 @@ public class SocketTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param type
+     * @param value
+     */
     public void refreshCard(String nickName, String type, int value) {
         if (canPlayerReceive(nickName)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
@@ -58,6 +89,15 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNamePlayer
+     * @param region
+     * @param otherType
+     * @param newType
+     * @param outcome
+     */
     @Override
     public void refreshMateSheepWith(String nickNamePlayer, String region,
                                      String otherType, String newType,
@@ -76,6 +116,13 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameBuyer
+     * @param boughtLand
+     * @param price
+     */
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
                                String price) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -169,6 +216,14 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNameKiller
+     * @param region
+     * @param type
+     * @param outcome
+     */
     public void refreshKillOvine(String nickNameKiller, String region,
                                  String type, String outcome) {
         //per tutti i nick tranne quello dato refresha
@@ -186,6 +241,16 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param shepherdIndex
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
     public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws
             PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
@@ -217,6 +282,16 @@ public class SocketTrasmission extends TrasmissionController {
         return false;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param possibleActions
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
     public boolean askChooseAction(String nickName, String possibleActions)
             throws PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
@@ -407,12 +482,24 @@ public class SocketTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param numbOfPlayers
+     * @param shepherd4player
+     */
     @Override
     public void refreshGameParameters(String nickName, int numbOfPlayers,
                                       int shepherd4player) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     */
     @Override
     public void refreshStartGame(String nickName) {
         if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
@@ -424,6 +511,12 @@ public class SocketTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param animal
+     * @param movementResult
+     */
     @Override
     public void refreshSpecialAnimal(SpecialAnimal animal, String movementResult) {
         if (animal instanceof BlackSheep) {
@@ -433,6 +526,11 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     */
     @Override
     public void refreshMoney(String nickName) {
         if (canPlayerReceive(nickName)) {
@@ -445,6 +543,13 @@ public class SocketTrasmission extends TrasmissionController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param winner
+     * @param nickName
+     * @param score
+     */
     @Override
     public void sendRank(boolean winner, String nickName, int score) {
         DebugLogger.println("Send result to " + nickName);
@@ -456,6 +561,11 @@ public class SocketTrasmission extends TrasmissionController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param classification
+     */
     @Override
     public void sendClassification(String classification) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -472,9 +582,9 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshSpecialAnimalInitialPosition(String nickName,
-                                                    SpecialAnimal animal,
-                                                    String region) {
+    public void refreshSpecialAnimalPosition(String nickName,
+                                             SpecialAnimal animal,
+                                             String region) {
         if (canPlayerReceive(nickName)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     MessageProtocol.SPECIAL_ANIMAL_POSITION.toString());

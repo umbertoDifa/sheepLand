@@ -50,11 +50,6 @@ public class GuiView implements TypeOfViewController, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public int chooseAction(int[] availableActions,
-            String[] availableStringedActions) {
-        return gui.chooseAction(availableActions);
-    }   
-
     public void moveShepherd(String startRegion, String endRegion) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -161,6 +156,12 @@ public class GuiView implements TypeOfViewController, ActionListener {
     public void showUnexpectedEndOfGame() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public String chooseAction(int[] availableActions,
+                               String[] availableStringedActions) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 
 }
