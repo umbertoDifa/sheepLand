@@ -34,7 +34,7 @@ public interface TypeOfViewController {
     public void showClassification(String classification);
 
     public void showUnexpectedEndOfGame();
-    
+
     public void showKillOvine(String region, String type, String shepherdPayed);
 
     public String setUpShepherd(int idShepherd);
@@ -49,6 +49,8 @@ public interface TypeOfViewController {
                                     String streetIndex);
 
     public void refreshBuyLand(String buyer, String land, String price);
+
+    public void refreshGameParameters(String[] nickNames, int shepherd4player);
 
     public void refreshKillOvine(String killer, String region, String type,
                                  String outcome);
@@ -71,7 +73,7 @@ public interface TypeOfViewController {
     public void specialAnimalInitialCondition(String region);
 
     public String chooseAction(int[] availableActions,
-                            String[] availableStringedActions);
+                               String[] availableStringedActions);
 
     public void refreshMateSheepWith(String nickName, String region,
                                      String otherType, String newType,

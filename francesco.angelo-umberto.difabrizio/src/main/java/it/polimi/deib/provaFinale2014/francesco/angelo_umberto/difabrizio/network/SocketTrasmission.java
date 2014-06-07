@@ -68,9 +68,9 @@ public class SocketTrasmission extends TrasmissionController {
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).send(nickNamePlayer);
             }
-
+            
         }
-
+        
     }
 
     /**
@@ -112,7 +112,7 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 nickNamePlayer + "," + region + "," + otherType + "," + newType + "," + outcome);
             }
-
+            
         }
     }
 
@@ -135,7 +135,7 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 nickNameBuyer + "," + boughtLand + "," + price);
             }
-
+            
         }
     }
 
@@ -156,10 +156,10 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 movementResult);
             }
-
+            
         }
     }
-
+    
     private void refreshWolf(String movementResult) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -171,10 +171,10 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 movementResult);
             }
-
+            
         }
     }
-
+    
     public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -187,7 +187,7 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 nickNameMover + "," + startRegion + "," + endRegion + "," + ovineType);
             }
-
+            
         }
     }
 
@@ -212,7 +212,7 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 nickNameMover + "," + shepherdIndex + "," + newStreet);
             }
-
+            
         }
     }
 
@@ -237,7 +237,7 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 nickNameKiller + "," + region + "," + type + "," + outcome);
             }
-
+            
         }
     }
 
@@ -259,7 +259,7 @@ public class SocketTrasmission extends TrasmissionController {
                 "" + shepherdIndex);
         //ricevo la stringa della strada
         String chosenStringedStreet;
-
+        
         chosenStringedStreet = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
         //tento di eseguire la setShepherd
@@ -278,7 +278,7 @@ public class SocketTrasmission extends TrasmissionController {
                     chosenStringedStreet);
             return true;
         }
-
+        
         return false;
     }
 
@@ -297,7 +297,7 @@ public class SocketTrasmission extends TrasmissionController {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 MessageProtocol.CHOOSE_ACTION.toString());
         DebugLogger.println("choose action inviata a " + nickName);
-
+        
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 possibleActions);
         String result = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
@@ -323,7 +323,7 @@ public class SocketTrasmission extends TrasmissionController {
                 return false;
         }
     }
-
+    
     private boolean askMoveOvine(String nickName) throws
             PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
@@ -333,7 +333,7 @@ public class SocketTrasmission extends TrasmissionController {
         String result = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
         String[] token = result.split(",", -1);
-
+        
         result = getNick2PlayerMap().get(nickName).moveOvine(token[0],
                 token[1], token[2]);
         DebugLogger.println(result);
@@ -346,16 +346,16 @@ public class SocketTrasmission extends TrasmissionController {
         }
         return false;
     }
-
+    
     private boolean askMoveSheperd(String nickName) throws
             PlayerDisconnectedException {
-
+        
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 MessageProtocol.MOVE_SHEPHERD.toString());
-
+        
         String result = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
-
+        
         String[] token = result.split(",", -1);
 
         //eseguo
@@ -365,7 +365,7 @@ public class SocketTrasmission extends TrasmissionController {
         //invio il risultato
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 result);
-
+        
         if (result.contains("Pastore spostato")) {
             //invia conferma riepilogativa agli utenti
             refreshMoveShepherd(nickName, token[0], token[1]);
@@ -375,25 +375,25 @@ public class SocketTrasmission extends TrasmissionController {
             return true;
         }
         return false;
-
+        
     }
-
+    
     private boolean askBuyLand(String nickName) throws
             PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 MessageProtocol.BUY_LAND.toString());
         String landToBuy = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
-
+        
         String result = getNick2PlayerMap().get(nickName).buyLand(
                 landToBuy);
 
         //invio il risultato al client
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 result);
-
+        
         String[] token = result.split(",", -1);
-
+        
         if (result.contains("Carta acquistata")) {
             refreshBuyLand(nickName, token[1], token[2]);
             //aggiorno i soldi del compratore
@@ -402,7 +402,7 @@ public class SocketTrasmission extends TrasmissionController {
         }
         return false;
     }
-
+    
     private boolean askKillOvine(String nickName) throws
             PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
@@ -413,13 +413,13 @@ public class SocketTrasmission extends TrasmissionController {
         String[] token = parameters.split(",", -1);
         String result = getNick2PlayerMap().get(nickName).killOvine(
                 token[0], token[1], token[2]);
-
+        
         DebugLogger.println(result);
         //invio risultato
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 result);
         if (result.contains("Ovino ucciso")) {
-
+            
             refreshKillOvine(nickName, token[1], token[2], "ok");
 
             //se l'azione ha successo aggiorna i portafogli remoti
@@ -427,37 +427,37 @@ public class SocketTrasmission extends TrasmissionController {
                 String nick = (String) pairs.getKey();
                 refreshMoney(nick);
             }
-
+            
             return true;
         } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
                 result) || "Il valore del dado è diverso dalla strada del pastore".equals(
                         result)) {
             refreshKillOvine(nickName, token[1], token[2], "nok:" + result);
             return true;
-
+            
         }
         return false;
     }
-
+    
     private boolean askMateSheepWith(String nickName, String type) throws
             PlayerDisconnectedException {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 MessageProtocol.MATE_SHEEP_WITH.toString());
         String parameters = ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                 nickName)).receive();
-
+        
         DebugLogger.println(parameters);
 
         //splitto i parametri
         String[] token = parameters.split(",", -1);
         String shepherd = token[0];
         String region = token[1];
-
+        
         String result = getNick2PlayerMap().get(nickName).mateSheepWith(
                 shepherd, region, type);
-
+        
         DebugLogger.println(result);
-
+        
         if (result.contains("Accoppiamento eseguito")) {
             token = result.split(",", -1);
             //token1 ha il tipo creato
@@ -466,7 +466,7 @@ public class SocketTrasmission extends TrasmissionController {
                     "invio risultato mateSheepWith " + result + "," + type);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     result + "," + type);
-
+            
             refreshMateSheepWith(nickName, region, type, token[1], "ok");
             return true;
         } else if ("Il valore del dado è diverso dalla strada del pastore".equals(
@@ -479,20 +479,7 @@ public class SocketTrasmission extends TrasmissionController {
         ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                 result);
         return false;
-
-    }
-
-    /**
-     * {@inheritDoc }
-     *
-     * @param nickName
-     * @param numbOfPlayers
-     * @param shepherd4player
-     */
-    @Override
-    public void refreshGameParameters(String nickName, int numbOfPlayers,
-                                      int shepherd4player) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     /**
@@ -508,7 +495,7 @@ public class SocketTrasmission extends TrasmissionController {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     MessageProtocol.WELCOME.toString());
         }
-
+        
     }
 
     /**
@@ -540,7 +527,7 @@ public class SocketTrasmission extends TrasmissionController {
                     ""
                     + getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
         }
-
+        
     }
 
     /**
@@ -580,7 +567,7 @@ public class SocketTrasmission extends TrasmissionController {
             }
         }
     }
-
+    
     @Override
     public void refreshSpecialAnimalPosition(String nickName,
                                              SpecialAnimal animal,
@@ -593,7 +580,7 @@ public class SocketTrasmission extends TrasmissionController {
                     + region);
         }
     }
-
+    
     @Override
     public void brodcastPlayerDisconnected(String nickNameDisconnected) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -606,10 +593,10 @@ public class SocketTrasmission extends TrasmissionController {
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).send(nickNameDisconnected);
             }
-
+            
         }
     }
-
+    
     @Override
     public void unexpectedEndOfGame() {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -619,8 +606,26 @@ public class SocketTrasmission extends TrasmissionController {
                         nickName)).send(
                                 MessageProtocol.UNEXPECTED_END_OF_GAME.toString());
             }
-
+            
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param nickNames
+     * @param shepherd4player
+     */
+    @Override
+    public void refreshGameParameters(String nickName, String nickNames,
+                                      int shepherd4player) {
+        if (canPlayerReceive(nickName)) {
+            ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    nickName)).send(MessageProtocol.GAME_PARAMETERS.toString());
+            ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    nickName)).send(nickNames + shepherd4player);
+        }
+    }
+    
 }

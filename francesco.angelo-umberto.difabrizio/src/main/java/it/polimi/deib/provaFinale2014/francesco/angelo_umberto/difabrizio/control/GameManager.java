@@ -127,22 +127,28 @@ public class GameManager implements Runnable {
         this.startGame();
 
     }
+
     /**
      * Returns the trasmission controller of a certain gameManager
+     *
      * @return the Trasmission controller
      */
     public TrasmissionController getController() {
         return controller;
     }
+
     /**
      * Returns the map of a given gam
+     *
      * @return The map of the game
      */
     public Map getMap() {
         return map;
     }
+
     /**
      * Returns the bank of the game
+     *
      * @return the bank
      */
     public Bank getBank() {
@@ -498,8 +504,13 @@ public class GameManager implements Runnable {
 
         refreshSpecialAnimals(client);
 
-        //broadcast nickNames
-        //broadcast shepherd
+        String tmp = "";
+
+        for (int i = 0; i < clientNickNames.length; i++) {
+            tmp += clientNickNames[i] + ",";
+        }      
+
+        controller.refreshGameParameters(client, tmp, shepherd4player);
     }
 
     private void executeRounds() throws FinishedFencesException,

@@ -162,6 +162,9 @@ public class GuiView implements TypeOfViewController, ActionListener {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public void refreshGameParameters(String[] nickNames, int shepherd4player) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 
 }

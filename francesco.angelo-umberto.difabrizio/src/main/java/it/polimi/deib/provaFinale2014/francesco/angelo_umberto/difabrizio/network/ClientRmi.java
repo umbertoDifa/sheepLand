@@ -555,4 +555,9 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshPlayerDisconnected(player);
     }
 
+    public void refreshGameParameters(String nickNames, int shepherd4player)
+            throws RemoteException {
+        //TODO
+    }
+
 }

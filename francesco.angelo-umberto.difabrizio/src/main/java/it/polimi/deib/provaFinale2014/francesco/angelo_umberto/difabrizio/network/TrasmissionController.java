@@ -81,11 +81,11 @@ public abstract class TrasmissionController {
      * Refreshes the game parameters
      *
      * @param nickName
-     * @param numbOfPlayers
+     * @param nickNames
      * @param shepherd4player
      */
     public abstract void refreshGameParameters(String nickName,
-                                               int numbOfPlayers,
+                                               String nickNames,                                                                                             
                                                int shepherd4player);
 
     /**

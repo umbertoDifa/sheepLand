@@ -71,7 +71,6 @@ public class SocketClientProxy extends ClientProxy {
      *                                     own shift
      */
     protected String receive() throws PlayerDisconnectedException {
-        //TODO:gestisci queste eccez
         try {
             String answer = fromClient.nextLine();
             return answer;
