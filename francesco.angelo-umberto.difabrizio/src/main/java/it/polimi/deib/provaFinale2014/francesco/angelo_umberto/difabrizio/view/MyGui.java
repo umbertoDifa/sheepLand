@@ -2,13 +2,15 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Ellipse2D;
@@ -19,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 /**
  *
@@ -55,7 +56,7 @@ public class MyGui implements MouseListener {
     private int buttonSelected;
     private JComponent mainPanel2;
     private JLayeredPane layeredPane;
-    private List<Integer> holder = new LinkedList<Integer>();
+    private List<String> holder = new LinkedList<String>();
     private RegionBox[] regionBoxes;
 
     public MyGui() {
@@ -63,6 +64,8 @@ public class MyGui implements MouseListener {
         setUpMap();
         setUpImagePool();
         setUpFrame();
+
+        //
         for (int i = 0; i < xRegionBoxes.length; i++) {
             regionBoxes[i].add("sheep");
             regionBoxes[i].add("blacksheep");
@@ -173,10 +176,10 @@ public class MyGui implements MouseListener {
         }
 
         //setto la struttura
-        frame.setLayout(new BorderLayout());
+        frame.setLayout(null);
         layeredPane.setPreferredSize(new Dimension(900, 800));
-        layeredPane.add(mainJPanel, 1);
-        layeredPane.add(infoPanel, 0);
+        layeredPane.add(mainJPanel, new Integer(0));
+        layeredPane.add(infoPanel, new Integer(1));
 
         mainJPanel.setLayout(new FlowLayout());
         mainJPanel.add(cardsJPanel);
@@ -273,8 +276,13 @@ public class MyGui implements MouseListener {
         }
         infoPanel.addMouseListener(infoPanel);
 
-        //nascondo dei componenti
-        //  hideInfoPanel();
+        for (RegionBox regionBox : regionBoxes) {
+          //  regionBox.addMouseListener(regionBox);
+            regionBox.addMouseListener(this);
+        }
+
+     //   hideInfoPanel();
+
         frame.pack();
         frame.setVisible(true);
     }
@@ -296,7 +304,7 @@ public class MyGui implements MouseListener {
                     if (e.getSource().equals(actions[i])) {
                         System.out.println("azione " + i + "selezionata");
                         actions[i].removeMouseListener(this);
-                        holder.add(i);
+                        holder.add(String.valueOf(i));
                         holder.notify();
                         System.out.println("aggiunto a holder azione " + i);
                     }
@@ -306,7 +314,7 @@ public class MyGui implements MouseListener {
                     if (e.getSource().equals(streets[i])) {
                         System.out.println("strada " + i + "selezionata");
                         streets[i].removeMouseListener(this);
-                        holder.add(i);
+                        holder.add(String.valueOf(i));
                         holder.notify();
                         System.out.println("aggiunto a holder strada " + i);
                     }
@@ -316,13 +324,63 @@ public class MyGui implements MouseListener {
                     if (e.getSource().equals(cardsJPanels[i])) {
                         System.out.println("carta terreno " + i + "selezionata");
                         cardsJPanels[i].removeMouseListener(this);
-                        holder.add(i);
+                        holder.add(String.valueOf(i));
                         holder.notify();
                         System.out.println("aggiunto a holder carta terreno " + i);
                     }
                 }
+            //TODO spostare in RegionBox (e aggiungere getter layeredPane)
+            } else if (e.getSource() instanceof RegionBox) {
+                for (int i = 0; i < regionBoxes.length; i++) {
+                    if (e.getSource().equals(regionBoxes[i])) {
+                        System.out.println("regione " + i + "selezionata");
+                        Animal[] animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
+                        int j = 0;
+                            for (Animal animalToHighlight : animalsToHighlight) {
+                                int animalWidth = animalToHighlight.getSize().width;
+                                int animalHeight = animalToHighlight.getSize().height;
+                                animalToHighlight.setPreferredSize(
+                                        new Dimension(animalWidth, animalHeight));
+                                Point p = regionBoxes[i].getLocation();
+                                int first = 1;
+                                if (j == 0) {
+                                first = 0;
+                            }
+                            animalToHighlight.setBounds(
+                                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5+140),
+                                    (int) (p.y - first * (animalWidth * Math.sqrt(2) * Math.sin((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
+                                    animalWidth, animalHeight);
+                            animalToHighlight.addMouseListener(this);
+                            layeredPane.add(animalToHighlight, new Integer(2));
+                            j++;
+                        }
+                        mainPanel2.repaint();
+                    }
+                }
+                removeRegionListener();
+            //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
+            //dal layer 2, rimetto visibili in preview gli animali nelle regioni
+            } else if (e.getSource() instanceof Animal) {
+                for (Component component : layeredPane.getComponents()) {
+                    if (component instanceof Animal) {
+                        Animal animal = (Animal) component;
+                        holder.add(animal.getAnimalType());
+                        holder.notify();
+                    }
+                }
+                Component[] toRemove = layeredPane.getComponentsInLayer(2);
+                for (Component componentToRemove : toRemove) {
+                    componentToRemove.setVisible(false);
+                    layeredPane.remove(componentToRemove);
+                }
+                System.out.println("num comp in layer 1:" + layeredPane.getComponentCountInLayer(2));
+                layeredPane.repaint();
+                System.out.println(layeredPane.getComponentCountInLayer(2));
+                for (RegionBox region: regionBoxes){
+                    region.setAnimalsVisibles(true);
+                    region.setAnimalPreview(true);
+                }
             }
-
             System.out.println(e.getX() + " , " + e.getY());
         }
     }
@@ -366,11 +424,11 @@ public class MyGui implements MouseListener {
         return choice;
     }
 
-    public int askBuyLand(int[] availableLand) throws InterruptedException {
+    public String askBuyLand(int[] availableLand) throws InterruptedException {
         for (int i = 0; i < availableLand.length; i++) {
             cardsJPanels[i].addMouseListener(this);
         }
-        int result;
+        String result;
         synchronized (holder) {
             // wait for answer
             while (holder.isEmpty()) {
@@ -414,9 +472,14 @@ public class MyGui implements MouseListener {
         ImagePool.add(".\\images\\shepherd2.png", "shepherd2");
         ImagePool.add(".\\images\\shepherd3.png", "shepherd3");
         ImagePool.add(".\\images\\shepherd4.png", "shepherd4");
-        ImagePool.add(".\\images\\fence2.png", "fence");
-        ImagePool.add(".\\images\\sheep2.png", "sheep");
-        ImagePool.add(".\\images\\wolf2.png", "wolf");
+        ImagePool.add(".\\images\\fence2.png", "fenceP");
+        ImagePool.add(".\\images\\sheep2P.png", "sheepP");
+        ImagePool.add(".\\images\\wolf2P.png", "wolfP");
+        ImagePool.add(".\\images\\blacksheepP.png", "blacksheepP");
+        ImagePool.add(".\\images\\ramP.png", "ramP");
+        ImagePool.add(".\\images\\lambP.png", "lambP");
+        ImagePool.add(".\\images\\sheep.png", "sheep");
+        ImagePool.add(".\\images\\wolf.png", "wolf");
         ImagePool.add(".\\images\\blacksheep.png", "blacksheep");
         ImagePool.add(".\\images\\ram.png", "ram");
         ImagePool.add(".\\images\\lamb.png", "lamb");
@@ -495,7 +558,7 @@ public class MyGui implements MouseListener {
                 street.addMouseListener(this);
             }
         }
-        int result;
+        String result;
         synchronized (holder) {
             // wait for answer
             while (holder.isEmpty()) {
@@ -520,6 +583,13 @@ public class MyGui implements MouseListener {
     private void showDice(int result) {
         infoPanel.setVisible(true);
         infoPanel.setDice(result);
+    }
+
+    //TODO
+    private void removeRegionListener() {
+        for(RegionBox region: regionBoxes){
+            region.removeMouseListener(this);
+        }
     }
 
 }
