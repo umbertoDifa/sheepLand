@@ -36,7 +36,7 @@ public class Animal extends JPanel {
         width = image.getWidth(this);
         height = image.getHeight(this);
         preview = true;
-        numLabel = new JLabel("0");
+        numLabel = new JLabel("1");
         numLabel.setPreferredSize(new Dimension(28, 28));
         numLabel.setBackground(new Color(0, 0, 0, 0));
         numLabel.setForeground(Color.white);
@@ -56,7 +56,7 @@ public class Animal extends JPanel {
             numLabel.setLocation(widthPreview / 2 - 8, heightPreview / 2 - 16);
         } else {
           //  numLabel.setBounds(width / 2+30, height / 2+30, 28, 28);
-            numLabel.setLocation(width / 2+30, height / 2+30);
+            numLabel.setLocation(width / 2-10, height / 2-16);
             
         }
     }
@@ -110,6 +110,7 @@ public class Animal extends JPanel {
     @Override
     protected Animal clone() throws CloneNotSupportedException {
         Animal newAnimal = new Animal(this.animalType);
+        newAnimal.setNum(this.getNum());
         return newAnimal;
     }
 

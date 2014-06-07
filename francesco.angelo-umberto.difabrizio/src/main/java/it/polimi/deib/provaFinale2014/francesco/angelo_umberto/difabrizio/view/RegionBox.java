@@ -2,6 +2,8 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +16,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
     private int[] numAnimals;
     private int[] xPreview = {10, 0, 10, 6, 10};
     private int[] yPreview = {0, 25, 25, 35, 35};
-    private Animal[] animals = new Animal[5];
+    private List<Animal> animals = new ArrayList<Animal>();
 
     public RegionBox() {
         this.numAnimals = new int[5];
@@ -23,22 +25,21 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
     }
 
     public void add(String animalType) {
-        int i;
         //controllo che in animals non ci sia già un animale col tipo da aggiungere
         //mi fermo al primo libero o se arrivo a fine array
-        for (i = 0; i < animals.length; i++) {
-            if (animals[i] == null) {
-                break;
-            } else if (animals[i].getAnimalType().equals(animalType)) {
+        for(int i=0; i<animals.size(); i++){
+            if (animals.get(i).getAnimalType().equals(animalType)){
+                animals.get(i).setNum(animals.get(i).getNum()+1);
                 return;
             }
         }
+        
         Animal newAnimal = new Animal(animalType);
         //se sono riuscito a creare l animale, la posizione nell array è vuota
         //e non sono arrivato a fine array
-        if (animals[i] == null && i != animals.length) {
+
             //aggiungo l animale all'array
-            animals[i] = newAnimal;
+            animals.add(newAnimal);
             //lo posiziono nel RegionBox
             if ("sheep".equals(animalType)) {
                 MyGui.addComponentsToPane(this, newAnimal, xPreview[0], yPreview[0]);
@@ -51,44 +52,57 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
             } else if ("wolf".equals(animalType)) {
                 MyGui.addComponentsToPane(this, newAnimal, xPreview[4], yPreview[4]);
             }
-        }
+        
         repaint();
     }
 
     /**
-     * return the clones of each animals in the RegionBox, change the preview of each
-     * clone in "false". hide the animals in the region.
-     * @return 
+     * return the clones of each animals in the RegionBox, change the preview of
+     * each clone in "false". hide the animals in the region.
+     *
+     * @return
      */
-    protected Animal[] cloneAndHideAnimals() {
+    protected List<Animal> cloneAndHideAnimals() {
         if (animals == null) {
             return null;
         }
-        
-        Animal[] result = new Animal[animals.length];
-        for (int i=0; i<animals.length; i++) {
-            try {
-                result[i] = animals[i].clone();
-                animals[i].setVisible(false);
-                result[i].setPreview(false);
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(RegionBox.class.getName()).log(Level.SEVERE, null, ex);
-            }
+
+        List<Animal> result = new ArrayList<Animal>();
+        for (int i = 0; i < animals.size(); i++) {
+
+                try {
+                    result.add(animals.get(i).clone());
+                    animals.get(i).setVisible(false);
+                    result.get(i).setPreview(false);
+                } catch (CloneNotSupportedException ex) {
+                    Logger.getLogger(RegionBox.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            
         }
 
         this.repaint();
         return result;
     }
-    
-    public void setAnimalsVisibles(boolean b){
-        for (Animal animal : animals) {
-            animal.setVisible(b);
+
+    public void add(String animalType, int quantity) {
+        for (int i = 0; i < quantity; i++) {
+            add(animalType);
         }
     }
-    
-    public void setAnimalPreview(boolean b){
+
+    public void setAnimalsVisibles(boolean b) {
         for (Animal animal : animals) {
-            animal.setPreview(b);
+            if (animal != null) {
+                animal.setVisible(b);
+            }
+        }
+    }
+
+    public void setAnimalPreview(boolean b) {
+        for (Animal animal : animals) {
+            if (animal != null) {
+                animal.setPreview(b);
+            }
         }
     }
 

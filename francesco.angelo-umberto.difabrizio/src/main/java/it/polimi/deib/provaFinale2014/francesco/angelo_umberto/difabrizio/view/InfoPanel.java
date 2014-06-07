@@ -24,9 +24,9 @@ public class InfoPanel extends JPanel implements MouseListener {
     private final JTextArea textArea;
     private List<Icon> imagesDice = new ArrayList<Icon>();
     private final JLabel dice;
-    private int width;
-    private int height;
-    private Image imageBackground;
+    private final int width;
+    private final int height;
+    private final Image imageBackground;
 
     /**
      * create the InfoPanel, setting font, width, height, set imageBackground,
@@ -39,23 +39,23 @@ public class InfoPanel extends JPanel implements MouseListener {
      * @param height
      */
     public InfoPanel(Font font, List<Icon> imagesDice, Image imageBackground, int width, int height) {
-        textArea = new JTextArea("e' uscito:");
+        textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setBackground(new Color(0, 0, 0, 0));
         textArea.setFont(font);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+        textArea.setPreferredSize(new Dimension(140, 110));
+        textArea.addMouseListener(this);
         this.imagesDice = imagesDice;
         dice = new JLabel();
+        dice.setVisible(false);
         this.setLayout(null);
-        //  this.add(label, BorderLayout.NORTH);
-        //  this.add(dice, BorderLayout.CENTER);
-        setDice(1);
         this.width = width;
         this.height = height;
         this.imageBackground = imageBackground;
         this.setToolTipText("click me to close me!");
-        MyGui.addComponentsToPane(this, textArea, 64, 150);
+        MyGui.addComponentsToPane(this, textArea, 50, 140);
         MyGui.addComponentsToPane(this, dice, 77, 300);
         repaint();
     }
@@ -75,7 +75,12 @@ public class InfoPanel extends JPanel implements MouseListener {
      * @param result
      */
     public void setDice(int result) {
+        dice.setVisible(true);
         dice.setIcon(imagesDice.get(result - 1));
+    }
+    
+    public void hideDice(){
+        dice.setVisible(false);
     }
 
     /**
@@ -104,6 +109,8 @@ public class InfoPanel extends JPanel implements MouseListener {
 
     public void mouseClicked(MouseEvent e) {
         this.setVisible(false);
+        System.out.println("dentro mouseClicked di infoPanel");
+        this.removeMouseListener(this);
     }
 
     public void mousePressed(MouseEvent e) {

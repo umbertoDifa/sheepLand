@@ -7,18 +7,18 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -26,79 +26,42 @@ import javax.swing.*;
  *
  * @author Francesco
  */
-public class MyGui implements MouseListener {
+public class MyGui implements MouseListener, TypeOfViewController {
 
     private JFrame frame;
     private JPanel mainJPanel;
     private Action[] actions;
     private Card[] cardsJPanels;
     private JPanel actionsJPanel;
-    private JPanel cardsJPanel;
+    private JPanel cardsConteinerJPanel;
     private Map mapJPanel;
     private Card fenceJPanel;
     private Player[] playersJPanels;
     private JPanel dxBar;
-    private JPanel playersJPanel;
-    private final int NUM_OF_PLAYERS = 4;
-    private final int SHEPHERD4PLAYERS = 1;
-    private final int ray = 12;
+    private JPanel playersContainerJPanel;
+    private JComponent layeredHolder;
+    private JLayeredPane layeredPane;
+    private InfoPanel infoPanel;
+    private String[] nickNames;
+    private Street[] streets;
+    private RegionBox[] regionBoxes;
+
+    private int numOfPlayers;
+    private int shepherds4player;
+    private final int rayStreet = 12;
     int xStreetPoints[] = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
     int yStreetPoints[] = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
     int xRegionBoxes[] = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
     int yRegionBoxes[] = {131, 269, 349, 111, 73, 226, 194, 134, 185, 243, 285, 412, 349, 490, 549, 488, 410, 420, 292};
-    Ellipse2D[] streetShape = new Ellipse2D[xStreetPoints.length];
     private final Color backgroundColor = new Color(35, 161, 246);
     private final Color noneColor = new Color(0, 0, 0, 0);
     private final MyFont font = new MyFont();
-    private String[] nickNames;
-    private Street[] streets;
-    private InfoPanel infoPanel;
-    private int buttonSelected;
-    private JComponent mainPanel2;
-    private JLayeredPane layeredPane;
-    private List<String> holder = new LinkedList<String>();
-    private RegionBox[] regionBoxes;
+
+    private final List<String> holder = new LinkedList<String>();
 
     public MyGui() {
-        setUpNickNames();
-        setUpMap();
         setUpImagePool();
         setUpFrame();
-
-        //
-        for (int i = 0; i < xRegionBoxes.length; i++) {
-            regionBoxes[i].add("sheep");
-            regionBoxes[i].add("blacksheep");
-            regionBoxes[i].add("ram");
-            regionBoxes[i].add("lamb");
-            regionBoxes[i].add("wolf");
-        }
-    }
-
-    public void setUpNickNames() {
-        nickNames = new String[NUM_OF_PLAYERS];
-        nickNames[0] = "Francesco";
-        nickNames[1] = "Umberto";
-        nickNames[2] = "Ross";
-        nickNames[3] = "Umbertone";
-    }
-
-    /**
-     * imposto le
-     */
-    public void setUpMap() {
-        //idRegionPointMap.put(1, new MyPoint());
-        setUpStreet();
-    }
-
-    /**
-     * imposto l'array di ellissi delle strada
-     */
-    private void setUpStreet() {
-        for (int i = 0; i < xStreetPoints.length; i++) {
-            streetShape[i] = new Ellipse2D.Double(xStreetPoints[i] - ray, yStreetPoints[i] - ray, 2 * ray, 2 * ray);
-            System.out.println("ellisse +" + i + ": centro:" + xStreetPoints[i] + "," + yStreetPoints[i]);
-        }
     }
 
     /**
@@ -108,14 +71,14 @@ public class MyGui implements MouseListener {
 
         //istanzio tutti i componenti
         frame = new JFrame();
-        mainPanel2 = new JPanel();
+        layeredHolder = new JPanel();
         layeredPane = new JLayeredPane();
         layeredPane.setOpaque(true);
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         mainJPanel = new JPanel();
         setUpInfoPanel();
         actionsJPanel = new JPanel();
-        cardsJPanel = new JPanel();
+        cardsConteinerJPanel = new JPanel();
         mapJPanel = new Map();
         actions = new Action[GameConstants.NUM_TOT_ACTIONS.getValue()];
         cardsJPanels = new Card[RegionType.values().length];
@@ -126,15 +89,12 @@ public class MyGui implements MouseListener {
             cardsJPanels[i] = new Card(font.getFont(), "0");
         }
         dxBar = new JPanel();
-        playersJPanel = new JPanel();
+        playersContainerJPanel = new JPanel();
         fenceJPanel = new Card(font.getFont(), String.valueOf(GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()));
-        playersJPanels = new Player[NUM_OF_PLAYERS];
-        for (int i = 0; i < NUM_OF_PLAYERS; i++) {
-            playersJPanels[i] = new Player(nickNames[i], font.getFont());
-        }
+
         streets = new Street[xStreetPoints.length];
         List<Image> imgShepherds = new ArrayList<Image>();
-        for (int i = 0; i < NUM_OF_PLAYERS; i++) {
+        for (int i = 0; i < numOfPlayers; i++) {
             imgShepherds.add(ImagePool.getByName("shepherd" + String.valueOf(i + 1)));
         }
         for (int i = 0; i < xStreetPoints.length; i++) {
@@ -160,16 +120,7 @@ public class MyGui implements MouseListener {
         cardsJPanels[4].setUp(".\\images\\lake2.png", 139, 91, 105, 104);
         cardsJPanels[5].setUp(".\\images\\plain2.png", 139, 91, 105, 104);
 
-        playersJPanels[0].setUp(".\\images\\giocatore1.png", ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
-        playersJPanels[1].setUp(".\\images\\giocatore2.png", ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
-        playersJPanels[2].setUp(".\\images\\giocatore3.png", ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
-        playersJPanels[3].setUp(".\\images\\giocatore4.png", ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
-
         fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
-
-        for (Street street : streets) {
-            street.setUp(".\\images\\shepherd3.png", 2 * ray, 2 * ray);
-        }
 
         for (RegionBox region : regionBoxes) {
             region.setUp((String) null, 52, 78);
@@ -182,11 +133,11 @@ public class MyGui implements MouseListener {
         layeredPane.add(infoPanel, new Integer(1));
 
         mainJPanel.setLayout(new FlowLayout());
-        mainJPanel.add(cardsJPanel);
+        mainJPanel.add(cardsConteinerJPanel);
         mainJPanel.add(mapJPanel);
         mainJPanel.add(dxBar);
         dxBar.setLayout(new FlowLayout());
-        dxBar.add(playersJPanel);
+        dxBar.add(playersContainerJPanel);
         dxBar.add(actionsJPanel);
         addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
         mapJPanel.setLayout(null);
@@ -197,27 +148,24 @@ public class MyGui implements MouseListener {
             mapJPanel.addPanel(regionBoxes[i], xRegionBoxes[i] - 10, yRegionBoxes[i] - 10);
         }
 
-        cardsJPanel.setLayout(new FlowLayout());
+        cardsConteinerJPanel.setLayout(new FlowLayout());
         actionsJPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        playersJPanel.setLayout(new FlowLayout());
-        for (Player player : playersJPanels) {
-            playersJPanel.add(player);
-        }
+        playersContainerJPanel.setLayout(new FlowLayout());
         for (Action action : actions) {
             actionsJPanel.add(action);
         }
         for (Card card : cardsJPanels) {
-            cardsJPanel.add(card);
+            cardsConteinerJPanel.add(card);
         }
-        mainPanel2.add(layeredPane);
-        frame.setContentPane(mainPanel2);
+        layeredHolder.add(layeredPane);
+        frame.setContentPane(layeredHolder);
 
         //imposto colore sfondi
-        mainPanel2.setBackground(backgroundColor);
+        layeredHolder.setBackground(backgroundColor);
         mainJPanel.setBackground(backgroundColor);
         actionsJPanel.setBackground(noneColor);
         mapJPanel.setBackground(noneColor);
-        cardsJPanel.setBackground(noneColor);
+        cardsConteinerJPanel.setBackground(noneColor);
         for (Action action : actions) {
             action.setBackground(noneColor);
             action.repaint();
@@ -226,12 +174,9 @@ public class MyGui implements MouseListener {
             street.setBackground(noneColor);
         }
         fenceJPanel.setBackground(noneColor);
-        for (Player player : playersJPanels) {
-            player.setBackground(noneColor);
-        }
-        playersJPanel.setBackground(noneColor);
+        playersContainerJPanel.setBackground(noneColor);
         dxBar.setBackground(noneColor);
-        mainPanel2.setOpaque(true);
+        layeredHolder.setOpaque(true);
         infoPanel.setBackground(noneColor);
         for (RegionBox region : regionBoxes) {
             region.setBackground(Color.MAGENTA);
@@ -239,51 +184,64 @@ public class MyGui implements MouseListener {
 
         //setto dimensioni
         actionsJPanel.setPreferredSize(new Dimension((68 + 10) * 3, (72 + 10) * actions.length));
-        playersJPanel.setPreferredSize(new Dimension(220, (99 + 10) * playersJPanels.length));
-        cardsJPanel.setPreferredSize(new Dimension(105, (116 + 10) * cardsJPanels.length));
+        //il contenitore dei player ha le dim per contenere sempre 4 player
+        playersContainerJPanel.setPreferredSize(new Dimension(220, (99 + 10) * 4));
+        cardsConteinerJPanel.setPreferredSize(new Dimension(105, (116 + 10) * cardsJPanels.length));
         mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
         mainJPanel.setBounds(0, 0, 900, 800);
+        //la barra di destra ha le dim per contenere sempre 4 player
         dxBar.setPreferredSize(new Dimension((68 + 10) * 3,
-                (((72 + 10) * actions.length) + (99 + 10) * playersJPanels.length) - 90));
-        //      layeredPane.setPreferredSize(new Dimension(800, 800));
-        //    mainPanel2.setPreferredSize(new Dimension(800, 800));
+                (((72 + 10) * actions.length) + (99 + 10) * 4) - 90));
         infoPanel.setPreferredSize(new Dimension(232, 444));
         infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-//        for (RegionBox region : regionBoxes) {
-//            region.setPreferredSize(new Dimension(51, 76));
+
+//        //aggiungo this come listener per le azioni
+//        for (Action action : actions) {
+//            action.addMouseListener(this);
 //        }
-
-        //aggiungo this come listener per le azioni
-        for (Action action : actions) {
-            action.addMouseListener(this);
+//        //aggiungo this come listener per la map
+//        mapJPanel.addMouseListener(this);
+//
+//        //aggiungo l strada come listener di se stessa
+//        for (Street street : streets) {
+//            street.addMouseListener(street);
+//            street.addMouseListener(this);
+//        }
+//
+//        for (Card card : cardsJPanels) {
+//            card.addMouseListener(this);
+//        }
+//
+//        for (Player player : playersJPanels) {
+//            player.addMouseListener(player);
+//        }
+//        infoPanel.addMouseListener(infoPanel);
+//
+        for (RegionBox regionBox : regionBoxes) {
+            regionBox.addMouseListener(this);
         }
+        hideInfoPanel();
 
-        //aggiungo this come listener per la map
-        mapJPanel.addMouseListener(this);
+        frame.pack();
+        frame.setVisible(true);
+    }
 
-        //aggiungo l strada come listener di se stessa
-        for (Street street : streets) {
-            street.addMouseListener(street);
-            street.addMouseListener(this);
-        }
-
-        for (Card card : cardsJPanels) {
-            card.addMouseListener(this);
+    private void setUpPlayers() {
+        //istanzio
+        playersJPanels = new Player[numOfPlayers];
+        for (int i = 0; i < numOfPlayers; i++) {
+            playersJPanels[i] = new Player(nickNames[i], font.getFont());
+            playersJPanels[i].setUp(".\\images\\giocatore" + i + ".png", ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
         }
 
         for (Player player : playersJPanels) {
-            player.addMouseListener(player);
+            playersContainerJPanel.add(player);
         }
-        infoPanel.addMouseListener(infoPanel);
-
-        for (RegionBox regionBox : regionBoxes) {
-            //  regionBox.addMouseListener(regionBox);
-            regionBox.addMouseListener(this);
+        for (Player player : playersJPanels) {
+            player.setBackground(noneColor);
         }
 
-     //   hideInfoPanel();
-        frame.pack();
-        frame.setVisible(true);
+        frame.revalidate();
     }
 
     public static void main(String args[]) {
@@ -291,7 +249,14 @@ public class MyGui implements MouseListener {
         //degli eventi generati dai vari componenti
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new MyGui();
+                MyGui gui = new MyGui();
+                //tes
+                System.out.println("prima ijnfrn");
+                gui.refreshGameParameters(new String[]{"a", "b"}, 4);
+                gui.refreshRegion(0, 1, 0, 2);
+                gui.refreshRegion(4, 2, 1, 0);
+                gui.refreshRegion(18, 3, 2, 4);
+                gui.refreshRegion(7, 0, 3, 0);
             }
         });
     }
@@ -333,7 +298,7 @@ public class MyGui implements MouseListener {
                 for (int i = 0; i < regionBoxes.length; i++) {
                     if (e.getSource().equals(regionBoxes[i])) {
                         System.out.println("regione " + i + "selezionata");
-                        Animal[] animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
+                        List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
                         int j = 0;
                         for (Animal animalToHighlight : animalsToHighlight) {
                             int animalWidth = animalToHighlight.getSize().width;
@@ -349,16 +314,15 @@ public class MyGui implements MouseListener {
                                     animalWidth, animalHeight);
 
                             animalToHighlight.addMouseListener(this);
-                            animalToHighlight.setNum(8);
                             layeredPane.add(animalToHighlight, new Integer(2));
-                            animalToHighlight.refreshLabelBounds();
                             j++;
                         }
                         layeredPane.repaint();
                     }
                 }
-            //    removeRegionListener();
-            //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
+                //FIXME da rimettere
+             //   removeRegionListener();
+                //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
                 //dal layer 2, rimetto visibili in preview gli animali nelle regioni
             } else if (e.getSource() instanceof Animal) {
                 for (Component component : layeredPane.getComponents()) {
@@ -397,42 +361,20 @@ public class MyGui implements MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    /**
-     * abilita i bottoni corrispondenti alle availableActions e controlla
-     * ciclicamente la variabile bottomSelected, appena cambia ritorno quel
-     * valore
-     *
-     * @param availableActionsIndex
-     * @return
-     */
-    public int chooseAction(int[] availableActionsIndex) {
-        //per ogni azione possibile
-        for (int availableActionIndex : availableActionsIndex) {
-            //abilito il corrispondente jButton FIXME
-            //actions[availableActionIndex - 1].setEnabled(true);
-            actions[availableActionIndex - 1].addMouseListener(this);
-        }
-
-        //finchè la pressione di uno di questi bottoni
-        //non cambia la var bottomSelected faccio ;
-        while (buttonSelected < 0) {
-            ;
-        }
-        int choice = buttonSelected;
-        //risetto
-        buttonSelected = -1;
-        return choice;
-    }
-
-    public String askBuyLand(int[] availableLand) throws InterruptedException {
-        for (int i = 0; i < availableLand.length; i++) {
+    public String askBuyLand() {
+        for (int i = 0; i < cardsJPanels.length; i++) {
             cardsJPanels[i].addMouseListener(this);
         }
         String result;
         synchronized (holder) {
             // wait for answer
             while (holder.isEmpty()) {
-                holder.wait();
+                try {
+                    holder.wait();
+                } catch (InterruptedException ex) {
+                    //TODO
+                    Logger.getLogger(MyGui.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
             //la risposta che accetto è la prima
@@ -529,29 +471,6 @@ public class MyGui implements MouseListener {
         infoPanel.setVisible(false);
     }
 
-    protected void moveShepherd(int idStartStreet, int idEndStreet) {
-        Image shepherdImage = streets[idStartStreet].getImage();
-        streets[idStartStreet].setFence();
-        streets[idEndStreet].setImage(shepherdImage);
-    }
-
-    protected String askMoveShepherd() {
-        String result = "";
-        boolean ok = false;
-        do {
-            try {
-                result += askStreet();
-                result += ",";
-                result += askStreet();
-                ok = true;
-            } catch (InterruptedException ex) {
-                ok = false;
-            }
-
-        } while (!ok);
-        return result;
-    }
-
     private String askStreet() throws InterruptedException {
         for (Street street : streets) {
             if (street.isEmpty()) {
@@ -585,11 +504,165 @@ public class MyGui implements MouseListener {
         infoPanel.setDice(result);
     }
 
-    //TODO
     private void removeRegionListener() {
         for (RegionBox region : regionBoxes) {
             region.removeMouseListener(this);
         }
+    }
+
+    //metodi dell'intefaccia
+    public void showWelcome() {
+        showInfo("Benvenuto. Il gioco sta per iniziare!");
+    }
+
+    public void showEndGame() {
+        showInfo("Il gioco è terminato. Arrivederci.");
+    }
+
+    public void showInfo(String info) {
+        infoPanel.addMouseListener(infoPanel);
+        infoPanel.hideDice();
+        infoPanel.setText(info);
+        infoPanel.setVisible(true);
+        infoPanel.repaint();
+    }
+
+    public void showBoughtLand(String boughLand, String price) {
+        showInfo("Hai acquistato la carta " + boughLand + " per " + price + " danari.");
+    }
+
+    public void showSetShepherd(String shepherdIndex, String streetIndex) {
+
+    }
+
+    public void refreshGameParameters(String[] nickNames, int shepherds4Player) {
+//        this.nickNames = nickNames;
+//        this.numOfPlayers = nickNames.length;
+//        this.shepherds4player = shepherds4Player;
+        this.nickNames = new String[]{"ro", "dddd", "kjwn"};
+        this.numOfPlayers = 3;
+        this.shepherds4player = 1;
+        setUpPlayers();
+    }
+
+    public void showMoveShepherd(String priceToMove) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showMoveOvine(String startRegion, String endRegion, String type) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showMateSheepWith(String region, String otherType, String newType) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showMyRank(Boolean winner, String rank) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showClassification(String classification) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showUnexpectedEndOfGame() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void showKillOvine(String region, String type, String shepherdPayed) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String setUpShepherd(int idShepherd) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
+        if (numbOfSheep >0) {
+            regionBoxes[regionIndex].add("sheep", numbOfSheep);
+        }
+        if (numbOfRam >0) {
+            regionBoxes[regionIndex].add("ram", numbOfRam);
+        }
+        if (numbOfLamb >0) {
+            regionBoxes[regionIndex].add("lamb", numbOfLamb);
+        }
+    }
+
+    public void refreshStreet(int streetIndex, boolean fence, String nickShepherd) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshMoveShepherd(String nickNameMover, String shepherdIndex, String streetIndex) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshBuyLand(String buyer, String land, String price) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshKillOvine(String killer, String region, String type, String outcome) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refereshGameParameters(int numbOfPlayers, String firstPlayer, int shepherd4player) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshMoney(String money) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refereshCurrentPlayer(String currenPlayer) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refereshCard(String type, int value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshBlackSheep(String result) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshWolf(String result) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshPlayerDisconnected(String player) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void specialAnimalInitialCondition(String region) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String chooseAction(int[] availableActions, String[] availableStringedActions) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshMateSheepWith(String nickName, String region, String otherType, String newType, String outcome) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void refreshMoveOvine(String nickName, String type, String startRegion, String endRegion) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askMoveOvine() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askMateSheepWith() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askKillOvine() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askMoveShepherd() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
