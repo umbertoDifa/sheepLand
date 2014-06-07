@@ -49,7 +49,7 @@ public class Animal extends JPanel {
         return animalType;
     }
 
-    private void refreshLabelBounds() {
+    protected void refreshLabelBounds() {
         numLabel.setSize(28, 28);
         if (preview) {
             //numLabel.setBounds(widthPreview / 2 - 8, heightPreview / 2 - 16, 28, 28);
@@ -110,12 +110,6 @@ public class Animal extends JPanel {
     @Override
     protected Animal clone() throws CloneNotSupportedException {
         Animal newAnimal = new Animal(this.animalType);
-        newAnimal.preview = this.preview;
-        newAnimal.numLabel = this.numLabel;
-        newAnimal.numLabel.setPreferredSize(this.numLabel.getPreferredSize());
-        newAnimal.numLabel.setText(this.numLabel.getText());
-        newAnimal.numLabel.setBounds(this.numLabel.getBounds().x, this.numLabel.getBounds().y, this.numLabel.getBounds().width, this.numLabel.getBounds().height);
-     //   newAnimal.setLayout(null);
         return newAnimal;
     }
 

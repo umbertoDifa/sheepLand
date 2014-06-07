@@ -29,7 +29,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         for (i = 0; i < animals.length; i++) {
             if (animals[i] == null) {
                 break;
-            } else if (animals[i].getAnimalType() == animalType) {
+            } else if (animals[i].getAnimalType().equals(animalType)) {
                 return;
             }
         }
@@ -69,29 +69,26 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         for (int i=0; i<animals.length; i++) {
             try {
                 result[i] = animals[i].clone();
-                animals[i].setVisible(true);
+                animals[i].setVisible(false);
                 result[i].setPreview(false);
             } catch (CloneNotSupportedException ex) {
                 Logger.getLogger(RegionBox.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        this.setAnimalsVisibles(false);
-
-        System.out.println("equals: " + animals[0].equals(result[0]) + ". stesso rif: " + (animals[0] == result[0]));
 
         this.repaint();
         return result;
     }
     
     public void setAnimalsVisibles(boolean b){
-        for(int i=0; i<animals.length; i++){
-            animals[i].setVisible(b);
+        for (Animal animal : animals) {
+            animal.setVisible(b);
         }
     }
     
     public void setAnimalPreview(boolean b){
-        for(int i=0; i<animals.length; i++){
-            animals[i].setPreview(b);
+        for (Animal animal : animals) {
+            animal.setPreview(b);
         }
     }
 

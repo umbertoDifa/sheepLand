@@ -277,12 +277,11 @@ public class MyGui implements MouseListener {
         infoPanel.addMouseListener(infoPanel);
 
         for (RegionBox regionBox : regionBoxes) {
-          //  regionBox.addMouseListener(regionBox);
+            //  regionBox.addMouseListener(regionBox);
             regionBox.addMouseListener(this);
         }
 
      //   hideInfoPanel();
-
         frame.pack();
         frame.setVisible(true);
     }
@@ -329,37 +328,38 @@ public class MyGui implements MouseListener {
                         System.out.println("aggiunto a holder carta terreno " + i);
                     }
                 }
-            //TODO spostare in RegionBox (e aggiungere getter layeredPane)
+                //TODO spostare in RegionBox (e aggiungere getter layeredPane)
             } else if (e.getSource() instanceof RegionBox) {
                 for (int i = 0; i < regionBoxes.length; i++) {
                     if (e.getSource().equals(regionBoxes[i])) {
                         System.out.println("regione " + i + "selezionata");
                         Animal[] animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
                         int j = 0;
-                            for (Animal animalToHighlight : animalsToHighlight) {
-                                int animalWidth = animalToHighlight.getSize().width;
-                                int animalHeight = animalToHighlight.getSize().height;
-                                animalToHighlight.setPreferredSize(
-                                        new Dimension(animalWidth, animalHeight));
-                                Point p = regionBoxes[i].getLocation();
-                                int first = 1;
-                                if (j == 0) {
+                        for (Animal animalToHighlight : animalsToHighlight) {
+                            int animalWidth = animalToHighlight.getSize().width;
+                            int animalHeight = animalToHighlight.getSize().height;
+                            Point p = regionBoxes[i].getLocation();
+                            int first = 1;
+                            if (j == 0) {
                                 first = 0;
                             }
                             animalToHighlight.setBounds(
-                                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5+140),
+                                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5 + 140),
                                     (int) (p.y - first * (animalWidth * Math.sqrt(2) * Math.sin((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
                                     animalWidth, animalHeight);
+
                             animalToHighlight.addMouseListener(this);
+                            animalToHighlight.setNum(8);
                             layeredPane.add(animalToHighlight, new Integer(2));
+                            animalToHighlight.refreshLabelBounds();
                             j++;
                         }
-                        mainPanel2.repaint();
+                        layeredPane.repaint();
                     }
                 }
-                removeRegionListener();
+            //    removeRegionListener();
             //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
-            //dal layer 2, rimetto visibili in preview gli animali nelle regioni
+                //dal layer 2, rimetto visibili in preview gli animali nelle regioni
             } else if (e.getSource() instanceof Animal) {
                 for (Component component : layeredPane.getComponents()) {
                     if (component instanceof Animal) {
@@ -376,7 +376,7 @@ public class MyGui implements MouseListener {
                 System.out.println("num comp in layer 1:" + layeredPane.getComponentCountInLayer(2));
                 layeredPane.repaint();
                 System.out.println(layeredPane.getComponentCountInLayer(2));
-                for (RegionBox region: regionBoxes){
+                for (RegionBox region : regionBoxes) {
                     region.setAnimalsVisibles(true);
                     region.setAnimalPreview(true);
                 }
@@ -587,7 +587,7 @@ public class MyGui implements MouseListener {
 
     //TODO
     private void removeRegionListener() {
-        for(RegionBox region: regionBoxes){
+        for (RegionBox region : regionBoxes) {
             region.removeMouseListener(this);
         }
     }
