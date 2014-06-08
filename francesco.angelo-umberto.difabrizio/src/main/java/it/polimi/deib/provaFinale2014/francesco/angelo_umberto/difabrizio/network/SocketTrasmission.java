@@ -680,11 +680,13 @@ public class SocketTrasmission extends TrasmissionController {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(MessageProtocol.GAME_PARAMETERS.toString());
             String tmp = "";
-            for (int i = 0; i < nickNames.length - 1; i++) {
+            for (int i = 0; i < nickNames.length ; i++) {
                 tmp += nickNames[i] + ",";
             }
+            DebugLogger.println("invio " + tmp);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(tmp + shepherd4player);
+            DebugLogger.println("invio " + tmp+shepherd4player);
         }
     }
 

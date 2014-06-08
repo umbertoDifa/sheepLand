@@ -325,9 +325,9 @@ public class CommandLineView implements TypeOfViewController {
     }
 
     public void refreshGameParameters(String[] nickNames, int shepherd4player) {
-        showInfo("Giocatori:\n");
+        showInfo("Giocatori:");
         for (int i = 0; i < nickNames.length ; i++) {
-            showInfo(nickNames[i] + "\n");
+            showInfo(nickNames[i]);
         }
         showInfo("pastori per giocatore: " + shepherd4player);
     }

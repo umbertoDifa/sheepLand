@@ -130,7 +130,6 @@ public class ClientSocket {
         boolean endOfGame = false;
         try {
             while (!endOfGame) {
-                DebugLogger.println("In ricezione:");
                 received = receiveString();
                 DebugLogger.println(received);
 
@@ -278,11 +277,11 @@ public class ClientSocket {
     private void refreshGameParameters() {
         received = receiveString();
         token = received.split(",", -1);
-        String[] nickNames = new String[token.length];
+        String[] nickNames = new String[token.length - 1];
 
         DebugLogger.println("lunghezza" + token.length);
 
-        for (int i = 0; i < token.length - 1; i++) {
+        for (int i = 0; i < nickNames.length; i++) {
             nickNames[i] = token[i];
             DebugLogger.println(token[i]);
         }
@@ -455,7 +454,7 @@ public class ClientSocket {
 
         sendString(parameters);
 
-        token = parameters.split(",",-1);
+        token = parameters.split(",", -1);
         String shepherdIndex = token[0];
 
         //ottengo il risultato
