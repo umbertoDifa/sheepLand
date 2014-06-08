@@ -53,11 +53,23 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
     }
 
     public boolean removeOvine(String ovineType) {
+        //per ogni animale nella regione
         for (Animal animal : animals) {
+            //se il tipo è uguale a quello da rimuovere
             if (animal.getAnimalType().equals(ovineType)) {
+                //se di quel tipo di animale vi è almeno 1 occorrenza
                 if (animal.getNum() > 0) {
-                    animal.setNum(animal.getNum() - 1);
-                    if(animal.getNum()==0){
+                    //se non è ne pecora nera ne lupo
+                    if (!animal.getAnimalType().equals("wolf") && !animal.getAnimalType().equals("blacksheep")) {
+                        //decrementa le occorrenze
+                        animal.setNum(animal.getNum() - 1);
+                        //nel caso rimuovilo
+                        if (animal.getNum() == 0) {
+                            this.remove(animal);
+                            animals.remove(animal);
+                        }
+                    //per lupo o pecora nera rimuovili
+                    } else {
                         this.remove(animal);
                         animals.remove(animal);
                     }

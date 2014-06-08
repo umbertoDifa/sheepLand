@@ -17,12 +17,12 @@ import javax.swing.JPanel;
  */
 public class Animal extends JPanel {
 
-    private Image imagePreview;
-    private Image image;
-    private int widthPreview;
-    private int heightPreview;
-    private int width;
-    private int height;
+    private final Image imagePreview;
+    private final Image image;
+    private final int widthPreview;
+    private final int heightPreview;
+    private final int width;
+    private final int height;
     private boolean preview;
     private final String animalType;
     private JLabel numLabel;
@@ -36,13 +36,15 @@ public class Animal extends JPanel {
         width = image.getWidth(this);
         height = image.getHeight(this);
         preview = true;
-        numLabel = new JLabel("1");
-        numLabel.setPreferredSize(new Dimension(28, 28));
-        numLabel.setBackground(new Color(0, 0, 0, 0));
-        numLabel.setForeground(Color.white);
-        this.setLayout(null);
-        this.add(numLabel);
-        refreshLabelBounds();
+        if (!animalType.equals("blacksheep") && !animalType.equals("wolf")) {
+            numLabel = new JLabel("1");
+            numLabel.setPreferredSize(new Dimension(28, 28));
+            numLabel.setBackground(new Color(0, 0, 0, 0));
+            numLabel.setForeground(Color.white);
+            this.setLayout(null);
+            this.add(numLabel);
+            refreshLabelBounds();
+        }
     }
 
     public String getAnimalType() {
@@ -55,9 +57,9 @@ public class Animal extends JPanel {
             //numLabel.setBounds(widthPreview / 2 - 8, heightPreview / 2 - 16, 28, 28);
             numLabel.setLocation(widthPreview / 2 - 8, heightPreview / 2 - 16);
         } else {
-          //  numLabel.setBounds(width / 2+30, height / 2+30, 28, 28);
-            numLabel.setLocation(width / 2-10, height / 2-16);
-            
+            //  numLabel.setBounds(width / 2+30, height / 2+30, 28, 28);
+            numLabel.setLocation(width / 2 - 10, height / 2 - 16);
+
         }
     }
 
@@ -95,22 +97,31 @@ public class Animal extends JPanel {
 
     public void setPreview(boolean ok) {
         preview = ok;
-        refreshLabelBounds();
+        if (this.numLabel != null) {
+            refreshLabelBounds();
+        }
         repaint();
     }
 
     public int getNum() {
-        return Integer.parseInt(numLabel.getText());
+        if (numLabel != null) {
+            return Integer.parseInt(numLabel.getText());
+        }
+        return 0;
     }
 
     public void setNum(int num) {
-        this.numLabel.setText(String.valueOf(num));
+        if (numLabel != null) {
+            this.numLabel.setText(String.valueOf(num));
+        }
     }
 
     @Override
     protected Animal clone() throws CloneNotSupportedException {
         Animal newAnimal = new Animal(this.animalType);
-        newAnimal.setNum(this.getNum());
+        if (newAnimal.numLabel != null) {
+            newAnimal.setNum(this.getNum());
+        }
         return newAnimal;
     }
 

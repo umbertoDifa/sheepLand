@@ -41,6 +41,10 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
         moneyText.setText(String.valueOf(amount));
     }
     
+    public void pay(int price){
+        moneyText.setText(String.valueOf(Integer.parseInt(moneyText.getText())-price));
+    }
+    
     public void isYourShift(){
         
     }

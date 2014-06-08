@@ -42,10 +42,11 @@ public class InfoPanel extends JPanel implements MouseListener {
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setBackground(new Color(0, 0, 0, 0));
-        textArea.setFont(font);
+        Font f = font.deriveFont(new Float(22.0));
+        textArea.setFont(f);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setPreferredSize(new Dimension(140, 110));
+        textArea.setPreferredSize(new Dimension(140, 230));
         textArea.addMouseListener(this);
         this.imagesDice = imagesDice;
         dice = new JLabel();

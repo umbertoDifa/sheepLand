@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -35,7 +36,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
     private Card[] cardsJPanels;
     private JPanel actionsJPanel;
     private JPanel cardsConteinerJPanel;
-    private Map mapJPanel;
+    private MapBoard mapJPanel;
     private Card fenceJPanel;
     private Player[] playersJPanels;
     private JPanel dxBar;
@@ -50,8 +51,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
     private String myNickName;
     private int numOfPlayers;
     private int shepherds4player;
-    private HashMap<Integer, Integer> nickShepherdToStreet;
-    private final int rayStreet = 12;
+    private Map<String, Integer> nickShepherdToStreet;
     int xStreetPoints[] = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
     int yStreetPoints[] = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
     int xRegionBoxes[] = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
@@ -82,7 +82,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
         setUpInfoPanel();
         actionsJPanel = new JPanel();
         cardsConteinerJPanel = new JPanel();
-        mapJPanel = new Map();
+        mapJPanel = new MapBoard();
         actions = new Action[GameConstants.NUM_TOT_ACTIONS.getValue()];
         cardsJPanels = new Card[RegionType.values().length];
         for (int i = 0; i < actions.length; i++) {
@@ -248,9 +248,9 @@ public class MyGui implements MouseListener, TypeOfViewController {
         nickShepherdToStreet = new HashMap();
 
         for (int i = 0; i < numOfPlayers; i++) {
-            for (int j = 0; j < shepherds4player; j++) //HACK nella key dell'hashmap le decine indicano il player, le unità l'id del pastore
+            for (int j = 0; j < shepherds4player; j++)
             {
-                nickShepherdToStreet.put((i * 10) + j, null);
+                nickShepherdToStreet.put(nickNames[i]+"-"+j, null);
             }
         }
 
@@ -281,6 +281,13 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
                 //test
                 gui.showMoveOvine("0", "7", "sheep");
+
+                //test
+                gui.specialAnimalInitialCondition("Blacksheep,3");
+                gui.refreshBlackSheep("ok,3,0,5");
+                
+                gui.showKillOvine("7", "sheep", "84");
+                gui.showKillOvine("18", "lamb", "0");
 
             }
         });
@@ -570,18 +577,17 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
     public void showBoughtLand(String boughLand, String price) {
         showInfo("Hai acquistato la carta " + boughLand + " per " + price + " danari.");
+        //TODO aggiornare carte
     }
 
     public void showSetShepherd(int shepherdIndex, String streetIndex) {
         refreshStreet(Integer.parseInt(streetIndex), false, myNickName);
-        nickShepherdToStreet.replace(getIndexShepherdByNickName(myNickName) * 10 + shepherdIndex,
+        nickShepherdToStreet.replace(myNickName+"-"+shepherdIndex,
                 Integer.valueOf(streetIndex));
     }
 
     public void refreshGameParameters(String[] nickNames, int shepherds4Player) {
         this.nickNames = nickNames;
-        //FIXME quando sarà impl la askNickName avverrà là l assegnam di myNickName
-        this.myNickName = nickNames[0];
         this.numOfPlayers = nickNames.length;
         this.shepherds4player = shepherds4Player;
         setUpPlayers();
@@ -592,10 +598,15 @@ public class MyGui implements MouseListener, TypeOfViewController {
     //l ho mette come messaggio nell showInfo quindi nello show info dovrei far dei controlli
     //se cancellare o meno il risultato della askMoveShepherd di cui avevo tenuto traccia..
     public void showMoveShepherd(String priceToMove) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        playersJPanels[getIndexShepherdByNickName(myNickName)].pay(Integer.parseInt(priceToMove));
+//        nickShepherdToStreet.get(myNickName+)
+        //aggiorno soldi
+        //rimuovo shepherd dalla startStreet
+        //aggiungo hepherd nella endStreet
     }
 
     public void showMoveOvine(String startRegion, String endRegion, String type) {
+        //TODO animazione?
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].add(type);
     }
@@ -641,7 +652,6 @@ public class MyGui implements MouseListener, TypeOfViewController {
         setFreeStreetsClickable();
         String result = getAnswerByHolder();
         return result;
-
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
@@ -689,39 +699,105 @@ public class MyGui implements MouseListener, TypeOfViewController {
     }
 
     public void refreshKillOvine(String killer, String region, String type, String outcome) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (outcome.equals("ok")) {
+            regionBoxes[Integer.parseInt(region)].removeOvine(type);
+        }
+        String resultToShow = "Il giocatore " + killer + " ha ";
+        if (outcome.equals("ok")) {
+            resultToShow += "ucciso ";
+        } else {
+            resultToShow += "provato ad uccidere ";
+        }
+        showInfo(resultToShow + "un " + type + " nella regione " + region);
+
     }
 
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer, int shepherd4player) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //FIXME da rimuovere dall interfaccia poi da qua
     }
 
     public void refreshMoney(String money) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        playersJPanels[getIndexShepherdByNickName(myNickName)].setAmount(Integer.parseInt(money));
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        showInfo("E' il turno di " + currenPlayer);
     }
 
     public void refereshCard(String type, int value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO aggiungere alle mie carte
     }
 
     public void refreshBlackSheep(String result) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //splitta il risultato e raccogli l'outcome
+        String[] token = result.split(",");
+        String outcome = token[0];
+
+        String diceValue = token[1];
+        String startRegion = token[2];
+        if ("ok".equalsIgnoreCase(outcome)) {
+            String endRegion = token[3];
+            regionBoxes[Integer.parseInt(startRegion)].removeOvine("blacksheep");
+            regionBoxes[Integer.parseInt(endRegion)].add("blacksheep");
+            showInfo("La pecora nera si è spostata da la regione " + startRegion
+                    + " alla regione " + endRegion + " passando per la strada di valore " + diceValue);
+        } else if ("nok".equalsIgnoreCase(outcome)) {
+            showInfo(
+                    "La pecora nera non può muoversi, la strada di valore "
+                    + diceValue + " è bloccata o non esiste nella regione " + startRegion);
+        }
     }
 
     public void refreshWolf(String result) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //splitta il risultato e raccogli l'outcome
+        String[] token = result.split(",");
+        String outcome = token[0];
+
+        if ("ok".equalsIgnoreCase(outcome)) {
+            String fence = token[1];
+            String ovine = token[2];
+            String diceValue = token[3];
+            String startRegion = token[4];
+            String endRegion = token[5];
+
+            regionBoxes[Integer.parseInt(startRegion)].removeOvine("wolf");
+            regionBoxes[Integer.parseInt(endRegion)].add("wolf");
+            if ("ok".equalsIgnoreCase(fence)) {
+                showInfo(
+                        "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
+                        + " passando sulla strada di valore " + diceValue + " e saltando la recinzione!");
+            } else {
+                showInfo(
+                        "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
+                        + " passando per la strada di valore " + diceValue);
+            }
+            if (!"nok".equalsIgnoreCase(ovine)) {
+                regionBoxes[Integer.parseInt(endRegion)].removeOvine(ovine);
+                showInfo("Il lupo ha mangiato una " + ovine);
+            }
+        } else {
+            String diceValue = token[1];
+            String startRegion = token[2];
+            showInfo(
+                    "Il lupo non è riuscito a passare attraverso la strada di valore "
+                    + diceValue + " nella regione " + startRegion);
+        }
     }
 
     public void refreshPlayerDisconnected(String player) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        playersJPanels[getIndexShepherdByNickName(player)].setEnabled(false);
+        showInfo("Il giocatore " + player + " si è disconnesso");
     }
 
     public void specialAnimalInitialCondition(String region) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String[] token = region.split(",");
+        if ("Wolf".equals(token[0])) {
+            regionBoxes[Integer.parseInt(token[1])].add("wolf");
+            showInfo("Il lupo si trova nella regione " + token[1]);
+        } else if ("BlackSheep".equals(token[0])) {
+            regionBoxes[Integer.parseInt(token[1])].add("blacksheep");
+            showInfo("La pecora nera si trova nella regione " + token[1]);
+        }
     }
 
     public String chooseAction(int[] availableActions, String[] availableStringedActions) {
