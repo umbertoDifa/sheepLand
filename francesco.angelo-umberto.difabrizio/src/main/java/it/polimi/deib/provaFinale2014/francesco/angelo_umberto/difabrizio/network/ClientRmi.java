@@ -130,19 +130,6 @@ public class ClientRmi implements ClientInterfaceRemote {
                               String nickShepherd) {
         view.refreshStreet(streetIndex, fence, nickShepherd);
     }
-
-    /**
-     * {@inheritDoc }
-     *
-     * @param numbOfPlayers
-     * @param firstPlayer
-     * @param shepherd4player
-     */
-    public void refreshGameParameters(int numbOfPlayers, String firstPlayer,
-                                      int shepherd4player) {
-        view.refereshGameParameters(numbOfPlayers, firstPlayer, shepherd4player);
-    }
-
     /**
      * {@inheritDoc }
      *
@@ -226,7 +213,7 @@ public class ClientRmi implements ClientInterfaceRemote {
         int action = -1;
 
         do {
-            choice = view.chooseAction(availableAcions, possibleActions);
+            choice = view.chooseAction(availableAcions, actionsName);
             try {
                 action = Integer.parseInt(choice);
                 rightFormat = true;
@@ -259,7 +246,7 @@ public class ClientRmi implements ClientInterfaceRemote {
             }
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);   
+                    ex.getMessage(), ex);
             this.disconnect("Il server è offline, la partita termina");
         }
         return null;
@@ -307,11 +294,13 @@ public class ClientRmi implements ClientInterfaceRemote {
     }
 
     private String moveShepherd() {
-        try {
-            parameters = view.askMoveShepherd();
-            token = parameters.split(",", -1);
 
-            result = playerRmi.moveShepherdRemote(token[0], token[1]);
+        parameters = view.askMoveShepherd();
+        token = parameters.split(",", -1);
+        String shepherdIndex = token[0];
+        String endStreet = token[1];
+        try {
+            result = playerRmi.moveShepherdRemote(shepherdIndex, endStreet);
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
@@ -319,7 +308,7 @@ public class ClientRmi implements ClientInterfaceRemote {
         }
         if (result.contains("Pastore spostato")) {
             token = result.split(",", -1);
-            view.showMoveShepherd(token[1]);
+            view.showMoveShepherd(shepherdIndex,token[1]);
             return parameters;
         }
         view.showInfo(result);
@@ -555,9 +544,9 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshPlayerDisconnected(player);
     }
 
-    public void refreshGameParameters(String nickNames, int shepherd4player)
+    public void refreshGameParameters(String[] nickNames, int shepherd4player)
             throws RemoteException {
-        //TODO
+        view.refreshGameParameters(nickNames, shepherd4player);
     }
 
 }

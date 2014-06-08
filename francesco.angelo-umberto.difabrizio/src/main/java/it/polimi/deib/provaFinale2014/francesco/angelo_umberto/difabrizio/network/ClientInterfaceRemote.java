@@ -145,7 +145,7 @@ public interface ClientInterfaceRemote extends Remote {
      *
      * @throws RemoteException If there's a connection problem
      */
-    public void refreshGameParameters(String nickNames,
+    public void refreshGameParameters(String[] nickNames,
                                       int shepherd4player) throws
             RemoteException;
 

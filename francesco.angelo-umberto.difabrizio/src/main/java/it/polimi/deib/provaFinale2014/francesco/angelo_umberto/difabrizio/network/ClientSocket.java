@@ -62,15 +62,7 @@ public class ClientSocket {
             DebugLogger.println(
                     "Canali di comunicazione impostati");
 
-            do {
-                stdOut.println("Inserisci il tuo nickName:");
-                stdOut.flush();
-
-                nickName = stdIn.nextLine();
-            } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
-                    ":"));
-            //da evitare come la peste la stringa vuota come nickname
-            //esplodono i satelliti della nasa
+            this.nickName = view.askNickName();
 
             DebugLogger.println("Invio nickName");
 
@@ -285,7 +277,7 @@ public class ClientSocket {
 
     private void refreshGameParameters() {
         received = receiveString();
-        token = received.split(",",-1);
+        token = received.split(",", -1);
         String[] nickNames = new String[token.length];
 
         DebugLogger.println("lunghezza" + token.length);
@@ -393,13 +385,13 @@ public class ClientSocket {
         //receive possible actions
         String actions = receiveString();
 
-        String[] possibleActions = actions.split(",",-1);
+        String[] possibleActions = actions.split(",", -1);
 
         int[] availableAcions = new int[possibleActions.length];
         String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
-            token = possibleActions[i].split("-",-1);
+            token = possibleActions[i].split("-", -1);
 
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
@@ -451,7 +443,7 @@ public class ClientSocket {
         String result = receiveString();
         DebugLogger.println(result);
         if (result.contains("Ovino mosso")) {
-            token = parameters.split(",",-1);
+            token = parameters.split(",", -1);
             view.showMoveOvine(token[0], token[1], token[2]);
         } else {
             view.showInfo(result);
@@ -459,16 +451,19 @@ public class ClientSocket {
     }
 
     private void moveShepherd() {
-        String result = view.askMoveShepherd();
+        String parameters = view.askMoveShepherd();
 
-        sendString(result);
+        sendString(parameters);
+
+        token = parameters.split(",",-1);
+        String shepherdIndex = token[0];
 
         //ottengo il risultato
-        result = receiveString();
+        String result = receiveString();
 
         if (result.contains("Pastore spostato")) {
-            token = result.split(",",-1);
-            view.showMoveShepherd(token[1]);
+            token = result.split(",", -1);
+            view.showMoveShepherd(shepherdIndex, token[1]);
         } else {
             view.showInfo(result);
         }
@@ -480,7 +475,7 @@ public class ClientSocket {
 
         //ottengo i lrisultato dell'operazione
         String result = receiveString();
-        token = result.split(",",-1);
+        token = result.split(",", -1);
         if (result.contains("Carta acquistata")) {
             //che mi rimanda il risultato            
             view.showBoughtLand(token[1], token[2]);
@@ -496,10 +491,10 @@ public class ClientSocket {
 
         //ottengo i lrisultato dell'operazione
         String result = receiveString();
-        String[] resultTokens = result.split(",",-1);
+        String[] resultTokens = result.split(",", -1);
         //resultTokens1 è il tipo creato, resultTokens2 è il tipo accoppiato con la pecora
         if (result.contains("Accoppiamento eseguito")) {
-            token = parameters.split(",",-1);
+            token = parameters.split(",", -1);
             //token 1 è la regione
             //che mi rimanda il risultato              
             view.showMateSheepWith(token[1], resultTokens[2], resultTokens[1]);
@@ -516,10 +511,10 @@ public class ClientSocket {
         //ottengo i lrisultato dell'operazione
         String result = receiveString();
 
-        token = parameters.split(",",-1);
+        token = parameters.split(",", -1);
 
         if (result.contains("Ovino ucciso")) {
-            String[] tokenResult = result.split(",",-1);
+            String[] tokenResult = result.split(",", -1);
             view.showKillOvine(token[1], token[2], tokenResult[1]);
         } else {
             view.showInfo(result);
@@ -536,7 +531,7 @@ public class ClientSocket {
 
     private void showMyRank() {
         received = receiveString();
-        token = received.split(",",-1);
+        token = received.split(",", -1);
 
         view.showMyRank(Boolean.parseBoolean(token[0]), token[1]);
     }

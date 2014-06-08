@@ -85,7 +85,7 @@ public abstract class TrasmissionController {
      * @param shepherd4player
      */
     public abstract void refreshGameParameters(String nickName,
-                                               String nickNames,                                                                                             
+                                               String[] nickNames,                                                                                             
                                                int shepherd4player);
 
     /**

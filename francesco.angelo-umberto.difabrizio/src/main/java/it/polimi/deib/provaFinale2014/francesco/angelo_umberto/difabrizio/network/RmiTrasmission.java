@@ -444,7 +444,7 @@ public class RmiTrasmission extends TrasmissionController {
                                     classification);
                     ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
                             nickName)).getClientRmi().disconnect(
-                                    "Il gioco è terminato\nArriverderci!");  //TODO to test
+                                    "Il gioco è terminato\nArriverderci!"); 
 
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
@@ -559,7 +559,7 @@ public class RmiTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshGameParameters(String nickName, String nickNames,
+    public void refreshGameParameters(String nickName, String[] nickNames,
                                       int shepherd4player) {
         if (canPlayerReceive(nickName)) {
             try {

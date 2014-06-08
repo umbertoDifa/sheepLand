@@ -16,7 +16,7 @@ public interface TypeOfViewController {
 
     public void showSetShepherd(int shepherdIndex, String streetIndex);
 
-    public void showMoveShepherd(String priceToMove);
+    public void showMoveShepherd(String shepherdIndex,String priceToMove);
 
     public void showMoveOvine(String startRegion, String endRegion, String type);
 
@@ -55,9 +55,6 @@ public interface TypeOfViewController {
     public void refreshKillOvine(String killer, String region, String type,
                                  String outcome);
 
-    public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-                                       int shepherd4player);
-
     public void refreshMoney(String money);
 
     public void refereshCurrentPlayer(String currenPlayer);
@@ -92,6 +89,13 @@ public interface TypeOfViewController {
      * @return
      */
     public String askMoveOvine();
+
+    /**
+     * Chiede il nickName
+     *
+     * @return nickName
+     */
+    public String askNickName();
 
     /**
      * Asks to the player which shepherd to move and in which streeet

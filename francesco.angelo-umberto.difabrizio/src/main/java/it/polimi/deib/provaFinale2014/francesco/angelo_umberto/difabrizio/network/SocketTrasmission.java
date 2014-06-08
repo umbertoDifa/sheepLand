@@ -674,13 +674,17 @@ public class SocketTrasmission extends TrasmissionController {
      * @param shepherd4player
      */
     @Override
-    public void refreshGameParameters(String nickName, String nickNames,
+    public void refreshGameParameters(String nickName, String[] nickNames,
                                       int shepherd4player) {
         if (canPlayerReceive(nickName)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(MessageProtocol.GAME_PARAMETERS.toString());
+            String tmp = "";
+            for (int i = 0; i < nickNames.length - 1; i++) {
+                tmp += nickNames[i] + ",";
+            }
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
-                    nickName)).send(nickNames + shepherd4player);
+                    nickName)).send(tmp + shepherd4player);
         }
     }
 

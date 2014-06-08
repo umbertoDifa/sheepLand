@@ -107,7 +107,6 @@ public class GameManager implements Runnable {
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            //TODO stesso discorso della run()
         }
 
         controller.setNick2PlayerMap(this.clientNickNames, players);
@@ -504,13 +503,7 @@ public class GameManager implements Runnable {
 
         refreshSpecialAnimals(client);
 
-        String tmp = "";
-
-        for (int i = 0; i < clientNickNames.length; i++) {
-            tmp += clientNickNames[i] + ",";
-        }      
-
-        controller.refreshGameParameters(client, tmp, shepherd4player);
+        controller.refreshGameParameters(client, clientNickNames, shepherd4player);
     }
 
     private void executeRounds() throws FinishedFencesException,

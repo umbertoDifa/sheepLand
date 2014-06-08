@@ -67,8 +67,7 @@ public class GameManagerTest {
         System.out.println("askIdShepherd");
         int hashCode = 0;
         GameManager instance = null;
-        int expResult = 0;
-        // TODO review the generated test code and remove the default call to fail.
+        int expResult = 0;        
         fail("The test case is a prototype.");
     }
 
