@@ -158,7 +158,7 @@ public abstract class TrasmissionController {
      * @param newStreet     Street where the shepherd was moved
      */
     public abstract void refreshMoveShepherd(String nickNameMover,
-                                             String shepherdIndex,
+                                             int shepherdIndex,
                                              String newStreet);
 
     /**
@@ -169,7 +169,7 @@ public abstract class TrasmissionController {
      * @param price         The pirce of the card
      */
     public abstract void refreshBuyLand(String nickNameBuyer, String boughtLand,
-                                        String price);
+                                        int price);
 
     /**
      * Refreshes that a sheep mated with some other kind of ovine. The result

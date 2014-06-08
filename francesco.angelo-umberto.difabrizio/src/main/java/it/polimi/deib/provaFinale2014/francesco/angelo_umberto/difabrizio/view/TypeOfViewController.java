@@ -14,7 +14,7 @@ public interface TypeOfViewController {
 
     public void showBoughtLand(String boughLand, String price);
 
-    public void showSetShepherd(String shepherdIndex, String streetIndex);
+    public void showSetShepherd(int shepherdIndex, String streetIndex);
 
     public void showMoveShepherd(String priceToMove);
 
@@ -45,10 +45,10 @@ public interface TypeOfViewController {
     public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd);
 
-    public void refreshMoveShepherd(String nickNameMover, String shepherdIndex,
+    public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
                                     String streetIndex);
 
-    public void refreshBuyLand(String buyer, String land, String price);
+    public void refreshBuyLand(String buyer, String land, int price);
 
     public void refreshGameParameters(String[] nickNames, int shepherd4player);
 

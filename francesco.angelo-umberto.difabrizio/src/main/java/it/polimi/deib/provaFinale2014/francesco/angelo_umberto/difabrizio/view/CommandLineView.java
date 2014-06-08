@@ -122,18 +122,18 @@ public class CommandLineView implements TypeOfViewController {
         return startRegion + "," + endRegion + "," + type;
     }
     
-    public void refreshMoveShepherd(String nickName, String shepherdIndex,
+    public void refreshMoveShepherd(String nickName, int shepherdIndex,
                                     String newStreet) {
         showInfo(
                 "Il giocatore " + nickName + " ha posizionato il pastore " + shepherdIndex + " nella strada " + newStreet);
         
     }
     
-    public void showSetShepherd(String shepherdIndex, String streetIndex) {
+    public void showSetShepherd(int shepherdIndex, String streetIndex) {
         showInfo("Pastore " + shepherdIndex + " posizionato in " + streetIndex);
     }
     
-    public void refreshBuyLand(String buyer, String land, String price) {
+    public void refreshBuyLand(String buyer, String land, int price) {
         showInfo(
                 "Il giocatore " + buyer + " ha acquistato un territorio " + land + " per " + price + " danari");
         
@@ -168,11 +168,7 @@ public class CommandLineView implements TypeOfViewController {
         showInfo(
                 "Il giocatore " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
-    
-    public void moveShepherd(String startRegion, String endRegion) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+
     public String askMoveShepherd() {
         showInfo("Scegliere quale pastore muovere:");
         String idShepherd = stdIn.nextLine();

@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.NoSuchElementException;
@@ -20,6 +21,7 @@ public class SocketClientProxy extends ClientProxy {
     private final Socket socket;
     private Scanner fromClient;
     private PrintWriter toClient;
+    private ObjectOutputStream toClientAsObject;
 
     public SocketClientProxy(Socket socket) {
         super();
@@ -31,6 +33,11 @@ public class SocketClientProxy extends ClientProxy {
 
             //inizializzo streamo in
             this.fromClient = new Scanner(this.socket.getInputStream());
+
+            //inizializzo stram out come oggetto
+            this.toClientAsObject = new ObjectOutputStream(
+                    this.socket.getOutputStream());
+
         } catch (IOException ex) {
             //se fallisce la creazione di un canale di scambio dati
             Logger.getLogger(DebugLogger.class.getName()).log(
@@ -53,6 +60,50 @@ public class SocketClientProxy extends ClientProxy {
      * @param message
      */
     protected void send(String message) {
+        toClient.println(message);
+        //flusha lo stream e controlla eventuali errori
+        if (toClient.checkError()) {
+            DebugLogger.println(
+                    "C'è stato un errore inviando al client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE);
+        }
+    }
+     /**
+     * Manda un messaggio al client attraverso il proprio socket
+     *
+     * @param message intero da inviare
+     */
+    protected void send(int info) {
+        toClient.println(info);
+        //flusha lo stream e controlla eventuali errori
+        if (toClient.checkError()) {
+            DebugLogger.println(
+                    "C'è stato un errore inviando al client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE);
+        }
+    }
+    
+     /**
+     * Manda un messaggio al client attraverso il proprio socket
+     *
+     * @param message boolean
+     */
+    protected void send(boolean message) {
+        toClient.println(message);
+        //flusha lo stream e controlla eventuali errori
+        if (toClient.checkError()) {
+            DebugLogger.println(
+                    "C'è stato un errore inviando al client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE);
+        }
+    }
+    
+     /**
+     * Manda un messaggio al client attraverso il proprio socket
+     *
+     * @param message oggetto da inviare
+     */
+    protected void send(Object message) {
         toClient.println(message);
         //flusha lo stream e controlla eventuali errori
         if (toClient.checkError()) {

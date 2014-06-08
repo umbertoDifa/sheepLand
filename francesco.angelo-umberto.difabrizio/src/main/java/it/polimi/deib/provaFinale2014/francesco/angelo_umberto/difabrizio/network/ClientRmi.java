@@ -196,7 +196,7 @@ public class ClientRmi implements ClientInterfaceRemote {
 
         token = result.split(",", -1);
         if (result.contains("Pastore posizionato correttamente!")) {
-            view.showSetShepherd("" + idShepherd, chosenStreet);
+            view.showSetShepherd(idShepherd, chosenStreet);
             return chosenStreet;
         }
         view.showInfo(token[0]);
@@ -333,7 +333,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param indexShepherd
      * @param newStreet
      */
-    public void refreshMoveShepherd(String nickName, String indexShepherd,
+    public void refreshMoveShepherd(String nickName, int indexShepherd,
                                     String newStreet) {
         view.refreshMoveShepherd(nickName, indexShepherd, newStreet);
     }
@@ -344,7 +344,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws java.rmi.RemoteException
      */
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
-                               String price) throws RemoteException {
+                               int price) throws RemoteException {
         view.refreshBuyLand(nickNameBuyer, boughtLand, price);
     }
 
