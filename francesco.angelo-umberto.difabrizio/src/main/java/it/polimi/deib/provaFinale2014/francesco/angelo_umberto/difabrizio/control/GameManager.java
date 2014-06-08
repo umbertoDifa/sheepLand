@@ -498,12 +498,14 @@ public class GameManager implements Runnable {
         refreshRegions(client);
 
         refreshStreets(client);
+        
+        controller.refreshGameParameters(client, clientNickNames, shepherd4player);
 
         controller.refreshMoney(client);
 
         refreshSpecialAnimals(client);
 
-        controller.refreshGameParameters(client, clientNickNames, shepherd4player);
+        
     }
 
     private void executeRounds() throws FinishedFencesException,

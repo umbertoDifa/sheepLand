@@ -39,13 +39,13 @@ public class ClientRmi implements ClientInterfaceRemote {
     /**
      * Creates an rmi client setting it's variables.
      *
-     * @param ip         The ip to which it will connect to find the server
-     * @param port       The port to search the server
+     * @param ip The ip to which it will connect to find the server
+     * @param port The port to search the server
      * @param nameServer The name to which the server is binded
-     * @param view       The kind of view wanted by the user
+     * @param view The kind of view wanted by the user
      */
     public ClientRmi(String ip, int port, String nameServer,
-                     TypeOfViewController view) {
+            TypeOfViewController view) {
         this.nameServer = nameServer;
         this.port = port;
         this.ip = ip;
@@ -77,10 +77,7 @@ public class ClientRmi implements ClientInterfaceRemote {
             do {
 
                 do {
-                    stdOut.println("Inserisci il tuo nickName:");
-                    stdOut.flush();
-
-                    nickName = stdIn.nextLine();
+                    this.nickName = view.askNickName();
                 } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
                         ":"));
                 //da evitare come la peste la stringa vuota come nickname
@@ -115,7 +112,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param numbOfLamb
      */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         view.refreshRegion(regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
     }
 
@@ -127,9 +124,10 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param nickShepherd
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd) {
+            String nickShepherd) {
         view.refreshStreet(streetIndex, fence, nickShepherd);
     }
+
     /**
      * {@inheritDoc }
      *
@@ -289,7 +287,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param ovineType
      */
     public void refreshMoveOvine(String nickNameMover, String startRegion,
-                                 String endRegion, String ovineType) {
+            String endRegion, String ovineType) {
         view.refreshMoveOvine(nickNameMover, ovineType, startRegion, endRegion);
     }
 
@@ -308,7 +306,7 @@ public class ClientRmi implements ClientInterfaceRemote {
         }
         if (result.contains("Pastore spostato")) {
             token = result.split(",", -1);
-            view.showMoveShepherd(shepherdIndex,token[1]);
+            view.showMoveShepherd(shepherdIndex, token[1]);
             return parameters;
         }
         view.showInfo(result);
@@ -323,7 +321,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param newStreet
      */
     public void refreshMoveShepherd(String nickName, int indexShepherd,
-                                    String newStreet) {
+            String newStreet) {
         view.refreshMoveShepherd(nickName, indexShepherd, newStreet);
     }
 
@@ -333,7 +331,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws java.rmi.RemoteException
      */
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
-                               int price) throws RemoteException {
+            int price) throws RemoteException {
         view.refreshBuyLand(nickNameBuyer, boughtLand, price);
     }
 
@@ -390,8 +388,8 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param outcome
      */
     public void refreshMateSheepWith(String nickNameMater, String region,
-                                     String otherType, String newType,
-                                     String outcome) {
+            String otherType, String newType,
+            String outcome) {
         view.refreshMateSheepWith(nickName, region, otherType, newType, outcome);
     }
 
@@ -516,7 +514,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws RemoteException
      */
     public void refreshKillOvine(String nickNameKiller, String region,
-                                 String type, String outcome) throws
+            String type, String outcome) throws
             RemoteException {
         view.refreshKillOvine(type, region, type, outcome);
     }

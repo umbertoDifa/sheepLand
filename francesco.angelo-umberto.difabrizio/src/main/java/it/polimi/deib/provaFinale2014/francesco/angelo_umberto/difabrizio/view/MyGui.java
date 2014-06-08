@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -10,6 +11,8 @@ import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -28,7 +31,7 @@ import javax.swing.*;
  *
  * @author Francesco
  */
-public class MyGui implements MouseListener, TypeOfViewController {
+public class MyGui implements MouseListener, TypeOfViewController, ActionListener {
 
     private JFrame frame;
     private JPanel mainJPanel;
@@ -44,6 +47,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
     private JComponent layeredHolder;
     private JLayeredPane layeredPane;
     private InfoPanel infoPanel;
+    private NickPanel nickPanel;
     private Street[] streets;
     private RegionBox[] regionBoxes;
 
@@ -59,8 +63,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
     private final Color backgroundColor = new Color(35, 161, 246);
     private final Color noneColor = new Color(0, 0, 0, 0);
     private final MyFont font = new MyFont();
-
-    private final List<String> holder = new LinkedList<String>();
+    private int lastStreet;
 
     public MyGui() {
         setUpImagePool();
@@ -79,6 +82,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
         layeredPane.setOpaque(true);
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         mainJPanel = new JPanel();
+        nickPanel = new NickPanel(this);
         setUpInfoPanel();
         actionsJPanel = new JPanel();
         cardsConteinerJPanel = new JPanel();
@@ -135,6 +139,8 @@ public class MyGui implements MouseListener, TypeOfViewController {
         layeredPane.setPreferredSize(new Dimension(900, 800));
         layeredPane.add(mainJPanel, new Integer(0));
         layeredPane.add(infoPanel, new Integer(1));
+        layeredPane.add(nickPanel, new Integer(3));
+        layeredPane.revalidate();
 
         mainJPanel.setLayout(new FlowLayout());
         mainJPanel.add(cardsConteinerJPanel);
@@ -198,7 +204,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
                 (((72 + 10) * actions.length) + (99 + 10) * 4) - 90));
         infoPanel.setPreferredSize(new Dimension(232, 444));
         infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-
+        nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
 //        //aggiungo this come listener per le azioni
 //        for (Action action : actions) {
 //            action.addMouseListener(this);
@@ -228,6 +234,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
         frame.pack();
         frame.setVisible(true);
+
     }
 
     private void setUpPlayers() {
@@ -248,49 +255,58 @@ public class MyGui implements MouseListener, TypeOfViewController {
         nickShepherdToStreet = new HashMap();
 
         for (int i = 0; i < numOfPlayers; i++) {
-            for (int j = 0; j < shepherds4player; j++)
-            {
-                nickShepherdToStreet.put(nickNames[i]+"-"+j, null);
+            for (int j = 0; j < shepherds4player; j++) {
+                nickShepherdToStreet.put(nickNames[i] + "-" + j, null);
             }
         }
 
         frame.revalidate();
     }
+    private static final List<String> holder = new LinkedList<String>();
 
     public static void main(String args[]) {
         //faccio gestire il thread da EDT, per il controllo ciclico della coda
         //degli eventi generati dai vari componenti
+        
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 MyGui gui = new MyGui();
-                //test regions
-                gui.refreshGameParameters(new String[]{"a", "b"}, 4);
-                gui.refreshRegion(0, 1, 0, 2);
-                gui.refreshRegion(4, 2, 1, 0);
-                gui.refreshRegion(18, 3, 2, 84);
-                gui.refreshRegion(7, 0, 3, 0);
-                //test streets
-                gui.refreshStreet(15, true, "a");
-                gui.refreshStreet(35, false, "b");
-                gui.refreshStreet(15, true, "c");
-                gui.refreshStreet(35, true, "");
-                gui.refreshStreet(15, false, "a");
-                gui.refreshStreet(0, false, "b");
-                //test moveShepherd
-                gui.refreshMoveShepherd("b", 0, String.valueOf(2));
 
-                //test
-                gui.showMoveOvine("0", "7", "sheep");
-
-                //test
-                gui.specialAnimalInitialCondition("Blacksheep,3");
-                gui.refreshBlackSheep("ok,3,0,5");
-                
-                gui.showKillOvine("7", "sheep", "84");
-                gui.showKillOvine("18", "lamb", "0");
-
+//                //test regions
+//                gui.refreshGameParameters(new String[]{"a", "b"}, 4);
+//                gui.refreshRegion(0, 1, 0, 2);
+//                gui.refreshRegion(4, 2, 1, 0);
+//                gui.refreshRegion(18, 3, 2, 84);
+//                gui.refreshRegion(7, 0, 3, 0);
+//                //test streets
+//                gui.refreshStreet(15, true, "a");
+//                gui.refreshStreet(35, false, "b");
+//                gui.refreshStreet(15, true, "c");
+//                gui.refreshStreet(35, true, "");
+//                gui.refreshStreet(15, false, "a");
+//                gui.refreshStreet(0, false, "b");
+//                //test moveShepherd
+//                gui.refreshMoveShepherd("b", 0, String.valueOf(2));
+//
+//                //test
+//                gui.showMoveOvine("0", "7", "sheep");
+//
+//                //test
+//                gui.specialAnimalInitialCondition("Blacksheep,3");
+//                gui.refreshBlackSheep("ok,3,0,5");
+//
+//                gui.showKillOvine("7", "sheep", "84");
+//                gui.showKillOvine("18", "lamb", "0");
             }
         });
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        myNickName = nickPanel.getMyNickName();
+        synchronized (holder) {
+            holder.add(myNickName);
+            holder.notify();
+        }
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -441,6 +457,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
         ImagePool.add(".\\images\\blacksheep.png", "blacksheep");
         ImagePool.add(".\\images\\ram.png", "ram");
         ImagePool.add(".\\images\\lamb.png", "lamb");
+        ImagePool.add(".\\images\\info.png", "infoPanel");
     }
 
     /**
@@ -516,10 +533,10 @@ public class MyGui implements MouseListener, TypeOfViewController {
         }
     }
 
-    private int getIndexShepherdByNickName(String nickShepherd) {
-        for (int indexShepherd = 0; indexShepherd < nickNames.length; indexShepherd++) {
-            if (nickNames[indexShepherd] == nickShepherd) {
-                return indexShepherd;
+    private int getIndexPlayerByNickName(String nickShepherd) {
+        for (int indexPlayer = 0; indexPlayer < nickNames.length; indexPlayer++) {
+            if (nickNames[indexPlayer].equals(nickShepherd)) {
+                return indexPlayer;
             }
         }
         return -1;
@@ -527,9 +544,13 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
     private String getAnswerByHolder() {
         String result;
+        DebugLogger.println("nella getanswerbuholder");
+
         synchronized (holder) {
             // wait for answer
             while (holder.isEmpty()) {
+                DebugLogger.println("nel while");
+
                 try {
                     holder.wait();
                 } catch (InterruptedException ex) {
@@ -540,6 +561,8 @@ public class MyGui implements MouseListener, TypeOfViewController {
             result = holder.remove(0);
             System.out.println("prelevato da holder " + result);
         }
+        DebugLogger.println("fine get answer by holder");
+
         return result;
     }
 
@@ -582,7 +605,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
     public void showSetShepherd(int shepherdIndex, String streetIndex) {
         refreshStreet(Integer.parseInt(streetIndex), false, myNickName);
-        nickShepherdToStreet.replace(myNickName+"-"+shepherdIndex,
+        nickShepherdToStreet.replace(myNickName + "-" + shepherdIndex,
                 Integer.valueOf(streetIndex));
     }
 
@@ -597,12 +620,15 @@ public class MyGui implements MouseListener, TypeOfViewController {
     //ma anche volendo il risultato se va bene i chiama qst metodo. se va male invece
     //l ho mette come messaggio nell showInfo quindi nello show info dovrei far dei controlli
     //se cancellare o meno il risultato della askMoveShepherd di cui avevo tenuto traccia..
-    public void showMoveShepherd(String priceToMove) {
-        playersJPanels[getIndexShepherdByNickName(myNickName)].pay(Integer.parseInt(priceToMove));
-//        nickShepherdToStreet.get(myNickName+)
-        //aggiorno soldi
-        //rimuovo shepherd dalla startStreet
-        //aggiungo hepherd nella endStreet
+    public void showMoveShepherd(String idShepherd, String priceToMove) {
+        //faccio pagare il player
+        playersJPanels[getIndexPlayerByNickName(myNickName)].pay(Integer.parseInt(priceToMove));
+        //metto il recinto nella strada dove si trovava
+        streets[nickShepherdToStreet.get(myNickName + "-" + idShepherd)].setFence();
+        //aggiorno l img della strada d arrivo
+        streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(myNickName));
+        //aggiorno la hashmap
+        nickShepherdToStreet.replace(myNickName + "-" + idShepherd, lastStreet);
     }
 
     public void showMoveOvine(String startRegion, String endRegion, String type) {
@@ -669,8 +695,8 @@ public class MyGui implements MouseListener, TypeOfViewController {
     public void refreshStreet(int streetIndex, boolean fence, String nickShepherd) {
         if (fence) {
             streets[streetIndex].setFence();
-        } else if (nickShepherd != null) {
-            int indexShepherd = getIndexShepherdByNickName(nickShepherd);
+        } else if (nickShepherd != null && !"null".equals(nickShepherd)) {
+            int indexShepherd = getIndexPlayerByNickName(nickShepherd);
             streets[streetIndex].setImage("shepherd" + String.valueOf(indexShepherd));
         }
 
@@ -678,18 +704,12 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex, String streetIndex) {
         //refresh della strada di partenza
-        //cerco la strada dov'era il pastore, lo rimuovo e metto un recinto
-        //FIXME funziona solo con un pastore... mi serve la startStreet
-        for (Street street : streets) {
-            if (street.getStringedImage().equals("shepherd" + getIndexShepherdByNickName(nickNameMover))) {
-                street.removeImg();
-                street.setFence();
-            }
-        }
+        //cerco la strada dov'era il pastore e metto un recinto
+        streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
 
         //refresh della strada di arrivo
-        //metto il pastore nella nuova strada
         refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover);
+        nickShepherdToStreet.replace((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex));
     }
 
     public void refreshBuyLand(String buyer, String land, int price) {
@@ -717,11 +737,12 @@ public class MyGui implements MouseListener, TypeOfViewController {
     }
 
     public void refreshMoney(String money) {
-        playersJPanels[getIndexShepherdByNickName(myNickName)].setAmount(Integer.parseInt(money));
+        playersJPanels[getIndexPlayerByNickName(myNickName)].setAmount(Integer.parseInt(money));
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
         showInfo("E' il turno di " + currenPlayer);
+        //TODO: aggiungere effetto evidenziatore
     }
 
     public void refereshCard(String type, int value) {
@@ -739,7 +760,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
             String endRegion = token[3];
             regionBoxes[Integer.parseInt(startRegion)].removeOvine("blacksheep");
             regionBoxes[Integer.parseInt(endRegion)].add("blacksheep");
-            showInfo("La pecora nera si è spostata da la regione " + startRegion
+            showInfo("La pecora nera si è spostata dalla regione " + startRegion
                     + " alla regione " + endRegion + " passando per la strada di valore " + diceValue);
         } else if ("nok".equalsIgnoreCase(outcome)) {
             showInfo(
@@ -785,8 +806,9 @@ public class MyGui implements MouseListener, TypeOfViewController {
     }
 
     public void refreshPlayerDisconnected(String player) {
-        playersJPanels[getIndexShepherdByNickName(player)].setEnabled(false);
+        playersJPanels[getIndexPlayerByNickName(player)].setEnabled(false);
         showInfo("Il giocatore " + player + " si è disconnesso");
+        //TODO: effetto grafico
     }
 
     public void specialAnimalInitialCondition(String region) {
@@ -801,7 +823,11 @@ public class MyGui implements MouseListener, TypeOfViewController {
     }
 
     public String chooseAction(int[] availableActions, String[] availableStringedActions) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (int i = 0; i < availableActions.length; i++) {
+            actions[i].addMouseListener(this);
+        }
+        //FIXME
+        return "";
     }
 
     public void refreshMateSheepWith(String nickName, String region, String otherType, String newType, String outcome) {
@@ -826,6 +852,14 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
     public String askMoveShepherd() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askNickName() {
+        DebugLogger.println("nella nickname");
+        nickPanel.setVisible(true);
+        String r = getAnswerByHolder();
+        DebugLogger.println(r);
+        return r;
     }
 
 }

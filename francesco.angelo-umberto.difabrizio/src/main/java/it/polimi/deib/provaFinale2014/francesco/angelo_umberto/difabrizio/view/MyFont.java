@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class MyFont {
 
-    private Font myFont;
+    private static Font myFont;
 
     public MyFont() {
         try {
@@ -27,7 +27,7 @@ public class MyFont {
         }
     }
     
-    public Font getFont(){
+    public static Font getFont(){
         return myFont;
     }
 }
