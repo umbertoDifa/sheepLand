@@ -13,47 +13,59 @@ import java.util.logging.Logger;
  */
 public class RegionBox extends BackgroundAndTextJPanel implements MouseListener {
 
-    private int[] numAnimals;
-    private int[] xPreview = {10, 0, 10, 6, 10};
-    private int[] yPreview = {0, 25, 25, 35, 35};
+    private final int[] xPreview = {10, 0, 10, 6, 10};
+    private final int[] yPreview = {0, 25, 25, 35, 35};
     private List<Animal> animals = new ArrayList<Animal>();
 
     public RegionBox() {
-        this.numAnimals = new int[5];
         this.setLayout(null);
         repaint();
     }
 
     public void add(String animalType) {
-        //controllo che in animals non ci sia già un animale col tipo da aggiungere
-        //mi fermo al primo libero o se arrivo a fine array
-        for(int i=0; i<animals.size(); i++){
-            if (animals.get(i).getAnimalType().equals(animalType)){
-                animals.get(i).setNum(animals.get(i).getNum()+1);
+        for (Animal animal : animals) {
+            if (animal.getAnimalType().equals(animalType)) {
+                animal.setNum(animal.getNum() + 1);
                 return;
             }
         }
-        
+
         Animal newAnimal = new Animal(animalType);
         //se sono riuscito a creare l animale, la posizione nell array è vuota
         //e non sono arrivato a fine array
 
-            //aggiungo l animale all'array
-            animals.add(newAnimal);
-            //lo posiziono nel RegionBox
-            if ("sheep".equals(animalType)) {
-                MyGui.addComponentsToPane(this, newAnimal, xPreview[0], yPreview[0]);
-            } else if ("ram".equals(animalType)) {
-                MyGui.addComponentsToPane(this, newAnimal, xPreview[1], yPreview[1]);
-            } else if ("lamb".equals(animalType)) {
-                MyGui.addComponentsToPane(this, newAnimal, xPreview[2], yPreview[2]);
-            } else if ("blacksheep".equals(animalType)) {
-                MyGui.addComponentsToPane(this, newAnimal, xPreview[3], yPreview[3]);
-            } else if ("wolf".equals(animalType)) {
-                MyGui.addComponentsToPane(this, newAnimal, xPreview[4], yPreview[4]);
-            }
-        
+        //aggiungo l animale all'array
+        animals.add(newAnimal);
+        //lo posiziono nel RegionBox
+        if ("sheep".equals(animalType)) {
+            MyGui.addComponentsToPane(this, newAnimal, xPreview[0], yPreview[0]);
+        } else if ("ram".equals(animalType)) {
+            MyGui.addComponentsToPane(this, newAnimal, xPreview[1], yPreview[1]);
+        } else if ("lamb".equals(animalType)) {
+            MyGui.addComponentsToPane(this, newAnimal, xPreview[2], yPreview[2]);
+        } else if ("blacksheep".equals(animalType)) {
+            MyGui.addComponentsToPane(this, newAnimal, xPreview[3], yPreview[3]);
+        } else if ("wolf".equals(animalType)) {
+            MyGui.addComponentsToPane(this, newAnimal, xPreview[4], yPreview[4]);
+        }
+
         repaint();
+    }
+
+    public boolean removeOvine(String ovineType) {
+        for (Animal animal : animals) {
+            if (animal.getAnimalType().equals(ovineType)) {
+                if (animal.getNum() > 0) {
+                    animal.setNum(animal.getNum() - 1);
+                    if(animal.getNum()==0){
+                        this.remove(animal);
+                        animals.remove(animal);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -70,14 +82,14 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         List<Animal> result = new ArrayList<Animal>();
         for (int i = 0; i < animals.size(); i++) {
 
-                try {
-                    result.add(animals.get(i).clone());
-                    animals.get(i).setVisible(false);
-                    result.get(i).setPreview(false);
-                } catch (CloneNotSupportedException ex) {
-                    Logger.getLogger(RegionBox.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            
+            try {
+                result.add(animals.get(i).clone());
+                animals.get(i).setVisible(false);
+                result.get(i).setPreview(false);
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(RegionBox.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
 
         this.repaint();

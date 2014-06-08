@@ -15,6 +15,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,12 +43,14 @@ public class MyGui implements MouseListener, TypeOfViewController {
     private JComponent layeredHolder;
     private JLayeredPane layeredPane;
     private InfoPanel infoPanel;
-    private String[] nickNames;
     private Street[] streets;
     private RegionBox[] regionBoxes;
 
+    private String[] nickNames;
+    private String myNickName;
     private int numOfPlayers;
     private int shepherds4player;
+    private HashMap<Integer, Integer> nickShepherdToStreet;
     private final int rayStreet = 12;
     int xStreetPoints[] = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
     int yStreetPoints[] = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
@@ -94,8 +97,9 @@ public class MyGui implements MouseListener, TypeOfViewController {
 
         streets = new Street[xStreetPoints.length];
         List<Image> imgShepherds = new ArrayList<Image>();
-        for (int i = 0; i < numOfPlayers; i++) {
-            imgShepherds.add(ImagePool.getByName("shepherd" + String.valueOf(i + 1)));
+        //ogni strada ha il sempre 4 pedine 
+        for (int i = 0; i < 4; i++) {
+            imgShepherds.add(ImagePool.getByName("shepherd" + String.valueOf(i)));
         }
         for (int i = 0; i < xStreetPoints.length; i++) {
             streets[i] = new Street(ImagePool.getByName("fence"), imgShepherds);
@@ -241,6 +245,15 @@ public class MyGui implements MouseListener, TypeOfViewController {
             player.setBackground(noneColor);
         }
 
+        nickShepherdToStreet = new HashMap();
+
+        for (int i = 0; i < numOfPlayers; i++) {
+            for (int j = 0; j < shepherds4player; j++) //HACK nella key dell'hashmap le decine indicano il player, le unità l'id del pastore
+            {
+                nickShepherdToStreet.put((i * 10) + j, null);
+            }
+        }
+
         frame.revalidate();
     }
 
@@ -250,13 +263,25 @@ public class MyGui implements MouseListener, TypeOfViewController {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 MyGui gui = new MyGui();
-                //tes
-                System.out.println("prima ijnfrn");
+                //test regions
                 gui.refreshGameParameters(new String[]{"a", "b"}, 4);
                 gui.refreshRegion(0, 1, 0, 2);
                 gui.refreshRegion(4, 2, 1, 0);
-                gui.refreshRegion(18, 3, 2, 4);
+                gui.refreshRegion(18, 3, 2, 84);
                 gui.refreshRegion(7, 0, 3, 0);
+                //test streets
+                gui.refreshStreet(15, true, "a");
+                gui.refreshStreet(35, false, "b");
+                gui.refreshStreet(15, true, "c");
+                gui.refreshStreet(35, true, "");
+                gui.refreshStreet(15, false, "a");
+                gui.refreshStreet(0, false, "b");
+                //test moveShepherd
+                gui.refreshMoveShepherd("b", 0, String.valueOf(2));
+
+                //test
+                gui.showMoveOvine("0", "7", "sheep");
+
             }
         });
     }
@@ -321,7 +346,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
                     }
                 }
                 //FIXME da rimettere
-             //   removeRegionListener();
+                //   removeRegionListener();
                 //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
                 //dal layer 2, rimetto visibili in preview gli animali nelle regioni
             } else if (e.getSource() instanceof Animal) {
@@ -365,22 +390,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
         for (int i = 0; i < cardsJPanels.length; i++) {
             cardsJPanels[i].addMouseListener(this);
         }
-        String result;
-        synchronized (holder) {
-            // wait for answer
-            while (holder.isEmpty()) {
-                try {
-                    holder.wait();
-                } catch (InterruptedException ex) {
-                    //TODO
-                    Logger.getLogger(MyGui.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            //la risposta che accetto è la prima
-            result = holder.remove(0);
-            System.out.println("prelevato da holder carta terreno" + result);
-        }
+        String result = getAnswerByHolder();
         return result;
     }
 
@@ -409,12 +419,11 @@ public class MyGui implements MouseListener, TypeOfViewController {
      * carica le immagini per le strade nell'ImagePool
      */
     private void setUpImagePool() {
-        //TODO creare ultime 2 pedine dei giocatori e modificare qui path
         ImagePool.add(".\\images\\shepherd1.png", "shepherd1");
         ImagePool.add(".\\images\\shepherd2.png", "shepherd2");
         ImagePool.add(".\\images\\shepherd3.png", "shepherd3");
-        ImagePool.add(".\\images\\shepherd4.png", "shepherd4");
-        ImagePool.add(".\\images\\fence2.png", "fenceP");
+        ImagePool.add(".\\images\\shepherd0.png", "shepherd0");
+        ImagePool.add(".\\images\\fence2.png", "fence");
         ImagePool.add(".\\images\\sheep2P.png", "sheepP");
         ImagePool.add(".\\images\\wolf2P.png", "wolfP");
         ImagePool.add(".\\images\\blacksheepP.png", "blacksheepP");
@@ -477,17 +486,7 @@ public class MyGui implements MouseListener, TypeOfViewController {
                 street.addMouseListener(this);
             }
         }
-        String result;
-        synchronized (holder) {
-            // wait for answer
-            while (holder.isEmpty()) {
-                holder.wait();
-            }
-
-            //la risposta che accetto è la prima
-            result = holder.remove(0);
-            System.out.println("prelevato da holder strada " + result);
-        }
+        String result = getAnswerByHolder();
         return String.valueOf(result);
     }
 
@@ -510,6 +509,48 @@ public class MyGui implements MouseListener, TypeOfViewController {
         }
     }
 
+    private int getIndexShepherdByNickName(String nickShepherd) {
+        for (int indexShepherd = 0; indexShepherd < nickNames.length; indexShepherd++) {
+            if (nickNames[indexShepherd] == nickShepherd) {
+                return indexShepherd;
+            }
+        }
+        return -1;
+    }
+
+    private String getAnswerByHolder() {
+        String result;
+        synchronized (holder) {
+            // wait for answer
+            while (holder.isEmpty()) {
+                try {
+                    holder.wait();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MyGui.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            //la risposta che accetto è la prima
+            result = holder.remove(0);
+            System.out.println("prelevato da holder " + result);
+        }
+        return result;
+    }
+
+    private void setFreeStreetsClickable() {
+        for (Street street : streets) {
+            if (street.isEmpty()) {
+                street.addMouseListener(this);
+            }
+            //FIXME solo per test aggiungo strada come listener
+            street.addMouseListener(street);
+        }
+    }
+
+    //metodi dell'intefaccia
+    //metodi dell'intefaccia
+    //metodi dell'intefaccia
+    //metodi dell'intefaccia
+    //metodi dell'intefaccia
     //metodi dell'intefaccia
     public void showWelcome() {
         showInfo("Benvenuto. Il gioco sta per iniziare!");
@@ -531,74 +572,120 @@ public class MyGui implements MouseListener, TypeOfViewController {
         showInfo("Hai acquistato la carta " + boughLand + " per " + price + " danari.");
     }
 
-    public void showSetShepherd(String shepherdIndex, String streetIndex) {
-
+    public void showSetShepherd(int shepherdIndex, String streetIndex) {
+        refreshStreet(Integer.parseInt(streetIndex), false, myNickName);
+        nickShepherdToStreet.replace(getIndexShepherdByNickName(myNickName) * 10 + shepherdIndex,
+                Integer.valueOf(streetIndex));
     }
 
     public void refreshGameParameters(String[] nickNames, int shepherds4Player) {
-//        this.nickNames = nickNames;
-//        this.numOfPlayers = nickNames.length;
-//        this.shepherds4player = shepherds4Player;
-        this.nickNames = new String[]{"ro", "dddd", "kjwn"};
-        this.numOfPlayers = 3;
-        this.shepherds4player = 1;
+        this.nickNames = nickNames;
+        //FIXME quando sarà impl la askNickName avverrà là l assegnam di myNickName
+        this.myNickName = nickNames[0];
+        this.numOfPlayers = nickNames.length;
+        this.shepherds4player = shepherds4Player;
         setUpPlayers();
     }
 
+    //problema: dovrei tener traccia dell'ultima risposta del metodo askMoveShepherd.
+    //ma anche volendo il risultato se va bene i chiama qst metodo. se va male invece
+    //l ho mette come messaggio nell showInfo quindi nello show info dovrei far dei controlli
+    //se cancellare o meno il risultato della askMoveShepherd di cui avevo tenuto traccia..
     public void showMoveShepherd(String priceToMove) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void showMoveOvine(String startRegion, String endRegion, String type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
+        regionBoxes[Integer.parseInt(endRegion)].add(type);
     }
 
     public void showMateSheepWith(String region, String otherType, String newType) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //TODO animazione accoppiamento?
+        regionBoxes[Integer.parseInt(region)].add(newType);
     }
 
     public void showMyRank(Boolean winner, String rank) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String result = "Hai ";
+        if (winner) {
+            result += "vinto ";
+        } else {
+            result += "perso ";
+        }
+        result += "con " + rank + " punti.";
+        showInfo(result);
     }
 
     public void showClassification(String classification) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String classificationToShow = "Classifica: ";
+        String[] token = classification.split(",");
+        int i = 0;
+        while (i < token.length - 1) {
+            classification += "Giocatore :" + token[i] + " punteggio: " + token[i + 1];
+            i += 2;
+        }
+        showInfo(classificationToShow);
     }
 
     public void showUnexpectedEndOfGame() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        showInfo("Il gioco è terminato per mancanza di giocatori, si scusiamo.");
     }
 
     public void showKillOvine(String region, String type, String shepherdPayed) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        showInfo("Hai ucciso un " + type + " nella regione " + region
+                + " pagando " + shepherdPayed + " pastori per il silenzio");
+        regionBoxes[Integer.parseInt(region)].removeOvine(type);
     }
 
     public String setUpShepherd(int idShepherd) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setFreeStreetsClickable();
+        String result = getAnswerByHolder();
+        return result;
+
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
-        if (numbOfSheep >0) {
+        if (numbOfSheep > 0) {
             regionBoxes[regionIndex].add("sheep", numbOfSheep);
         }
-        if (numbOfRam >0) {
+        if (numbOfRam > 0) {
             regionBoxes[regionIndex].add("ram", numbOfRam);
         }
-        if (numbOfLamb >0) {
+        if (numbOfLamb > 0) {
             regionBoxes[regionIndex].add("lamb", numbOfLamb);
         }
     }
 
     public void refreshStreet(int streetIndex, boolean fence, String nickShepherd) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (fence) {
+            streets[streetIndex].setFence();
+        } else if (nickShepherd != null) {
+            int indexShepherd = getIndexShepherdByNickName(nickShepherd);
+            streets[streetIndex].setImage("shepherd" + String.valueOf(indexShepherd));
+        }
+
     }
 
-    public void refreshMoveShepherd(String nickNameMover, String shepherdIndex, String streetIndex) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshMoveShepherd(String nickNameMover, int shepherdIndex, String streetIndex) {
+        //refresh della strada di partenza
+        //cerco la strada dov'era il pastore, lo rimuovo e metto un recinto
+        //FIXME funziona solo con un pastore... mi serve la startStreet
+        for (Street street : streets) {
+            if (street.getStringedImage().equals("shepherd" + getIndexShepherdByNickName(nickNameMover))) {
+                street.removeImg();
+                street.setFence();
+            }
+        }
+
+        //refresh della strada di arrivo
+        //metto il pastore nella nuova strada
+        refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover);
     }
 
-    public void refreshBuyLand(String buyer, String land, String price) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void refreshBuyLand(String buyer, String land, int price) {
+        showInfo("Il giocatore " + buyer + " ha acquistato un territorio "
+                + land + " per " + price + " danari");
+        //TODO aggiungere +1 al territorio fra le mie carte
     }
 
     public void refreshKillOvine(String killer, String region, String type, String outcome) {

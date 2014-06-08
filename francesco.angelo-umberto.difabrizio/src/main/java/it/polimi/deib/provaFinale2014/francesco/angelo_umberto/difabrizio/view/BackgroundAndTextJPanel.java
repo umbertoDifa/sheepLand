@@ -19,8 +19,8 @@ import javax.swing.JPanel;
 public abstract class BackgroundAndTextJPanel extends JPanel {
 
     private JLabel textLabel = new JLabel();
-    Font font;
-    Image image;
+    protected Font font;
+    private Image image;
     private int delta;
     private int width;
     private int height;
@@ -35,6 +35,10 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected BackgroundAndTextJPanel() {
     }
 
+    protected void setDimension(int width, int height){
+        this.width = width;
+        this.height = height;
+    }
     /**
      * set the panel's background image corrisponding to the path center the
      * Label with xText, yText
@@ -45,8 +49,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      */
     protected void setUp(String imgPath, int xText, int yText, int width, int height) {
         //salvo le dimensioni
-        this.height = height;
-        this.width = width;
+        setDimension(width, height);
 
         //setto immagine di sfondo e colore di sfondo
         this.setImage(imgPath);
@@ -85,20 +88,25 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      * @param height
      */
     protected void setUp(String imgPath, int width, int height) {
+        setDimension(width, height);
         setPreferredSize(new Dimension(width, height));
         setUp(imgPath, 0, 0, width, height);
 
     }
 
     /**
-     * set the only background image WARNING funziona solo per cambiare img
-     * source. non imposta dimensioni
+     * set the only background image
      *
      * @param image
      */
     protected void setUp(Image image) {
+        setDimension(image.getWidth(this), image.getHeight(this));
         this.image = image;
         repaint();
+    }
+    
+    protected void removeImg(){
+        this.image = null;
     }
 
     /**
@@ -129,6 +137,10 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         textLabel.setText(text);
     }
 
+    protected Image getImage(){
+        return this.image;
+    }
+    
     /**
      * add a Panel, positioning it with x,y referred to this
      *
