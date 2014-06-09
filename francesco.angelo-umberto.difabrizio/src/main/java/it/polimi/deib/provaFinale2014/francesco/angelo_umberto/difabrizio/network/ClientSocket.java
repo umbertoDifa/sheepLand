@@ -56,13 +56,16 @@ public class ClientSocket {
     protected void startClient() {
 
         try {
-            Scanner stdIn = new Scanner(System.in);
-            PrintWriter stdOut = new PrintWriter(System.out);
 
             DebugLogger.println(
                     "Canali di comunicazione impostati");
+            do {
+                this.nickName = view.askNickName();
 
-            this.nickName = view.askNickName();
+            } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                    ":"));
+            //da evitare come la peste la stringa vuota come nickname
+            //esplodono i satelliti della nasaF
 
             DebugLogger.println("Invio nickName");
 
@@ -238,13 +241,16 @@ public class ClientSocket {
                         MessageProtocol.valueOf(
                                 received))) {
                     showClassification();
+
                 }
             }
         } catch (NoSuchElementException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
             view.showEndGame();
         }
+
     }
 
     private void refreshRegion() {
@@ -384,13 +390,13 @@ public class ClientSocket {
         //receive possible actions
         String actions = receiveString();
 
-        String[] possibleActions = actions.split(",", -1);
+        String[] possibleActions = actions.split(",");
 
         int[] availableAcions = new int[possibleActions.length];
         String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
-            token = possibleActions[i].split("-", -1);
+            token = possibleActions[i].split("-");
 
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];

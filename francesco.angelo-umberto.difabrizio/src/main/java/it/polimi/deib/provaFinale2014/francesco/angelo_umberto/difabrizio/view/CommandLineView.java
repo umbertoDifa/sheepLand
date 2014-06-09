@@ -209,18 +209,11 @@ public class CommandLineView implements TypeOfViewController {
     }
 
     public String askNickName() {
-        String nickName;
 
-        do {
-            stdOut.println("Inserisci il tuo nickName:");
-            stdOut.flush();
+        stdOut.println("Inserisci il tuo nickName:");
+        stdOut.flush();
 
-            nickName = stdIn.nextLine();
-        } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
-                ":"));
-        //da evitare come la peste la stringa vuota come nickname
-        //esplodono i satelliti della nasa
-        return nickName;
+        return stdIn.nextLine();
     }
 
     public void showEndGame() {
@@ -326,7 +319,7 @@ public class CommandLineView implements TypeOfViewController {
 
     public void refreshGameParameters(String[] nickNames, int shepherd4player) {
         showInfo("Giocatori:");
-        for (int i = 0; i < nickNames.length ; i++) {
+        for (int i = 0; i < nickNames.length; i++) {
             showInfo(nickNames[i]);
         }
         showInfo("pastori per giocatore: " + shepherd4player);

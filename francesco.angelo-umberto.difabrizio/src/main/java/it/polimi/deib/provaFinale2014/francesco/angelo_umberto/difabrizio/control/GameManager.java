@@ -546,6 +546,12 @@ public class GameManager implements Runnable {
                 nextPlayer();
 
                 evolveLambs();
+                
+                //informa i player dell'evoluzione dei lamb
+                for(String client: clientNickNames){
+                    refreshRegions(client);
+                    refreshSpecialAnimals(client);
+                }
 
                 //controllo se ho finito il giro
                 //se il prossimo a giocare è il primo del giro

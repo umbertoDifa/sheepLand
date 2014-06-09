@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class RegionBox extends BackgroundAndTextJPanel {
 
     public void removeOvine(String ovineType) {
         //per ogni animale nella regione
-        for (int i=0; i<animals.size(); i++) {
+        for (int i = 0; i < animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
             if (animals.get(i).getAnimalType().equals(ovineType.toLowerCase())) {
                 //se di quel tipo di animale vi è almeno 1 occorrenza
@@ -74,7 +75,7 @@ public class RegionBox extends BackgroundAndTextJPanel {
 
     public void removeSpecialAnimal(String animalType) {
         //per ogni animale nella regione
-        for (int i=0; i<animals.size(); i++) {
+        for (int i = 0; i < animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
             if (animals.get(i).getAnimalType().equals(animalType.toLowerCase())) {
                 this.remove(animals.get(i));
@@ -136,6 +137,12 @@ public class RegionBox extends BackgroundAndTextJPanel {
     }
 
     protected void removeAllAnimals() {
-        animals = null;
+        animals.clear();
+        for (Component component : this.getComponents()) {
+            if (component instanceof Animal) {
+                this.remove(component);
+            }
+        }
+
     }
 }
