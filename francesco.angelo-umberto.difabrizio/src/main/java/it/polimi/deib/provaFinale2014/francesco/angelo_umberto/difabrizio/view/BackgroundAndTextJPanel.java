@@ -35,10 +35,11 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected BackgroundAndTextJPanel() {
     }
 
-    protected void setDimension(int width, int height){
+    protected void setDimension(int width, int height) {
         this.width = width;
         this.height = height;
     }
+
     /**
      * set the panel's background image corrisponding to the path center the
      * Label with xText, yText
@@ -100,12 +101,14 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      * @param image
      */
     protected void setUp(Image image) {
-        setDimension(image.getWidth(this), image.getHeight(this));
+        if (image != null) {
+            setDimension(image.getWidth(this), image.getHeight(this));
+        }
         this.image = image;
         repaint();
     }
-    
-    protected void removeImg(){
+
+    protected void removeImg() {
         this.image = null;
     }
 
@@ -137,10 +140,10 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         textLabel.setText(text);
     }
 
-    protected Image getImage(){
+    protected Image getImage() {
         return this.image;
     }
-    
+
     /**
      * add a Panel, positioning it with x,y referred to this
      *

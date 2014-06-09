@@ -16,7 +16,7 @@ import javax.swing.JTextArea;
  */
 class Player extends BackgroundAndTextJPanel implements MouseListener{
 
-    private JTextArea moneyText;
+    private JLabel moneyText;
 
     public Player(String text, Font font) {
         super(font, text);
@@ -25,7 +25,7 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
     public void setUp(String imgPath1, String imgPath2, int xText1, int yText1, int xText2, int yText2, int width, int height) {
         super.setUp(imgPath1, xText1, yText1, width, height);
         MoneyPanel moneyPanel = new MoneyPanel();
-        JLabel moneyText = new JLabel("20");
+        moneyText = new JLabel("0");
         moneyText.setFont(font);
         moneyText.setForeground(new Color(64, 64, 64));
         moneyPanel.add(moneyText);

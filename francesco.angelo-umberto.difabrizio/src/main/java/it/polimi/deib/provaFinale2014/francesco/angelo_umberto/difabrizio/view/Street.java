@@ -31,8 +31,6 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
 
     public void mouseClicked(MouseEvent e) {
         System.out.println("strada clickata, dentro la catch dell evento");
-        //   FIX ME
-        clear();
         repaint();
     }
 

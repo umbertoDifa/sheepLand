@@ -64,6 +64,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     private final Color noneColor = new Color(0, 0, 0, 0);
     private final MyFont font = new MyFont();
     private int lastStreet;
+    private boolean zoomOn;
 
     public MyGui() {
         setUpImagePool();
@@ -205,31 +206,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         infoPanel.setPreferredSize(new Dimension(232, 444));
         infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
         nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-//        //aggiungo this come listener per le azioni
-//        for (Action action : actions) {
-//            action.addMouseListener(this);
-//        }
-//        //aggiungo this come listener per la map
-//        mapJPanel.addMouseListener(this);
-//
-//        //aggiungo l strada come listener di se stessa
-//        for (Street street : streets) {
-//            street.addMouseListener(street);
-//            street.addMouseListener(this);
-//        }
-//
-//        for (Card card : cardsJPanels) {
-//            card.addMouseListener(this);
-//        }
-//
-//        for (Player player : playersJPanels) {
-//            player.addMouseListener(player);
-//        }
-//        infoPanel.addMouseListener(infoPanel);
-//
-        for (RegionBox regionBox : regionBoxes) {
-            regionBox.addMouseListener(this);
-        }
+
         hideInfoPanel();
 
         frame.pack();
@@ -267,36 +244,10 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public static void main(String args[]) {
         //faccio gestire il thread da EDT, per il controllo ciclico della coda
         //degli eventi generati dai vari componenti
-        
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 MyGui gui = new MyGui();
-
-//                //test regions
-//                gui.refreshGameParameters(new String[]{"a", "b"}, 4);
-//                gui.refreshRegion(0, 1, 0, 2);
-//                gui.refreshRegion(4, 2, 1, 0);
-//                gui.refreshRegion(18, 3, 2, 84);
-//                gui.refreshRegion(7, 0, 3, 0);
-//                //test streets
-//                gui.refreshStreet(15, true, "a");
-//                gui.refreshStreet(35, false, "b");
-//                gui.refreshStreet(15, true, "c");
-//                gui.refreshStreet(35, true, "");
-//                gui.refreshStreet(15, false, "a");
-//                gui.refreshStreet(0, false, "b");
-//                //test moveShepherd
-//                gui.refreshMoveShepherd("b", 0, String.valueOf(2));
-//
-//                //test
-//                gui.showMoveOvine("0", "7", "sheep");
-//
-//                //test
-//                gui.specialAnimalInitialCondition("Blacksheep,3");
-//                gui.refreshBlackSheep("ok,3,0,5");
-//
-//                gui.showKillOvine("7", "sheep", "84");
-//                gui.showKillOvine("18", "lamb", "0");
             }
         });
     }
@@ -314,65 +265,54 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             if (e.getSource() instanceof Action) {
                 for (int i = 0; i < actions.length; i++) {
                     if (e.getSource().equals(actions[i])) {
-                        System.out.println("azione " + i + "selezionata");
-                        actions[i].removeMouseListener(this);
-                        holder.add(String.valueOf(i));
+                        DebugLogger.println("azione " + i + "selezionata");
+                        holder.add(String.valueOf(i + 1));
                         holder.notify();
-                        System.out.println("aggiunto a holder azione " + i);
+                        DebugLogger.println("aggiunto a holder azione " + i);
                     }
+                    actions[i].removeMouseListener(this);
+                    DebugLogger.println("rimosso listener della action " + i);
+
                 }
             } else if (e.getSource() instanceof Street) {
                 for (int i = 0; i < streets.length; i++) {
                     if (e.getSource().equals(streets[i])) {
                         System.out.println("strada " + i + "selezionata");
-                        streets[i].removeMouseListener(this);
                         holder.add(String.valueOf(i));
                         holder.notify();
-                        System.out.println("aggiunto a holder strada " + i);
+                        DebugLogger.println("aggiunto a holder strada " + i);
                     }
+                    streets[i].removeMouseListener(this);
+                    streets[i].removeMouseListener(streets[i]);
+                    DebugLogger.println("rimosso listener della strada " + i);
                 }
             } else if (e.getSource() instanceof Card) {
                 for (int i = 0; i < cardsJPanels.length; i++) {
                     if (e.getSource().equals(cardsJPanels[i])) {
-                        System.out.println("carta terreno " + i + "selezionata");
-                        cardsJPanels[i].removeMouseListener(this);
+                        DebugLogger.println("carta terreno " + i + "selezionata");
                         holder.add(String.valueOf(i));
                         holder.notify();
-                        System.out.println("aggiunto a holder carta terreno " + i);
+                        DebugLogger.println("aggiunto a holder carta terreno " + i);
                     }
+                    cardsJPanels[i].removeMouseListener(this);
                 }
-                //TODO spostare in RegionBox (e aggiungere getter layeredPane)
             } else if (e.getSource() instanceof RegionBox) {
                 for (int i = 0; i < regionBoxes.length; i++) {
                     if (e.getSource().equals(regionBoxes[i])) {
-                        System.out.println("regione " + i + "selezionata");
-                        List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
-                        int j = 0;
-                        for (Animal animalToHighlight : animalsToHighlight) {
-                            int animalWidth = animalToHighlight.getSize().width;
-                            int animalHeight = animalToHighlight.getSize().height;
-                            Point p = regionBoxes[i].getLocation();
-                            int first = 1;
-                            if (j == 0) {
-                                first = 0;
-                            }
-                            animalToHighlight.setBounds(
-                                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5 + 140),
-                                    (int) (p.y - first * (animalWidth * Math.sqrt(2) * Math.sin((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
-                                    animalWidth, animalHeight);
-
-                            animalToHighlight.addMouseListener(this);
-                            layeredPane.add(animalToHighlight, new Integer(2));
-                            j++;
+                        DebugLogger.println("regione " + i + "selezionata");
+                        holder.add(String.valueOf(i));
+                        holder.notify();
+                        if (zoomOn) {
+                            zoomAnimals(i);
                         }
-                        layeredPane.repaint();
                     }
                 }
-                //FIXME da rimettere
-                //   removeRegionListener();
+                removeAllRegionListener();
+
+            } else if (e.getSource() instanceof Animal) {
                 //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
                 //dal layer 2, rimetto visibili in preview gli animali nelle regioni
-            } else if (e.getSource() instanceof Animal) {
+
                 for (Component component : layeredPane.getComponents()) {
                     if (component instanceof Animal) {
                         Animal animal = (Animal) component;
@@ -385,15 +325,13 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                     componentToRemove.setVisible(false);
                     layeredPane.remove(componentToRemove);
                 }
-                System.out.println("num comp in layer 1:" + layeredPane.getComponentCountInLayer(2));
                 layeredPane.repaint();
-                System.out.println(layeredPane.getComponentCountInLayer(2));
                 for (RegionBox region : regionBoxes) {
                     region.setAnimalsVisibles(true);
                     region.setAnimalPreview(true);
                 }
             }
-            System.out.println(e.getX() + " , " + e.getY());
+            DebugLogger.println(e.getX() + " , " + e.getY());
         }
     }
 
@@ -527,10 +465,20 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         infoPanel.setDice(result);
     }
 
-    private void removeRegionListener() {
+    private void removeAllRegionListener() {
         for (RegionBox region : regionBoxes) {
             region.removeMouseListener(this);
         }
+        DebugLogger.println("rimosso listener delle regioni");
+
+    }
+
+    private void addAllRegionListener() {
+        for (RegionBox region : regionBoxes) {
+            region.addMouseListener(this);
+        }
+        DebugLogger.println("aggiunto listener a tutte le regioni");
+
     }
 
     private int getIndexPlayerByNickName(String nickShepherd) {
@@ -559,7 +507,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             }
             //la risposta che accetto è la prima
             result = holder.remove(0);
-            System.out.println("prelevato da holder " + result);
+            holder.clear();
+            DebugLogger.println("prelevato da holder " + result);
         }
         DebugLogger.println("fine get answer by holder");
 
@@ -570,10 +519,32 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         for (Street street : streets) {
             if (street.isEmpty()) {
                 street.addMouseListener(this);
+                street.addMouseListener(street);
             }
-            //FIXME solo per test aggiungo strada come listener
-            street.addMouseListener(street);
         }
+    }
+
+    private void zoomAnimals(int i) {
+        List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
+        int j = 0;
+        for (Animal animalToHighlight : animalsToHighlight) {
+            int animalWidth = animalToHighlight.getSize().width;
+            int animalHeight = animalToHighlight.getSize().height;
+            Point p = regionBoxes[i].getLocation();
+            int first = 1;
+            if (j == 0) {
+                first = 0;
+            }
+            animalToHighlight.setBounds(
+                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5 + 140),
+                    (int) (p.y - first * (animalWidth * Math.sqrt(2) * Math.sin((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
+                    animalWidth, animalHeight);
+
+            animalToHighlight.addMouseListener(this);
+            layeredPane.add(animalToHighlight, new Integer(2));
+            j++;
+        }
+        layeredPane.repaint();
     }
 
     //metodi dell'intefaccia
@@ -595,7 +566,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         infoPanel.hideDice();
         infoPanel.setText(info);
         infoPanel.setVisible(true);
-        infoPanel.repaint();
+        this.layeredHolder.revalidate();
+        this.layeredHolder.repaint();
     }
 
     public void showBoughtLand(String boughLand, String price) {
@@ -634,12 +606,15 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public void showMoveOvine(String startRegion, String endRegion, String type) {
         //TODO animazione?
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
-        regionBoxes[Integer.parseInt(endRegion)].add(type);
+        regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
+
+        mapJPanel.revalidate();
+        mapJPanel.repaint();
     }
 
     public void showMateSheepWith(String region, String otherType, String newType) {
         //TODO animazione accoppiamento?
-        regionBoxes[Integer.parseInt(region)].add(newType);
+        regionBoxes[Integer.parseInt(region)].addAnimal(newType);
     }
 
     public void showMyRank(Boolean winner, String rank) {
@@ -705,7 +680,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex, String streetIndex) {
         //refresh della strada di partenza
         //cerco la strada dov'era il pastore e metto un recinto
-        streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
+        if (nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex) != null) {
+            streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
+        }
 
         //refresh della strada di arrivo
         refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover);
@@ -737,7 +714,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void refreshMoney(String money) {
+        DebugLogger.println("inizio refresh money " + money);
         playersJPanels[getIndexPlayerByNickName(myNickName)].setAmount(Integer.parseInt(money));
+        DebugLogger.println("fine refresh money " + money);
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
@@ -758,8 +737,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         String startRegion = token[2];
         if ("ok".equalsIgnoreCase(outcome)) {
             String endRegion = token[3];
-            regionBoxes[Integer.parseInt(startRegion)].removeOvine("blacksheep");
-            regionBoxes[Integer.parseInt(endRegion)].add("blacksheep");
+            regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal("blacksheep");
+            regionBoxes[Integer.parseInt(endRegion)].addAnimal("blacksheep");
             showInfo("La pecora nera si è spostata dalla regione " + startRegion
                     + " alla regione " + endRegion + " passando per la strada di valore " + diceValue);
         } else if ("nok".equalsIgnoreCase(outcome)) {
@@ -781,8 +760,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             String startRegion = token[4];
             String endRegion = token[5];
 
-            regionBoxes[Integer.parseInt(startRegion)].removeOvine("wolf");
-            regionBoxes[Integer.parseInt(endRegion)].add("wolf");
+            regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal("wolf");
+            regionBoxes[Integer.parseInt(endRegion)].addAnimal("wolf");
             if ("ok".equalsIgnoreCase(fence)) {
                 showInfo(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
@@ -814,20 +793,20 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public void specialAnimalInitialCondition(String region) {
         String[] token = region.split(",");
         if ("Wolf".equals(token[0])) {
-            regionBoxes[Integer.parseInt(token[1])].add("wolf");
+            regionBoxes[Integer.parseInt(token[1])].addAnimal("wolf");
             showInfo("Il lupo si trova nella regione " + token[1]);
         } else if ("BlackSheep".equals(token[0])) {
-            regionBoxes[Integer.parseInt(token[1])].add("blacksheep");
+            regionBoxes[Integer.parseInt(token[1])].addAnimal("blacksheep");
             showInfo("La pecora nera si trova nella regione " + token[1]);
         }
     }
 
     public String chooseAction(int[] availableActions, String[] availableStringedActions) {
+        //TODO abilitare effetto grafico mio turno
         for (int i = 0; i < availableActions.length; i++) {
             actions[i].addMouseListener(this);
         }
-        //FIXME
-        return "";
+        return getAnswerByHolder();
     }
 
     public void refreshMateSheepWith(String nickName, String region, String otherType, String newType, String outcome) {
@@ -835,11 +814,26 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void refreshMoveOvine(String nickName, String type, String startRegion, String endRegion) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
+        regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
+        mapJPanel.revalidate();
+        mapJPanel.repaint();
     }
 
     public String askMoveOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        addAllRegionListener();
+        zoomOn = true;
+        String startRegion = getAnswerByHolder();
+
+        String ovineType = getAnswerByHolder();
+
+        addAllRegionListener();
+
+        zoomOn = false;
+        String endRegion = getAnswerByHolder();
+
+        return startRegion + "," + endRegion + "," + ovineType;
+
     }
 
     public String askMateSheepWith() {

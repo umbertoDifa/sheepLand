@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  *
  * @author Francesco
  */
-public class RegionBox extends BackgroundAndTextJPanel implements MouseListener {
+public class RegionBox extends BackgroundAndTextJPanel {
 
     private final int[] xPreview = {10, 0, 10, 6, 10};
     private final int[] yPreview = {0, 25, 25, 35, 35};
@@ -22,7 +22,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         repaint();
     }
 
-    public void add(String animalType) {
+    public void addAnimal(String animalType) {
         for (Animal animal : animals) {
             if (animal.getAnimalType().equals(animalType)) {
                 animal.setNum(animal.getNum() + 1);
@@ -52,32 +52,34 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         repaint();
     }
 
-    public boolean removeOvine(String ovineType) {
+    public void removeOvine(String ovineType) {
         //per ogni animale nella regione
-        for (Animal animal : animals) {
+        for (int i=0; i<animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
-            if (animal.getAnimalType().equals(ovineType)) {
+            if (animals.get(i).getAnimalType().equals(ovineType)) {
                 //se di quel tipo di animale vi è almeno 1 occorrenza
-                if (animal.getNum() > 0) {
-                    //se non è ne pecora nera ne lupo
-                    if (!animal.getAnimalType().equals("wolf") && !animal.getAnimalType().equals("blacksheep")) {
-                        //decrementa le occorrenze
-                        animal.setNum(animal.getNum() - 1);
-                        //nel caso rimuovilo
-                        if (animal.getNum() == 0) {
-                            this.remove(animal);
-                            animals.remove(animal);
-                        }
-                    //per lupo o pecora nera rimuovili
-                    } else {
-                        this.remove(animal);
-                        animals.remove(animal);
+                if (animals.get(i).getNum() > 0) {
+                    //decrementa le occorrenze
+                    animals.get(i).setNum(animals.get(i).getNum() - 1);
+                    //nel caso rimuovilo
+                    if (animals.get(i).getNum() == 0) {
+                        this.remove(animals.get(i));
+                        animals.remove(animals.get(i));
                     }
-                    return true;
                 }
             }
         }
-        return false;
+    }
+
+    public void removeSpecialAnimal(String animalType) {
+        //per ogni animale nella regione
+        for (int i=0; i<animals.size(); i++) {
+            //se il tipo è uguale a quello da rimuovere
+            if (animals.get(i).getAnimalType().equals(animalType)) {
+                this.remove(animals.get(i));
+                animals.remove(animals.get(i));
+            }
+        }
     }
 
     /**
@@ -98,8 +100,10 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
                 result.add(animals.get(i).clone());
                 animals.get(i).setVisible(false);
                 result.get(i).setPreview(false);
+
             } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(RegionBox.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(RegionBox.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
 
         }
@@ -110,7 +114,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
 
     public void add(String animalType, int quantity) {
         for (int i = 0; i < quantity; i++) {
-            add(animalType);
+            addAnimal(animalType);
         }
     }
 
@@ -128,20 +132,5 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
                 animal.setPreview(b);
             }
         }
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
     }
 }
