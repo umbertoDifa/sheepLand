@@ -134,4 +134,8 @@ public class RegionBox extends BackgroundAndTextJPanel {
             }
         }
     }
+
+    protected void removeAllAnimals() {
+        animals = null;
+    }
 }

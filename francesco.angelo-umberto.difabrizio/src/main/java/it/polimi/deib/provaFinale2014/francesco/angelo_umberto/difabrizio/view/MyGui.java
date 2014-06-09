@@ -209,9 +209,11 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                 (((72 + 10) * actions.length) + (99 + 10) * 4) - 90));
         infoPanel.setPreferredSize(new Dimension(232, 444));
         infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-        nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
+        nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
 
+        //nascondo infoPanel e mappa
         hideInfoPanel();
+        mainJPanel.setVisible(false);
 
         frame.pack();
         frame.setVisible(true);
@@ -262,6 +264,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             holder.add(myNickName);
             holder.notify();
         }
+        mainJPanel.setVisible(true);
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -699,6 +702,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
+
+        regionBoxes[regionIndex].removeAllAnimals();
+        
         if (numbOfSheep > 0) {
             regionBoxes[regionIndex].add("sheep", numbOfSheep);
         }
