@@ -285,16 +285,25 @@ public class ClientSocket {
 
     private void refreshGameParameters() {
         received = receiveString();
+
+        DebugLogger.println(received);
+
         token = received.split(",", -1);
-        String[] nickNames = new String[token.length - 1];
+        String[] nickNames = new String[(token.length - 1) / 2];
+        int[] wallets = new int[(token.length - 1) / 2];
 
         DebugLogger.println("lunghezza" + token.length);
 
-        for (int i = 0; i < nickNames.length; i++) {
-            nickNames[i] = token[i];
+        for (int i = 0, j = 0; i < token.length - 1; j++) {
+            nickNames[j] = token[i];
+            wallets[j] = Integer.parseInt(token[i + 1]);
+
             DebugLogger.println(token[i]);
+            DebugLogger.println(token[i + 1]);
+
+            i += 2;
         }
-        view.refreshGameParameters(nickNames, Integer.parseInt(
+        view.refreshGameParameters(nickNames, wallets, Integer.parseInt(
                 token[token.length - 1]));
 
     }
@@ -369,10 +378,10 @@ public class ClientSocket {
 
         view.refreshMoveOvine(player, type, startRegion, endRegion);
     }
-    
-     private void refreshAvailableFences() {
+
+    private void refreshAvailableFences() {
         int fences = receiveInt();
-        
+
         view.refreshFences(fences);
     }
 
@@ -565,7 +574,5 @@ public class ClientSocket {
     private void unexpectedEndOfGame() {
         view.showUnexpectedEndOfGame();
     }
-
-   
 
 }

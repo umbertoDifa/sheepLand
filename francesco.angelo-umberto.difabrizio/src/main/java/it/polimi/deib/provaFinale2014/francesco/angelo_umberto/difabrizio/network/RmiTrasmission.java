@@ -561,12 +561,13 @@ public class RmiTrasmission extends TrasmissionController {
 
     @Override
     public void refreshGameParameters(String nickName, String[] nickNames,
-                                      int shepherd4player) {
+                                      int[] wallets, int shepherd4player
+    ) {
         if (canPlayerReceive(nickName)) {
             try {
                 ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).getClientRmi().refreshGameParameters(
-                                nickNames, shepherd4player);
+                                nickNames, wallets, shepherd4player);
 
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);

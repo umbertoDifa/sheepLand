@@ -50,7 +50,7 @@ public interface TypeOfViewController {
 
     public void refreshBuyLand(String buyer, String land, int price);
 
-    public void refreshGameParameters(String[] nickNames, int shepherd4player);
+    public void refreshGameParameters(String[] nickNames,int[] wallets, int shepherd4player);
 
     public void refreshKillOvine(String killer, String region, String type,
                                  String outcome);

@@ -670,17 +670,18 @@ public class SocketTrasmission extends TrasmissionController {
      *
      * @param nickName
      * @param nickNames
+     * @param wallet
      * @param shepherd4player
      */
     @Override
-    public void refreshGameParameters(String nickName, String[] nickNames,
+    public void refreshGameParameters(String nickName, String[] nickNames,int[] wallet,
                                       int shepherd4player) {
         if (canPlayerReceive(nickName)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(MessageProtocol.GAME_PARAMETERS.toString());
             String tmp = "";
             for (int i = 0; i < nickNames.length; i++) {
-                tmp += nickNames[i] + ",";
+                tmp += nickNames[i] + ","+wallet[i]+",";
             }
             DebugLogger.println("invio " + tmp);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(

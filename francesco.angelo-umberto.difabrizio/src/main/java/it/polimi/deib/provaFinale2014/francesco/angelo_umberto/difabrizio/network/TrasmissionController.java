@@ -81,11 +81,14 @@ public abstract class TrasmissionController {
      *
      * @param nickName
      * @param nickNames
+     * @param wallets
      * @param shepherd4player
      */
     public abstract void refreshGameParameters(String nickName,
-                                               String[] nickNames,                                                                                             
-                                               int shepherd4player);
+                                               String[] nickNames, int[] wallets,                                                                                          
+                                               int shepherd4player
+
+    );
 
     /**
      * Broadcast to the online player the player who is currently playing
@@ -253,11 +256,14 @@ public abstract class TrasmissionController {
      * @param classification the rankings
      */
     public abstract void sendClassification(String classification);
+
     /**
      * Refreshes to the client the number of available fences
-     * @param client The player to refrehs
+     *
+     * @param client         The player to refrehs
      * @param fenceAvailable The number of available fence
      */
-    public abstract void refreshNumberOfAvailableFence(String client , int fenceAvailable);
-        
+    public abstract void refreshNumberOfAvailableFence(String client,
+                                                       int fenceAvailable);
+
 }

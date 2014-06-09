@@ -151,11 +151,12 @@ public interface ClientInterfaceRemote extends Remote {
      * Refresh the game paramters
      *
      * @param nickNames       All the nickNames
+     * @param wallets
      * @param shepherd4player the number of shepherd that ech player has
      *
      * @throws RemoteException If there's a connection problem
      */
-    public void refreshGameParameters(String[] nickNames,
+    public void refreshGameParameters(String[] nickNames, int[] wallets,
                                       int shepherd4player) throws
             RemoteException;
 

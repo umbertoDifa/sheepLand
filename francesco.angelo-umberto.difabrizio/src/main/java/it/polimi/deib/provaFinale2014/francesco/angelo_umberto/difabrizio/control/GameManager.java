@@ -281,6 +281,9 @@ public class GameManager implements Runnable {
             //setto il player corrente
             currentPlayer = (firstPlayer + i) % playersNumber;
 
+            //brodcast il player corrente
+            controller.brodcastCurrentPlayer(clientNickNames[currentPlayer]);
+
             //per ogni suo pastore
             try {
                 for (j = 0; j < this.shepherd4player; j++) {
@@ -498,8 +501,10 @@ public class GameManager implements Runnable {
         refreshRegions(client);
 
         refreshStreets(client);
+        
+        int[] wallets = getWalletsAmmount();
 
-        controller.refreshGameParameters(client, clientNickNames,
+        controller.refreshGameParameters(client, clientNickNames, wallets,
                 shepherd4player);
 
         controller.refreshMoney(client);
@@ -515,6 +520,16 @@ public class GameManager implements Runnable {
                     ex);
         }
 
+    }
+
+    private int[] getWalletsAmmount() {
+        int[] wallets = new int[clientNickNames.length];
+
+        for (int i = 0; i < clientNickNames.length; i++) {
+            wallets[i] = players.get(i).getMainShepherd().getWallet().getAmount();
+        }
+
+        return wallets;
     }
 
     private void executeRounds() throws FinishedFencesException,
