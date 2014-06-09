@@ -94,6 +94,16 @@ public interface ClientInterfaceRemote extends Remote {
             RemoteException;
 
     /**
+     * Refreshes the number of available fences
+     *
+     * @param availableFences Fence available
+     *
+     * @throws RemoteException If there's a connection problem
+     */
+    public void refreshAvailableFences(int availableFences) throws
+            RemoteException;
+
+    /**
      * Refresh that two ovine mated and a new one is born, or that a player
      * tried to mate two ovines but failed
      *

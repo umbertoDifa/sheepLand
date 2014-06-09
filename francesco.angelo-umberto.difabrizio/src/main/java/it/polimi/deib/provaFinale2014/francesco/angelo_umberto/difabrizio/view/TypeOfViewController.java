@@ -16,7 +16,7 @@ public interface TypeOfViewController {
 
     public void showSetShepherd(int shepherdIndex, String streetIndex);
 
-    public void showMoveShepherd(String shepherdIndex,String priceToMove);
+    public void showMoveShepherd(String shepherdIndex, String priceToMove);
 
     public void showMoveOvine(String startRegion, String endRegion, String type);
 
@@ -126,5 +126,12 @@ public interface TypeOfViewController {
      * @return ShepherdIndex,region,type
      */
     public String askKillOvine();
+
+    /**
+     * Refresh the number of available fence
+     *
+     * @param fences fence available
+     */
+    public void refreshFences(int fences);
 
 }

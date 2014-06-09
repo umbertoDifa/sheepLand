@@ -71,8 +71,7 @@ public class SocketTrasmission extends TrasmissionController {
     public void brodcastCurrentPlayer(String nickNamePlayer) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
-            if (!nickName.equals(nickNamePlayer) && ServerManager.Nick2ClientProxyMap.get(
-                    nickName).isOnline()) {
+            if (!nickName.equals(nickNamePlayer) && canPlayerReceive(nickName)) {
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).send(
                                 MessageProtocol.CURRENT_PLAYER.toString());
@@ -680,13 +679,24 @@ public class SocketTrasmission extends TrasmissionController {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(MessageProtocol.GAME_PARAMETERS.toString());
             String tmp = "";
-            for (int i = 0; i < nickNames.length ; i++) {
+            for (int i = 0; i < nickNames.length; i++) {
                 tmp += nickNames[i] + ",";
             }
             DebugLogger.println("invio " + tmp);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(tmp + shepherd4player);
-            DebugLogger.println("invio " + tmp+shepherd4player);
+            DebugLogger.println("invio " + tmp + shepherd4player);
+        }
+    }
+
+    @Override
+    public void refreshNumberOfAvailableFence(String client, int fenceAvailable) {
+        if (canPlayerReceive(client)) {
+            ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    client)).send(MessageProtocol.FENCE_REFRESH.toString());
+
+            ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    client)).send(fenceAvailable);
         }
     }
 

@@ -224,6 +224,9 @@ public class ClientSocket {
                 } else if (MessageProtocol.GAME_PARAMETERS.equals(
                         MessageProtocol.valueOf(received))) {
                     refreshGameParameters();
+                } else if (MessageProtocol.FENCE_REFRESH.equals(
+                        MessageProtocol.valueOf(received))) {
+                    refreshAvailableFences();
                 } else if (MessageProtocol.KILL_OVINE.equals(
                         MessageProtocol.valueOf(
                                 received))) {
@@ -365,6 +368,12 @@ public class ClientSocket {
         String type = receiveString();
 
         view.refreshMoveOvine(player, type, startRegion, endRegion);
+    }
+    
+     private void refreshAvailableFences() {
+        int fences = receiveInt();
+        
+        view.refreshFences(fences);
     }
 
     private void setUpShepherd() {
@@ -556,5 +565,7 @@ public class ClientSocket {
     private void unexpectedEndOfGame() {
         view.showUnexpectedEndOfGame();
     }
+
+   
 
 }

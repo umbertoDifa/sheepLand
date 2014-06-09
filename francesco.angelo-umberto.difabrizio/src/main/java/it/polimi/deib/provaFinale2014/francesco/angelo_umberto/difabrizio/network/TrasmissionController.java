@@ -2,7 +2,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,4 +253,11 @@ public abstract class TrasmissionController {
      * @param classification the rankings
      */
     public abstract void sendClassification(String classification);
+    /**
+     * Refreshes to the client the number of available fences
+     * @param client The player to refrehs
+     * @param fenceAvailable The number of available fence
+     */
+    public abstract void refreshNumberOfAvailableFence(String client , int fenceAvailable);
+        
 }

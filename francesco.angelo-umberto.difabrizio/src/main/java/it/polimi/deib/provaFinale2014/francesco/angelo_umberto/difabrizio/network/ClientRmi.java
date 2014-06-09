@@ -547,4 +547,9 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshGameParameters(nickNames, shepherd4player);
     }
 
+    public void refreshAvailableFences(int availableFences) throws
+                                                                   RemoteException {
+        view.refreshFences(availableFences);
+    }
+
 }

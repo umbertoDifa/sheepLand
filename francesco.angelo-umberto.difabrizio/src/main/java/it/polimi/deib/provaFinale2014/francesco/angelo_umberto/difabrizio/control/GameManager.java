@@ -498,14 +498,23 @@ public class GameManager implements Runnable {
         refreshRegions(client);
 
         refreshStreets(client);
-        
-        controller.refreshGameParameters(client, clientNickNames, shepherd4player);
+
+        controller.refreshGameParameters(client, clientNickNames,
+                shepherd4player);
 
         controller.refreshMoney(client);
 
         refreshSpecialAnimals(client);
 
-        
+        try {
+            controller.refreshNumberOfAvailableFence(client,
+                    GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue() - bank.numberOfUsedFence());
+        } catch (FinishedFencesException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(),
+                    ex);
+        }
+
     }
 
     private void executeRounds() throws FinishedFencesException,
@@ -546,9 +555,9 @@ public class GameManager implements Runnable {
                 nextPlayer();
 
                 evolveLambs();
-                
+
                 //informa i player dell'evoluzione dei lamb
-                for(String client: clientNickNames){
+                for (String client : clientNickNames) {
                     refreshRegions(client);
                     refreshSpecialAnimals(client);
                 }

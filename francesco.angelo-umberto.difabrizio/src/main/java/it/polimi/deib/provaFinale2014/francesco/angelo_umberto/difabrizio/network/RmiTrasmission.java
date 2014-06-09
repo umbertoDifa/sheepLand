@@ -184,7 +184,7 @@ public class RmiTrasmission extends TrasmissionController {
 
             //invia conferma riepilogativa agli utenti
             if (chosenStreet != null) {
-                refreshMoveShepherd(nickName,shepherdIndex, chosenStreet);
+                refreshMoveShepherd(nickName, shepherdIndex, chosenStreet);
                 return true;
             }
         } catch (RemoteException ex) {
@@ -230,7 +230,8 @@ public class RmiTrasmission extends TrasmissionController {
                         refreshMoveOvine(nickName, token[1], token[2], token[3]);
                         return true;
                     case '2':
-                        refreshMoveShepherd(nickName, Integer.parseInt(token[1]), token[2]);
+                        refreshMoveShepherd(nickName, Integer.parseInt(token[1]),
+                                token[2]);
                         return true;
                     case '3':
                         refreshBuyLand(nickName, token[2], Integer.parseInt(
@@ -444,7 +445,7 @@ public class RmiTrasmission extends TrasmissionController {
                                     classification);
                     ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
                             nickName)).getClientRmi().disconnect(
-                                    "Il gioco è terminato\nArriverderci!"); 
+                                    "Il gioco è terminato\nArriverderci!");
 
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
@@ -569,6 +570,20 @@ public class RmiTrasmission extends TrasmissionController {
 
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
+            }
+        }
+    }
+
+    @Override
+    public void refreshNumberOfAvailableFence(String client, int fenceAvailable) {
+        if (canPlayerReceive(client)) {
+            try {
+                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        client)).getClientRmi().refreshAvailableFences(
+                                fenceAvailable);
+
+            } catch (RemoteException ex) {
+                setPlayerOffline(client, ex);
             }
         }
     }
