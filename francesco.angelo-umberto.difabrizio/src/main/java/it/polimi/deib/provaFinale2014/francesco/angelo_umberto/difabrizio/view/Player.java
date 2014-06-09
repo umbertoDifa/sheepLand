@@ -20,6 +20,7 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
 
     public Player(String text, Font font) {
         super(font, text);
+        super.setOpacity(true);
     }
 
     public void setUp(String imgPath1, String imgPath2, int xText1, int yText1, int xText2, int yText2, int width, int height) {
@@ -45,10 +46,14 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
         moneyText.setText(String.valueOf(Integer.parseInt(moneyText.getText())-price));
     }
     
-    public void isYourShift(){
-        
+    protected void isYourShift(){
+        super.setOpacity(false);
     }
-
+    
+    protected void isNotYourShift() {
+        super.setOpacity(true);
+    }
+    
     public void mouseClicked(MouseEvent e) {
         isYourShift();
     }
@@ -64,4 +69,6 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
 
     public void mouseExited(MouseEvent e) {
     }
+
+
 }

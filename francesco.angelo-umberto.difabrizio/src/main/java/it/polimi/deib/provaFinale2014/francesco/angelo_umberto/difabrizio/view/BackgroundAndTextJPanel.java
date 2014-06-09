@@ -1,9 +1,11 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
 import java.io.File;
@@ -26,6 +28,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     private int height;
     private int xImage = 0;
     private int yImage = 0;
+    private boolean opacity = false;
 
     protected BackgroundAndTextJPanel(Font font, String text) {
         textLabel.setText(text);
@@ -161,6 +164,15 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     }
 
     /**
+     * se opacity è vero setto il parametro opacity a vero. se opacity vero 
+     * l'img viene visualizzata opaca 
+     * @param opacity 
+     */
+    protected void setOpacity (boolean opacity){
+        this.opacity = opacity;
+    }
+    
+    /**
      * override paintComponent to set the background image if it exists,
      * otherwise clear the background image
      *
@@ -170,10 +182,15 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         setOpaque(false);
         //  super.paintComponent(g);
+        Graphics2D g2D = (Graphics2D) g;;
         if (image != null) {
-            g.drawImage(image, xImage, yImage, this);
+            if (opacity) {
+                AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.6);
+                g2D.setComposite(ac);
+            }
+            g2D.drawImage(image, xImage, yImage, this);
         }
-        super.paintComponent(g);
+        super.paintComponent(g2D);
     }
 
     @Override

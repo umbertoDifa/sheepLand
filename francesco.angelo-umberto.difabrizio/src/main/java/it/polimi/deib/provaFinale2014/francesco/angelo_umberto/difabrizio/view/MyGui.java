@@ -2,9 +2,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.MessageProtocol;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.SocketClientProxy;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Color;
 import java.awt.Component;
@@ -53,6 +50,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     private NickPanel nickPanel;
     private Street[] streets;
     private RegionBox[] regionBoxes;
+    private HistoryPanel historyPanel;
 
     private String[] nickNames;
     private String myNickName;
@@ -88,6 +86,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         mainJPanel = new JPanel();
         nickPanel = new NickPanel(this);
         setUpInfoPanel();
+        historyPanel = new HistoryPanel();
         actionsJPanel = new JPanel();
         cardsConteinerJPanel = new JPanel();
         mapJPanel = new MapBoard();
@@ -154,6 +153,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         dxBar.setLayout(new FlowLayout());
         dxBar.add(playersContainerJPanel);
         dxBar.add(actionsJPanel);
+        dxBar.add(historyPanel);
         addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
         mapJPanel.setLayout(null);
         for (int i = 0; i < streets.length; i++) {
@@ -193,6 +193,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         dxBar.setBackground(noneColor);
         layeredHolder.setOpaque(true);
         infoPanel.setBackground(noneColor);
+        historyPanel.setBackground(backgroundColor);
         for (RegionBox region : regionBoxes) {
             region.setBackground(Color.MAGENTA);
         }
@@ -207,6 +208,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         //la barra di destra ha le dim per contenere sempre 4 player
         dxBar.setPreferredSize(new Dimension((68 + 10) * 3,
                 (((72 + 10) * actions.length) + (99 + 10) * 4) - 90));
+        historyPanel.setPreferredSize(new Dimension((68 + 10) * 3, 30));
         infoPanel.setPreferredSize(new Dimension(232, 444));
         infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
         nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
@@ -279,7 +281,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                         DebugLogger.println("aggiunto a holder azione " + i);
                     }
                     actions[i].removeMouseListener(this);
-
+                    actions[i].setAvailableView(false);
                 }
             } else if (e.getSource() instanceof Street) {
                 for (int i = 0; i < streets.length; i++) {
@@ -405,17 +407,6 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     /**
-     * abilita le azioni corripondenti ai numeri nell array intActions
-     *
-     * @param intActions
-     */
-    public void setActionEnabled(int[] intActions) {
-        for (int i = 0; i < intActions.length; i++) {
-            actions[i].setEnabled(true);
-        }
-    }
-
-    /**
      * carica le immagini che servono al infoPanel, istanzia l'infoPanel
      * passandogli font, img per il dado, e img sfondo, dimensioni
      */
@@ -446,20 +437,6 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
     private void hideInfoPanel() {
         infoPanel.setVisible(false);
-    }
-
-    private String askStreet() throws InterruptedException {
-        for (Street street : streets) {
-            if (street.isEmpty()) {
-                street.addMouseListener(this);
-            }
-        }
-        String result = getAnswerByHolder();
-        return String.valueOf(result);
-    }
-
-    private void setMoney(int idShepherd, int amount) {
-        playersJPanels[idShepherd].setAmount(amount);
     }
 
     private void setNumberTypeCard(int idTypeCard, int tot) {
@@ -565,14 +542,6 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         }
     }
 
-    private void setPlayersEnabledBut(String myNickName) {
-        for (int i = 0; i < playersJPanels.length; i++) {
-            if (i != getIndexPlayerByNickName(myNickName)) {
-                playersJPanels[i].setEnabled(false);
-            }
-        }
-    }
-
     private String getShepherdByStreet(String streetOfMyShepherd) {
         for (Map.Entry pairs : nickShepherdToStreet.entrySet()) {
             String key = (String) pairs.getKey();
@@ -619,17 +588,13 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                 Integer.valueOf(streetIndex));
     }
 
-    public void refreshGameParameters(String[] nickNames, int shepherds4Player) {
+    public void refreshGameParameters(String[] nickNames, int[] wallets, int shepherd4player) {
         this.nickNames = nickNames;
         this.numOfPlayers = nickNames.length;
-        this.shepherds4player = shepherds4Player;
+        this.shepherds4player = shepherd4player;
         setUpPlayers();
     }
 
-    //problema: dovrei tener traccia dell'ultima risposta del metodo askMoveShepherd.
-    //ma anche volendo il risultato se va bene i chiama qst metodo. se va male invece
-    //l ho mette come messaggio nell showInfo quindi nello show info dovrei far dei controlli
-    //se cancellare o meno il risultato della askMoveShepherd di cui avevo tenuto traccia..
     public void showMoveShepherd(String idShepherd, String priceToMove) {
 
         DebugLogger.println("in show move shepherd con " + idShepherd + " e " + priceToMove);
@@ -704,7 +669,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
 
         regionBoxes[regionIndex].removeAllAnimals();
-        
+
         if (numbOfSheep > 0) {
             regionBoxes[regionIndex].add("sheep", numbOfSheep);
         }
@@ -776,8 +741,14 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
+        for (int i = 0; i < playersJPanels.length; i++) {
+            if (i == getIndexPlayerByNickName(currenPlayer)) {
+                playersJPanels[i].isYourShift();
+            } else {
+                playersJPanels[i].isNotYourShift();
+            }
+        }
         showInfo("E' il turno di " + currenPlayer);
-        //TODO: aggiungere effetto evidenziatore
     }
 
     public void refereshCard(String type, int value) {
@@ -860,9 +831,10 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public String chooseAction(int[] availableActions, String[] availableStringedActions) {
         //TODO abilitare effetto grafico mio turno
         showInfo("e' il tuo turno!");
-        setPlayersEnabledBut(myNickName);
+        playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
         for (int i = 0; i < availableActions.length; i++) {
             actions[availableActions[i] - 1].addMouseListener(this);
+            actions[availableActions[i] - 1].setAvailableView(true);
         }
         return getAnswerByHolder();
     }
@@ -950,6 +922,10 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         String r = getAnswerByHolder();
         DebugLogger.println(r);
         return r;
+    }
+
+    public void refreshFences(int fences) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
