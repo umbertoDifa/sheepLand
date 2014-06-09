@@ -22,7 +22,8 @@ public class RegionBox extends BackgroundAndTextJPanel {
         repaint();
     }
 
-    public void addAnimal(String animalType) {
+    public void addAnimal(String typeOfAnimal) {
+        String animalType = typeOfAnimal.toLowerCase();
         for (Animal animal : animals) {
             if (animal.getAnimalType().equals(animalType)) {
                 animal.setNum(animal.getNum() + 1);
@@ -56,7 +57,7 @@ public class RegionBox extends BackgroundAndTextJPanel {
         //per ogni animale nella regione
         for (int i=0; i<animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
-            if (animals.get(i).getAnimalType().equals(ovineType)) {
+            if (animals.get(i).getAnimalType().equals(ovineType.toLowerCase())) {
                 //se di quel tipo di animale vi è almeno 1 occorrenza
                 if (animals.get(i).getNum() > 0) {
                     //decrementa le occorrenze
@@ -75,7 +76,7 @@ public class RegionBox extends BackgroundAndTextJPanel {
         //per ogni animale nella regione
         for (int i=0; i<animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
-            if (animals.get(i).getAnimalType().equals(animalType)) {
+            if (animals.get(i).getAnimalType().equals(animalType.toLowerCase())) {
                 this.remove(animals.get(i));
                 animals.remove(animals.get(i));
             }
@@ -114,7 +115,7 @@ public class RegionBox extends BackgroundAndTextJPanel {
 
     public void add(String animalType, int quantity) {
         for (int i = 0; i < quantity; i++) {
-            addAnimal(animalType);
+            addAnimal(animalType.toLowerCase());
         }
     }
 

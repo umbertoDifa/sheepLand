@@ -1,10 +1,12 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
+import jdk.nashorn.internal.runtime.Debug;
 
 /**
  *
@@ -30,7 +32,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        System.out.println("strada clickata, dentro la catch dell evento");
+        DebugLogger.println("strada clickata, dentro la catch dell evento");
         repaint();
     }
 

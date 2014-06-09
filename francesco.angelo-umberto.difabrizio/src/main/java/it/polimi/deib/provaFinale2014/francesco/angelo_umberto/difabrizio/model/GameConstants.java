@@ -49,7 +49,7 @@ public enum GameConstants {
         /**
      * Numero di azioni totali tra cui scegliere
      */
-    NUM_TOT_ACTIONS(5),
+    NUM_TOT_ACTIONS(6),
     /**
      * Valore iniziale del portafoglio quando i giocatori sono più del minimo
      */

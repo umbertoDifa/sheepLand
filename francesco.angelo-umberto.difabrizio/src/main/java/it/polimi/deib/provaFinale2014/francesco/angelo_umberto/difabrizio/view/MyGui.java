@@ -2,6 +2,9 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.MessageProtocol;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.SocketClientProxy;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Color;
 import java.awt.Component;
@@ -120,7 +123,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         actions[1].setUp(".\\images\\moveShepherd.png", 68, 72);
         actions[2].setUp(".\\images\\buyLand.png", 68, 72);
         actions[3].setUp(".\\images\\mateSheep.png", 68, 72);
-        actions[4].setUp(".\\images\\killOvine.png", 68, 72);
+        actions[4].setUp(".\\images\\mateRam.png", 68, 72);
+        actions[5].setUp(".\\images\\killOvine.png", 68, 72);
 
         cardsJPanels[0].setUp(".\\images\\hill2.png", 139, 91, 105, 104);
         cardsJPanels[1].setUp(".\\images\\countryside2.png", 139, 91, 105, 104);
@@ -265,26 +269,25 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             if (e.getSource() instanceof Action) {
                 for (int i = 0; i < actions.length; i++) {
                     if (e.getSource().equals(actions[i])) {
-                        DebugLogger.println("azione " + i + "selezionata");
+                        DebugLogger.println(" azione " + i + "selezionata");
+
                         holder.add(String.valueOf(i + 1));
                         holder.notify();
                         DebugLogger.println("aggiunto a holder azione " + i);
                     }
                     actions[i].removeMouseListener(this);
-                    DebugLogger.println("rimosso listener della action " + i);
 
                 }
             } else if (e.getSource() instanceof Street) {
                 for (int i = 0; i < streets.length; i++) {
                     if (e.getSource().equals(streets[i])) {
-                        System.out.println("strada " + i + "selezionata");
+                        DebugLogger.println("strada " + i + "selezionata");
                         holder.add(String.valueOf(i));
                         holder.notify();
                         DebugLogger.println("aggiunto a holder strada " + i);
                     }
                     streets[i].removeMouseListener(this);
                     streets[i].removeMouseListener(streets[i]);
-                    DebugLogger.println("rimosso listener della strada " + i);
                 }
             } else if (e.getSource() instanceof Card) {
                 for (int i = 0; i < cardsJPanels.length; i++) {
@@ -424,10 +427,10 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         Image imageBg;
         try {
             imageBg = ImageIO.read(new File(".\\images\\info.png"));
-            System.out.println("immagine infoPanel caricata");
+            DebugLogger.println("immagine infoPanel caricata");
         } catch (IOException ex) {
             imageBg = null;
-            System.out.println("immagine infoPanel non caricata");
+            DebugLogger.println("immagine infoPanel non caricata");
         }
         infoPanel = new InfoPanel(font.getFont(), listIcon, imageBg, 232, 444);
     }
@@ -492,7 +495,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
     private String getAnswerByHolder() {
         String result;
-        DebugLogger.println("nella getanswerbuholder");
+        DebugLogger.println("nella getanswerbyholder");
 
         synchronized (holder) {
             // wait for answer
@@ -547,6 +550,36 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         layeredPane.repaint();
     }
 
+    /**
+     * set clickable the streets where my shepherds are
+     */
+    private void setMyStreetClickable() {
+        for (Street street : streets) {
+            if (street.getImage() != null && street.getImage().equals(ImagePool.getByName("shepherd" + getIndexPlayerByNickName(myNickName)))) {
+                street.addMouseListener(this);
+                street.addMouseListener(street);
+            }
+        }
+    }
+
+    private void setPlayersEnabledBut(String myNickName) {
+        for (int i = 0; i < playersJPanels.length; i++) {
+            if (i != getIndexPlayerByNickName(myNickName)) {
+                playersJPanels[i].setEnabled(false);
+            }
+        }
+    }
+
+    private String getShepherdByStreet(String streetOfMyShepherd) {
+        for (Map.Entry pairs : nickShepherdToStreet.entrySet()) {
+            String key = (String) pairs.getKey();
+            if (Integer.toString(nickShepherdToStreet.get(key)).equals(streetOfMyShepherd)) {
+                return key.split("-", -1)[1];
+            }
+        }
+        return "0";
+    }
+
     //metodi dell'intefaccia
     //metodi dell'intefaccia
     //metodi dell'intefaccia
@@ -562,6 +595,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void showInfo(String info) {
+        DebugLogger.println("msg in info panel " + info);
+
         infoPanel.addMouseListener(infoPanel);
         infoPanel.hideDice();
         infoPanel.setText(info);
@@ -577,7 +612,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
     public void showSetShepherd(int shepherdIndex, String streetIndex) {
         refreshStreet(Integer.parseInt(streetIndex), false, myNickName);
-        nickShepherdToStreet.replace(myNickName + "-" + shepherdIndex,
+        nickShepherdToStreet.putIfAbsent(myNickName + "-" + shepherdIndex,
                 Integer.valueOf(streetIndex));
     }
 
@@ -593,6 +628,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     //l ho mette come messaggio nell showInfo quindi nello show info dovrei far dei controlli
     //se cancellare o meno il risultato della askMoveShepherd di cui avevo tenuto traccia..
     public void showMoveShepherd(String idShepherd, String priceToMove) {
+
+        DebugLogger.println("in show move shepherd con " + idShepherd + " e " + priceToMove);
         //faccio pagare il player
         playersJPanels[getIndexPlayerByNickName(myNickName)].pay(Integer.parseInt(priceToMove));
         //metto il recinto nella strada dove si trovava
@@ -601,9 +638,13 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(myNickName));
         //aggiorno la hashmap
         nickShepherdToStreet.replace(myNickName + "-" + idShepherd, lastStreet);
+
+        mapJPanel.revalidate();
+        mapJPanel.repaint();
     }
 
     public void showMoveOvine(String startRegion, String endRegion, String type) {
+
         //TODO animazione?
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
@@ -647,9 +688,11 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         showInfo("Hai ucciso un " + type + " nella regione " + region
                 + " pagando " + shepherdPayed + " pastori per il silenzio");
         regionBoxes[Integer.parseInt(region)].removeOvine(type);
+        playersJPanels[getIndexPlayerByNickName(myNickName)].pay(GameConstants.PRICE_OF_SILENCE.getValue() * Integer.parseInt(shepherdPayed));
     }
 
     public String setUpShepherd(int idShepherd) {
+        showInfo("Scegli dove posizionare il pastore");
         setFreeStreetsClickable();
         String result = getAnswerByHolder();
         return result;
@@ -678,15 +721,26 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex, String streetIndex) {
+
+        DebugLogger.println("in refresh move shepherd con " + shepherdIndex + " e " + streetIndex + " e " + nickNameMover);
+
         //refresh della strada di partenza
         //cerco la strada dov'era il pastore e metto un recinto
         if (nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex) != null) {
+            DebugLogger.println("metto fence");
             streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
+            nickShepherdToStreet.replace((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex));
+
         }
 
         //refresh della strada di arrivo
         refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover);
-        nickShepherdToStreet.replace((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex));
+        DebugLogger.println("posiziono " + nickNameMover + " in " + streetIndex
+        );
+        if (null != nickShepherdToStreet.putIfAbsent((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex))) {
+            DebugLogger.println(" risultato putifabsent ok");
+        }
+
     }
 
     public void refreshBuyLand(String buyer, String land, int price) {
@@ -707,10 +761,6 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         }
         showInfo(resultToShow + "un " + type + " nella regione " + region);
 
-    }
-
-    public void refereshGameParameters(int numbOfPlayers, String firstPlayer, int shepherd4player) {
-        //FIXME da rimuovere dall interfaccia poi da qua
     }
 
     public void refreshMoney(String money) {
@@ -803,14 +853,24 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
     public String chooseAction(int[] availableActions, String[] availableStringedActions) {
         //TODO abilitare effetto grafico mio turno
+        showInfo("e' il tuo turno!");
+        setPlayersEnabledBut(myNickName);
         for (int i = 0; i < availableActions.length; i++) {
-            actions[i].addMouseListener(this);
+            actions[availableActions[i] - 1].addMouseListener(this);
         }
         return getAnswerByHolder();
     }
 
     public void refreshMateSheepWith(String nickName, String region, String otherType, String newType, String outcome) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if ("ok".equals(outcome)) {
+            showInfo(
+                    "Il giocatore " + nickName + " ha accoppiato una pecora con un "
+                    + otherType + " nella regione " + region + " ed è nato un " + newType + "!");
+            regionBoxes[Integer.parseInt(region)].addAnimal(newType);
+        } else {
+            showInfo(
+                    "Il giocatore " + nickName + " ha tentato di accoppiare una pecora con un " + otherType + " ma ha fallito!");
+        }
     }
 
     public void refreshMoveOvine(String nickName, String type, String startRegion, String endRegion) {
@@ -837,15 +897,45 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public String askMateSheepWith() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setMyStreetClickable();
+        String idShepherd = getShepherdByStreet(getAnswerByHolder());
+        addAllRegionListener();
+        String region = getAnswerByHolder();
+        return idShepherd + "," + region;
     }
 
     public String askKillOvine() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setMyStreetClickable();
+
+        String streetOfMyShepherd = getAnswerByHolder();
+
+        String killerShepherd = getShepherdByStreet(streetOfMyShepherd);
+        addAllRegionListener();
+        zoomOn = true;
+        String startRegion = getAnswerByHolder();
+
+        String ovineType = getAnswerByHolder();
+        zoomOn = false;
+
+        return killerShepherd + "," + startRegion + "," + ovineType;
+
     }
 
     public String askMoveShepherd() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setMyStreetClickable();
+
+        String streetOfMyShepherd = getAnswerByHolder();
+
+        String shepherdToMove = getShepherdByStreet(streetOfMyShepherd);
+
+        DebugLogger.println("trovato pastore " + shepherdToMove);
+
+        setFreeStreetsClickable();
+        String endStreet = getAnswerByHolder();
+
+        lastStreet = Integer.parseInt(endStreet);
+
+        return shepherdToMove + "," + endStreet;
     }
 
     public String askNickName() {

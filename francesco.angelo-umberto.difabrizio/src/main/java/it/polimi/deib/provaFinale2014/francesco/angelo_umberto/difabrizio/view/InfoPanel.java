@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -110,7 +111,7 @@ public class InfoPanel extends JPanel implements MouseListener {
 
     public void mouseClicked(MouseEvent e) {
         this.setVisible(false);
-        System.out.println("dentro mouseClicked di infoPanel");
+        DebugLogger.println("dentro mouseClicked di infoPanel");
         this.removeMouseListener(this);
     }
 
