@@ -10,6 +10,7 @@ class HistoryPanel extends JTextArea {
 
     public HistoryPanel() {
         setText("prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova");
+        setEditable(false);
         setLineWrap(true);
         setWrapStyleWord(true);
     }

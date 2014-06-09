@@ -193,22 +193,21 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         dxBar.setBackground(noneColor);
         layeredHolder.setOpaque(true);
         infoPanel.setBackground(noneColor);
-        historyPanel.setBackground(backgroundColor);
+        historyPanel.setBackground(Color.white);
         for (RegionBox region : regionBoxes) {
             region.setBackground(Color.MAGENTA);
         }
 
         //setto dimensioni
-        actionsJPanel.setPreferredSize(new Dimension((68 + 10) * 3, (72 + 10) * actions.length));
+        actionsJPanel.setPreferredSize(new Dimension((68 + 10) * 3, (72 + 5) * 2));
         //il contenitore dei player ha le dim per contenere sempre 4 player
-        playersContainerJPanel.setPreferredSize(new Dimension(220, (99 + 10) * 4));
+        playersContainerJPanel.setPreferredSize(new Dimension(220, (99+4) * 4));
         cardsConteinerJPanel.setPreferredSize(new Dimension(105, (116 + 10) * cardsJPanels.length));
         mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
         mainJPanel.setBounds(0, 0, 900, 800);
         //la barra di destra ha le dim per contenere sempre 4 player
-        dxBar.setPreferredSize(new Dimension((68 + 10) * 3,
-                (((72 + 10) * actions.length) + (99 + 10) * 4) - 90));
-        historyPanel.setPreferredSize(new Dimension((68 + 10) * 3, 30));
+        dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
+        historyPanel.setPreferredSize(new Dimension((68 + 10) * 3, 80));
         infoPanel.setPreferredSize(new Dimension(232, 444));
         infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
         nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
@@ -607,6 +606,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         //aggiorno la hashmap
         nickShepherdToStreet.replace(myNickName + "-" + idShepherd, lastStreet);
 
+        //decremento recinti
+        fenceJPanel.setText("" + (Integer.parseInt(fenceJPanel.getText()) - 1));
+
         mapJPanel.revalidate();
         mapJPanel.repaint();
     }
@@ -702,6 +704,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
             nickShepherdToStreet.replace((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex));
 
+            //decremento recinti
+            fenceJPanel.setText("" + (Integer.parseInt(fenceJPanel.getText()) - 1));
         }
 
         //refresh della strada di arrivo
@@ -832,6 +836,12 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         //TODO abilitare effetto grafico mio turno
         showInfo("e' il tuo turno!");
         playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
+        for (int i = 0; i < playersJPanels.length; i++) {
+            if (getIndexPlayerByNickName(myNickName) != i) {
+                playersJPanels[i].isNotYourShift();
+            }
+        }
+
         for (int i = 0; i < availableActions.length; i++) {
             actions[availableActions[i] - 1].addMouseListener(this);
             actions[availableActions[i] - 1].setAvailableView(true);
@@ -925,7 +935,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void refreshFences(int fences) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        fenceJPanel.setText(String.valueOf(fences));
     }
 
 }

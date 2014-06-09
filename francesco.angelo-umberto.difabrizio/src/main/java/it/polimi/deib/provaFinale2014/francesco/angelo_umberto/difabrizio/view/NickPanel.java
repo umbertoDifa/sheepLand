@@ -1,25 +1,17 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
 
 /**
  *
@@ -44,7 +36,7 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
         button.setFont(font);
      //   this.imageBackground = ImagePool.getByName("infoPanel");
         this.setBackground(Color.BLUE);
-        this.area = new JTextArea("inserire qui nickname");
+        this.area = new JTextArea("inserire qui nickname"+ Math.random() );
         area.setPreferredSize(new Dimension(140, 60));
         this.area.addKeyListener(this);
         this.setLayout(new BorderLayout());

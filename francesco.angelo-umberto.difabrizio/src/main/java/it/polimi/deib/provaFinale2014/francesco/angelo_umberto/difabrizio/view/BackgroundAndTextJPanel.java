@@ -142,6 +142,10 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected void setText(String text) {
         textLabel.setText(text);
     }
+    
+    protected String getText() {
+        return textLabel.getText();
+    }
 
     protected Image getImage() {
         return this.image;
