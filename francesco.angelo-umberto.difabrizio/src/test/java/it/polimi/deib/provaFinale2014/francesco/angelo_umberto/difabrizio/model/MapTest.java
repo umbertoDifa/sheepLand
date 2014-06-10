@@ -15,25 +15,13 @@ public class MapTest {
 
     private Map map;
 
-    public MapTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
+    /**
+     * Creates a map and sets it up
+     */
     @Before
     public void setUp() {
         map = new Map();
         map.setUp();
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     /**
@@ -68,6 +56,7 @@ public class MapTest {
 
     /**
      * Test of convertStringToStreet method, of class Map.
+     * @throws java.lang.Exception
      */
     @Test
     public void testConvertStringToStreet() throws Exception {
@@ -212,7 +201,7 @@ public class MapTest {
 
         assertTrue(exCount == 1);
 
-    }  
+    }
 
     /**
      * Test of getBlackSheep method, of class Map.
@@ -330,6 +319,7 @@ public class MapTest {
 
     /**
      * Test of getNodeIndex method, of class Map.
+     *
      * @throws NodeNotFoundException
      */
     @Test
@@ -342,7 +332,7 @@ public class MapTest {
 
         assertTrue(map.getNodeIndex(map.getStreets()[12]) == 12);
         assertTrue(map.getNodeIndex(map.getStreets()[1]) == 1);
-        assertTrue(map.getNodeIndex(map.getStreets()[0]) == 0);              
+        assertTrue(map.getNodeIndex(map.getStreets()[0]) == 0);
     }
 
 }

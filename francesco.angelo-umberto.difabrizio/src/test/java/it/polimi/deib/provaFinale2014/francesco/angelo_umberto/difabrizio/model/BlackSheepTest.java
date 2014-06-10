@@ -1,10 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveBlackSheepException;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -15,27 +11,14 @@ import static org.junit.Assert.*;
 public class BlackSheepTest {
     
     Map map;
-    
-    public BlackSheepTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
+    /**
+     * Creates a new map
+     */
     @Before
     public void setUp() {
         map = new Map();
         map.setUp();
-    }
-    
-    @After
-    public void tearDown() {
-    }
+    } 
 
     /**
      * Test of moveThrough method, of class BlackSheep.

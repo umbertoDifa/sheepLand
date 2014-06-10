@@ -2,7 +2,6 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.NoSuchElementException;
@@ -20,8 +19,14 @@ public class SocketClientProxy extends ClientProxy {
 
     private final Socket socket;
     private Scanner fromClient;
-    private PrintWriter toClient;    
+    private PrintWriter toClient;
 
+    /**
+     * Create a socket client proxy that deals with the communication with the
+     * given socket
+     *
+     * @param socket The socket representing the client
+     */
     public SocketClientProxy(Socket socket) {
         super();
 
@@ -63,7 +68,8 @@ public class SocketClientProxy extends ClientProxy {
             super.setStatus(NetworkConstants.OFFLINE);
         }
     }
-     /**
+
+    /**
      * Manda un messaggio al client attraverso il proprio socket
      *
      * @param info
@@ -77,8 +83,8 @@ public class SocketClientProxy extends ClientProxy {
             super.setStatus(NetworkConstants.OFFLINE);
         }
     }
-    
-     /**
+
+    /**
      * Manda un messaggio al client attraverso il proprio socket
      *
      * @param message boolean

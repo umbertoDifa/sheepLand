@@ -3,7 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utili
 import java.util.logging.Logger;
 
 /**
- *
+ *Utility debug to print to the console a given String if the debug is on
  * @author francesco.angelo-umberto.difabrizio
  */
 public class DebugLogger {
@@ -22,7 +22,9 @@ public class DebugLogger {
         }
         //altrimenti nulla
     }
-
+    /**
+     * It turns off the debug exception if the DEBUG variable is off
+     */
     public static void turnOffExceptionLog() {
         Logger.getLogger(DebugLogger.class
                 .getName()).setUseParentHandlers(DebugLogger.PARENT_HANDLERS_ON);

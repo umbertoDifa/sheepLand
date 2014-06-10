@@ -357,13 +357,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * chiede le regioni di partenza e di arrivo dell'ovino del tipo
      * specificato, lo rimuove dalla regione, lo aggiunge nella regione da dove
      * può arrivare passando per la strada occupata dal pastore del giocatore.
-     * Se mossa non valida chiede e annullare o ripetere azione
+     * 
      *
-     * @param type
-     * @param finishRegion
-     * @param beginRegion
+     * @param type type of ovine to move
+     * @param finishRegion Region where to move the ovine
+     * @param beginRegion Regione where the ovine is
      *
-     * @return
+     * @return "ovino mosso" se tutto ok, una stringa di errore altrimenti
      */
     public String moveOvine(String beginRegion, String finishRegion, String type) {
         
@@ -392,9 +392,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return ex.getMessage();
         }
 
-//per ogni strada occupata dai patori del giocatore
-//finchè non ne trovo una adatta e quindi o ritorno 
-//un fallimento o un successo
+        //per ogni strada occupata dai patori del giocatore
+        //finchè non ne trovo una adatta e quindi o ritorno 
+        //un fallimento o un successo
         for (Street possibleStreet : this.getShepherdsStreets()) {
             //se le regioni confinano con la strada e sono diverse tra loro
             if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
@@ -469,7 +469,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @throws PlayerDisconnectedException If the player disconnects while
      *                                     putting his shepherd on the map
      */
-    protected void setMyshepherd(int shepherdIndex) throws
+    protected void chooseShepherdStreet(int shepherdIndex) throws
             PlayerDisconnectedException {
         boolean outcomeOk;
         int numberOfDisconnections;
@@ -934,20 +934,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return "Non puoi pagare il silenzio degli altri pastori";
         }
         
-    }
-
-    /**
-     * The method to sell cards of a player
-     */
-    public void sellCards() {
-        //TODO
-    }
-
-    /**
-     * The method to buy cards in the market
-     */
-    public void buyCards() {
-        //TODO
     }
 
     /**

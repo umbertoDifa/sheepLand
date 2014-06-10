@@ -12,28 +12,17 @@ import static org.junit.Assert.*;
 public class BankTest {
 
     Bank instance;
-
-    public BankTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
+  
+    /**
+     * Sets up a new bank with the game constants
+     * @throws Exception 
+     */
     @Before
     public void setUp() throws Exception {
         //inizializzo una bank con le costanti del gioco
         instance = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     /**
@@ -68,7 +57,10 @@ public class BankTest {
         }
 
     }
-
+    /**
+     * Tests the get card method
+     * @throws MissingCardException 
+     */
     @Test(expected = MissingCardException.class)
     public void testGetCardException() throws MissingCardException {
         System.out.println("getCard");
@@ -160,6 +152,7 @@ public class BankTest {
 
     /**
      * Test of getFence method, of class Bank.
+     * @throws java.lang.Exception
      */
     @Test
     public void testGetFence() throws Exception {
@@ -247,6 +240,7 @@ public class BankTest {
 
     /**
      * Test of numberOfUsedFence method, getFence e loadFence, of class Bank.
+     * @throws java.lang.Exception
      */
     @Test
     public void testNumberOfUsedFence() throws Exception {
@@ -308,6 +302,7 @@ public class BankTest {
 
     /**
      * Test of getPriceOfCard method, of class Bank.
+     * @throws java.lang.Exception
      */
     @Test
     public void testPriceOfCard() throws Exception {

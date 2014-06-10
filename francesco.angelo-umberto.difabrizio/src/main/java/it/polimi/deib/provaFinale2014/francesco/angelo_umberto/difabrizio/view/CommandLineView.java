@@ -3,15 +3,24 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * It's the view responsable to deal with the input-output from the console
+ *
+ * @author Umberto
+ */
 public class CommandLineView implements TypeOfViewController {
 
     private final PrintWriter stdOut = new PrintWriter(System.out);
     private final Scanner stdIn = new Scanner(System.in);
 
-    public CommandLineView() {
-
-    }
-
+    /**
+     * {@inheritDoc }
+     *
+     * @param regionIndex
+     * @param numbOfSheep
+     * @param numbOfRam
+     * @param numbOfLamb
+     */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
                               int numbOfLamb) {
         showInfo("La regione " + regionIndex + " ora ha " + numbOfSheep
@@ -19,6 +28,13 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param streetIndex
+     * @param fence
+     * @param nickShepherd
+     */
     public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd) {
         stdOut.print("La strada " + streetIndex + " è ");
@@ -38,6 +54,13 @@ public class CommandLineView implements TypeOfViewController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param numbOfPlayers
+     * @param firstPlayer
+     * @param shepherd4player
+     */
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
                                        int shepherd4player) {
         showInfo(
@@ -46,11 +69,21 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param currentPlayer
+     */
     public void refereshCurrentPlayer(String currentPlayer) {
         showInfo("E' il turno di " + currentPlayer);
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param result
+     */
     public void refreshBlackSheep(String result) {
 
         //splitta il risultato e raccogli l'outcome
@@ -72,6 +105,11 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param result
+     */
     public void refreshWolf(String result) {
         //splitta il risultato e raccogli l'outcome
         String[] token = result.split(",");
@@ -104,6 +142,13 @@ public class CommandLineView implements TypeOfViewController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param shepherdIndex
+     *
+     * @return
+     */
     public String setUpShepherd(int shepherdIndex) {
         showInfo("Inserisci una strada per il pastore " + shepherdIndex);
         return stdIn.nextLine();
@@ -122,6 +167,14 @@ public class CommandLineView implements TypeOfViewController {
         return startRegion + "," + endRegion + "," + type;
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param shepherdIndex
+     * @param endStreet
+     * @param price
+     */
     public void refreshMoveShepherd(String nickName, int shepherdIndex,
                                     String endStreet, int price) {
         showInfo(
@@ -131,21 +184,48 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param shepherdIndex
+     * @param streetIndex
+     */
     public void showSetShepherd(int shepherdIndex, String streetIndex) {
         showInfo("Pastore " + shepherdIndex + " posizionato in " + streetIndex);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param buyer
+     * @param land
+     * @param price
+     */
     public void refreshBuyLand(String buyer, String land, int price) {
         showInfo(
                 "Il giocatore " + buyer + " ha acquistato un territorio " + land + " per " + price + " danari");
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param type
+     * @param value
+     */
     public void refereshCard(String type, int value) {
         showInfo("Hai una carta " + type + " di valore " + value);
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param availableActions
+     * @param availableStringedActions
+     *
+     * @return
+     */
     public String chooseAction(int[] availableActions,
                                String[] availableStringedActions) {
         String stringToPrint = "";
@@ -158,12 +238,25 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param info
+     */
     public void showInfo(String info) {
         stdOut.println();
         stdOut.println(info);
         stdOut.flush();
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param type
+     * @param startRegion
+     * @param endRegion
+     */
     public void refreshMoveOvine(String nickName, String type,
                                  String startRegion,
                                  String endRegion) {
@@ -205,6 +298,9 @@ public class CommandLineView implements TypeOfViewController {
         return idShepherd + "," + region;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     public void showWelcome() {
         this.showInfo("Benvenuto, il gioco sta per iniziare!");
         //per ora la welcome da tastiera è una sringa normale
@@ -218,6 +314,9 @@ public class CommandLineView implements TypeOfViewController {
         return stdIn.nextLine();
     }
 
+    /**
+     * {@inheritDoc }
+     */
     public void showEndGame() {
         this.showInfo("Il gioco è terminato arrivederci!");
     }
@@ -228,26 +327,61 @@ public class CommandLineView implements TypeOfViewController {
         return stdIn.nextLine();
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param boughLand
+     * @param price
+     */
     public void showBoughtLand(String boughLand, String price) {
         showInfo(
                 "Hai acquistato la carta " + boughLand + " per " + price + " danari");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param region
+     * @param type
+     * @param shepherdPayed
+     */
     public void showKillOvine(String region, String type, String shepherdPayed) {
         showInfo(
                 "Hai ucciso un " + type + " nella regione " + region + " pagando " + shepherdPayed + " pastori per il silenzio");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param idShepherd
+     * @param priceToMove
+     */
     public void showMoveShepherd(String idShepherd, String priceToMove) {
         showInfo(
                 "Pastore " + idShepherd + " spostato pagando " + priceToMove + " denari");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param startRegion
+     * @param endRegion
+     * @param type
+     */
     public void showMoveOvine(String startRegion, String endRegion, String type) {
         showInfo(
                 "Hai spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickName
+     * @param region
+     * @param otherType
+     * @param newType
+     * @param outcome
+     */
     public void refreshMateSheepWith(String nickName, String region,
                                      String otherType, String newType,
                                      String outcome) {
@@ -262,6 +396,14 @@ public class CommandLineView implements TypeOfViewController {
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param killer
+     * @param region
+     * @param type
+     * @param outcome
+     */
     public void refreshKillOvine(String killer, String region, String type,
                                  String outcome) {
         if ("ok".equals(outcome)) {
@@ -273,6 +415,13 @@ public class CommandLineView implements TypeOfViewController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param region
+     * @param otherType
+     * @param newType
+     */
     public void showMateSheepWith(String region, String otherType,
                                   String newType) {
         showInfo(
@@ -280,10 +429,21 @@ public class CommandLineView implements TypeOfViewController {
                 + " nella regione " + region + " ed è nato un " + newType);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param money
+     */
     public void refreshMoney(String money) {
         showInfo("Ora hai " + money + " denari");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param winner
+     * @param rank
+     */
     public void showMyRank(Boolean winner, String rank) {
         if (winner) {
             showInfo("Hai vinto con " + rank + " punti!");
@@ -302,6 +462,11 @@ public class CommandLineView implements TypeOfViewController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param region
+     */
     public void specialAnimalInitialCondition(String region) {
         String[] token = region.split(",");
         if ("Wolf".equals(token[0])) {
@@ -311,14 +476,29 @@ public class CommandLineView implements TypeOfViewController {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param player
+     */
     public void refreshPlayerDisconnected(String player) {
         showInfo("Il giocatore " + player + " si è disconnesso");
     }
 
+    /**
+     * {@inheritDoc }
+     */
     public void showUnexpectedEndOfGame() {
         showInfo("Il gioco è terminato per mancanza di giocatori, si scusiamo.");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNames
+     * @param wallets
+     * @param shepherd4player
+     */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
                                       int shepherd4player) {
         showInfo("Giocatori:");

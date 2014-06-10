@@ -158,6 +158,7 @@ public abstract class TrasmissionController {
      * @param nickNameMover Who moved the shepherd
      * @param shepherdIndex Which shepherd was moved
      * @param endStreet     Street where the shepherd was moved
+     * @param price price to move the shepherd
      */
     public abstract void refreshMoveShepherd(String nickNameMover,
                                              int shepherdIndex,

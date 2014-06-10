@@ -287,7 +287,7 @@ public class GameManager implements Runnable {
             //per ogni suo pastore
             try {
                 for (j = 0; j < this.shepherd4player; j++) {
-                    players.get(currentPlayer).setMyshepherd(j);
+                    players.get(currentPlayer).chooseShepherdStreet(j);
                 }
             } catch (PlayerDisconnectedException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(
@@ -496,6 +496,13 @@ public class GameManager implements Runnable {
 
     }
 
+    /**
+     * Refreshes all the initial condition to a player. In order: nicknames of
+     * the players and their money, region status, street status, specialAnimals
+     * and fence number
+     *
+     * @param client Client to refresh
+     */
     protected void refreshInitialConditions(String client) {
         int[] wallets = getWalletsAmmount();
 
@@ -658,7 +665,7 @@ public class GameManager implements Runnable {
                     clientNickNames[currentPlayer]).getNumberOfShepherdStillToSet();
 
             for (int i = 0; i < shepherdToSet; i++) {
-                players.get(currentPlayer).setMyshepherd(
+                players.get(currentPlayer).chooseShepherdStreet(
                         shepherd4player - shepherdToSet + i);
             }
 
@@ -737,26 +744,6 @@ public class GameManager implements Runnable {
                             "nok" + ex.getMessage(), ex);
             controller.refreshSpecialAnimal(animal,
                     "nok" + "," + streetValue + "," + startRegionIndex);
-        }
-    }
-
-    private void startMarket() {
-        //iteratore sui player
-        int i;
-        //per ogni player 
-        for (i = 0; i < this.playersNumber; i++) {
-            //raccogli cosa vuole vendere
-            this.players.get(i).sellCards();
-        }
-        //lancia il dado per sapere il primo a comprare
-        //il modulo serve ad essere sicuro che venga selezionato un player esistente
-        int playerThatBuys = Dice.roll() % this.playersNumber;
-        //per ogni player 
-        for (i = 0; i < this.playersNumber; i++) {
-            //chiedi se vuole comprare           
-            this.players.get(playerThatBuys).buyCards();
-            //aggiorno il prossimo player
-            playerThatBuys = (playerThatBuys + 1) % this.playersNumber;
         }
     }
 

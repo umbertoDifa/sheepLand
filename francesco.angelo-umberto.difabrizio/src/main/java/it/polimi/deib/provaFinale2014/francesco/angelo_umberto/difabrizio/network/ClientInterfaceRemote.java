@@ -73,6 +73,7 @@ public interface ClientInterfaceRemote extends Remote {
      * @param nickNameMover The player who moved the shepherd
      * @param shepherdIndex The shepherd who was moved
      * @param streetIndex   The street where the shepherd is now
+     * @param price price to move the shepherd
      *
      * @throws RemoteException If there's a connection problem
      */

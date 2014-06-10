@@ -1,14 +1,9 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.CannotMoveWolfException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -19,18 +14,9 @@ public class WolfTest {
 
     Map map = new Map();
     Wolf wolf;
-    
-    public WolfTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
+    /**
+     * Sets up a map and adds the ovines
+     */
     @Before
     public void setUp() {
         int SHEEPSBURG_ID = 18;
@@ -138,12 +124,12 @@ public class WolfTest {
         int i, j;
         
         
-        int numberOfOvineForRegion = 1;
+        int numberOfOvineForRegion = 2;
         //per ogni regione tranne shepsburg
         for (j = 0; j < numberOfOvineForRegion; j++) {
             for (i = 0; i < region.length - 1; i++) {
                 //aggiungi un ovino (a caso)          
-                region[i].addOvine(new Ovine());
+                region[i].addOvine(new Ovine(OvineType.SHEEP));
             }
         }
 

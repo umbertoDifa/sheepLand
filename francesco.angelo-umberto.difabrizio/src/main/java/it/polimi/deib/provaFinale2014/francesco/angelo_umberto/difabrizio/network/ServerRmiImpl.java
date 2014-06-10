@@ -1,6 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
-
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.GameManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
@@ -16,6 +15,13 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * It's the rmi server which implements the remote interface. It deals with the
+ * connections of the clients and manage the starting of a game the rejection of
+ * a player and the reconnection of a plyaer
+ *
+ * @author Umberto
+ */
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                                                                   Runnable {
 
@@ -42,12 +48,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     /**
      * Thread del server
      */
-    private Thread myThread;
+    private final Thread myThread;
 
     /**
      * Executes the threads which manage the games
      */
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * The number of players waiting for a mach to start during an rmi
@@ -64,6 +70,15 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
      */
     private List<String> clientNickNames = new ArrayList<String>();
 
+    /**
+     * Creates a serverRmi with a given serverName and the port to do the remote
+     * binding
+     *
+     * @param serverName The name which will be used by the server to bind
+     * @param port       Port to bind to
+     *
+     * @throws RemoteException
+     */
     public ServerRmiImpl(String serverName, int port) throws
             RemoteException {
         myThread = new Thread(this);
@@ -78,6 +93,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         this.timeoutAccept = secondsBeforeAcceptTimeout * NetworkConstants.MILLISECONDS_IN_SECONDS.getValue();
     }
 
+    /**
+     * Starts the server
+     */
     protected void start() {
         myThread.start();
     }
@@ -107,6 +125,16 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param client
+     * @param nickName
+     *
+     * @return
+     *
+     * @throws RemoteException
+     */
     public boolean connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException {
         //se il client che tenta di connettersi non esiste

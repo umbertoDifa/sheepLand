@@ -18,7 +18,12 @@ import java.util.logging.Logger;
  */
 public class ServerManager {
 
-    public static final  Map<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
+    /**
+     * it's the map that links the client nickName to its proxy, which is the
+     * interface to comunicate with the client and can be a socket proxy or an
+     * rmi proxy
+     */
+    public static final Map<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
     /**
      * It represents the number of active games. Since it's static it can be
      * modified by any thread which decrements it before dying
@@ -88,7 +93,7 @@ public class ServerManager {
 
     }
 
-    private ServerManager() {  
-    }    
-    
+    private ServerManager() {
+    }
+
 }

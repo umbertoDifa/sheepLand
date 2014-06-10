@@ -113,6 +113,7 @@ public class RmiTrasmission extends TrasmissionController {
      * @param nickNameMover
      * @param shepherdInedx
      * @param endStreet
+     * @param price
      */
     @Override
     public void refreshMoveShepherd(String nickNameMover, int shepherdInedx,

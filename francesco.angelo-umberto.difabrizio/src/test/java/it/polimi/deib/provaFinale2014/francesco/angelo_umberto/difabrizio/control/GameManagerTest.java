@@ -1,20 +1,25 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Bank;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.RmiTrasmission;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Umberto
  */
 public class GameManagerTest {
+
+    GameManager instance;
+    TrasmissionController controller;
 
     public GameManagerTest() {
     }
@@ -29,6 +34,11 @@ public class GameManagerTest {
 
     @Before
     public void setUp() {
+        controller = new RmiTrasmission();
+
+        instance = new GameManager(new ArrayList<String>(),
+                controller);
+
     }
 
     @After
@@ -36,96 +46,41 @@ public class GameManagerTest {
     }
 
     /**
-     * Test of startGame method, of class GameManager.
+     * Test of getController method, of class GameManager.
      */
-    @Ignore
     @Test
-    public void testStartGame() {
-        System.out.println("startGame");
-        GameManager instance = null;
-       
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of askStreet method, of class GameManager.
-     * @throws java.lang.Exception
-     */
-    @Ignore
-    @Test
-    public void testAskStreet() throws Exception {
-        System.out.println("askStreet");        
+    public void testGetController() {
+        System.out.println("getController");
+        TrasmissionController expResult = controller;
+        TrasmissionController result = instance.getController();
+        assertEquals(expResult, result);
 
     }
 
     /**
-     * Test of askIdShepherd method, of class GameManager.
+     * Test of getMap method, of class GameManager.
      */
-    @Ignore
     @Test
-    public void testAskIdShepherd() {
-        System.out.println("askIdShepherd");
-        int hashCode = 0;
-        GameManager instance = null;
-        int expResult = 0;        
-        fail("The test case is a prototype.");
+    public void testGetMap() {
+        System.out.println("getMap");
+
+        instance = new GameManager(new ArrayList<String>(),
+                controller);
+
+        Map result = instance.getMap();
+        
+        //l'unico pericolo è il null pointer excetpion
+        assertNotNull(result);
     }
 
     /**
-     * Test of askAboutRegion method, of class GameManager.
+     * Test of getBank method, of class GameManager.
      */
-    @Ignore
     @Test
-    public void testAskAboutRegion() throws Exception {
-        System.out.println("askAboutRegion");
-        int playerHashCode = 0;
-        String message = "";
-        GameManager instance = null;
-        Region expResult = null;
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetBank() {
+        System.out.println("getBank");
+        Bank result = instance.getBank();
+        //l'unico pericolo è il null pointer exception
+        assertNotNull(result);
     }
-
-    /**
-     * Test of askCancelOrRetry method, of class GameManager.
-     */
-    @Ignore
-    @Test
-    public void testAskCancelOrRetry() throws Exception {
-        System.out.println("askCancelOrRetry");
-        int playerHashCode = 0;
-        String message = "";
-        GameManager instance = null;
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of askAndThrowDice method, of class GameManager.
-     */
-    @Ignore
-    @Test
-    public void testAskAndThrowDice() {
-        System.out.println("askAndThrowDice");
-        int playerHashCode = 0;
-        GameManager instance = null;
-        int expResult = 0;
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getPlayerByShepherd method, of class GameManager.
-     */
-    @Ignore
-    @Test
-    public void testGetPlayerByShepherd() {
-        System.out.println("getPlayerByShepherd");
-        Shepherd shepherd = null;
-        GameManager instance = null;
-        Player expResult = null;
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
 }

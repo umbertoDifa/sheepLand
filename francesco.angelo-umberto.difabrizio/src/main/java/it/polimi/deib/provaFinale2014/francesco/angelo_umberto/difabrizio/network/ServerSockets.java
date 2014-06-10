@@ -54,13 +54,16 @@ public class ServerSockets implements Runnable {
     /**
      * Executes the threads which manage the games
      */
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * Thread del server
      */
-    private Thread myThread;
-
+    private final Thread myThread;
+    /**
+     * create a server binded on a certain port
+     * @param port Port to bind the server
+     */
     public ServerSockets(int port) {
         myThread = new Thread(this);
 
@@ -76,7 +79,9 @@ public class ServerSockets implements Runnable {
         DebugLogger.turnOffExceptionLog();
 
     }
-
+    /**
+     * Starts the server
+     */
     protected void start() {
         myThread.start();
     }
