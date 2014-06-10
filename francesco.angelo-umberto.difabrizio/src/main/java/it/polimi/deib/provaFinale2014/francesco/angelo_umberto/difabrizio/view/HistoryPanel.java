@@ -9,14 +9,16 @@ import javax.swing.JTextArea;
 class HistoryPanel extends JTextArea {
 
     public HistoryPanel() {
-        setText("prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova prova");
+        setText("Gioco in caricamento:\n");
         setEditable(false);
+        setAutoscrolls(false);
         setLineWrap(true);
         setWrapStyleWord(true);
     }
-
-    protected void addInHead(String message) {
-        this.setText(message + this.getText());
+    
+    protected void showToHistoryPanel(String message) {
+        append("-");
+        append(message);
+        append("\n");
     }
-
 }

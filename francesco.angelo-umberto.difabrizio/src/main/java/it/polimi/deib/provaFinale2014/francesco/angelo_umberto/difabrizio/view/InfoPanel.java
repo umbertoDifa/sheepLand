@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.TextArea;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -57,8 +56,8 @@ public class InfoPanel extends JPanel implements MouseListener {
         this.height = height;
         this.imageBackground = imageBackground;
         this.setToolTipText("click me to close me!");
-        MyGui.addComponentsToPane(this, textArea, 50, 140);
-        MyGui.addComponentsToPane(this, dice, 77, 300);
+        GuiView.addComponentsToPane(this, textArea, 50, 140);
+        GuiView.addComponentsToPane(this, dice, 77, 300);
         repaint();
     }
 

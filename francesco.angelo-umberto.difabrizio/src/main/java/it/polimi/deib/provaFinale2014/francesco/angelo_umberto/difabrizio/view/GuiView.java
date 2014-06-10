@@ -13,6 +13,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -31,7 +33,8 @@ import javax.swing.*;
  *
  * @author Francesco
  */
-public class MyGui implements MouseListener, TypeOfViewController, ActionListener {
+public class GuiView implements MouseListener, TypeOfViewController,
+                                ActionListener {
 
     private JFrame frame;
     private JPanel mainJPanel;
@@ -51,6 +54,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     private Street[] streets;
     private RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
+    private JScrollPane historyScrollPane;
 
     private String[] nickNames;
     private String myNickName;
@@ -67,7 +71,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     private int lastStreet;
     private boolean zoomOn;
 
-    public MyGui() {
+    public GuiView() {
         setUpImagePool();
         setUpFrame();
     }
@@ -87,6 +91,21 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         nickPanel = new NickPanel(this);
         setUpInfoPanel();
         historyPanel = new HistoryPanel();
+        //aggiungo il textarea della history ad uno scrolla pane
+        historyScrollPane = new JScrollPane(historyPanel);
+        historyScrollPane.setPreferredSize(new Dimension((68 + 10) * 3, 80));
+        historyScrollPane.setVerticalScrollBarPolicy(
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        //imposto autoscroll
+        historyScrollPane.getVerticalScrollBar().addAdjustmentListener(
+                new AdjustmentListener() {
+                    public void adjustmentValueChanged(AdjustmentEvent e) {
+                        e.getAdjustable().setValue(
+                                e.getAdjustable().getMaximum());                        
+                    }
+                });
+
         actionsJPanel = new JPanel();
         cardsConteinerJPanel = new JPanel();
         mapJPanel = new MapBoard();
@@ -96,11 +115,12 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             actions[i] = new Action();
         }
         for (int i = 0; i < cardsJPanels.length; i++) {
-            cardsJPanels[i] = new Card(font.getFont(), "0");
+            cardsJPanels[i] = new Card(MyFont.getFont(), "0");
         }
         dxBar = new JPanel();
         playersContainerJPanel = new JPanel();
-        fenceJPanel = new Card(font.getFont(), String.valueOf(GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()));
+        fenceJPanel = new Card(MyFont.getFont(), String.valueOf(
+                GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()));
 
         streets = new Street[xStreetPoints.length];
         List<Image> imgShepherds = new ArrayList<Image>();
@@ -153,14 +173,18 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         dxBar.setLayout(new FlowLayout());
         dxBar.add(playersContainerJPanel);
         dxBar.add(actionsJPanel);
-        dxBar.add(historyPanel);
+
+        // dxBar.add(historyPanel);
+        dxBar.add(historyScrollPane);
         addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
         mapJPanel.setLayout(null);
         for (int i = 0; i < streets.length; i++) {
-            mapJPanel.addPanel(streets[i], xStreetPoints[i] - 10, yStreetPoints[i] - 10);
+            mapJPanel.addPanel(streets[i], xStreetPoints[i] - 10,
+                    yStreetPoints[i] - 10);
         }
         for (int i = 0; i < regionBoxes.length; i++) {
-            mapJPanel.addPanel(regionBoxes[i], xRegionBoxes[i] - 10, yRegionBoxes[i] - 10);
+            mapJPanel.addPanel(regionBoxes[i], xRegionBoxes[i] - 10,
+                    yRegionBoxes[i] - 10);
         }
 
         cardsConteinerJPanel.setLayout(new FlowLayout());
@@ -199,18 +223,21 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         }
 
         //setto dimensioni
-        actionsJPanel.setPreferredSize(new Dimension((68 + 10) * 3, (72 + 5) * 2));
+        actionsJPanel.setPreferredSize(
+                new Dimension((68 + 10) * 3, (72 + 5) * 2));
         //il contenitore dei player ha le dim per contenere sempre 4 player
-        playersContainerJPanel.setPreferredSize(new Dimension(220, (99+4) * 4));
-        cardsConteinerJPanel.setPreferredSize(new Dimension(105, (116 + 10) * cardsJPanels.length));
+        playersContainerJPanel.setPreferredSize(new Dimension(220, (99 + 4) * 4));
+        cardsConteinerJPanel.setPreferredSize(new Dimension(105,
+                (116 + 10) * cardsJPanels.length));
         mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
         mainJPanel.setBounds(0, 0, 900, 800);
         //la barra di destra ha le dim per contenere sempre 4 player
         dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
-        historyPanel.setPreferredSize(new Dimension((68 + 10) * 3, 80));
         infoPanel.setPreferredSize(new Dimension(232, 444));
-        infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-        nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2), mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
+        infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2),
+                mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
+        nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2),
+                mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
 
         //nascondo infoPanel e mappa
         hideInfoPanel();
@@ -225,8 +252,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         //istanzio
         playersJPanels = new Player[numOfPlayers];
         for (int i = 0; i < numOfPlayers; i++) {
-            playersJPanels[i] = new Player(nickNames[i], font.getFont());
-            playersJPanels[i].setUp(".\\images\\giocatore" + i + ".png", ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
+            playersJPanels[i] = new Player(nickNames[i], MyFont.getFont());
+            playersJPanels[i].setUp(".\\images\\giocatore" + i + ".png",
+                    ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
         }
 
         for (Player player : playersJPanels) {
@@ -254,7 +282,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                MyGui gui = new MyGui();
+                GuiView gui = new GuiView();
             }
         });
     }
@@ -265,7 +293,6 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             holder.add(myNickName);
             holder.notify();
         }
-        mainJPanel.setVisible(true);
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -278,6 +305,31 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                         holder.add(String.valueOf(i + 1));
                         holder.notify();
                         DebugLogger.println("aggiunto a holder azione " + i);
+                        switch (i) {
+                            case 0:
+                                showToHistoryPanel("Scelta azione: Muovi ovino.");
+                                break;
+                            case 1:
+                                showToHistoryPanel(
+                                        "Scelta azione: Muovi pastore.");
+                                break;
+                            case 2:
+                                showToHistoryPanel(
+                                        "Scelta azione: Compra carta.");
+                                break;
+                            case 3:
+                                showToHistoryPanel(
+                                        "Scelta azione: Accoppia pecore.");
+                                break;
+                            case 4:
+                                showToHistoryPanel(
+                                        "Scelta azione: Accoppia montone e pecora.");
+                                break;
+                            case 5:
+                                showToHistoryPanel(
+                                        "Scelta azione: Uccidi ovino.");
+                                break;
+                        }
                     }
                     actions[i].removeMouseListener(this);
                     actions[i].setAvailableView(false);
@@ -299,7 +351,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                         DebugLogger.println("carta terreno " + i + "selezionata");
                         holder.add(String.valueOf(i));
                         holder.notify();
-                        DebugLogger.println("aggiunto a holder carta terreno " + i);
+                        DebugLogger.println(
+                                "aggiunto a holder carta terreno " + i);
                     }
                     cardsJPanels[i].removeMouseListener(this);
                 }
@@ -371,7 +424,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
      * @param x
      * @param y
      */
-    public static void addComponentsToPane(Container panelFather, JComponent panelSon, int x, int y) {
+    public static void addComponentsToPane(Container panelFather,
+                                           JComponent panelSon, int x, int y) {
 
         panelFather.setLayout(null);
         panelFather.add(panelSon);
@@ -425,7 +479,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             imageBg = null;
             DebugLogger.println("immagine infoPanel non caricata");
         }
-        infoPanel = new InfoPanel(font.getFont(), listIcon, imageBg, 232, 444);
+        infoPanel = new InfoPanel(MyFont.getFont(), listIcon, imageBg, 232, 444);
     }
 
     private void showResultDice(int result) {
@@ -484,7 +538,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                 try {
                     holder.wait();
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(MyGui.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GuiView.class.getName()).log(Level.SEVERE,
+                            null, ex);
                 }
             }
             //la risposta che accetto è la prima
@@ -518,8 +573,10 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                 first = 0;
             }
             animalToHighlight.setBounds(
-                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5 + 140),
-                    (int) (p.y - first * (animalWidth * Math.sqrt(2) * Math.sin((Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
+                    (int) (p.x + first * (animalWidth * Math.sqrt(2) * Math.cos(
+                            (Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5 + 140),
+                    (int) (p.y - first * (animalWidth * Math.sqrt(2) * Math.sin(
+                            (Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
                     animalWidth, animalHeight);
 
             animalToHighlight.addMouseListener(this);
@@ -534,7 +591,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
      */
     private void setMyStreetClickable() {
         for (Street street : streets) {
-            if (street.getImage() != null && street.getImage().equals(ImagePool.getByName("shepherd" + getIndexPlayerByNickName(myNickName)))) {
+            if (street.getImage() != null && street.getImage().equals(
+                    ImagePool.getByName("shepherd" + getIndexPlayerByNickName(
+                                    myNickName)))) {
                 street.addMouseListener(this);
                 street.addMouseListener(street);
             }
@@ -544,7 +603,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     private String getShepherdByStreet(String streetOfMyShepherd) {
         for (Map.Entry pairs : nickShepherdToStreet.entrySet()) {
             String key = (String) pairs.getKey();
-            if (Integer.toString(nickShepherdToStreet.get(key)).equals(streetOfMyShepherd)) {
+            if (Integer.toString(nickShepherdToStreet.get(key)).equals(
+                    streetOfMyShepherd)) {
                 return key.split("-", -1)[1];
             }
         }
@@ -559,6 +619,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     //metodi dell'intefaccia
     public void showWelcome() {
         showInfo("Benvenuto. Il gioco sta per iniziare!");
+
     }
 
     public void showEndGame() {
@@ -566,6 +627,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void showInfo(String info) {
+        showToHistoryPanel(info);
         DebugLogger.println("msg in info panel " + info);
 
         infoPanel.addMouseListener(infoPanel);
@@ -577,7 +639,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public void showBoughtLand(String boughLand, String price) {
-        showInfo("Hai acquistato la carta " + boughLand + " per " + price + " danari.");
+        showInfo(
+                "Hai acquistato la carta " + boughLand + " per " + price + " danari.");
         //TODO aggiornare carte
     }
 
@@ -587,27 +650,38 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
                 Integer.valueOf(streetIndex));
     }
 
-    public void refreshGameParameters(String[] nickNames, int[] wallets, int shepherd4player) {
+    public void refreshGameParameters(String[] nickNames, int[] wallets,
+                                      int shepherd4player) {
         this.nickNames = nickNames;
         this.numOfPlayers = nickNames.length;
         this.shepherds4player = shepherd4player;
         setUpPlayers();
+
+        for (int i = 0; i < nickNames.length; i++) {
+            playersJPanels[getIndexPlayerByNickName(nickNames[i])].setAmount(
+                    wallets[i]);
+        }
     }
 
     public void showMoveShepherd(String idShepherd, String priceToMove) {
 
-        DebugLogger.println("in show move shepherd con " + idShepherd + " e " + priceToMove);
+        DebugLogger.println(
+                "in show move shepherd con " + idShepherd + " e " + priceToMove);
         //faccio pagare il player
-        playersJPanels[getIndexPlayerByNickName(myNickName)].pay(Integer.parseInt(priceToMove));
+        playersJPanels[getIndexPlayerByNickName(myNickName)].pay(
+                Integer.parseInt(priceToMove));
         //metto il recinto nella strada dove si trovava
         streets[nickShepherdToStreet.get(myNickName + "-" + idShepherd)].setFence();
         //aggiorno l img della strada d arrivo
-        streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(myNickName));
+        streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(
+                myNickName));
         //aggiorno la hashmap
         nickShepherdToStreet.replace(myNickName + "-" + idShepherd, lastStreet);
 
         //decremento recinti
-        fenceJPanel.setText("" + (Integer.parseInt(fenceJPanel.getText()) - 1));
+        fenceJPanel.decrease(1);
+        //OLD
+//        fenceJPanel.setText("" + (Integer.parseInt(fenceJPanel.getText()) - 1));
 
         mapJPanel.revalidate();
         mapJPanel.repaint();
@@ -623,7 +697,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         mapJPanel.repaint();
     }
 
-    public void showMateSheepWith(String region, String otherType, String newType) {
+    public void showMateSheepWith(String region, String otherType,
+                                  String newType) {
         //TODO animazione accoppiamento?
         regionBoxes[Integer.parseInt(region)].addAnimal(newType);
     }
@@ -658,17 +733,35 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         showInfo("Hai ucciso un " + type + " nella regione " + region
                 + " pagando " + shepherdPayed + " pastori per il silenzio");
         regionBoxes[Integer.parseInt(region)].removeOvine(type);
-        playersJPanels[getIndexPlayerByNickName(myNickName)].pay(GameConstants.PRICE_OF_SILENCE.getValue() * Integer.parseInt(shepherdPayed));
+        playersJPanels[getIndexPlayerByNickName(myNickName)].pay(
+                GameConstants.PRICE_OF_SILENCE.getValue() * Integer.parseInt(
+                        shepherdPayed));
     }
 
     public String setUpShepherd(int idShepherd) {
+        mainJPanel.setVisible(true);
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+
+        //svuoto la history appena il gioco inizia
+        historyPanel.setText("");
+
+        //imposto visibilità players
+        playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
+        for (int i = 0; i < playersJPanels.length; i++) {
+            if (getIndexPlayerByNickName(myNickName) != i) {
+                playersJPanels[i].isNotYourShift();
+            }
+        }
+
         showInfo("Scegli dove posizionare il pastore");
         setFreeStreetsClickable();
         String result = getAnswerByHolder();
         return result;
     }
 
-    public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam, int numbOfLamb) {
+    public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
+                              int numbOfLamb) {
 
         regionBoxes[regionIndex].removeAllAnimals();
 
@@ -683,36 +776,46 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         }
     }
 
-    public void refreshStreet(int streetIndex, boolean fence, String nickShepherd) {
+    public void refreshStreet(int streetIndex, boolean fence,
+                              String nickShepherd) {
         if (fence) {
             streets[streetIndex].setFence();
         } else if (nickShepherd != null && !"null".equals(nickShepherd)) {
             int indexShepherd = getIndexPlayerByNickName(nickShepherd);
-            streets[streetIndex].setImage("shepherd" + String.valueOf(indexShepherd));
+            streets[streetIndex].setImage("shepherd" + String.valueOf(
+                    indexShepherd));
         }
 
     }
 
-    public void refreshMoveShepherd(String nickNameMover, int shepherdIndex, String streetIndex) {
+    public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
+                                    String streetIndex) {
 
-        DebugLogger.println("in refresh move shepherd con " + shepherdIndex + " e " + streetIndex + " e " + nickNameMover);
+        DebugLogger.println(
+                "in refresh move shepherd con " + shepherdIndex + " e " + streetIndex + " e " + nickNameMover);
 
         //refresh della strada di partenza
         //cerco la strada dov'era il pastore e metto un recinto
         if (nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex) != null) {
             DebugLogger.println("metto fence");
             streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
-            nickShepherdToStreet.replace((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex));
+            nickShepherdToStreet.replace((nickNameMover + "-" + shepherdIndex),
+                    Integer.parseInt(streetIndex));
 
             //decremento recinti
-            fenceJPanel.setText("" + (Integer.parseInt(fenceJPanel.getText()) - 1));
+            fenceJPanel.decrease(1);
+            //OLD
+//            fenceJPanel.setText(
+//                    "" + (Integer.parseInt(fenceJPanel.getText()) - 1));
         }
 
         //refresh della strada di arrivo
         refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover);
         DebugLogger.println("posiziono " + nickNameMover + " in " + streetIndex
         );
-        if (null != nickShepherdToStreet.putIfAbsent((nickNameMover + "-" + shepherdIndex), Integer.parseInt(streetIndex))) {
+        if (null != nickShepherdToStreet.putIfAbsent(
+                (nickNameMover + "-" + shepherdIndex), Integer.parseInt(
+                        streetIndex))) {
             DebugLogger.println(" risultato putifabsent ok");
         }
 
@@ -724,7 +827,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         //TODO aggiungere +1 al territorio fra le mie carte
     }
 
-    public void refreshKillOvine(String killer, String region, String type, String outcome) {
+    public void refreshKillOvine(String killer, String region, String type,
+                                 String outcome) {
         if (outcome.equals("ok")) {
             regionBoxes[Integer.parseInt(region)].removeOvine(type);
         }
@@ -740,11 +844,16 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
     public void refreshMoney(String money) {
         DebugLogger.println("inizio refresh money " + money);
-        playersJPanels[getIndexPlayerByNickName(myNickName)].setAmount(Integer.parseInt(money));
+        playersJPanels[getIndexPlayerByNickName(myNickName)].setAmount(
+                Integer.parseInt(money));
         DebugLogger.println("fine refresh money " + money);
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
+        mainJPanel.setVisible(true);
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+
         for (int i = 0; i < playersJPanels.length; i++) {
             if (i == getIndexPlayerByNickName(currenPlayer)) {
                 playersJPanels[i].isYourShift();
@@ -768,14 +877,13 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         String startRegion = token[2];
         if ("ok".equalsIgnoreCase(outcome)) {
             String endRegion = token[3];
-            regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal("blacksheep");
+            regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal(
+                    "blacksheep");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("blacksheep");
             showInfo("La pecora nera si è spostata dalla regione " + startRegion
-                    + " alla regione " + endRegion + " passando per la strada di valore " + diceValue);
+                    + " alla regione " + endRegion);
         } else if ("nok".equalsIgnoreCase(outcome)) {
-            showInfo(
-                    "La pecora nera non può muoversi, la strada di valore "
-                    + diceValue + " è bloccata o non esiste nella regione " + startRegion);
+            showInfo("La pecora nera non può muoversi");
         }
     }
 
@@ -791,7 +899,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
             String startRegion = token[4];
             String endRegion = token[5];
 
-            regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal("wolf");
+            regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal(
+                    "wolf");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("wolf");
             if ("ok".equalsIgnoreCase(fence)) {
                 showInfo(
@@ -832,15 +941,18 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         }
     }
 
-    public String chooseAction(int[] availableActions, String[] availableStringedActions) {
+    public String chooseAction(int[] availableActions,
+                               String[] availableStringedActions) {
         //TODO abilitare effetto grafico mio turno
-        showInfo("e' il tuo turno!");
+        //imposto visibilità players
         playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
         for (int i = 0; i < playersJPanels.length; i++) {
             if (getIndexPlayerByNickName(myNickName) != i) {
                 playersJPanels[i].isNotYourShift();
             }
         }
+
+        showToHistoryPanel("Scegli un azione");
 
         for (int i = 0; i < availableActions.length; i++) {
             actions[availableActions[i] - 1].addMouseListener(this);
@@ -849,7 +961,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         return getAnswerByHolder();
     }
 
-    public void refreshMateSheepWith(String nickName, String region, String otherType, String newType, String outcome) {
+    public void refreshMateSheepWith(String nickName, String region,
+                                     String otherType, String newType,
+                                     String outcome) {
         if ("ok".equals(outcome)) {
             showInfo(
                     "Il giocatore " + nickName + " ha accoppiato una pecora con un "
@@ -861,7 +975,8 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         }
     }
 
-    public void refreshMoveOvine(String nickName, String type, String startRegion, String endRegion) {
+    public void refreshMoveOvine(String nickName, String type,
+                                 String startRegion, String endRegion) {
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
         mapJPanel.revalidate();
@@ -871,13 +986,16 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     public String askMoveOvine() {
         addAllRegionListener();
         zoomOn = true;
+        showToHistoryPanel("Seleziona la  regione di partenza:");
         String startRegion = getAnswerByHolder();
-
+        
+        showToHistoryPanel("Seleziona quale ovino muovere:");
         String ovineType = getAnswerByHolder();
 
         addAllRegionListener();
 
         zoomOn = false;
+        showToHistoryPanel("Seleziona la  regione di arrivo:");
         String endRegion = getAnswerByHolder();
 
         return startRegion + "," + endRegion + "," + ovineType;
@@ -886,22 +1004,30 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
 
     public String askMateSheepWith() {
         setMyStreetClickable();
+        
+        showToHistoryPanel("Seleziona il tuo pastore");
         String idShepherd = getShepherdByStreet(getAnswerByHolder());
+        
         addAllRegionListener();
+        showToHistoryPanel("Seleziona la  regione dell'accoppiamento");
         String region = getAnswerByHolder();
         return idShepherd + "," + region;
     }
 
     public String askKillOvine() {
         setMyStreetClickable();
-
+        
+        showToHistoryPanel("Seleziona il tuo pastore");
         String streetOfMyShepherd = getAnswerByHolder();
 
         String killerShepherd = getShepherdByStreet(streetOfMyShepherd);
         addAllRegionListener();
         zoomOn = true;
+        
+        showToHistoryPanel("Seleziona la  regione in cui uccidere");
         String startRegion = getAnswerByHolder();
-
+        
+        showToHistoryPanel("Seleziona quale ovino uccidere");
         String ovineType = getAnswerByHolder();
         zoomOn = false;
 
@@ -910,8 +1036,10 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
     }
 
     public String askMoveShepherd() {
-        setMyStreetClickable();
 
+        setMyStreetClickable();
+        
+        showToHistoryPanel("Seleziona il pastore da muovere");
         String streetOfMyShepherd = getAnswerByHolder();
 
         String shepherdToMove = getShepherdByStreet(streetOfMyShepherd);
@@ -919,6 +1047,7 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         DebugLogger.println("trovato pastore " + shepherdToMove);
 
         setFreeStreetsClickable();
+        showToHistoryPanel("Seleziona la  strada su cui spostare il pastore");
         String endStreet = getAnswerByHolder();
 
         lastStreet = Integer.parseInt(endStreet);
@@ -938,4 +1067,9 @@ public class MyGui implements MouseListener, TypeOfViewController, ActionListene
         fenceJPanel.setText(String.valueOf(fences));
     }
 
+    private void showToHistoryPanel(String message) {
+        historyPanel.append("-");
+        historyPanel.append(message);
+        historyPanel.append("\n");
+    }
 }

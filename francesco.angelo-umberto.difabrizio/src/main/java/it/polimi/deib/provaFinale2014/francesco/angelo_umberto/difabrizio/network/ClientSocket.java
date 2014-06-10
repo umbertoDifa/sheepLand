@@ -54,52 +54,68 @@ public class ClientSocket {
      * terminates
      */
     protected void startClient() {
+        boolean nickNameAccepted = false;
+        boolean nickNameOk = false;
+        String connectionResult = "nok";
 
-        try {
+        while (!nickNameAccepted) {
+            try {
+                //creo socket server
+                Socket socket = new Socket(ip, port);
+                DebugLogger.println("Connessione stabilita");
 
-            DebugLogger.println(
-                    "Canali di comunicazione impostati");
-            do {
+                //creo scanner ingresso server
+                serverIn = new Scanner(socket.getInputStream());
+
+                //creo printwriter verso server
+                serverOut = new PrintWriter(socket.getOutputStream());
+                DebugLogger.println(
+                        "Canali di comunicazione impostati");
+            } catch (IOException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+                view.showInfo("Il server è spento, impossibile connettersi");
+            }
+
+            while (!nickNameOk) {
                 this.nickName = view.askNickName();
-
-            } while ("".equals(nickName) || nickName.contains(",") || nickName.contains(
-                    ":"));
+                if ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                        ":") || nickName.contains(" ")) {
+                    nickNameOk = false;
+                    view.showInfo(
+                            "Il nickName inserito non è valido, prego riprovare.");
+                } else {
+                    nickNameOk = true;
+                }
+            }
             //da evitare come la peste la stringa vuota come nickname
             //esplodono i satelliti della nasaF
 
-            DebugLogger.println("Invio nickName");
-
-            //creo socket server
-            Socket socket = new Socket(ip, port);
-            DebugLogger.println("Connessione stabilita");
-
-            //creo scanner ingresso server
-            serverIn = new Scanner(socket.getInputStream());
-
-            //creo printwriter verso server
-            serverOut = new PrintWriter(socket.getOutputStream());
+            DebugLogger.println("Invio nickName: '" + nickName + "'");
 
             serverOut.println(nickName);
             serverOut.flush();
 
-            String connectionResult = receiveString();
+            connectionResult = receiveString();
             DebugLogger.println(connectionResult);
-
-            if (!("Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.".equals(
-                    connectionResult) || "Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick".equals(
-                            connectionResult) || "Ci sono troppe partite attive riprovare più tardi".equals(
-                            connectionResult))) {
-                DebugLogger.println(connectionResult);
-                waitCommand();
+            if ("Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick".equals(
+                    connectionResult)) {
+                view.showInfo(
+                        "Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick");
             } else {
-                view.showInfo(connectionResult);
+                nickNameAccepted = true;
             }
-
-        } catch (IOException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
-            view.showInfo("Il server è spento, impossibile connettersi");
         }
+
+        if (!("Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.".equals(
+                connectionResult) || "Ci sono troppe partite attive riprovare più tardi".equals(
+                        connectionResult))) {
+            DebugLogger.println(connectionResult);
+            waitCommand();
+        } else {
+            view.showInfo(connectionResult);
+        }
+
     }
 
     private String receiveString() {

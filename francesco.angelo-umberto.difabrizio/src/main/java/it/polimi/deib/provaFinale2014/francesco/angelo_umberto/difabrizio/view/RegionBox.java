@@ -40,15 +40,20 @@ public class RegionBox extends BackgroundAndTextJPanel {
         animals.add(newAnimal);
         //lo posiziono nel RegionBox
         if ("sheep".equals(animalType)) {
-            MyGui.addComponentsToPane(this, newAnimal, xPreview[0], yPreview[0]);
+            GuiView.addComponentsToPane(this, newAnimal, xPreview[0],
+                    yPreview[0]);
         } else if ("ram".equals(animalType)) {
-            MyGui.addComponentsToPane(this, newAnimal, xPreview[1], yPreview[1]);
+            GuiView.addComponentsToPane(this, newAnimal, xPreview[1],
+                    yPreview[1]);
         } else if ("lamb".equals(animalType)) {
-            MyGui.addComponentsToPane(this, newAnimal, xPreview[2], yPreview[2]);
+            GuiView.addComponentsToPane(this, newAnimal, xPreview[2],
+                    yPreview[2]);
         } else if ("blacksheep".equals(animalType)) {
-            MyGui.addComponentsToPane(this, newAnimal, xPreview[3], yPreview[3]);
+            GuiView.addComponentsToPane(this, newAnimal, xPreview[3],
+                    yPreview[3]);
         } else if ("wolf".equals(animalType)) {
-            MyGui.addComponentsToPane(this, newAnimal, xPreview[4], yPreview[4]);
+            GuiView.addComponentsToPane(this, newAnimal, xPreview[4],
+                    yPreview[4]);
         }
 
         repaint();

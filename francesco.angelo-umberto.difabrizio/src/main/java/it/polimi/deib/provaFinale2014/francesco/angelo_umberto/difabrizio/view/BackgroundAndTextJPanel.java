@@ -1,5 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -23,7 +24,6 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     private JLabel textLabel = new JLabel();
     protected Font font;
     private Image image;
-    private int delta;
     private int width;
     private int height;
     private int xImage = 0;
@@ -50,6 +50,8 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      * @param imgPath
      * @param xText
      * @param yText
+     * @param width
+     * @param height
      */
     protected void setUp(String imgPath, int xText, int yText, int width, int height) {
         //salvo le dimensioni
@@ -60,12 +62,11 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         this.setBackground(new Color(0, 0, 0, 0));
 
         //se ha testo
-        if (textLabel.getText() != "") {
+        if (!"".equals(textLabel.getText())) {
             //aggiungo il label e setto la posizione del testo rispetto al panel
             this.setLayout(null);
             this.add(textLabel);
             Insets insets = getInsets();
-            Dimension size = textLabel.getPreferredSize();
             int verticalAlign = (int) getAlignmentX();
             int horizontalAlign = (int) getAlignmentY();
             //centrandolo rispetto le coord xText e yText
@@ -124,13 +125,13 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         try {
             if (imgPath != null) {
                 image = ImageIO.read(new File(imgPath));
-                System.out.println("immagine impostata");
+                DebugLogger.println("immagine impostata");
             } else {
                 image = null;
             }
         } catch (IOException ex) {
             image = null;
-            System.out.println("immagine non impostata" + imgPath);
+            DebugLogger.println("immagine non impostata" + imgPath);
         }
     }
 

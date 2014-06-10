@@ -12,4 +12,11 @@ public class Card extends BackgroundAndTextJPanel {
         super(font, text);
     }
 
+    public void decrease(int amountToRemove) {
+        //calcolo nuovo ammount
+        int newAmmount = Integer.parseInt(this.getText()) - amountToRemove;
+        
+        //setto il nuovo ammount
+        this.setText(Integer.toString(newAmmount));
+    }
 }

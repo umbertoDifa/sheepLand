@@ -496,7 +496,7 @@ public class GameManager implements Runnable {
 
     }
 
-    private void refreshInitialConditions(String client) {
+    protected void refreshInitialConditions(String client) {
 
         refreshRegions(client);
 

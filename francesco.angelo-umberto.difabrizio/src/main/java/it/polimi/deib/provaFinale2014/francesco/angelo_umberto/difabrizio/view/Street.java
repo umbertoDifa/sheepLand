@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
-import jdk.nashorn.internal.runtime.Debug;
 
 /**
  *
@@ -32,7 +31,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        DebugLogger.println("strada clickata, dentro la catch dell evento");
+        DebugLogger.println("strada clickata, dentro la catch dell evento");        
         repaint();
     }
 

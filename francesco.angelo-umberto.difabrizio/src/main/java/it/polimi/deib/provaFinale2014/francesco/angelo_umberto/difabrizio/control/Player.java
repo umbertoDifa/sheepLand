@@ -146,6 +146,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     
                     gameManager.getController().refreshStartGame(
                             playerNickName);
+                    gameManager.refreshInitialConditions(playerNickName);
                     
                 }
                 DebugLogger.println(
@@ -493,7 +494,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     
                     gameManager.getController().refreshStartGame(
                             playerNickName);
-                    
+                    gameManager.refreshInitialConditions(playerNickName);
                 }
                 
                 DebugLogger.println(

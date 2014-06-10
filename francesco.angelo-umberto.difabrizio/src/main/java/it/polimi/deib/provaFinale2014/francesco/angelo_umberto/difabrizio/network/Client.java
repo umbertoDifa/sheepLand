@@ -2,7 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.CommandLineView;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.MyGui;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.GuiView;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -67,7 +67,7 @@ public class Client {
                         //Socket - GUI
                         ClientSocket client = new ClientSocket(ip,
                                 socketPort,
-                                new MyGui());
+                                new GuiView());
                         client.startClient();
                         valid = true;
                     }
@@ -95,7 +95,7 @@ public class Client {
                         ClientRmi client;
                         try {
                             client = new ClientRmi(ip, rmiPort, nameServer,
-                                    new MyGui());
+                                    new GuiView());
                             client.startClient();
                             DebugLogger.println("Client remoto attivo");
                             synchronized (LOCK) {

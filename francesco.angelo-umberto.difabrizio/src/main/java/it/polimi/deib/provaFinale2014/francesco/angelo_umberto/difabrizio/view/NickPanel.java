@@ -21,22 +21,22 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
     private JTextArea area;
     private JLabel label;
-    private Font font;
+    private final Font font;
     private final int width;
     private final int height;
- //   private final Image imageBackground;
-    private JButton button;
+    //   private final Image imageBackground;
+    private final JButton button;
 
-    public NickPanel(MyGui gui) {
-        this.button = new JButton("Submit");
+    public NickPanel(GuiView gui) {
+        this.button = new JButton("Login");
 
         this.width = 140;
         this.height = 100;
         this.font = MyFont.getFont();
         button.setFont(font);
-     //   this.imageBackground = ImagePool.getByName("infoPanel");
+        //   this.imageBackground = ImagePool.getByName("infoPanel");
         this.setBackground(Color.BLUE);
-        this.area = new JTextArea("inserire qui nickname"+ Math.random() );
+        this.area = new JTextArea(""+ (int) (Math.random() * 10));
         area.setPreferredSize(new Dimension(140, 60));
         this.area.addKeyListener(this);
         this.setLayout(new BorderLayout());
@@ -54,18 +54,8 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        this.setVisible(false);
-        this.area.setEditable(false);
+        this.setVisible(false);        
     }
-//
-//    @Override
-//    protected void paintComponent(Graphics g) {
-//        setOpaque(false);
-//        if (imageBackground != null) {
-//            g.drawImage(imageBackground, 0, 0, new Color(0, 0, 0, 0), this);
-//        }
-//        super.paintComponent(g);
-//    }
 
     @Override
     public Dimension getPreferredSize() {
@@ -89,6 +79,5 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
 
     }
-
 
 }
