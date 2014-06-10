@@ -46,7 +46,7 @@ public interface TypeOfViewController {
                               String nickShepherd);
 
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-                                    String streetIndex);
+                                    String endStreet, int price);
 
     public void refreshBuyLand(String buyer, String land, int price);
 

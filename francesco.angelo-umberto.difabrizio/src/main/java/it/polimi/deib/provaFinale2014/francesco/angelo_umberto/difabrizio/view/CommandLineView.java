@@ -123,9 +123,11 @@ public class CommandLineView implements TypeOfViewController {
     }
 
     public void refreshMoveShepherd(String nickName, int shepherdIndex,
-                                    String newStreet) {
+                                    String endStreet, int price) {
         showInfo(
-                "Il giocatore " + nickName + " ha posizionato il pastore " + shepherdIndex + " nella strada " + newStreet);
+                "Il giocatore " + nickName + " ha posizionato il pastore "
+                + shepherdIndex + " nella strada " + endStreet + " pagando "
+                + price + " danari.");
 
     }
 

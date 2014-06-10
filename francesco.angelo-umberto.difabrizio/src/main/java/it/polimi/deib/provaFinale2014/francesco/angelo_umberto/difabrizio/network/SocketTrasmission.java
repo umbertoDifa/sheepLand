@@ -237,9 +237,10 @@ public class SocketTrasmission extends TrasmissionController {
      * @param nickNameMover
      * @param shepherdIndex
      * @param newStreet
+     * @param price
      */
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-                                    String newStreet) {
+                                    String newStreet, int price) {
         //per tutti i nick tranne quello dato refresha
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -256,6 +257,8 @@ public class SocketTrasmission extends TrasmissionController {
                 ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                         nickName)).send(
                                 newStreet);
+                ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        nickName)).send(price);
             }
 
         }
@@ -329,8 +332,9 @@ public class SocketTrasmission extends TrasmissionController {
         //ritorno il successo o meno dell'operazione
         if (result.contains("Pastore posizionato correttamente!")) {
             //refresho
+            String[] token = result.split(",");
             refreshMoveShepherd(nickName, shepherdIndex,
-                    chosenStringedStreet);
+                    chosenStringedStreet, Integer.parseInt(token[1]));
             return true;
         }
 
@@ -423,7 +427,8 @@ public class SocketTrasmission extends TrasmissionController {
 
         if (result.contains("Pastore spostato")) {
             //invia conferma riepilogativa agli utenti
-            refreshMoveShepherd(nickName, Integer.parseInt(token[0]), token[1]);
+            int price  = Integer.parseInt(result.split(",")[1]);
+            refreshMoveShepherd(nickName, Integer.parseInt(token[0]), token[1],price);
 
             //invia refresh portafoglio
             refreshMoney(nickName);
@@ -674,14 +679,15 @@ public class SocketTrasmission extends TrasmissionController {
      * @param shepherd4player
      */
     @Override
-    public void refreshGameParameters(String nickName, String[] nickNames,int[] wallet,
+    public void refreshGameParameters(String nickName, String[] nickNames,
+                                      int[] wallet,
                                       int shepherd4player) {
         if (canPlayerReceive(nickName)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     nickName)).send(MessageProtocol.GAME_PARAMETERS.toString());
             String tmp = "";
             for (int i = 0; i < nickNames.length; i++) {
-                tmp += nickNames[i] + ","+wallet[i]+",";
+                tmp += nickNames[i] + "," + wallet[i] + ",";
             }
             DebugLogger.println("invio " + tmp);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(

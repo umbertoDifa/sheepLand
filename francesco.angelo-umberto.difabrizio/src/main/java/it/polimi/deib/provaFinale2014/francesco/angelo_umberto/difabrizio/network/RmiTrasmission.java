@@ -112,11 +112,11 @@ public class RmiTrasmission extends TrasmissionController {
      *
      * @param nickNameMover
      * @param shepherdInedx
-     * @param newStreet
+     * @param endStreet
      */
     @Override
     public void refreshMoveShepherd(String nickNameMover, int shepherdInedx,
-                                    String newStreet) {
+                                    String endStreet, int price) {
         String nickName = null;
 
         try {
@@ -127,7 +127,8 @@ public class RmiTrasmission extends TrasmissionController {
 
                     ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
                             nickName)).getClientRmi().refreshMoveShepherd(
-                                    nickNameMover, shepherdInedx, newStreet);
+                                    nickNameMover, shepherdInedx, endStreet,
+                                    price);
                 }
             }
         } catch (RemoteException ex) {
@@ -184,7 +185,8 @@ public class RmiTrasmission extends TrasmissionController {
 
             //invia conferma riepilogativa agli utenti
             if (chosenStreet != null) {
-                refreshMoveShepherd(nickName, shepherdIndex, chosenStreet);
+                //il set up costa 0 denari
+                refreshMoveShepherd(nickName, shepherdIndex, chosenStreet, 0);
                 return true;
             }
         } catch (RemoteException ex) {
@@ -231,7 +233,7 @@ public class RmiTrasmission extends TrasmissionController {
                         return true;
                     case '2':
                         refreshMoveShepherd(nickName, Integer.parseInt(token[1]),
-                                token[2]);
+                                token[2], Integer.parseInt(token[3]));
                         return true;
                     case '3':
                         refreshBuyLand(nickName, token[2], Integer.parseInt(

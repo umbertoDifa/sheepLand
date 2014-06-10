@@ -340,8 +340,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     actions[i].removeMouseListener(this);
                     actions[i].setOpaqueView(true);
                 }
-                actionsContainerJPanel.revalidate();
-                actionsContainerJPanel.repaint();
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
             } else if (e.getSource() instanceof Street) {
                 for (int i = 0; i < streets.length; i++) {
                     if (e.getSource().equals(streets[i])) {
@@ -957,8 +957,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
             actions[availableActions[i] - 1].setOpaqueView(false);
         }
 
-        actionsContainerJPanel.revalidate();
-        actionsContainerJPanel.repaint();
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
         return getAnswerByHolder();
     }
 
