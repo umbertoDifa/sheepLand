@@ -102,6 +102,7 @@ public class ClientSocket {
                     connectionResult)) {
                 view.showInfo(
                         "Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick");
+                nickNameOk = false;
             } else {
                 nickNameAccepted = true;
             }
