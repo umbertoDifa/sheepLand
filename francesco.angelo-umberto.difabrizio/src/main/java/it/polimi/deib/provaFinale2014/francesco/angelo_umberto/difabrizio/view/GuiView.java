@@ -818,14 +818,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-            String streetIndex) {
+            String streetIndex, int price) {
         hideInfoPanel();
 
         DebugLogger.println(
                 "in refresh move shepherd con " + shepherdIndex + " e " + streetIndex + " e " + nickNameMover);
 
+        //Se vi è una strada di partenza vuol dire che l'azione è una MoveOvine
+        //non una setShepherd e quindi faccio una
         //refresh della strada di partenza
-        //cerco la strada dov'era il pastore e metto un recinto
+        //cerco la strada dov'era il pastore e metto un recinto, lo faccio pagare
         if (nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex) != null) {
             DebugLogger.println("metto fence");
             streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
@@ -834,9 +836,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
             //decremento recinti
             fenceJPanel.decrease(1);
-            //OLD
-//            fenceJPanel.setText(
-//                    "" + (Integer.parseInt(fenceJPanel.getText()) - 1));
+            playersJPanels[getIndexPlayerByNickName(nickNameMover)].pay(price);
         }
 
         //refresh della strada di arrivo
@@ -861,6 +861,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     public void refreshKillOvine(String killer, String region, String type,
             String outcome) {
+        hideInfoPanel();
         if (outcome.equals("ok")) {
             regionBoxes[Integer.parseInt(region)].removeOvine(type);
         }
@@ -882,7 +883,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {
-
+        hideInfoPanel();
         for (int i = 0; i < playersJPanels.length; i++) {
             if (i == getIndexPlayerByNickName(currenPlayer)) {
                 playersJPanels[i].isYourShift();
@@ -894,7 +895,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public void refereshCard(String type, int value) {
-        //TODO aggiungere alle mie carte
+        cardsJPanels[RegionType.valueOf(type).getIndex()].setText(""+value);
     }
 
     public void refreshBlackSheep(String result) {

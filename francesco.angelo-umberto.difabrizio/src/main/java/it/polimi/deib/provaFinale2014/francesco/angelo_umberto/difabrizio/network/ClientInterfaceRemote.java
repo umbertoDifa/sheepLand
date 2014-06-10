@@ -77,7 +77,7 @@ public interface ClientInterfaceRemote extends Remote {
      * @throws RemoteException If there's a connection problem
      */
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-                                    String streetIndex) throws RemoteException;
+                                    String streetIndex, int price) throws RemoteException;
 
     /**
      * It refresh that a given player moved an ovine from one region to an other

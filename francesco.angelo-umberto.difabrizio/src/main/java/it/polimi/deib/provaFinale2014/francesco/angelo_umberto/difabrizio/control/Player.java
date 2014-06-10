@@ -458,7 +458,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
         
-        return "Pastore posizionato correttamente!";
+        return "Pastore posizionato correttamente!,0";
     }
 
     /**
@@ -681,8 +681,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 possibleRegionsType.add(region.getType().toString());
                 possibleShepherd.add(street.getShepherd());
             }
-        }
-
+        }        
+        
         //se la stringa coincide con uno dei tipi di regione possibili
         try {
             for (String type : possibleRegionsType) {

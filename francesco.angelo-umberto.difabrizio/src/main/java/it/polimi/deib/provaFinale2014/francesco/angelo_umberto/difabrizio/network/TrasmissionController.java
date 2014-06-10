@@ -157,11 +157,11 @@ public abstract class TrasmissionController {
      *
      * @param nickNameMover Who moved the shepherd
      * @param shepherdIndex Which shepherd was moved
-     * @param newStreet     Street where the shepherd was moved
+     * @param endStreet     Street where the shepherd was moved
      */
     public abstract void refreshMoveShepherd(String nickNameMover,
                                              int shepherdIndex,
-                                             String newStreet);
+                                             String endStreet,int price);
 
     /**
      * Refreshes that a card was bought to the online players

@@ -355,8 +355,9 @@ public class ClientSocket {
         String player = receiveString();
         int shepherdIndex = receiveInt();
         String street = receiveString();
+        int price = receiveInt();
 
-        view.refreshMoveShepherd(player, shepherdIndex, street);
+        view.refreshMoveShepherd(player, shepherdIndex, street, price);
     }
 
     private void refreshMateSheepWith() {
