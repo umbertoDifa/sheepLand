@@ -10,11 +10,11 @@ import java.io.IOException;
  *
  * @author Francesco
  */
-public class MyFont {
+public class FontFactory {
 
     private static Font myFont;
 
-    public MyFont() {
+    private FontFactory() {
         try {
             myFont = Font.createFont(Font.TRUETYPE_FONT, new File(".\\font\\DenneFreakshow.ttf"));
             DebugLogger.println("impostato font DenneFeakshow");
@@ -27,6 +27,11 @@ public class MyFont {
             DebugLogger.println("nel catch FontFormatEx");
         }
     }
+    
+    public static void createFont(){
+        new FontFactory();
+    }
+    
     
     public static Font getFont(){
         return myFont;

@@ -14,8 +14,8 @@ public class Action extends BackgroundAndTextJPanel {
      * se ok l'img viene visualizzata non opaca
      * @param ok 
      */
-    protected void setAvailableView(boolean ok) {
-        super.setOpacity(false);
+    protected void setOpaqueView(boolean ok) {
+        super.setOpacity(ok);
     }
 
 }

@@ -32,7 +32,7 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
         this.width = 140;
         this.height = 100;
-        this.font = MyFont.getFont();
+        this.font = FontFactory.getFont();
         button.setFont(font);
         //   this.imageBackground = ImagePool.getByName("infoPanel");
         this.setBackground(Color.BLUE);
