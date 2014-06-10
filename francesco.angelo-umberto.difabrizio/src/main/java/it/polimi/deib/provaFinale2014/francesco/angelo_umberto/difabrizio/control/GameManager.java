@@ -497,15 +497,14 @@ public class GameManager implements Runnable {
     }
 
     protected void refreshInitialConditions(String client) {
-
-        refreshRegions(client);
-
-        refreshStreets(client);
-        
         int[] wallets = getWalletsAmmount();
 
         controller.refreshGameParameters(client, clientNickNames, wallets,
                 shepherd4player);
+
+        refreshRegions(client);
+
+        refreshStreets(client);
 
         controller.refreshMoney(client);
 

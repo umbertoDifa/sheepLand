@@ -234,7 +234,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         //la barra di destra ha le dim per contenere sempre 4 player
         dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
         infoPanel.setPreferredSize(new Dimension(232, 444));
-        infoPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2),
+        infoPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
                 mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
         nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2),
                 mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
@@ -249,6 +249,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     private void setUpPlayers() {
+        //rendo visibile il panel
+        mainJPanel.setVisible(true);
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+        
         //istanzio
         playersJPanels = new Player[numOfPlayers];
         for (int i = 0; i < numOfPlayers; i++) {
@@ -738,11 +743,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                         shepherdPayed));
     }
 
-    public String setUpShepherd(int idShepherd) {
-        mainJPanel.setVisible(true);
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
-
+    public String setUpShepherd(int idShepherd) {    
         //svuoto la history appena il gioco inizia
         historyPanel.setText("");
 
@@ -849,10 +850,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println("fine refresh money " + money);
     }
 
-    public void refereshCurrentPlayer(String currenPlayer) {
-        mainJPanel.setVisible(true);
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+    public void refereshCurrentPlayer(String currenPlayer) {        
 
         for (int i = 0; i < playersJPanels.length; i++) {
             if (i == getIndexPlayerByNickName(currenPlayer)) {
