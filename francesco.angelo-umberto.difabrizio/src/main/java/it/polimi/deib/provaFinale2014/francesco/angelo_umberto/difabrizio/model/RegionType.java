@@ -74,6 +74,19 @@ public enum RegionType {
     public int getIndex() {
         return index;
     }
+    /**
+     * returns a region type given its index
+     * @param index the index of the region
+     * @return the name of the region if it exist, null if not
+     */
+    public String getRegionByIndex(int index){
+        for(RegionType type: RegionType.values()){
+            if(type.getIndex() == index){
+                return type.toString();
+            }
+        }
+        return null;
+    }
 
     /**
      * Restitutisce una regione a caso. Tranne sheepsburg
