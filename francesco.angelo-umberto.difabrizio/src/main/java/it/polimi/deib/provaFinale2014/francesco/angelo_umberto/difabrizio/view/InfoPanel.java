@@ -39,6 +39,8 @@ public class InfoPanel extends JPanel implements MouseListener {
      * @param height
      */
     public InfoPanel(Font font, List<Icon> imagesDice, Image imageBackground, int width, int height) {
+        this.setPreferredSize(new Dimension(232, 444));
+        this.setBackground(new Color(0,0,0,0));
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setBackground(new Color(0, 0, 0, 0));
@@ -58,6 +60,7 @@ public class InfoPanel extends JPanel implements MouseListener {
         this.setToolTipText("click me to close me!");
         GuiView.addComponentsToPane(this, textArea, 50, 140);
         GuiView.addComponentsToPane(this, dice, 77, 300);
+        this.setVisible(false);
         repaint();
     }
 
@@ -79,8 +82,8 @@ public class InfoPanel extends JPanel implements MouseListener {
         dice.setVisible(true);
         dice.setIcon(imagesDice.get(result - 1));
     }
-    
-    public void hideDice(){
+
+    public void hideDice() {
         dice.setVisible(false);
     }
 

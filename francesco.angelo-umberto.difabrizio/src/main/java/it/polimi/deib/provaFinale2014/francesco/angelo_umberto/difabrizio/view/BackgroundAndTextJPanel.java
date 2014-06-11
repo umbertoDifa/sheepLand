@@ -72,7 +72,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
             //centrandolo rispetto le coord xText e yText
             textLabel.setBounds((xText + insets.left + horizontalAlign - width / 2),
                     (yText + insets.top + verticalAlign - (28 / 2)),
-                    width, 28);
+                    width/2, 28);
 
             //imposto font e colore font
             textLabel.setFont(font);

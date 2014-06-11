@@ -1,6 +1,8 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.logging.Logger;
  *
  * @author Francesco
  */
-public class RegionBox extends BackgroundAndTextJPanel {
+public class RegionBox extends BackgroundAndTextJPanel implements MouseListener {
 
     private final int[] xPreview = {10, 0, 10, 6, 10};
     private final int[] yPreview = {0, 25, 25, 35, 35};
@@ -20,6 +22,9 @@ public class RegionBox extends BackgroundAndTextJPanel {
 
     public RegionBox() {
         this.setLayout(null);
+        this.setUp((String) null, 52, 78);
+        this.addMouseListener(this);
+
         repaint();
     }
 
@@ -149,5 +154,26 @@ public class RegionBox extends BackgroundAndTextJPanel {
             }
         }
 
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        DebugLogger.println("region clickata, dentro la catch dell evento");
+        repaint();
+    }
+
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    public void mouseEntered(MouseEvent e) {
+        this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    public void mouseExited(MouseEvent e) {
+        this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 }

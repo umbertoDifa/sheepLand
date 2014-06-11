@@ -3,6 +3,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -79,22 +80,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * inizializzo tutti i componenti della Gui
      */
     private void setUpFrame() {
-        //istanzio font
-        FontFactory.createFont();
 
-        //istanzio tutti i componenti
-        frame = new JFrame();
-        layeredHolder = new JPanel();
-        layeredPane = new JLayeredPane();
-        layeredPane.setOpaque(true);
-        frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        mainJPanel = new JPanel();
-        nickPanel = new NickPanel(this);
-        setUpInfoPanel();
-        historyPanel = new HistoryPanel();
-        //aggiungo il textarea della history ad uno scrolla pane
-        historyScrollPane = new JScrollPane(historyPanel);
-        historyScrollPane.setPreferredSize(new Dimension((68 + 10) * 3, 80));
+        instantiateFrameComponents();
+
         historyScrollPane.setVerticalScrollBarPolicy(
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
@@ -107,149 +95,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     }
                 });
 
-        actionsContainerJPanel = new JPanel();
-        cardsConteinerJPanel = new JPanel();
-        mapJPanel = new MapBoard();
-        actions = new Action[GameConstants.NUM_TOT_ACTIONS.getValue()];
-        cardsJPanels = new Card[RegionType.values().length];
-        for (int i = 0; i < actions.length; i++) {
-            actions[i] = new Action();
-        }
-        for (int i = 0; i < cardsJPanels.length; i++) {
-            cardsJPanels[i] = new Card(FontFactory.getFont(), "9", "0");
-        }
-        dxBar = new JPanel();
-        playersContainerJPanel = new JPanel();
-        fenceJPanel = new CardBoard(FontFactory.getFont(), String.valueOf(
-                GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()));
+        setUpImageFrameComponents();
 
-        streets = new Street[xStreetPoints.length];
-        List<Image> imgShepherds = new ArrayList<Image>();
-        //ogni strada ha il sempre 4 pedine 
-        for (int i = 0; i < 4; i++) {
-            imgShepherds.add(ImagePool.getByName("shepherd" + String.valueOf(i)));
-        }
-        for (int i = 0; i < xStreetPoints.length; i++) {
-            streets[i] = new Street(ImagePool.getByName("fence"), imgShepherds);
-        }
-        regionBoxes = new RegionBox[xRegionBoxes.length];
-        for (int i = 0; i < xRegionBoxes.length; i++) {
-            regionBoxes[i] = new RegionBox();
-        }
-
-        //aggiungo immagini
-        mapJPanel.setUp(".\\images\\Game_Board_big.jpg", 487, 900);
-        actions[0].setUp(".\\images\\moveSheep.png", 68, 72);
-        actions[1].setUp(".\\images\\moveShepherd.png", 68, 72);
-        actions[2].setUp(".\\images\\buyLand.png", 68, 72);
-        actions[3].setUp(".\\images\\mateSheep.png", 68, 72);
-        actions[4].setUp(".\\images\\mateRam.png", 68, 72);
-        actions[5].setUp(".\\images\\killOvine.png", 68, 72);
-
-        cardsJPanels[1].setUp(".\\images\\hill2.png", 139, 91, 105, 104);
-        cardsJPanels[2].setUp(".\\images\\countryside2.png", 139, 91, 105, 104);
-        cardsJPanels[0].setUp(".\\images\\mountain2.png", 139, 91, 105, 104);
-        cardsJPanels[5].setUp(".\\images\\desert2.png", 139, 91, 105, 104);
-        cardsJPanels[4].setUp(".\\images\\lake2.png", 139, 91, 105, 104);
-        cardsJPanels[3].setUp(".\\images\\plain2.png", 139, 91, 105, 104);
-
-        fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
-
-        for (RegionBox region : regionBoxes) {
-            region.setUp((String) null, 52, 78);
-        }
-
-        //setto la struttura
-        frame.setLayout(null);
-        layeredPane.setPreferredSize(new Dimension(900, 800));
-        layeredPane.add(mainJPanel, new Integer(0));
-        layeredPane.add(infoPanel, new Integer(1));
-        layeredPane.add(nickPanel, new Integer(3));
-        layeredPane.revalidate();
-
-        mainJPanel.setLayout(new FlowLayout());
-        mainJPanel.add(cardsConteinerJPanel);
-        mainJPanel.add(mapJPanel);
-        mainJPanel.add(dxBar);
-        dxBar.setLayout(new FlowLayout());
-        dxBar.add(playersContainerJPanel);
-        dxBar.add(actionsContainerJPanel);
-
-        // dxBar.add(historyPanel);
-        dxBar.add(historyScrollPane);
-        addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
-        mapJPanel.setLayout(null);
-        for (int i = 0; i < streets.length; i++) {
-            mapJPanel.addPanel(streets[i], xStreetPoints[i] - 10,
-                    yStreetPoints[i] - 10);
-        }
-        for (int i = 0; i < regionBoxes.length; i++) {
-            mapJPanel.addPanel(regionBoxes[i], xRegionBoxes[i] - 10,
-                    yRegionBoxes[i] - 10);
-        }
-
-        cardsConteinerJPanel.setLayout(new FlowLayout());
-        actionsContainerJPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        playersContainerJPanel.setLayout(new FlowLayout());
-        for (Action action : actions) {
-            actionsContainerJPanel.add(action);
-        }
-        for (CardBoard card : cardsJPanels) {
-            cardsConteinerJPanel.add(card);
-        }
-        layeredHolder.add(layeredPane);
-        frame.setContentPane(layeredHolder);
-
-        //imposto colore sfondi
-        layeredHolder.setBackground(backgroundColor);
-        mainJPanel.setBackground(backgroundColor);
-        actionsContainerJPanel.setBackground(noneColor);
-        mapJPanel.setBackground(noneColor);
-        cardsConteinerJPanel.setBackground(noneColor);
-        for (Action action : actions) {
-            action.setBackground(noneColor);
-            action.repaint();
-        }
-        for (Street street : streets) {
-            street.setBackground(noneColor);
-        }
-        fenceJPanel.setBackground(noneColor);
-        playersContainerJPanel.setBackground(noneColor);
-        dxBar.setBackground(noneColor);
-        layeredHolder.setOpaque(true);
-        infoPanel.setBackground(noneColor);
-        historyPanel.setBackground(Color.white);
-        for (RegionBox region : regionBoxes) {
-            region.setBackground(Color.MAGENTA);
-        }
-
-        //setto dimensioni
-        actionsContainerJPanel.setPreferredSize(
-                new Dimension((68 + 10) * 3, (72 + 5) * 2));
-        //il contenitore dei player ha le dim per contenere sempre 4 player
-        playersContainerJPanel.setPreferredSize(new Dimension(220, (99 + 4) * 4));
-        cardsConteinerJPanel.setPreferredSize(new Dimension(105,
-                (116 + 10) * cardsJPanels.length));
-        mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
-        mainJPanel.setBounds(0, 0, 900, 800);
-        //la barra di destra ha le dim per contenere sempre 4 player
-        dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
-        infoPanel.setPreferredSize(new Dimension(232, 444));
-        infoPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
-                mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-        nickPanel.setBounds(mainJPanel.getPreferredSize().width / 2 - (444 / 2),
-                mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
+        setUpFrameStructure();
+        setUpBackgroundColorFrameComponents();
+        setUpDimensionFrameComponents();
 
         //nascondo infoPanel e mappa
-        hideInfoPanel();
         mainJPanel.setVisible(false);
 
-        //aggiungo listener delle strade
-        for (Street street : streets) {
-            street.addMouseListener(this);
-            street.addMouseListener(street);
-            street.setEnabled(false);
-        }
+        addFrameComponentsListener();
 
         frame.pack();
         frame.setVisible(true);
@@ -287,18 +142,177 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         frame.revalidate();
     }
-    private static final List<String> holder = new LinkedList<String>();
 
-    public static void main(String args[]) {
-        //faccio gestire il thread da EDT, per il controllo ciclico della coda
-        //degli eventi generati dai vari componenti
+    private void instantiateFrameComponents() {
+        //istanzio font
+        FontFactory.createFont();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                GuiView gui = new GuiView();
-            }
-        });
+        //istanzio tutti i componenti
+        frame = new JFrame();
+        layeredHolder = new JPanel();
+        layeredPane = new JLayeredPane();
+        layeredPane.setOpaque(true);
+        frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        mainJPanel = new JPanel();
+        nickPanel = new NickPanel(this);
+        setUpInfoPanel();
+        historyPanel = new HistoryPanel();
+        //aggiungo il textarea della history ad uno scrolla pane
+        historyScrollPane = new JScrollPane(historyPanel);
+        actionsContainerJPanel = new JPanel();
+        cardsConteinerJPanel = new JPanel();
+        mapJPanel = new MapBoard();
+        actions = new Action[GameConstants.NUM_TOT_ACTIONS.getValue()];
+        cardsJPanels = new Card[RegionType.values().length];
+        for (int i = 0; i < actions.length; i++) {
+            actions[i] = new Action();
+        }
+        for (int i = 0; i < cardsJPanels.length; i++) {
+            cardsJPanels[i] = new Card(FontFactory.getFont(), "9", "0");
+        }
+        dxBar = new JPanel();
+        playersContainerJPanel = new JPanel();
+        fenceJPanel = new CardBoard(FontFactory.getFont(), String.valueOf(
+                GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue()));
+
+        streets = new Street[xStreetPoints.length];
+        List<Image> imgShepherds = new ArrayList<Image>();
+        //ogni strada ha il sempre 4 pedine 
+        for (int i = 0; i < 4; i++) {
+            imgShepherds.add(ImagePool.getByName("shepherd" + String.valueOf(i)));
+        }
+        for (int i = 0; i < xStreetPoints.length; i++) {
+            streets[i] = new Street(ImagePool.getByName("fence"), imgShepherds);
+        }
+        regionBoxes = new RegionBox[xRegionBoxes.length];
+        for (int i = 0; i < xRegionBoxes.length; i++) {
+            regionBoxes[i] = new RegionBox();
+        }
+
     }
+
+    private void setUpImageFrameComponents() {
+        //aggiungo immagini
+        actions[0].setUp(".\\images\\moveSheep.png", 68, 72);
+        actions[1].setUp(".\\images\\moveShepherd.png", 68, 72);
+        actions[2].setUp(".\\images\\buyLand.png", 68, 72);
+        actions[3].setUp(".\\images\\mateSheep.png", 68, 72);
+        actions[4].setUp(".\\images\\mateRam.png", 68, 72);
+        actions[5].setUp(".\\images\\killOvine.png", 68, 72);
+
+        cardsJPanels[1].setUp(".\\images\\hill2.png", 139, 91, 105, 104);
+        cardsJPanels[2].setUp(".\\images\\countryside2.png", 139, 91, 105, 104);
+        cardsJPanels[0].setUp(".\\images\\mountain2.png", 139, 91, 105, 104);
+        cardsJPanels[5].setUp(".\\images\\desert2.png", 139, 91, 105, 104);
+        cardsJPanels[4].setUp(".\\images\\lake2.png", 139, 91, 105, 104);
+        cardsJPanels[3].setUp(".\\images\\plain2.png", 139, 91, 105, 104);
+
+        fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
+    }
+
+    private void setUpFrameStructure() {
+        //setto la struttura
+        frame.setLayout(null);
+        layeredPane.add(mainJPanel, new Integer(0));
+        layeredPane.add(infoPanel, new Integer(3));
+        layeredPane.add(nickPanel, new Integer(2));
+        layeredPane.revalidate();
+
+        mainJPanel.setLayout(new FlowLayout());
+        mainJPanel.add(cardsConteinerJPanel);
+        mainJPanel.add(mapJPanel);
+        mainJPanel.add(dxBar);
+        dxBar.setLayout(new FlowLayout());
+        dxBar.add(playersContainerJPanel);
+        dxBar.add(actionsContainerJPanel);
+        dxBar.add(historyScrollPane);
+        addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
+        mapJPanel.setLayout(null);
+        for (int i = 0; i < streets.length; i++) {
+            mapJPanel.addPanel(streets[i], xStreetPoints[i] - 10,
+                    yStreetPoints[i] - 10);
+        }
+        for (int i = 0; i < regionBoxes.length; i++) {
+            mapJPanel.addPanel(regionBoxes[i], xRegionBoxes[i] - 10,
+                    yRegionBoxes[i] - 10);
+        }
+
+        cardsConteinerJPanel.setLayout(new FlowLayout());
+        actionsContainerJPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        playersContainerJPanel.setLayout(new FlowLayout());
+        for (Action action : actions) {
+            actionsContainerJPanel.add(action);
+        }
+        for (CardBoard card : cardsJPanels) {
+            cardsConteinerJPanel.add(card);
+        }
+        layeredHolder.add(layeredPane);
+        frame.setContentPane(layeredHolder);
+    }
+
+    private void setUpBackgroundColorFrameComponents() {
+        //imposto colore sfondi
+        layeredHolder.setBackground(backgroundColor);
+        mainJPanel.setBackground(backgroundColor);
+        actionsContainerJPanel.setBackground(noneColor);
+        cardsConteinerJPanel.setBackground(noneColor);
+        playersContainerJPanel.setBackground(noneColor);
+        dxBar.setBackground(noneColor);
+        layeredHolder.setOpaque(true);
+    }
+
+    private void setUpDimensionFrameComponents() {
+        //setto dimensioni
+        layeredPane.setPreferredSize(new Dimension(900, 800));
+        actionsContainerJPanel.setPreferredSize(
+                new Dimension((68 + 10) * 3, (72 + 5) * 2));
+        //il contenitore dei player ha le dim per contenere sempre 4 player
+        playersContainerJPanel.setPreferredSize(new Dimension(220, (99 + 4) * 4));
+        cardsConteinerJPanel.setPreferredSize(new Dimension(105,
+                (116 + 10) * cardsJPanels.length));
+        mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
+        mainJPanel.setBounds(0, 0, 900, 800);
+        //la barra di destra ha le dim per contenere sempre 4 player
+        dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
+        infoPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
+                mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
+        nickPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
+                mainJPanel.getPreferredSize().height / 2 - (400), 223, 320);
+        historyScrollPane.setPreferredSize(new Dimension((68 + 10) * 3, 80));
+
+    }
+
+    private void addFrameComponentsListener() {
+        //aggiungo listener delle strade
+        //imposto che non generano eventi
+        for (Street street : streets) {
+            street.addMouseListener(this);
+            street.setEnabled(false);
+        }
+
+        //aggiungo listener delle regioni
+        //imposto che non generano eventi
+        for (RegionBox region : regionBoxes) {
+            region.addMouseListener(this);
+            region.setEnabled(false);
+        }
+
+        //aggiungo listener delle azioni
+        //imposto che non generano eventi
+        for (Action action : actions) {
+            action.addMouseListener(this);
+            action.setEnabled(false);
+        }
+
+        //aggiungo listener delle carte
+        //imposto che non generano eventi
+        for (Card card : cardsJPanels) {
+            card.addMouseListener(this);
+            card.setEnabled(false);
+        }
+    }
+
+    private static final List<String> holder = new LinkedList<String>();
 
     public void actionPerformed(ActionEvent e) {
         myNickName = nickPanel.getMyNickName();
@@ -311,103 +325,126 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void mouseClicked(MouseEvent e) {
         synchronized (holder) {
             if (e.getSource() instanceof Action) {
-                for (int i = 0; i < actions.length; i++) {
-                    if (e.getSource().equals(actions[i])) {
-                        DebugLogger.println(" azione " + i + "selezionata");
-
-                        holder.add(String.valueOf(i + 1));
-                        holder.notify();
-                        DebugLogger.println("aggiunto a holder azione " + i);
-                        switch (i) {
-                            case 0:
-                                showToHistoryPanel("Scelta azione: Muovi ovino.");
-                                break;
-                            case 1:
-                                showToHistoryPanel(
-                                        "Scelta azione: Muovi pastore.");
-                                break;
-                            case 2:
-                                showToHistoryPanel(
-                                        "Scelta azione: Compra carta.");
-                                break;
-                            case 3:
-                                showToHistoryPanel(
-                                        "Scelta azione: Accoppia pecore.");
-                                break;
-                            case 4:
-                                showToHistoryPanel(
-                                        "Scelta azione: Accoppia montone e pecora.");
-                                break;
-                            case 5:
-                                showToHistoryPanel(
-                                        "Scelta azione: Uccidi ovino.");
-                                break;
-                        }
-                    }
-                    actions[i].removeMouseListener(this);
-                    actions[i].setOpaqueView(true);
-                }
-                mainJPanel.revalidate();
-                mainJPanel.repaint();
+                actionClicked(e);
             } else if (e.getSource() instanceof Street) {
-                for (int i = 0; i < streets.length; i++) {
-                    if (e.getSource().equals(streets[i])) {
-                        DebugLogger.println("strada " + i + "selezionata");
-                        holder.add(String.valueOf(i));
-                        holder.notify();
-                        DebugLogger.println("aggiunto a holder strada " + i);
-                    }
-//                    streets[i].removeMouseListener(this);
-//                    streets[i].removeMouseListener(streets[i]);
-                    streets[i].setEnabled(false);
-                }
+                streetClicked(e);
+//                }
             } else if (e.getSource() instanceof CardBoard) {
-                for (int i = 0; i < cardsJPanels.length; i++) {
-                    if (e.getSource().equals(cardsJPanels[i])) {
-                        DebugLogger.println("carta terreno " + i + "selezionata");
-                        holder.add(String.valueOf(i));
-                        holder.notify();
-                        DebugLogger.println(
-                                "aggiunto a holder carta terreno " + i);
-                    }
-                    cardsJPanels[i].removeMouseListener(this);
-                }
+                cardBoardClicked(e);
             } else if (e.getSource() instanceof RegionBox) {
-                for (int i = 0; i < regionBoxes.length; i++) {
-                    if (e.getSource().equals(regionBoxes[i])) {
-                        DebugLogger.println("regione " + i + "selezionata");
-                        holder.add(String.valueOf(i));
-                        holder.notify();
-                        if (zoomOn) {
-                            zoomAnimals(i);
-                        }
-                    }
-                }
-                removeAllRegionListener();
+
+                regionClicked(e);
 
             } else if (e.getSource() instanceof Animal) {
-                //se il click è su un animale aggiungo il tipo a holder e rimuovo tutti gli animali
-                //dal layer 2, rimetto visibili in preview gli animali nelle regioni
-
-                for (Component component : layeredPane.getComponents()) {
-                    if (component instanceof Animal) {
-                        Animal animal = (Animal) component;
-                        holder.add(animal.getAnimalType());
-                        holder.notify();
-                    }
-                }
-                Component[] toRemove = layeredPane.getComponentsInLayer(2);
-                for (Component componentToRemove : toRemove) {
-                    componentToRemove.setVisible(false);
-                    layeredPane.remove(componentToRemove);
-                }
-                layeredPane.repaint();
-                for (RegionBox region : regionBoxes) {
-                    region.setAnimalsVisibles(true);
-                    region.setAnimalPreview(true);
-                }
+                animalClicked(e);
             }
             DebugLogger.println(e.getX() + " , " + e.getY());
+        }
+    }
+
+    private void actionClicked(MouseEvent e) {
+        for (int i = 0; i < actions.length; i++) {
+            if (e.getSource().equals(actions[i])) {
+                DebugLogger.println(" azione " + i + "selezionata");
+
+                holder.add(String.valueOf(i + 1));
+                holder.notify();
+                DebugLogger.println("aggiunto a holder azione " + i);
+                switch (i) {
+                    case 0:
+                        showToHistoryPanel("Scelta azione: Muovi ovino.");
+                        break;
+                    case 1:
+                        showToHistoryPanel(
+                                "Scelta azione: Muovi pastore.");
+                        break;
+                    case 2:
+                        showToHistoryPanel(
+                                "Scelta azione: Compra carta.");
+                        break;
+                    case 3:
+                        showToHistoryPanel(
+                                "Scelta azione: Accoppia pecore.");
+                        break;
+                    case 4:
+                        showToHistoryPanel(
+                                "Scelta azione: Accoppia montone e pecora.");
+                        break;
+                    case 5:
+                        showToHistoryPanel(
+                                "Scelta azione: Uccidi ovino.");
+                        break;
+                }
+            }
+            actions[i].setEnabled(false);
+            actions[i].setOpaqueView(true);
+        }
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+    }
+
+    private void streetClicked(MouseEvent e) {
+        for (int i = 0; i < streets.length; i++) {
+            if (e.getSource().equals(streets[i])) {
+                DebugLogger.println("strada " + i + "selezionata");
+                holder.add(String.valueOf(i));
+                holder.notify();
+                DebugLogger.println("aggiunto a holder strada " + i);
+            }
+            streets[i].setEnabled(false);
+        }
+    }
+
+    private void cardBoardClicked(MouseEvent e) {
+        for (int i = 0; i < cardsJPanels.length; i++) {
+            if (e.getSource().equals(cardsJPanels[i])) {
+                DebugLogger.println("carta terreno " + i + "selezionata");
+                holder.add(String.valueOf(i));
+                holder.notify();
+                DebugLogger.println(
+                        "aggiunto a holder carta terreno " + i);
+            }
+            cardsJPanels[i].setEnabled(false);
+            cardsJPanels[i].revalidate();
+        }
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+    }
+
+    private void regionClicked(MouseEvent e) {
+        for (int i = 0; i < regionBoxes.length; i++) {
+            if (e.getSource().equals(regionBoxes[i])) {
+                DebugLogger.println("regione " + i + "selezionata");
+                holder.add(String.valueOf(i));
+                holder.notify();
+                if (zoomOn) {
+                    zoomAnimals(i);
+                }
+            }
+        }
+        removeAllRegionListener();
+    }
+
+    private void animalClicked(MouseEvent e) {
+        //se il click è su un animale, aggiungo il tipo a holder e rimuovo tutti gli animali
+        //dal layer 2, rimetto visibili in preview gli animali nelle regioni
+
+        for (Component component : layeredPane.getComponents()) {
+            if (component instanceof Animal) {
+                Animal animal = (Animal) component;
+                holder.add(animal.getAnimalType());
+                holder.notify();
+            }
+        }
+        Component[] toRemove = layeredPane.getComponentsInLayer(1);
+        for (Component componentToRemove : toRemove) {
+            componentToRemove.setVisible(false);
+            layeredPane.remove(componentToRemove);
+        }
+        layeredPane.repaint();
+        for (RegionBox region : regionBoxes) {
+            region.setAnimalsVisibles(true);
+            region.setAnimalPreview(true);
         }
     }
 
@@ -425,7 +462,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     public String askBuyLand() {
         for (int i = 0; i < cardsJPanels.length; i++) {
-            cardsJPanels[i].addMouseListener(this);
+            cardsJPanels[i].setEnabled(true);
         }
         showToHistoryPanel("Seleziona il territorio da comprare");
         String idResult = getAnswerByHolder();
@@ -474,6 +511,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         ImagePool.add(".\\images\\ram.png", "ram");
         ImagePool.add(".\\images\\lamb.png", "lamb");
         ImagePool.add(".\\images\\info.png", "infoPanel");
+        ImagePool.add(".\\images\\nickPanel.png", "nickPanel");
     }
 
     /**
@@ -516,7 +554,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     private void removeAllRegionListener() {
         for (RegionBox region : regionBoxes) {
-            region.removeMouseListener(this);
+            region.setEnabled(false);
         }
         DebugLogger.println("rimosso listener delle regioni");
 
@@ -524,7 +562,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     private void addAllRegionListener() {
         for (RegionBox region : regionBoxes) {
-            region.addMouseListener(this);
+            region.setEnabled(true);
         }
         DebugLogger.println("aggiunto listener a tutte le regioni");
 
@@ -568,8 +606,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private void setFreeStreetsClickable() {
         for (Street street : streets) {
             if (street.isEmpty()) {
-//                street.addMouseListener(this);
-//                street.addMouseListener(street);
                 street.setEnabled(true);
             }
         }
@@ -593,8 +629,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
                             (Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
                     animalWidth, animalHeight);
 
-            animalToHighlight.addMouseListener(this);
-            layeredPane.add(animalToHighlight, new Integer(2));
+            if (!"blacksheep".equals(animalToHighlight.getAnimalType())
+                    || !"wolf".equals(animalToHighlight.getAnimalType())) {
+                animalToHighlight.addMouseListener(this);
+            }
+            layeredPane.add(animalToHighlight, new Integer(1));
             j++;
         }
         layeredPane.repaint();
@@ -608,8 +647,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
             if (street.getImage() != null && street.getImage().equals(
                     ImagePool.getByName("shepherd" + getIndexPlayerByNickName(
                                     myNickName)))) {
-//                street.addMouseListener(this);
-//                street.addMouseListener(street);
                 street.setEnabled(true);
             }
         }
@@ -624,6 +661,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
             }
         }
         return "0";
+    }
+
+    private void showToHistoryPanel(String message) {
+        historyPanel.append("-");
+        historyPanel.append(message);
+        historyPanel.append("\n");
     }
 
     //metodi dell'intefaccia
@@ -895,10 +938,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public void refereshCard(String type, int value) {
-        cardsJPanels[RegionType.valueOf(type).getIndex()].setText(""+value);
+        hideInfoPanel();
+        cardsJPanels[RegionType.valueOf(type).getIndex()].setText("" + value);
     }
 
     public void refreshBlackSheep(String result) {
+        hideInfoPanel();
+
         //splitta il risultato e raccogli l'outcome
         String[] token = result.split(",");
         String outcome = token[0];
@@ -910,14 +956,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
             regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal(
                     "blacksheep");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("blacksheep");
-            showInfo("La pecora nera si è spostata dalla regione " + startRegion
+            showToHistoryPanel("La pecora nera si è spostata dalla regione " + startRegion
                     + " alla regione " + endRegion);
         } else if ("nok".equalsIgnoreCase(outcome)) {
-            showInfo("La pecora nera non può muoversi");
+            showToHistoryPanel("La pecora nera non può muoversi");
         }
     }
 
     public void refreshWolf(String result) {
+        hideInfoPanel();
+
         //splitta il risultato e raccogli l'outcome
         String[] token = result.split(",");
         String outcome = token[0];
@@ -933,11 +981,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     "wolf");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("wolf");
             if ("ok".equalsIgnoreCase(fence)) {
-                showInfo(
+                showToHistoryPanel(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
                         + " passando sulla strada di valore " + diceValue + " e saltando la recinzione!");
             } else {
-                showInfo(
+                showToHistoryPanel(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
                         + " passando per la strada di valore " + diceValue);
             }
@@ -948,31 +996,42 @@ public class GuiView implements MouseListener, TypeOfViewController,
         } else {
             String diceValue = token[1];
             String startRegion = token[2];
-            showInfo(
+            showToHistoryPanel(
                     "Il lupo non è riuscito a passare attraverso la strada di valore "
                     + diceValue + " nella regione " + startRegion);
         }
     }
 
     public void refreshPlayerDisconnected(String player) {
+        hideInfoPanel();
+
         playersJPanels[getIndexPlayerByNickName(player)].setEnabled(false);
+        playersJPanels[getIndexPlayerByNickName(player)].setOpacity(true);
+        playersJPanels[getIndexPlayerByNickName(player)].setLayout(new BorderLayout());
+        playersJPanels[getIndexPlayerByNickName(player)].add(new disconnectIcon(), BorderLayout.CENTER);
         showInfo("Il giocatore " + player + " si è disconnesso");
-        //TODO: effetto grafico
+        dxBar.revalidate();
+        dxBar.repaint();
     }
 
     public void specialAnimalInitialCondition(String region) {
+        hideInfoPanel();
+
         String[] token = region.split(",");
         if ("Wolf".equals(token[0])) {
             regionBoxes[Integer.parseInt(token[1])].addAnimal("wolf");
-            showInfo("Il lupo si trova nella regione " + token[1]);
+            showToHistoryPanel("Il lupo si trova nella regione " + token[1]);
         } else if ("BlackSheep".equals(token[0])) {
             regionBoxes[Integer.parseInt(token[1])].addAnimal("blacksheep");
-            showInfo("La pecora nera si trova nella regione " + token[1]);
+            showToHistoryPanel("La pecora nera si trova nella regione " + token[1]);
         }
     }
 
     public String chooseAction(int[] availableActions,
             String[] availableStringedActions) {
+
+        hideInfoPanel();
+
         //imposto visibilità players
         playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
         for (int i = 0; i < playersJPanels.length; i++) {
@@ -983,7 +1042,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         //imposto cliccabili solo le actions
         for (int i = 0; i < availableActions.length; i++) {
-            actions[availableActions[i] - 1].addMouseListener(this);
+            actions[availableActions[i] - 1].setEnabled(true);
             actions[availableActions[i] - 1].setOpaqueView(false);
         }
 
@@ -998,6 +1057,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void refreshMateSheepWith(String nickName, String region,
             String otherType, String newType,
             String outcome) {
+
+        hideInfoPanel();
+
         if ("ok".equals(outcome)) {
             regionBoxes[Integer.parseInt(region)].addAnimal(newType);
             showInfo(
@@ -1012,6 +1074,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     public void refreshMoveOvine(String nickName, String type,
             String startRegion, String endRegion) {
+
+        hideInfoPanel();
+
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
         mapJPanel.revalidate();
@@ -1102,9 +1167,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
         fenceJPanel.setText(String.valueOf(fences));
     }
 
-    private void showToHistoryPanel(String message) {
-        historyPanel.append("-");
-        historyPanel.append(message);
-        historyPanel.append("\n");
+    public static void main(String args[]) {
+        //faccio gestire il thread da EDT, per il controllo ciclico della coda
+        //degli eventi generati dai vari componenti
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                GuiView gui = new GuiView();
+            }
+        });
     }
 }

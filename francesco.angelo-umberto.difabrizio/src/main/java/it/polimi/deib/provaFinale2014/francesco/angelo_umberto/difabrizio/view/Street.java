@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -20,6 +21,9 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
         this.fence = image;
         this.shepherds = shepherds;
         super.setUp("", fence.getWidth(this), fence.getHeight(this));
+        this.setBackground(new Color(0, 0, 0, 0));
+        this.addMouseListener(this);
+
     }
 
     /**
@@ -31,7 +35,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
     }
 
     public void mouseClicked(MouseEvent e) {
-        DebugLogger.println("strada clickata, dentro la catch dell evento");        
+        DebugLogger.println("strada clickata, dentro la catch dell evento");
         repaint();
     }
 
