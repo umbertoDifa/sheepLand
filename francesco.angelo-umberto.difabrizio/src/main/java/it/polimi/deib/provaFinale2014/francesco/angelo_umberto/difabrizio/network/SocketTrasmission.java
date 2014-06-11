@@ -48,9 +48,10 @@ public class SocketTrasmission extends TrasmissionController {
      * @param streetIndex
      * @param fence
      * @param nickNameOfShepherdPlayer
+     * @param shepherdIndex
      */
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
-                              String nickNameOfShepherdPlayer) {
+                              String nickNameOfShepherdPlayer, int shepherdIndex) {
         if (canPlayerReceive(nickName)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     MessageProtocol.STREET.toString());
@@ -60,6 +61,7 @@ public class SocketTrasmission extends TrasmissionController {
                     fence);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     nickNameOfShepherdPlayer);
+             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(shepherdIndex);
         }
     }
 
@@ -427,8 +429,9 @@ public class SocketTrasmission extends TrasmissionController {
 
         if (result.contains("Pastore spostato")) {
             //invia conferma riepilogativa agli utenti
-            int price  = Integer.parseInt(result.split(",")[1]);
-            refreshMoveShepherd(nickName, Integer.parseInt(token[0]), token[1],price);
+            int price = Integer.parseInt(result.split(",")[1]);
+            refreshMoveShepherd(nickName, Integer.parseInt(token[0]), token[1],
+                    price);
 
             //invia refresh portafoglio
             refreshMoney(nickName);

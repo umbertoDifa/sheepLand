@@ -60,11 +60,12 @@ public interface ClientInterfaceRemote extends Remote {
      * @param streetIndex  The street index on the map
      * @param hasFence     If there's a fence
      * @param nickShepherd The shepherd who's there, null if there's no shepherd
+     * @param shepherdIndex
      *
      * @throws RemoteException If there's a connection problem
      */
     public void refreshStreet(int streetIndex, boolean hasFence,
-                              String nickShepherd) throws RemoteException;
+                              String nickShepherd, int shepherdIndex) throws RemoteException;
 
     /**
      * It refresh that a given player moved one of his shepherd from a street to

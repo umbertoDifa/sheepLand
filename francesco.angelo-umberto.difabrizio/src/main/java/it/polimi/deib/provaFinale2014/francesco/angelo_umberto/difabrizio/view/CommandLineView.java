@@ -34,9 +34,10 @@ public class CommandLineView implements TypeOfViewController {
      * @param streetIndex
      * @param fence
      * @param nickShepherd
+     * @param shepherdIndex
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd) {
+                              String nickShepherd, int shepherdIndex) {
         stdOut.print("La strada " + streetIndex + " è ");
 
         if (fence) {
@@ -44,7 +45,8 @@ public class CommandLineView implements TypeOfViewController {
             stdOut.flush();
 
         } else if (nickShepherd != null && !"null".equals(nickShepherd)) {
-            stdOut.println(" occupata da " + nickShepherd);
+            stdOut.println(
+                    " occupata dal pastore " + shepherdIndex + " del giocatore " + nickShepherd);
             stdOut.flush();
 
         } else {

@@ -461,20 +461,49 @@ public class GameManager implements Runnable {
 
     private void refreshStreets(String client) {
         boolean fence;
-        String shepherdName;
+        String playerOnTheStreet;
         int streetsNumber = this.map.getStreets().length;
         for (int i = 0; i < streetsNumber; i++) {
             Street street = this.map.getStreets()[i];
             fence = false;
-            shepherdName = null;
+            playerOnTheStreet = null;
+            int shepherdIndex = 0;
             if (street.hasFence()) {
                 fence = true;
             } else if (street.hasShepherd()) {
-                shepherdName = getPlayerNickNameByShepherd(
+                playerOnTheStreet = getPlayerNickNameByShepherd(
                         street.getShepherd());
+
+                //cerco l'indice del player
+                int playerIndex = getPlayerIndexByNickName(playerOnTheStreet);
+
+                //cerco l'index dello shepherd
+                shepherdIndex = getShepherdIndex(playerIndex,
+                        street.getShepherd());
+
             }
-            controller.refreshStreet(client, i, fence, shepherdName);
+            controller.refreshStreet(client, i, fence, playerOnTheStreet,
+                    shepherdIndex);
         }
+    }
+
+    private int getPlayerIndexByNickName(String nickName) {
+        for (int i = 0; i < playersNumber; i++) {
+            if (players.get(i).getPlayerNickName().equals(
+                    nickName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getShepherdIndex(int playerIndex, Shepherd shepherd) {
+        for (int i = 0; i < players.get(playerIndex).shepherd.length; i++) {
+            if (shepherd == players.get(playerIndex).shepherd[i]) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void refreshSpecialAnimals(String client) {

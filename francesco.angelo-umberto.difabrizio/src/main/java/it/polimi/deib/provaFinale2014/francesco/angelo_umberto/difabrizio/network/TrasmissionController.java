@@ -74,7 +74,8 @@ public abstract class TrasmissionController {
      */
     public abstract void refreshStreet(String nickName, int streetIndex,
                                        boolean fence,
-                                       String nickNameOfShepherdPlayer);
+                                       String nickNameOfShepherdPlayer,
+                                       int shepherdIndex);
 
     /**
      * Refreshes the game parameters
@@ -85,9 +86,8 @@ public abstract class TrasmissionController {
      * @param shepherd4player
      */
     public abstract void refreshGameParameters(String nickName,
-                                               String[] nickNames, int[] wallets,                                                                                          
+                                               String[] nickNames, int[] wallets,
                                                int shepherd4player
-
     );
 
     /**
@@ -158,11 +158,11 @@ public abstract class TrasmissionController {
      * @param nickNameMover Who moved the shepherd
      * @param shepherdIndex Which shepherd was moved
      * @param endStreet     Street where the shepherd was moved
-     * @param price price to move the shepherd
+     * @param price         price to move the shepherd
      */
     public abstract void refreshMoveShepherd(String nickNameMover,
                                              int shepherdIndex,
-                                             String endStreet,int price);
+                                             String endStreet, int price);
 
     /**
      * Refreshes that a card was bought to the online players

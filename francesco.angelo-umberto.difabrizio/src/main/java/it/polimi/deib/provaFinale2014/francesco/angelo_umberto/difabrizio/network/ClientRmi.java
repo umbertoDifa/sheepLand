@@ -124,8 +124,8 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param nickShepherd
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd) {
-        view.refreshStreet(streetIndex, fence, nickShepherd);
+                              String nickShepherd, int shepherdIndex) {
+        view.refreshStreet(streetIndex, fence, nickShepherd, shepherdIndex);
     }
 
     /**
@@ -307,7 +307,7 @@ public class ClientRmi implements ClientInterfaceRemote {
         if (result.contains("Pastore spostato")) {
             token = result.split(",", -1);
             view.showMoveShepherd(shepherdIndex, token[1]);
-            return parameters+","+token[1];
+            return parameters + "," + token[1];
         }
         view.showInfo(result);
         return null;
@@ -322,8 +322,8 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param price
      */
     public void refreshMoveShepherd(String nickName, int indexShepherd,
-                                    String newStreet,int price) {
-        view.refreshMoveShepherd(nickName, indexShepherd, newStreet,price);
+                                    String newStreet, int price) {
+        view.refreshMoveShepherd(nickName, indexShepherd, newStreet, price);
     }
 
     /**

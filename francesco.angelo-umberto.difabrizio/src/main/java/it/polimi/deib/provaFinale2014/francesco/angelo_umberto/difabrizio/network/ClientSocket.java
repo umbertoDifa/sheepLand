@@ -296,8 +296,10 @@ public class ClientSocket {
         boolean fence = receiveBoolean();
 
         String nick = receiveString();
+        
+        int shepherdIndex = receiveInt();
 
-        view.refreshStreet(streetIndex, fence, nick);
+        view.refreshStreet(streetIndex, fence, nick,shepherdIndex);
     }
 
     private void refreshGameParameters() {

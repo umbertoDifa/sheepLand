@@ -48,14 +48,16 @@ public class RmiTrasmission extends TrasmissionController {
      * @param streetIndex
      * @param fence
      * @param nickNameOfShepherdPlayer
+     * @param shepherdIndex
      */
     @Override
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
-                              String nickNameOfShepherdPlayer) {
+                              String nickNameOfShepherdPlayer, int shepherdIndex) {
         if (canPlayerReceive(nickName)) {
             try {
                 ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshStreet(
-                        streetIndex, fence, nickNameOfShepherdPlayer);
+                        streetIndex, fence, nickNameOfShepherdPlayer,
+                        shepherdIndex);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
 

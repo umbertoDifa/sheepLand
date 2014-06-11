@@ -125,7 +125,7 @@ public interface TypeOfViewController {
      * @param nickShepherd If there is a shepherd
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd);
+                              String nickShepherd, int shepherdIndex);
 
     /**
      * Refreshes to the player the outcome of a move shepherd
