@@ -57,15 +57,17 @@ public interface ClientInterfaceRemote extends Remote {
      * status of the region which is: occupied by a fence, occupied by a
      * shepherd or free
      *
-     * @param streetIndex  The street index on the map
-     * @param hasFence     If there's a fence
-     * @param nickShepherd The shepherd who's there, null if there's no shepherd
+     * @param streetIndex   The street index on the map
+     * @param hasFence      If there's a fence
+     * @param nickShepherd  The shepherd who's there, null if there's no
+     *                      shepherd
      * @param shepherdIndex
      *
      * @throws RemoteException If there's a connection problem
      */
     public void refreshStreet(int streetIndex, boolean hasFence,
-                              String nickShepherd, int shepherdIndex) throws RemoteException;
+                              String nickShepherd, int shepherdIndex) throws
+            RemoteException;
 
     /**
      * It refresh that a given player moved one of his shepherd from a street to
@@ -74,12 +76,13 @@ public interface ClientInterfaceRemote extends Remote {
      * @param nickNameMover The player who moved the shepherd
      * @param shepherdIndex The shepherd who was moved
      * @param streetIndex   The street where the shepherd is now
-     * @param price price to move the shepherd
+     * @param price         price to move the shepherd
      *
      * @throws RemoteException If there's a connection problem
      */
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-                                    String streetIndex, int price) throws RemoteException;
+                                    String streetIndex, int price) throws
+            RemoteException;
 
     /**
      * It refresh that a given player moved an ovine from one region to an other
@@ -94,6 +97,9 @@ public interface ClientInterfaceRemote extends Remote {
     public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) throws
             RemoteException;
+
+    public void refreshOtherPlayerWallet(String otherPlayer, int otherMoney)
+            throws RemoteException;
 
     /**
      * Refreshes the number of available fences

@@ -176,6 +176,14 @@ public interface TypeOfViewController {
     public void refreshMoney(String money);
 
     /**
+     * Refreshes the ammount of money of another player
+     *
+     * @param otherPlayer the other player
+     * @param money       his money
+     */
+    public void refreshOtherPlayerMoney(String otherPlayer, int money);
+
+    /**
      * Refershes the current player
      *
      * @param currenPlayer The player playing

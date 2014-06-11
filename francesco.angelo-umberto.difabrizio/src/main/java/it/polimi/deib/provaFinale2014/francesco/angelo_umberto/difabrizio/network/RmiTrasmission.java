@@ -158,8 +158,7 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
                             nickName)).getClientRmi().refreshKillOvine(
                                     nickNameKiller, region, type, outcome);
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
-                            nickName)).getClientRmi().refreshMoney(type);
+
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
                 }
@@ -252,11 +251,7 @@ public class RmiTrasmission extends TrasmissionController {
                         return true;
                     case '6':
                         refreshKillOvine(nickName, token[1], token[2], token[3]);
-                        //refresho i soldi a tutti
-                        for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
-                            String nick = (String) pairs.getKey();
-                            refreshMoney(nick);
-                        }
+                        refreshWallets();
                         return true;
 
                     default:
@@ -397,9 +392,9 @@ public class RmiTrasmission extends TrasmissionController {
      */
     @Override
     public void refreshMoney(String nickName) {
+        DebugLogger.println("refresh money a " + nickName);
         if (canPlayerReceive(nickName)) {
             try {
-
                 ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshMoney(
                         ""
                         + getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
@@ -590,6 +585,30 @@ public class RmiTrasmission extends TrasmissionController {
 
             } catch (RemoteException ex) {
                 setPlayerOffline(client, ex);
+            }
+        }
+    }
+
+    @Override
+    public void refreshWallets() {
+        for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            try {
+                if (canPlayerReceive(nickName)) {
+                    for (Map.Entry couple : getNick2PlayerMap().entrySet()) {
+                        String other = (String) couple.getKey();
+                        if (!nickName.equals(other)) {
+
+                            ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                                    nickName)).getClientRmi().refreshOtherPlayerWallet(
+                                            other,
+                                            getNick2PlayerMap().get(other).getMainShepherd().getWallet().getAmount());
+
+                        }
+                    }
+                }
+            } catch (RemoteException ex) {
+                setPlayerOffline(nickName, ex);
             }
         }
     }

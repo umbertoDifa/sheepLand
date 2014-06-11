@@ -132,6 +132,10 @@ public abstract class TrasmissionController {
      * @param nickName The player to refresh
      */
     public abstract void refreshMoney(String nickName);
+    /**
+     * Refreshes teh ammount of money of each player 
+     */
+    public abstract void refreshWallets();
 
     /**
      * Brodcast that a player has disconnected
