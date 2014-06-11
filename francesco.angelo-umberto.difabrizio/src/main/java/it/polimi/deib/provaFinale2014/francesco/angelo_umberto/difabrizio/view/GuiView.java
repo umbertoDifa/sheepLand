@@ -31,6 +31,10 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
+ * The class is the gui, it starts the thread to create and display the JFrame,
+ * implements the interface to be commanded by the Client. It creates and
+ * orchestrates all the other components of the JFrame It manages the events
+ * that listens
  *
  * @author Francesco
  */
@@ -71,13 +75,19 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private int lastStreet;
     private boolean zoomOn;
 
+    /**
+     * Constructor of the gui. Create JFrame and starts the setUp of ImagePool
+     * and the JFrame itself.
+     */
     public GuiView() {
         setUpImagePool();
         setUpFrame();
     }
 
     /**
-     * inizializzo tutti i componenti della Gui
+     * instanciates all the components of the JFrame create the hierarchy of the
+     * structure. add to the components images, colors, dimensions and the
+     * listener "this"
      */
     private void setUpFrame() {
 
@@ -111,6 +121,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     }
 
+    /**
+     * It instantiates all the Players, setting up with images, dimension. It
+     * adds them to the hierarchy of the gui and fill the hashmap
+     * "nickShepherdToStreet"
+     */
     private void setUpPlayers() {
         //rendo visibile il panel
         mainJPanel.setVisible(true);
@@ -143,6 +158,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         frame.revalidate();
     }
 
+    /**
+     * The method instantiates all the components of the JFrame givins to the
+     * constructor all the parameters needed
+     */
     private void instantiateFrameComponents() {
         //istanzio font
         FontFactory.createFont();
@@ -191,6 +210,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     }
 
+    /**
+     * It gives to all the components a background image with dimension and
+     * eventually the coordinates of the text in the image
+     */
     private void setUpImageFrameComponents() {
         //aggiungo immagini
         actions[0].setUp(".\\images\\moveSheep.png", 68, 72);
@@ -210,6 +233,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
     }
 
+    /**
+     * It creates the structure of all the elements of the JFrame
+     */
     private void setUpFrameStructure() {
         //setto la struttura
         frame.setLayout(null);
@@ -250,6 +276,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         frame.setContentPane(layeredHolder);
     }
 
+    /**
+     * It sets up the backgroundcolor of the components of the jframe
+     */
     private void setUpBackgroundColorFrameComponents() {
         //imposto colore sfondi
         layeredHolder.setBackground(backgroundColor);
@@ -261,6 +290,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         layeredHolder.setOpaque(true);
     }
 
+    /**
+     * It sets up the dimensions of the components of the jframe
+     */
     private void setUpDimensionFrameComponents() {
         //setto dimensioni
         layeredPane.setPreferredSize(new Dimension(900, 800));
@@ -276,12 +308,15 @@ public class GuiView implements MouseListener, TypeOfViewController,
         dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
         infoPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
                 mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-        nickPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
-                mainJPanel.getPreferredSize().height / 2 - (400), 223, 320);
+        nickPanel.setBounds((int) (mainJPanel.getPreferredSize().width / 2 - (444 / 2)),
+                mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
         historyScrollPane.setPreferredSize(new Dimension((68 + 10) * 3, 80));
 
     }
 
+    /**
+     * It adds the listener "this" to all the components of the jframe
+     */
     private void addFrameComponentsListener() {
         //aggiungo listener delle strade
         //imposto che non generano eventi
@@ -314,6 +349,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     private static final List<String> holder = new LinkedList<String>();
 
+    /**
+     * When the button to submit the nickname inserted is clicked it sets the
+     * parameter MyNickName and adds it to holder
+     *
+     * @param e
+     */
     public void actionPerformed(ActionEvent e) {
         myNickName = nickPanel.getMyNickName();
         synchronized (holder) {
@@ -322,6 +363,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
     }
 
+    /**
+     * when a JPanel between Action, Street, CardBoard, RegionBox and Animal is
+     * clicked, the method call the right method
+     *
+     * @param e
+     */
     public void mouseClicked(MouseEvent e) {
         synchronized (holder) {
             if (e.getSource() instanceof Action) {
@@ -342,6 +389,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
     }
 
+    /**
+     * When an Action is clicked, the method adds to holder the corrisponding id
+     * and set disabled all the Actions
+     *
+     * @param e
+     */
     private void actionClicked(MouseEvent e) {
         for (int i = 0; i < actions.length; i++) {
             if (e.getSource().equals(actions[i])) {
@@ -383,6 +436,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         mainJPanel.repaint();
     }
 
+    /**
+     * When a Street is clicked, the method adds to holder the corrisponding id
+     * and set disabled all the Streets
+     *
+     * @param e
+     */
     private void streetClicked(MouseEvent e) {
         for (int i = 0; i < streets.length; i++) {
             if (e.getSource().equals(streets[i])) {
@@ -395,6 +454,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
     }
 
+    /**
+     * When an CardBoard is clicked, the method adds to holder the corrisponding
+     * id and set disabled all the CardBoard
+     *
+     * @param e
+     */
     private void cardBoardClicked(MouseEvent e) {
         for (int i = 0; i < cardsJPanels.length; i++) {
             if (e.getSource().equals(cardsJPanels[i])) {
@@ -411,6 +476,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         mainJPanel.repaint();
     }
 
+    /**
+     * When a RegionBox is clicked, the method adds to holder the corrisponding
+     * id and set disabled all the RegionBox
+     *
+     * @param e
+     */
     private void regionClicked(MouseEvent e) {
         for (int i = 0; i < regionBoxes.length; i++) {
             if (e.getSource().equals(regionBoxes[i])) {
@@ -422,20 +493,28 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 }
             }
         }
-        removeAllRegionListener();
+        disableAllRegionListener();
     }
 
+    /**
+     *
+     * @param e
+     */
     private void animalClicked(MouseEvent e) {
         //se il click è su un animale, aggiungo il tipo a holder e rimuovo tutti gli animali
         //dal layer 2, rimetto visibili in preview gli animali nelle regioni
 
+        Animal chosenAnimal = (Animal) e.getSource();
         for (Component component : layeredPane.getComponents()) {
             if (component instanceof Animal) {
                 Animal animal = (Animal) component;
-                holder.add(animal.getAnimalType());
-                holder.notify();
+                if (animal.getAnimalType().equals(chosenAnimal.getAnimalType())) {
+                    holder.add(animal.getAnimalType());
+                    holder.notify();
+                }
             }
         }
+        
         Component[] toRemove = layeredPane.getComponentsInLayer(1);
         for (Component componentToRemove : toRemove) {
             componentToRemove.setVisible(false);
@@ -552,7 +631,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         infoPanel.setDice(result);
     }
 
-    private void removeAllRegionListener() {
+    private void disableAllRegionListener() {
         for (RegionBox region : regionBoxes) {
             region.setEnabled(false);
         }
