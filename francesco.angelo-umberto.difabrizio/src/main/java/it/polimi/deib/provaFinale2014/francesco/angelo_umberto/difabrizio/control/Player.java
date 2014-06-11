@@ -399,6 +399,10 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             //se le regioni confinano con la strada e sono diverse tra loro
             if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
                     possibleStreet) && startRegion != endRegion) {
+                if(possibleStreet.getShepherd() != lastShepherd){
+                    return "Non puoi muovere due pastori diversi nello stesso turno";
+                }
+                
                 //rimuovi ovino del tipo specificato
                 Ovine movedOvine;
                 DebugLogger.println("Rimuovo ovino");
