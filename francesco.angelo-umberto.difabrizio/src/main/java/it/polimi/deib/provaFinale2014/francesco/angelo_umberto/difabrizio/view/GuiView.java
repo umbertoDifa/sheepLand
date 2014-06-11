@@ -14,8 +14,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -104,7 +102,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
 //                                e.getAdjustable().getMaximum());
 //                    }
 //                });
-
         setUpImageFrameComponents();
 
         setUpFrameStructure();
@@ -376,18 +373,27 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void mouseClicked(MouseEvent e) {
         synchronized (holder) {
             if (e.getSource() instanceof Action) {
-                actionClicked(e);
+                if (((Action) e.getSource()).isEnabled()) {
+                    actionClicked(e);
+                }
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
             } else if (e.getSource() instanceof Street) {
-                streetClicked(e);
-//                }
+                if (((Street) e.getSource()).isEnabled()) {
+                    streetClicked(e);
+                }
             } else if (e.getSource() instanceof CardBoard) {
-                cardBoardClicked(e);
+                if (((CardBoard) e.getSource()).isEnabled()) {
+                    cardBoardClicked(e);
+                }
             } else if (e.getSource() instanceof RegionBox) {
-
-                regionClicked(e);
-
+                if (((RegionBox) e.getSource()).isEnabled()) {
+                    regionClicked(e);
+                }
             } else if (e.getSource() instanceof Animal) {
-                animalClicked(e);
+                if (((Animal) e.getSource()).isEnabled()) {
+                    animalClicked(e);
+                }
             }
             DebugLogger.println(e.getX() + " , " + e.getY());
         }
@@ -409,26 +415,26 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 DebugLogger.println("aggiunto a holder azione " + i);
                 switch (i) {
                     case 0:
-                        historyPanel.showToHistoryPanel("Scelta azione: Muovi ovino.");
+                        historyPanel.show("Scelta azione: Muovi ovino.");
                         break;
                     case 1:
-                        historyPanel.showToHistoryPanel(
+                        historyPanel.show(
                                 "Scelta azione: Muovi pastore.");
                         break;
                     case 2:
-                        historyPanel.showToHistoryPanel(
+                        historyPanel.show(
                                 "Scelta azione: Compra carta.");
                         break;
                     case 3:
-                        historyPanel.showToHistoryPanel(
+                        historyPanel.show(
                                 "Scelta azione: Accoppia pecore.");
                         break;
                     case 4:
-                        historyPanel.showToHistoryPanel(
+                        historyPanel.show(
                                 "Scelta azione: Accoppia montone e pecora.");
                         break;
                     case 5:
-                        historyPanel.showToHistoryPanel(
+                        historyPanel.show(
                                 "Scelta azione: Uccidi ovino.");
                         break;
                 }
@@ -768,7 +774,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             if (street.getImage() != null && street.getImage().equals(
                     ImagePool.getByName("shepherd" + getIndexPlayerByNickName(
                                     myNickName)))) {
-                street.setEnabled(false);
+                street.setEnabled(true);
             }
         }
     }
@@ -791,7 +797,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
         return "0";
     }
 
-
     //metodi dell'intefaccia
     //metodi dell'intefaccia
     //metodi dell'intefaccia
@@ -799,7 +804,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     //metodi dell'intefaccia
     //metodi dell'intefaccia
     public void showWelcome() {
-        showInfo("Benvenuto. Il gioco sta per iniziare!");
+        historyPanel.show("Benvenuto. Il gioco sta per iniziare!");
 
     }
 
@@ -808,7 +813,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public void showInfo(String info) {
-        historyPanel.showToHistoryPanel(info);
+        historyPanel.show(info);
         DebugLogger.println("msg in info panel " + info);
 
         infoPanel.addMouseListener(infoPanel);
@@ -823,7 +828,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].increase(1);
         playersJPanels[getIndexPlayerByNickName(myNickName)].pay(Integer.parseInt(price));
-        showInfo(
+        historyPanel.show(
                 "Hai acquistato la carta " + boughLand + " per " + price + " danari.");
     }
 
@@ -911,10 +916,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         String[] token = classification.split(",");
         int i = 0;
         while (i < token.length - 1) {
-            classificationToShow += "Giocatore " + token[i] + " punteggio: " + token[i + 1]+"\n";
+            classificationToShow += "Giocatore " + token[i] + " punteggio: " + token[i + 1] + "\n";
             i += 2;
         }
-        historyPanel.showToHistoryPanel(classificationToShow);
+        historyPanel.show(classificationToShow);
     }
 
     public void showUnexpectedEndOfGame() {
@@ -930,7 +935,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         playersJPanels[getIndexPlayerByNickName(myNickName)].pay(
                 GameConstants.PRICE_OF_SILENCE.getValue() * Integer.parseInt(
                         shepherdPayed));
-        showInfo("Hai ucciso un " + type + " nella regione " + region
+        historyPanel.show("Hai ucciso un " + type + " nella regione " + region
                 + " pagando " + shepherdPayed + " pastori per il silenzio");
     }
 
@@ -1088,10 +1093,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
             regionBoxes[Integer.parseInt(startRegion)].removeSpecialAnimal(
                     "blacksheep");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("blacksheep");
-            historyPanel.showToHistoryPanel("La pecora nera si è spostata dalla regione " + startRegion
+            historyPanel.show("La pecora nera si è spostata dalla regione " + startRegion
                     + " alla regione " + endRegion);
         } else if ("nok".equalsIgnoreCase(outcome)) {
-            historyPanel.showToHistoryPanel("La pecora nera non può muoversi");
+            historyPanel.show("La pecora nera non può muoversi");
         }
     }
 
@@ -1113,22 +1118,22 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     "wolf");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("wolf");
             if ("ok".equalsIgnoreCase(fence)) {
-                historyPanel.showToHistoryPanel(
+                historyPanel.show(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
                         + " passando sulla strada di valore " + diceValue + " e saltando la recinzione!");
             } else {
-                historyPanel.showToHistoryPanel(
+                historyPanel.show(
                         "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
                         + " passando per la strada di valore " + diceValue);
             }
             if (!"nok".equalsIgnoreCase(ovine)) {
                 regionBoxes[Integer.parseInt(endRegion)].removeOvine(ovine);
-                showInfo("Il lupo ha mangiato una " + ovine);
+                historyPanel.show("Il lupo ha mangiato una " + ovine);
             }
         } else {
             String diceValue = token[1];
             String startRegion = token[2];
-            historyPanel.showToHistoryPanel(
+            historyPanel.show(
                     "Il lupo non è riuscito a passare attraverso la strada di valore "
                     + diceValue + " nella regione " + startRegion);
         }
@@ -1141,7 +1146,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         playersJPanels[getIndexPlayerByNickName(player)].setOpacity(true);
         playersJPanels[getIndexPlayerByNickName(player)].setLayout(new BorderLayout());
         playersJPanels[getIndexPlayerByNickName(player)].add(new DisconnectImage(), BorderLayout.CENTER);
-        showInfo("Il giocatore " + player + " si è disconnesso");
+        historyPanel.show("Il giocatore " + player + " si è disconnesso");
         dxBar.revalidate();
         dxBar.repaint();
     }
@@ -1152,10 +1157,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         String[] token = region.split(",");
         if ("Wolf".equals(token[0])) {
             regionBoxes[Integer.parseInt(token[1])].addAnimal("wolf");
-            historyPanel.showToHistoryPanel("Il lupo si trova nella regione " + token[1]);
+            historyPanel.show("Il lupo si trova nella regione " + token[1]);
         } else if ("BlackSheep".equals(token[0])) {
             regionBoxes[Integer.parseInt(token[1])].addAnimal("blacksheep");
-            historyPanel.showToHistoryPanel("La pecora nera si trova nella regione " + token[1]);
+            historyPanel.show("La pecora nera si trova nella regione " + token[1]);
         }
     }
 
@@ -1181,7 +1186,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         mainJPanel.revalidate();
         mainJPanel.repaint();
 
-        historyPanel.showToHistoryPanel("Scegli un azione");
+        historyPanel.show("Scegli un azione");
 
         return getAnswerByHolder();
     }
@@ -1216,10 +1221,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public String askBuyLand() {
-        for (int i = 0; i < cardsJPanels.length; i++) {
-            cardsJPanels[i].setEnabled(true);
+        for (Card cardsJPanel : cardsJPanels) {
+            cardsJPanel.setEnabled(true);
         }
-        historyPanel.showToHistoryPanel("Seleziona il territorio da comprare");
+        historyPanel.show("Seleziona il territorio da comprare");
         String idResult = getAnswerByHolder();
         return RegionType.getRegionByIndex(Integer.parseInt(idResult));
     }
@@ -1227,16 +1232,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public String askMoveOvine() {
         addAllRegionListener();
         zoomOn = true;
-        historyPanel.showToHistoryPanel("Seleziona la  regione di partenza:");
+        historyPanel.show("Seleziona la  regione di partenza:");
         String startRegion = getAnswerByHolder();
 
-        historyPanel.showToHistoryPanel("Seleziona quale ovino muovere:");
+        historyPanel.show("Seleziona quale ovino muovere:");
         String ovineType = getAnswerByHolder();
 
         addAllRegionListener();
 
         zoomOn = false;
-        historyPanel.showToHistoryPanel("Seleziona la  regione di arrivo:");
+        historyPanel.show("Seleziona la  regione di arrivo:");
         String endRegion = getAnswerByHolder();
 
         return startRegion + "," + endRegion + "," + ovineType;
@@ -1246,11 +1251,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public String askMateSheepWith() {
         setMyStreetClickable();
 
-        historyPanel.showToHistoryPanel("Seleziona il tuo pastore");
+        historyPanel.show("Seleziona il tuo pastore");
         String idShepherd = getShepherdByStreet(getAnswerByHolder());
 
         addAllRegionListener();
-        historyPanel.showToHistoryPanel("Seleziona la  regione dell'accoppiamento");
+        historyPanel.show("Seleziona la  regione dell'accoppiamento");
         String region = getAnswerByHolder();
         return idShepherd + "," + region;
     }
@@ -1258,17 +1263,17 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public String askKillOvine() {
         setMyStreetClickable();
 
-        historyPanel.showToHistoryPanel("Seleziona il tuo pastore");
+        historyPanel.show("Seleziona il tuo pastore");
         String streetOfMyShepherd = getAnswerByHolder();
 
         String killerShepherd = getShepherdByStreet(streetOfMyShepherd);
         addAllRegionListener();
         zoomOn = true;
 
-        historyPanel.showToHistoryPanel("Seleziona la  regione in cui uccidere");
+        historyPanel.show("Seleziona la  regione in cui uccidere");
         String startRegion = getAnswerByHolder();
 
-        historyPanel.showToHistoryPanel("Seleziona quale ovino uccidere");
+        historyPanel.show("Seleziona quale ovino uccidere");
         String ovineType = getAnswerByHolder();
         zoomOn = false;
 
@@ -1280,7 +1285,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         setMyStreetClickable();
 
-        historyPanel.showToHistoryPanel("Seleziona il pastore da muovere");
+        historyPanel.show("Seleziona il pastore da muovere");
         String streetOfMyShepherd = getAnswerByHolder();
 
         String shepherdToMove = getShepherdByStreet(streetOfMyShepherd);
@@ -1288,7 +1293,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println("trovato pastore " + shepherdToMove);
 
         setFreeStreetsClickable();
-        historyPanel.showToHistoryPanel("Seleziona la  strada su cui spostare il pastore");
+        historyPanel.show("Seleziona la  strada su cui spostare il pastore");
         String endStreet = getAnswerByHolder();
 
         lastStreet = Integer.parseInt(endStreet);
@@ -1310,17 +1315,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     public void refreshOtherPlayerMoney(String otherPlayer, int money) {
         playersJPanels[getIndexPlayerByNickName(otherPlayer)].setAmount(money);
-    }
-
-    public static void main(String args[]) {
-        //faccio gestire il thread da EDT, per il controllo ciclico della coda
-        //degli eventi generati dai vari componenti
-
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                GuiView gui = new GuiView();
-            }
-        });
     }
 
 }

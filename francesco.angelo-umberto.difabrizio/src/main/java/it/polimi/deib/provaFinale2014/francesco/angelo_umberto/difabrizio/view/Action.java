@@ -32,6 +32,7 @@ public class Action extends BackgroundAndTextJPanel implements MouseListener {
 
     public void mouseClicked(MouseEvent e) {
         DebugLogger.println("azione clickata, dentro la catch dell evento");
+        revalidate();
         repaint();
     }
 
