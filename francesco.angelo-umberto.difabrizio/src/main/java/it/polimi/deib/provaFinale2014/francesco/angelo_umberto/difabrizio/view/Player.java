@@ -28,8 +28,6 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
         moneyPanel.add(moneyText);
         moneyPanel.setUp(imgPath2, 38, 40);
         moneyPanel.setBackground(new Color(0, 0, 0, 0));
-
-        //    moneyLabel.setPreferredSize(new Dimension(38, 40));
         this.setLayout(null);
         GuiView.addComponentsToPane(this, moneyPanel, xText2, yText2);
     }

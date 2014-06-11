@@ -11,12 +11,14 @@ import java.awt.event.MouseListener;
  * @author Francesco
  */
 public class Action extends BackgroundAndTextJPanel implements MouseListener {
-
-    public Action() {
+    private final String toolTipText;
+    
+    public Action(String toolTipText) {
         setOpacity(true);
         this.setBackground(new Color(0, 0, 0, 0));
         this.addMouseListener(this);
-//        this.repaint();
+        this.toolTipText = toolTipText;
+        this.setToolTipText(toolTipText);
     }
 
     /**

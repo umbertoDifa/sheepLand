@@ -15,11 +15,11 @@ import javax.swing.JPanel;
  *
  * @author Francesco
  */
-public class disconnectIcon extends JPanel {
+public class DisconnectImage extends JPanel {
     
     private Image image;
 
-    public disconnectIcon() {
+    public DisconnectImage() {
         try {
             image = ImageIO.read(new File(".\\images\\disconnect.png"));
             DebugLogger.println("immagine disconnessione aggiunta al pool");

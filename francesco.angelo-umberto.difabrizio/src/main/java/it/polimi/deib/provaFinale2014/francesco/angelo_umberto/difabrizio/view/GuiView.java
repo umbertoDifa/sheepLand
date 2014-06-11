@@ -183,9 +183,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
         mapJPanel = new MapBoard();
         actions = new Action[GameConstants.NUM_TOT_ACTIONS.getValue()];
         cardsJPanels = new Card[RegionType.values().length];
-        for (int i = 0; i < actions.length; i++) {
-            actions[i] = new Action();
-        }
+        actions[0] = new Action("Muovi ovino");
+        actions[1] = new Action("Muovi pastore");
+        actions[2] = new Action("Compra carta");
+        actions[3] = new Action("Accoppia pecore");
+        actions[4] = new Action("Accoppia montone e percora");
+        actions[5] = new Action("Uccidi ovino");
+        
         for (int i = 0; i < cardsJPanels.length; i++) {
             cardsJPanels[i] = new Card(FontFactory.getFont(), "9", "0");
         }
@@ -497,32 +501,45 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     /**
+     * When an Animal is clicked, the method adds to holder the corrispondindg
+     * AnimalType. Then it removes all the Animal from the layer 1 and switches
+     * on the Animal preview of all the regions
      *
      * @param e
      */
     private void animalClicked(MouseEvent e) {
-        //se il click è su un animale, aggiungo il tipo a holder e rimuovo tutti gli animali
-        //dal layer 2, rimetto visibili in preview gli animali nelle regioni
 
+        //casto l'oggetto che ha generato l evento a Animal
         Animal chosenAnimal = (Animal) e.getSource();
+        
+        //per ogni oggetto nel layeredPane
         for (Component component : layeredPane.getComponents()) {
+            //se è un Animal
             if (component instanceof Animal) {
+                //lo casto ad Animal
                 Animal animal = (Animal) component;
+                //se ha AnimalType uguale all AnimalType di chi ha generato l evento
                 if (animal.getAnimalType().equals(chosenAnimal.getAnimalType())) {
+                    //aggiungo ad holder il corrispondente tipo
                     holder.add(animal.getAnimalType());
                     holder.notify();
                 }
             }
         }
-        
+
+        //rimuovo tutti gli Animal dal layer 1
         Component[] toRemove = layeredPane.getComponentsInLayer(1);
         for (Component componentToRemove : toRemove) {
             componentToRemove.setVisible(false);
             layeredPane.remove(componentToRemove);
         }
         layeredPane.repaint();
+        
+        //per ogni regione
         for (RegionBox region : regionBoxes) {
+            //rimetto visibili gli animali
             region.setAnimalsVisibles(true);
+            //in modalità preview
             region.setAnimalPreview(true);
         }
     }
@@ -539,18 +556,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void mouseExited(MouseEvent e) {
     }
 
-    public String askBuyLand() {
-        for (int i = 0; i < cardsJPanels.length; i++) {
-            cardsJPanels[i].setEnabled(true);
-        }
-        showToHistoryPanel("Seleziona il territorio da comprare");
-        String idResult = getAnswerByHolder();
-        return RegionType.getRegionByIndex(Integer.parseInt(idResult));
-    }
-
     /**
-     * posiziona il panel figlio nel panel padre, posizionando l'angolo sx del
-     * figlio a x,y rispetto al padre
+     * Place the son panel in the father panel, 
+     * placing the left corner of the son
+     * in x,y rispect the father
      *
      * @param panelFather
      * @param panelSon
@@ -571,7 +580,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     /**
-     * carica le immagini per le strade nell'ImagePool
+     * It adds to the ImagePool all the images that are used dinamically
      */
     private void setUpImagePool() {
         ImagePool.add(".\\images\\shepherd1.png", "shepherd1");
@@ -594,8 +603,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     /**
-     * carica le immagini che servono al infoPanel, istanzia l'infoPanel
-     * passandogli font, img per il dado, e img sfondo, dimensioni
+     * Load all the images for the InfoPanel and instantiates
+     * the InfoPanel with font, list of images, and dimensions
      */
     private void setUpInfoPanel() {
         List<Icon> listIcon = new ArrayList<Icon>();
@@ -616,21 +625,27 @@ public class GuiView implements MouseListener, TypeOfViewController,
         infoPanel = new InfoPanel(FontFactory.getFont(), listIcon, imageBg, 232, 444);
     }
 
+    /**
+     * show infoPanel with the result of the dice
+     * @param result the dice result to show
+     */
     private void showResultDice(int result) {
         infoPanel.setText("è uscito: ");
         infoPanel.setDice(result);
         infoPanel.setVisible(true);
     }
 
+    /**
+     * Hide the InfoPanel setting its visibility to false
+     */
     private void hideInfoPanel() {
         infoPanel.setVisible(false);
     }
 
-    private void showDice(int result) {
-        infoPanel.setVisible(true);
-        infoPanel.setDice(result);
-    }
-
+    /**
+     * Set disabled all the regions so they
+     * don't generate events when clicked
+     */
     private void disableAllRegionListener() {
         for (RegionBox region : regionBoxes) {
             region.setEnabled(false);
@@ -639,6 +654,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     }
 
+    /**
+     * Set enabled all the regions do
+     * they can generate events when clicked
+     */
     private void addAllRegionListener() {
         for (RegionBox region : regionBoxes) {
             region.setEnabled(true);
@@ -647,6 +666,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     }
 
+    /**
+     * Return the Index of the Player that corrisponds to the nickname
+     * of the shepherd
+     * @param nickShepherd
+     * @return 
+     */
     private int getIndexPlayerByNickName(String nickShepherd) {
         for (int indexPlayer = 0; indexPlayer < nickNames.length; indexPlayer++) {
             if (nickNames[indexPlayer].equals(nickShepherd)) {
@@ -656,6 +681,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         return -1;
     }
 
+    /**
+     * Wait for answer by the holder.
+     * Return the first element  of the holder
+     * when added
+     * @return 
+     */
     private String getAnswerByHolder() {
         String result;
         DebugLogger.println("nella getanswerbyholder");
@@ -682,6 +713,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         return result;
     }
 
+    /**
+     * Set enabled only the empty streets
+     * so that they can generate events
+     */
     private void setFreeStreetsClickable() {
         for (Street street : streets) {
             if (street.isEmpty()) {
@@ -690,6 +725,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
     }
 
+    /**
+     * It clones all the Animals of the i-th RegionBox.
+     * Dispose them in circle setting the bounds.
+     * Set them clickable, adds them to the layer 1
+     * @param i 
+     */
     private void zoomAnimals(int i) {
         List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
         int j = 0;
@@ -719,7 +760,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     /**
-     * set clickable the streets where my shepherds are
+     * set enalbed the street/s where my shepherds are. so the street/s
+     * can generate events.
      */
     private void setMyStreetClickable() {
         for (Street street : streets) {
@@ -731,6 +773,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
     }
 
+    /**
+     * return the Shepherd id that is on the specific street. 0 if it don't
+     * find it
+     * @param streetOfMyShepherd
+     * @return 
+     */
     private String getShepherdByStreet(String streetOfMyShepherd) {
         for (Map.Entry pairs : nickShepherdToStreet.entrySet()) {
             String key = (String) pairs.getKey();
@@ -741,7 +789,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
         return "0";
     }
-
+    
+    /**
+     * 
+     * @param message 
+     */
     private void showToHistoryPanel(String message) {
         historyPanel.append("-");
         historyPanel.append(message);
@@ -785,7 +837,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
     public void showSetShepherd(int shepherdIndex, String streetIndex) {
         hideInfoPanel();
-        refreshStreet(Integer.parseInt(streetIndex), false, myNickName);
+        refreshStreet(Integer.parseInt(streetIndex), false, myNickName, shepherdIndex);
         nickShepherdToStreet.putIfAbsent(myNickName + "-" + shepherdIndex,
                 Integer.valueOf(streetIndex));
     }
@@ -903,7 +955,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         setFreeStreetsClickable();
-        showInfo("Scegli dove posizionare il pastore");
+        showInfo("Scegli dove posizionare la pedina");
         String result = getAnswerByHolder();
         return result;
     }
@@ -926,15 +978,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public void refreshStreet(int streetIndex, boolean fence,
-            String nickShepherd) {
+            String nickShepherd, int shepherdIndex) {
         hideInfoPanel();
 
         if (fence) {
             streets[streetIndex].setFence();
         } else if (nickShepherd != null && !"null".equals(nickShepherd)) {
-            int indexShepherd = getIndexPlayerByNickName(nickShepherd);
+            int indexPlayer = getIndexPlayerByNickName(nickShepherd);
             streets[streetIndex].setImage("shepherd" + String.valueOf(
-                    indexShepherd));
+                    indexPlayer));
+            nickShepherdToStreet.putIfAbsent(nickShepherd+"-"+shepherdIndex, streetIndex);
         }
 
     }
@@ -962,7 +1015,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         //refresh della strada di arrivo
-        refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover);
+        refreshStreet(Integer.parseInt(streetIndex), false, nickNameMover, shepherdIndex);
         DebugLogger.println("posiziono " + nickNameMover + " in " + streetIndex
         );
         if (null != nickShepherdToStreet.putIfAbsent(
@@ -1013,6 +1066,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 playersJPanels[i].isNotYourShift();
             }
         }
+        
+        Component[] components = playersJPanels[getIndexPlayerByNickName(currenPlayer)].getComponents();
+        for(Component comp: components){
+            if(comp instanceof DisconnectImage){
+                playersJPanels[getIndexPlayerByNickName(currenPlayer)].remove(comp);
+            }
+        }
+        
         showInfo("E' il turno di " + currenPlayer);
     }
 
@@ -1087,7 +1148,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         playersJPanels[getIndexPlayerByNickName(player)].setEnabled(false);
         playersJPanels[getIndexPlayerByNickName(player)].setOpacity(true);
         playersJPanels[getIndexPlayerByNickName(player)].setLayout(new BorderLayout());
-        playersJPanels[getIndexPlayerByNickName(player)].add(new disconnectIcon(), BorderLayout.CENTER);
+        playersJPanels[getIndexPlayerByNickName(player)].add(new DisconnectImage(), BorderLayout.CENTER);
         showInfo("Il giocatore " + player + " si è disconnesso");
         dxBar.revalidate();
         dxBar.repaint();
@@ -1160,6 +1221,15 @@ public class GuiView implements MouseListener, TypeOfViewController,
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
         mapJPanel.revalidate();
         mapJPanel.repaint();
+    }
+
+    public String askBuyLand() {
+        for (int i = 0; i < cardsJPanels.length; i++) {
+            cardsJPanels[i].setEnabled(true);
+        }
+        showToHistoryPanel("Seleziona il territorio da comprare");
+        String idResult = getAnswerByHolder();
+        return RegionType.getRegionByIndex(Integer.parseInt(idResult));
     }
 
     public String askMoveOvine() {

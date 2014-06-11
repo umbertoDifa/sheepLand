@@ -40,7 +40,7 @@ public class InfoPanel extends JPanel implements MouseListener {
      */
     public InfoPanel(Font font, List<Icon> imagesDice, Image imageBackground, int width, int height) {
         this.setPreferredSize(new Dimension(232, 444));
-        this.setBackground(new Color(0,0,0,0));
+        this.setBackground(new Color(0, 0, 0, 0));
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setBackground(new Color(0, 0, 0, 0));
@@ -61,6 +61,8 @@ public class InfoPanel extends JPanel implements MouseListener {
         GuiView.addComponentsToPane(this, textArea, 50, 140);
         GuiView.addComponentsToPane(this, dice, 77, 300);
         this.setVisible(false);
+        this.textArea.setToolTipText("click me to close me!");
+        this.setToolTipText("click me to close me!");
         repaint();
     }
 
