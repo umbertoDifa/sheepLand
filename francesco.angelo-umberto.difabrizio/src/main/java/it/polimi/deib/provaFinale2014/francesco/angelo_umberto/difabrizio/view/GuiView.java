@@ -1066,6 +1066,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 playersJPanels[i].isNotYourShift();
             }
         }
+        
         Component[] components = playersJPanels[getIndexPlayerByNickName(currenPlayer)].getComponents();
         for(Component comp: components){
             if(comp instanceof DisconnectImage){
