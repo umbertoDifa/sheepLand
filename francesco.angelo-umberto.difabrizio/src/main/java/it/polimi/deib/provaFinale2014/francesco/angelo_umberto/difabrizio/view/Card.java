@@ -34,6 +34,14 @@ public class Card extends CardBoard implements MouseListener {
         //setto il nuovo ammount
         this.setText(Integer.toString(newAmmount));
     }
+    
+    @Override
+    public void setText(String text) {
+        if(Integer.parseInt(text)<0){
+            this.setUp(".\\images\\numFencesRed.png", 67, 77, 78, 94);
+        }
+        super.setText(text);
+    }
 
     public void mouseClicked(MouseEvent e) {
         DebugLogger.println("carta terreno clickata, dentro la catch dell evento");

@@ -72,7 +72,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
             //centrandolo rispetto le coord xText e yText
             textLabel.setBounds((xText + insets.left + horizontalAlign - width / 2),
                     (yText + insets.top + verticalAlign - (28 / 2)),
-                    width/2, 28);
+                    width / 2, 28);
 
             //imposto font e colore font
             textLabel.setFont(font);
@@ -143,7 +143,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected void setText(String text) {
         textLabel.setText(text);
     }
-    
+
     protected String getText() {
         return textLabel.getText();
     }
@@ -169,14 +169,15 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     }
 
     /**
-     * se opacity è vero setto il parametro opacity a vero. se opacity vero 
-     * l'img viene visualizzata opaca 
-     * @param opacity 
+     * se opacity è vero setto il parametro opacity a vero. se opacity vero
+     * l'img viene visualizzata opaca
+     *
+     * @param opacity
      */
-    protected void setOpacity (boolean opacity){
+    protected void setOpacity(boolean opacity) {
         this.opacity = opacity;
     }
-    
+
     /**
      * override paintComponent to set the background image if it exists,
      * otherwise clear the background image

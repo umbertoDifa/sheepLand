@@ -1,8 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import java.awt.Color;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import javax.swing.JTextArea;
 
 /**
@@ -22,8 +20,11 @@ class HistoryPanel extends JTextArea {
     }
 
     protected void showToHistoryPanel(String message) {
-        append("-");
-        append(message);
-        append("\n");
+        String oldText = this.getText();
+        this.setText("-" + message + "\n" + oldText);
+//        append("-");
+//        append(message);
+//        append("\n");
     }
+
 }

@@ -26,10 +26,11 @@ public enum GameConstants {
      * Numero di recinti finali
      */
     NUM_FINAL_FENCES(12),
+    NUM_NOT_FINAL_FENCES(1),//FIXME was 20
     /**
      * Numero di recinti, finali + non finali
      */
-    NUM_FENCES(NUM_FINAL_FENCES.value + 6),//FIXME was 20
+    NUM_FENCES(NUM_FINAL_FENCES.value + NUM_NOT_FINAL_FENCES.value),
     /**
      * Numero di regioni per ogni tipo di terreno
      */
@@ -46,7 +47,7 @@ public enum GameConstants {
      * Numero di azioni che possono essere fatte in un turno da un giocatore
      */
     NUM_ACTIONS(3),
-        /**
+    /**
      * Numero di azioni totali tra cui scegliere
      */
     NUM_TOT_ACTIONS(6),
