@@ -206,6 +206,9 @@ public class ClientSocket {
                         MessageProtocol.valueOf(
                                 received))) {
                     refreshWolf();
+                } else if (MessageProtocol.REFRESH_OTHER_PLAYER_MONEY.equals(
+                        MessageProtocol.valueOf(received))) {
+                    refreshOtherPlayerMoney();
                 } else if (MessageProtocol.PLAYER_DISCONNECTED.equals(
                         MessageProtocol.valueOf(
                                 received))) {
@@ -261,6 +264,7 @@ public class ClientSocket {
                         MessageProtocol.valueOf(
                                 received))) {
                     showClassification();
+                    endOfGame = true;
 
                 }
             }
@@ -296,10 +300,10 @@ public class ClientSocket {
         boolean fence = receiveBoolean();
 
         String nick = receiveString();
-        
+
         int shepherdIndex = receiveInt();
 
-        view.refreshStreet(streetIndex, fence, nick,shepherdIndex);
+        view.refreshStreet(streetIndex, fence, nick, shepherdIndex);
     }
 
     private void refreshGameParameters() {
@@ -593,6 +597,13 @@ public class ClientSocket {
 
     private void unexpectedEndOfGame() {
         view.showUnexpectedEndOfGame();
+    }
+
+    private void refreshOtherPlayerMoney() {
+        String otherPlayer = receiveString();
+        int otherMoney = receiveInt();
+
+        view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
     }
 
 }

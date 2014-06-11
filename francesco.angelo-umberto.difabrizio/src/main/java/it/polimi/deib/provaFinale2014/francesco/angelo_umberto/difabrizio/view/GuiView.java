@@ -919,10 +919,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         String[] token = classification.split(",");
         int i = 0;
         while (i < token.length - 1) {
-            classification += "Giocatore :" + token[i] + " punteggio: " + token[i + 1];
+            classificationToShow += "Giocatore " + token[i] + " punteggio: " + token[i + 1];
             i += 2;
         }
-        showInfo(classificationToShow);
+        showToHistoryPanel(classificationToShow);
     }
 
     public void showUnexpectedEndOfGame() {
@@ -1046,7 +1046,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         } else {
             resultToShow += "provato ad uccidere ";
         }
-        showInfo(resultToShow + "un " + type + " nella regione " + region);
+        showInfo(resultToShow + "un " + type );
 
     }
 
@@ -1054,7 +1054,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println("inizio refresh money " + money);
         playersJPanels[getIndexPlayerByNickName(myNickName)].setAmount(
                 Integer.parseInt(money));
-        DebugLogger.println("fine refresh money " + money);
+        DebugLogger.println("fine refresh money ");
     }
 
     public void refereshCurrentPlayer(String currenPlayer) {

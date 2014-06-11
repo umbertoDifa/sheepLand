@@ -192,14 +192,16 @@ public class ClientRmi implements ClientInterfaceRemote {
      * {@inheritDoc }
      */
     public String chooseAction(String actions) {
+        DebugLogger.println("azioni possibili ricevute nella choose action");
+        
         //receive possible actions      
-        String[] possibleActions = actions.split(",", -1);
+        String[] possibleActions = actions.split(",");
 
         int[] availableAcions = new int[possibleActions.length];
         String[] actionsName = new String[possibleActions.length];
 
         for (int i = 0; i < possibleActions.length; i++) {
-            token = possibleActions[i].split("-", -1);
+            token = possibleActions[i].split("-");
 
             availableAcions[i] = Integer.parseInt(token[0]);
             actionsName[i] = token[1];
@@ -414,13 +416,13 @@ public class ClientRmi implements ClientInterfaceRemote {
 
             view.showKillOvine(token[1], token[2], tokenResult[1]);
 
-            return token[1] + "," + token[2] + "," + ",ok";
+            return token[1] + "," + token[2] + "," + "ok";
         } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
                 result) || "Il valore del dado è diverso dalla strada del pastore".equals(
                         result)) {
             view.showInfo(result);
 
-            return token[1] + "," + token[2] + "," + ",nok";
+            return token[1] + "," + token[2] + "," + "nok";
         }
         view.showInfo(result);
         return null;
@@ -517,7 +519,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     public void refreshKillOvine(String nickNameKiller, String region,
                                  String type, String outcome) throws
             RemoteException {
-        view.refreshKillOvine(type, region, type, outcome);
+        view.refreshKillOvine(nickNameKiller, region, type, outcome);
     }
 
     /**
@@ -552,6 +554,11 @@ public class ClientRmi implements ClientInterfaceRemote {
     public void refreshAvailableFences(int availableFences) throws
             RemoteException {
         view.refreshFences(availableFences);
+    }
+
+    public void refreshOtherPlayerWallet(String otherPlayer, int otherMoney)
+            throws RemoteException {
+        view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
     }
 
 }

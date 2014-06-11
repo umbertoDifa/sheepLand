@@ -61,7 +61,8 @@ public class SocketTrasmission extends TrasmissionController {
                     fence);
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
                     nickNameOfShepherdPlayer);
-             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(shepherdIndex);
+            ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).send(
+                    shepherdIndex);
         }
     }
 
@@ -491,6 +492,9 @@ public class SocketTrasmission extends TrasmissionController {
                 refreshMoney(nick);
             }
 
+            //aggiorna la consapevolezza di ogni altro giocatore rispetto agli altri in quanto a money
+            refreshWallets();
+            
             return true;
         } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
                 result) || "Il valore del dado è diverso dalla strada del pastore".equals(
@@ -700,7 +704,37 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshNumberOfAvailableFence(String client, int fenceAvailable) {
+    public void refreshWallets() {
+        //per tutti i player
+        //se quel player può ricever
+        //gli mando il portafoglio di tutti gli altri
+        for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            if (canPlayerReceive(nickName)) {
+                for (Map.Entry couple : getNick2PlayerMap().entrySet()) {
+                    String other = (String) couple.getKey();
+                    if (!nickName.equals(other)) {
+                        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                                nickName)).send(
+                                        MessageProtocol.REFRESH_OTHER_PLAYER_MONEY.toString());
+
+                        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                                nickName)).send(other);
+
+                        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                                nickName)).send(
+                                        getNick2PlayerMap().get(other).getMainShepherd().getWallet().getAmount());
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    @Override
+    public void refreshNumberOfAvailableFence(String client, int fenceAvailable
+    ) {
         if (canPlayerReceive(client)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     client)).send(MessageProtocol.FENCE_REFRESH.toString());

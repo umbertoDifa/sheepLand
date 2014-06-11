@@ -40,7 +40,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * It's the list of shepherd of a given player
      */
     protected final Shepherd[] shepherd;
-    
+
     private final GameManager gameManager;
     private final String playerNickName;
     /**
@@ -78,9 +78,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             RemoteException {
         this.playerNickName = playerNickName;
         this.gameManager = gameManager;
-        
+
         this.shepherd = new Shepherd[gameManager.shepherd4player];
-        
+
         if (gameManager.shepherd4player >= ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue()) {
             this.shepherd[0] = new Shepherd(
                     GameConstants.LOW_PLAYER_WALLET_AMMOUNT.getValue());
@@ -94,7 +94,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             this.shepherd[i] = new Shepherd(this.shepherd[0].getWallet(),
                     this.shepherd[0].getMyCards());
         }
-        
+
     }
 
     /**
@@ -127,11 +127,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *                                     chances
      */
     protected void chooseAndMakeAction() throws PlayerDisconnectedException {
-        
+
         boolean outcomeOk;
         createActionList();
         int numberOfDisconnections = 0;
-        
+
         do {
             try {
                 //se il player si era disconnesso gli rimando il benvenuto
@@ -140,14 +140,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     //setto il needRefresh a false
                     ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
                             false);
-                    
+
                     DebugLogger.println(
                             "il giocatore " + playerNickName + " ha bisogno di un avvio gioco prima di ricominciare a giocare");
-                    
+
                     gameManager.getController().refreshStartGame(
                             playerNickName);
                     gameManager.refreshInitialConditions(playerNickName);
-                    
+
                 }
                 DebugLogger.println(
                         "invio le azionio possibiil: " + possibleAction);
@@ -168,7 +168,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
                     gameManager.getController().brodcastPlayerDisconnected(
                             playerNickName);
-                    
+
                     throw new PlayerDisconnectedException(
                             "Il giocatore si è disconnesso");
                 }
@@ -184,7 +184,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 }
             }
         } while (!outcomeOk);
-        
+
     }
 
     /**
@@ -194,14 +194,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     private void createActionList() {
         //nessuna azione disponibile inizialmente                
         possibleAction = "";
-        
+
         for (OvineType type : OvineType.values()) {
             if (canMoveOvine(type) && lastAction != ActionConstants.MOVE_OVINE.getValue()) {
                 possibleAction += "1-Sposta ovino,";
                 break;
             }
         }
-        
+
         possibleAction += "2-Sposta pastore,";
 
         //aggiungi acquisto carta se possibile
@@ -217,9 +217,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         if (canKillOvine() && lastAction != ActionConstants.KILL_OVINE.getValue()) {
             possibleAction += "6-Abbatti ovino";
         }
-        
+
     }
-    
+
     private boolean canMoveOvine(OvineType ovine) {
         //se non c'è un ultimo pastore
         if (lastShepherd == null) {
@@ -242,12 +242,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             return false;
         }
     }
-    
+
     private boolean canBuyCard() {
         int price;
         int shepherdMoney = this.shepherd[0].getWallet().getAmount();
         List<Region> regions;
-        
+
         if (lastShepherd == null) {
             regions = getShepherdsRegion();
         } else {
@@ -262,30 +262,30 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                         region.getType());
                 if (price < shepherdMoney) {
                     return true;
-                    
+
                 }
             } catch (MissingCardException ex) {
                 Logger.getLogger(DebugLogger.class
                         .getName()).log(Level.SEVERE,
                                 ex.getMessage(), ex);
             }
-            
+
         }
         return false;
-        
+
     }
-    
+
     private boolean canMateSheep() {
         int numbOfSheep;
         Shepherd[] shphArray;
-        
+
         if (lastShepherd == null) {
             shphArray = shepherd;
         } else {
             shphArray = new Shepherd[1];
             shphArray[0] = lastShepherd;
         }
-        
+
         for (Region region : getShepherdsRegion(shphArray)) {
             numbOfSheep = 0;
             for (Ovine ovine : region.getMyOvines()) {
@@ -297,22 +297,22 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     private boolean canMateSheepWithRam() {
         int numbOfSheep;
         int numbOfRam;
         Shepherd[] shphArray;
-        
+
         if (lastShepherd == null) {
             shphArray = shepherd;
         } else {
             shphArray = new Shepherd[1];
             shphArray[0] = lastShepherd;
         }
-        
+
         for (Region region : getShepherdsRegion(shphArray)) {
             numbOfRam = 0;
             numbOfSheep = 0;
@@ -326,65 +326,65 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             if (numbOfRam >= 1 && numbOfSheep >= 1) {
                 return true;
             }
-            
+
         }
-        
+
         return false;
-        
+
     }
-    
+
     private boolean canKillOvine() {
         Shepherd[] shphArray;
-        
+
         if (lastShepherd == null) {
             shphArray = shepherd;
         } else {
             shphArray = new Shepherd[1];
             shphArray[0] = lastShepherd;
         }
-        
+
         for (Region region : getShepherdsRegion(shphArray)) {
             if (!region.getMyOvines().isEmpty()) {
                 return true;
             }
         }
-        
+
         return false;
-        
+
     }
 
     /**
      * chiede le regioni di partenza e di arrivo dell'ovino del tipo
      * specificato, lo rimuove dalla regione, lo aggiunge nella regione da dove
      * può arrivare passando per la strada occupata dal pastore del giocatore.
-     * 
      *
-     * @param type type of ovine to move
+     *
+     * @param type         type of ovine to move
      * @param finishRegion Region where to move the ovine
-     * @param beginRegion Regione where the ovine is
+     * @param beginRegion  Regione where the ovine is
      *
      * @return "ovino mosso" se tutto ok, una stringa di errore altrimenti
      */
     public String moveOvine(String beginRegion, String finishRegion, String type) {
-        
+
         Region startRegion;
         Region endRegion;
         String typeToMove;
-        
+
         try {
             startRegion = gameManager.getMap().convertStringToRegion(beginRegion);
             endRegion = gameManager.getMap().convertStringToRegion(finishRegion);
-            
+
         } catch (RegionNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(), ex);
-            
+
             return "La regione inserita non esiste";
         }
         try {
             typeToMove = convertAndCheckOvineType(type);
-            
+
         } catch (OvineNotFoundExeption ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -399,23 +399,24 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             //se le regioni confinano con la strada e sono diverse tra loro
             if (startRegion.isNeighbour(possibleStreet) && endRegion.isNeighbour(
                     possibleStreet) && startRegion != endRegion) {
-                if(possibleStreet.getShepherd() != lastShepherd){
+
+                if (lastShepherd != null && possibleStreet.getShepherd() != lastShepherd) {
                     return "Non puoi muovere due pastori diversi nello stesso turno";
                 }
-                
+
                 //rimuovi ovino del tipo specificato
                 Ovine movedOvine;
                 DebugLogger.println("Rimuovo ovino");
                 try {
                     movedOvine = startRegion.removeOvine(
                             OvineType.valueOf(typeToMove));
-                    
+
                 } catch (NoOvineException ex) {
                     Logger.getLogger(DebugLogger.class
                             .getName()).log(
                                     Level.SEVERE,
                                     ex.getMessage(), ex);
-                    
+
                     return "Nessun ovino nella regione di partenza!";
                 }
                 DebugLogger.println("ovino rimosso");
@@ -427,7 +428,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
         }
         return "Non è possibile spostare l'ovino tra le regioni inidicate";
-        
+
     }
 
     /**
@@ -442,11 +443,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *         if an exeption is caught.
      */
     public String setShepherd(int indexShepherd, String stringedStreet) {
-        
+
         Street chosenStreet;
         try {
             chosenStreet = convertAndCheckStreet(stringedStreet);
-            
+
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -461,7 +462,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         //sposta il pastore 
         shepherd[indexShepherd].moveTo(chosenStreet);
-        
+
         return "Pastore posizionato correttamente!,0";
     }
 
@@ -482,7 +483,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //do la possibilità al giocatore corrente di disconnettersi resettando
         //il numero  di disconnessioni
         numberOfDisconnections = 0;
-        
+
         while (!outcomeOk) {
             try {
                 //se il player si era disconnesso gli rimando il benvenuto
@@ -492,15 +493,15 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     //setto il needRefresh a false
                     ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
                             false);
-                    
+
                     DebugLogger.println(
                             "il giocatore " + playerNickName + "ha bisogno di un start game");
-                    
+
                     gameManager.getController().refreshStartGame(
                             playerNickName);
                     gameManager.refreshInitialConditions(playerNickName);
                 }
-                
+
                 DebugLogger.println(
                         "chiedo posizionamento del pastore " + shepherdIndex + " al giocatore " + playerNickName);
 
@@ -522,7 +523,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     //salvo quanti pastori deve ancora settare
                     ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
                             gameManager.shepherd4player - shepherdIndex);
-                    
+
                     throw new PlayerDisconnectedException(
                             "giocatore disconnesso durante set up pastore");
                 }
@@ -574,26 +575,26 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         int shepherdIndex;
         try {
             shepherdIndex = convertAndCheckShepherd(shepherdNumber);
-            
+
         } catch (ShepherdNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(), ex);
             return ex.getMessage();
         }
-        
+
         Shepherd currentShepherd = shepherd[shepherdIndex];
         Street startStreet = currentShepherd.getStreet();
-        
+
         if (lastShepherd != null && currentShepherd != lastShepherd) {
             return noSameShepherdString;
         }
-        
+
         Street endStreet;
         //controllo strada
         try {
             endStreet = convertAndCheckStreet(newStreet);
-            
+
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -612,13 +613,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             currentShepherd.moveTo(endStreet);
             try {
                 startStreet.setFence(this.gameManager.getBank().getFence());
-                
+
             } catch (FinishedFencesException ex) {
                 Logger.getLogger(DebugLogger.class
                         .getName()).log(
                                 Level.SEVERE,
                                 ex.getMessage(), ex);
-                
+
                 return "Recinti terminati";
             }
             DebugLogger.println("Pastore posizionato");
@@ -631,22 +632,22 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             currentShepherd.moveTo(endStreet);
             try {
                 startStreet.setFence(this.gameManager.getBank().getFence());
-                
+
             } catch (FinishedFencesException ex) {
                 Logger.getLogger(DebugLogger.class
                         .getName()).log(
                                 Level.SEVERE,
                                 ex.getMessage(), ex);
-                
+
                 return "Recinti terminati";
             }
             lastShepherd = currentShepherd;
             lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
             return "Pastore spostato," + GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue();
-            
+
         }
         return "Non hai soldi per spostarti";
-        
+
     }
 
     /**
@@ -659,7 +660,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @return "Carta acquistata,[type],[price]" or an error string
      */
     public String buyLand(String landToBuy) {
-        
+
         if (landToBuy.equalsIgnoreCase(RegionType.SHEEPSBURG.toString())) {
             return "Non puoi comprare sheepsburg!";
         }
@@ -669,9 +670,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         //creo la lista dei pastori corrispondenti a certi tipi di regione
         List<Shepherd> possibleShepherd = new ArrayList<Shepherd>();
-        
+
         List<Street> possibleStreets;
-        
+
         if (lastShepherd == null) {
             possibleStreets = getShepherdsStreets();
         } else {
@@ -685,8 +686,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 possibleRegionsType.add(region.getType().toString());
                 possibleShepherd.add(street.getShepherd());
             }
-        }        
-        
+        }
+
         //se la stringa coincide con uno dei tipi di regione possibili
         try {
             for (String type : possibleRegionsType) {
@@ -718,16 +719,16 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
             return "Non è possibile acquistare il territorio richiesto in quanto"
                     + " non confina con il tuo pastore in uso";
-            
+
         } catch (MissingCardException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(
                             Level.SEVERE,
                             ex.getMessage(), ex);
-            
+
             return "Non ci sono più carte del territorio richiesto";
         }
-        
+
     }
 
     /**
@@ -744,18 +745,18 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     public String mateSheepWith(String shepherdNumber, String regionToMate,
                                 String otherOvineType) {
-        
+
         int shepherdIndex;
         String type;
         Region matingRegion;
-        
+
         try {
             //controllo i dati sul pastore,sul tipo di ovino e sulla regione
             shepherdIndex = convertAndCheckShepherd(shepherdNumber);
             type = convertAndCheckOvineType(otherOvineType);
             matingRegion = gameManager.getMap().convertStringToRegion(
                     regionToMate);
-            
+
         } catch (ShepherdNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -780,7 +781,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         //controllo se la regione chiesta confina con la strada del pastore indicato 
         boolean regionOk = false;
-        
+
         for (Region region : shepherd[shepherdIndex].getStreet().getNeighbourRegions()) {
             if (region == matingRegion) {
                 regionOk = true;
@@ -790,7 +791,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         if (!regionOk) {
             return "La regione non confina con il pastore indicato";
         }
-        
+
         if (matingRegion.isPossibleToMeetSheepWith(OvineType.valueOf(type))) {
             //lancio il dado
             int diceValue = Dice.roll();
@@ -798,14 +799,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
                 //aggiungo un ovino alla regione in base al tipo dell'altro ovino
                 if (type.equalsIgnoreCase(OvineType.SHEEP.toString())) {
-                    
+
                     matingRegion.addOvine(new Ovine(OvineType.SHEEP));
                     lastShepherd = shepherd[shepherdIndex];
                     lastAction = ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue();
                     return "Accoppiamento eseguito," + OvineType.SHEEP.toString();
-                    
+
                 } else if (type.equalsIgnoreCase(OvineType.RAM.toString())) {
-                    
+
                     matingRegion.addOvine(new Ovine(OvineType.LAMB));
                     lastShepherd = shepherd[shepherdIndex];
                     lastAction = ActionConstants.MATE_SHEEP_WITH_RAM.getValue();
@@ -840,14 +841,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         List<Shepherd> shepherdToPay = new ArrayList<Shepherd>();
         String type;
         Region regionOfTheMurder;
-        
+
         try {
             //controllo i dati sul pastore,sul tipo di ovino e sulla regione
             shepherdIndex = convertAndCheckShepherd(shepherdNumber);
             type = convertAndCheckOvineType(typeToKill);
             regionOfTheMurder = gameManager.getMap().convertStringToRegion(
                     region);
-            
+
         } catch (ShepherdNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -877,7 +878,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 canKill = true;
             }
         }
-        
+
         if (!canKill) {
             return "La regione inserita non confina col tuo pastore";
         }
@@ -911,19 +912,19 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
             DebugLogger.println(
                     "pastore paga " + shepherdToPay.size() + " pastori");
-            
+
             for (Shepherd shp : shepherdToPay) {
                 shp.getWallet().setAmount(
                         shp.getWallet().getAmount() + GameConstants.PRICE_OF_SILENCE.getValue());
             }
-            
+
             try {
                 //ammazza l'ovino
                 regionOfTheMurder.removeOvine(OvineType.valueOf(type));
                 lastShepherd = shepherd[shepherdIndex];
                 lastAction = ActionConstants.KILL_OVINE.getValue();
                 return "Ovino ucciso," + numbOfShepherdToPay;
-                
+
             } catch (NoOvineException ex) {
                 //non può succedere perchè ho verificato prima che esista
                 Logger.getLogger(DebugLogger.class
@@ -931,13 +932,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                                 ex.getMessage(), ex);
                 return ex.getMessage();
             }
-            
+
         } else {
             lastShepherd = shepherd[shepherdIndex];
             lastAction = ActionConstants.KILL_OVINE.getValue();
             return "Non puoi pagare il silenzio degli altri pastori";
         }
-        
+
     }
 
     /**
@@ -948,13 +949,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     private List<Street> getShepherdsStreets() {
         //creo lista che accoglierà le strada
         List<Street> streets = new ArrayList<Street>();
-        
+
         for (int i = 0; i < gameManager.shepherd4player; i++) {
             streets.add(this.shepherd[i].getStreet());
         }
         return streets;
     }
-    
+
     private List<Region> getShepherdsRegion() {
         return getShepherdsRegion(this.shepherd);
     }
@@ -969,13 +970,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     private List<Region> getShepherdsRegion(Shepherd[] shphdArray) {
         List<Region> neighbourRegions = new ArrayList<Region>();
-        
+
         for (Shepherd shphd : shphdArray) {
             for (Region region : shphd.getStreet().getNeighbourRegions()) {
                 neighbourRegions.add(region);
             }
         }
-        
+
         return neighbourRegions;
     }
 
@@ -1020,9 +1021,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 return shepherdIndex;
             } else {
                 throw new ShepherdNotFoundException("Il pastore non esiste");
-                
+
             }
-            
+
         } catch (NumberFormatException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -1093,16 +1094,16 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     public String buyLandRemote(String regionType) throws RemoteException {
         return buyLand(regionType);
     }
-    
+
     public String mateSheepWithRemote(String shepherdNumber, String regionToMate,
                                       String otherOvineType) throws
             RemoteException {
         return mateSheepWith(shepherdNumber, regionToMate, otherOvineType);
     }
-    
+
     public String killOvineRemote(String shepherdNumber, String region,
                                   String typeToKill) throws RemoteException {
         return killOvine(shepherdNumber, region, typeToKill);
     }
-    
+
 }
