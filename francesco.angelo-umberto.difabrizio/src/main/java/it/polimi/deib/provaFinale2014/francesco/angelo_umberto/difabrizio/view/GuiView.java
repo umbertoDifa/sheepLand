@@ -599,6 +599,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         ImagePool.add(".\\images\\lamb.png", "lamb");
         ImagePool.add(".\\images\\info.png", "infoPanel");
         ImagePool.add(".\\images\\nickPanel.png", "nickPanel");
+        ImagePool.add(".\\images\\cup.png", "cup");
+        ImagePool.add(".\\images\\lose.png", "lose");
     }
 
     /**
@@ -766,7 +768,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             if (street.getImage() != null && street.getImage().equals(
                     ImagePool.getByName("shepherd" + getIndexPlayerByNickName(
                                     myNickName)))) {
-                street.setEnabled(true);
+                street.setEnabled(false);
             }
         }
     }
@@ -863,8 +865,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         //decremento recinti
         fenceJPanel.decrease(1);
-        //OLD
-//        fenceJPanel.setText("" + (Integer.parseInt(fenceJPanel.getText()) - 1));
 
         mapJPanel.revalidate();
         mapJPanel.repaint();
@@ -898,7 +898,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         } else {
             result += "perso ";
         }
-        result += "con " + rank + " punti.";
+        result += "con " + rank + " punti";
 
         layeredPane.add(new RankPannel(result), new Integer(6));
         mainJPanel.revalidate();
