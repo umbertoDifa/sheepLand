@@ -7,13 +7,23 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- *
+ * The class loads the font and return it when asked
  * @author Francesco
  */
 public class FontFactory {
 
     private static Font myFont;
-
+    
+    /**
+     * create and object of the class and call the method to load the font
+     */
+    public static void createFont(){
+        new FontFactory();
+    }
+    
+    /**
+     * load and save the font
+     */
     private FontFactory() {
         try {
             myFont = Font.createFont(Font.TRUETYPE_FONT, new File(".\\font\\DenneFreakshow.ttf"));
@@ -28,11 +38,10 @@ public class FontFactory {
         }
     }
     
-    public static void createFont(){
-        new FontFactory();
-    }
-    
-    
+    /**
+     * return the font loaded
+     * @return 
+     */
     public static Font getFont(){
         return myFont;
     }
