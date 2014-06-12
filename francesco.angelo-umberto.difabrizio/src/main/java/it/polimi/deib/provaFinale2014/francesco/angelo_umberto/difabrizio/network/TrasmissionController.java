@@ -17,7 +17,7 @@ public abstract class TrasmissionController {
     private final Map<String, Player> nick2PlayerMap = new HashMap<String, Player>();
 
     /**
-     * Sets the map that contains the couple nickName->player so that the
+     * Sets the map that contains the couple nickName-player so that the
      * trasmissionController can loop around players when refreshing the new
      * conditions of the game. NickNames and players must be in the same ordered
      * so that they're linked right

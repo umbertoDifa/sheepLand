@@ -1,13 +1,9 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.TextArea;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -54,10 +50,10 @@ public class Animal extends JPanel {
     protected void refreshLabelBounds() {
         numLabel.setSize(28, 28);
         if (preview) {
-            //numLabel.setBounds(widthPreview / 2 - 8, heightPreview / 2 - 16, 28, 28);
+            
             numLabel.setLocation(widthPreview / 2 - 8, heightPreview / 2 - 16);
         } else {
-            //  numLabel.setBounds(width / 2+30, height / 2+30, 28, 28);
+           
             numLabel.setLocation(width / 2 - 10, height / 2 - 16);
 
         }
@@ -66,7 +62,7 @@ public class Animal extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         setOpaque(false);
-        //  super.paintComponent(g);
+       
         if (imagePreview != null) {
             if (preview) {
                 g.drawImage(imagePreview, 0, 0, this);

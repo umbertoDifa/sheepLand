@@ -22,9 +22,6 @@ class HistoryPanel extends JTextArea {
     protected void show(String message) {
         String oldText = this.getText();
         this.setText("-" + message + "\n" + oldText);
-//        append("-");
-//        append(message);
-//        append("\n");
     }
 
 }

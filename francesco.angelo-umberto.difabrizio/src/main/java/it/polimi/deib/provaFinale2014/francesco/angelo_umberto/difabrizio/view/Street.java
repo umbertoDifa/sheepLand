@@ -40,11 +40,12 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
+        //not used
 
     }
 
     public void mouseReleased(MouseEvent e) {
-
+        //not used
     }
 
     public void mouseEntered(MouseEvent e) {
@@ -114,7 +115,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
      * @return
      */
     public boolean isEmpty() {
-        return (this.getImage() == null);
+        return this.getImage() == null;
     }
 
     protected void setFence() {

@@ -155,7 +155,10 @@ public class CommandLineView implements TypeOfViewController {
         showInfo("Inserisci una strada per il pastore " + shepherdIndex);
         return stdIn.nextLine();
     }
-    
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public String askMoveOvine() {
         showInfo("Inserisci il tipo di ovino da spostare:");
         String type = stdIn.nextLine();
@@ -265,7 +268,10 @@ public class CommandLineView implements TypeOfViewController {
         showInfo(
                 "Il giocatore " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
-    
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public String askMoveShepherd() {
         showInfo("Scegliere quale pastore muovere:");
         String idShepherd = stdIn.nextLine();
@@ -276,7 +282,10 @@ public class CommandLineView implements TypeOfViewController {
         
         return idShepherd + "," + stringedStreet;
     }
-    
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public String askKillOvine() {
         showInfo("Scegliere quale pastore ucciderà l'ovino:");
         String idShepherd = stdIn.nextLine();
@@ -289,7 +298,10 @@ public class CommandLineView implements TypeOfViewController {
         
         return idShepherd + "," + stringedRegion + "," + type;
     }
-    
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public String askMateSheepWith() {
         showInfo("Scegli il pastore vicino la regione dell'accoppiamento:");
         String idShepherd = stdIn.nextLine();
@@ -307,7 +319,10 @@ public class CommandLineView implements TypeOfViewController {
         this.showInfo("Benvenuto, il gioco sta per iniziare!");
         //per ora la welcome da tastiera è una sringa normale
     }
-    
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public String askNickName() {
         
         stdOut.println("Inserisci il tuo nickName:");
@@ -322,7 +337,10 @@ public class CommandLineView implements TypeOfViewController {
     public void showEndGame() {
         this.showInfo("Il gioco è terminato arrivederci!");
     }
-    
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public String askBuyLand() {
         showInfo(
                 "Che territorio vuoi comprare?\n-Plain\n-Countryside\n-Hill\n-Mountain\n-Desert\n-Lake");
@@ -453,7 +471,10 @@ public class CommandLineView implements TypeOfViewController {
             showInfo("Hai perso con " + rank + " punti!");
         }
     }
-    
+    /**
+     * {@inheritDoc }
+     * @param classification 
+     */
     public void showClassification(String classification) {
         showInfo("Classifica: ");
         String[] token = classification.split(",");

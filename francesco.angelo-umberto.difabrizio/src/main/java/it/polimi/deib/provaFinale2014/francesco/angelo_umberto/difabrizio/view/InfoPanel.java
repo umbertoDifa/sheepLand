@@ -120,15 +120,19 @@ public class InfoPanel extends JPanel implements MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
+        //not used
     }
 
     public void mouseReleased(MouseEvent e) {
+        //not used
     }
 
     public void mouseEntered(MouseEvent e) {
+        //not used
     }
 
     public void mouseExited(MouseEvent e) {
+        //not used
     }
 
 }

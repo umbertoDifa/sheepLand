@@ -121,6 +121,9 @@ public class GameManager implements Runnable {
         myThread.start();
     }
 
+    /**
+     * {@inheritDoc }
+     */
     public void run() {
 
         this.startGame();

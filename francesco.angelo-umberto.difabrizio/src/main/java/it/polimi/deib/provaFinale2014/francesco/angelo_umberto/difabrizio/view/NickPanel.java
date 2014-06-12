@@ -24,7 +24,7 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     private final Font font;
     private final int width;
     private final int height;
-    //   private final Image imageBackground;
+    
     private final JButton button;
 
     public NickPanel(GuiView gui) {
@@ -34,7 +34,7 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
         this.height = 100;
         this.font = FontFactory.getFont();
         button.setFont(font);
-        //   this.imageBackground = ImagePool.getByName("infoPanel");
+       
         this.setBackground(Color.BLUE);
         this.area = new JTextArea(""+ (int) (Math.random() * 10));
         area.setPreferredSize(new Dimension(140, 60));
@@ -73,11 +73,11 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-
+        //not used
     }
 
     public void keyReleased(KeyEvent e) {
-
+        //not used
     }
 
 }

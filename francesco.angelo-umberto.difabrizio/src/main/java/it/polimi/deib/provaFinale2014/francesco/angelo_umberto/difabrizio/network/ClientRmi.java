@@ -193,18 +193,18 @@ public class ClientRmi implements ClientInterfaceRemote {
      */
     public String chooseAction(String actions) {
         DebugLogger.println("azioni possibili ricevute nella choose action");
-        
+
         //receive possible actions      
-        String[] possibleActions = actions.split(",");
+        String[] possiblesActions = actions.split(",");
 
-        int[] availableAcions = new int[possibleActions.length];
-        String[] actionsName = new String[possibleActions.length];
+        int[] availablesAcions = new int[possiblesActions.length];
+        String[] actionsNames = new String[possiblesActions.length];
 
-        for (int i = 0; i < possibleActions.length; i++) {
-            token = possibleActions[i].split("-");
+        for (int i = 0; i < possiblesActions.length; i++) {
+            token = possiblesActions[i].split("-");
 
-            availableAcions[i] = Integer.parseInt(token[0]);
-            actionsName[i] = token[1];
+            availablesAcions[i] = Integer.parseInt(token[0]);
+            actionsNames[i] = token[1];
         }
 
         // ottengo il risultato e lo controllo
@@ -213,7 +213,7 @@ public class ClientRmi implements ClientInterfaceRemote {
         int action = -1;
 
         do {
-            choice = view.chooseAction(availableAcions, actionsName);
+            choice = view.chooseAction(availablesAcions, actionsNames);
             try {
                 action = Integer.parseInt(choice);
                 rightFormat = true;
@@ -223,7 +223,7 @@ public class ClientRmi implements ClientInterfaceRemote {
                 view.showInfo("Azione non valida.\nPrego riprovare.");
                 rightFormat = false;
             }
-        } while (!rightFormat || !actionExists(availableAcions, action));
+        } while (!rightFormat || !actionExists(availablesAcions, action));
 
         try {
             switch (Integer.parseInt(choice)) {
@@ -545,17 +545,41 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshPlayerDisconnected(player);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param nickNames
+     * @param wallets
+     * @param shepherd4player
+     *
+     * @throws RemoteException
+     */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
                                       int shepherd4player)
             throws RemoteException {
         view.refreshGameParameters(nickNames, wallets, shepherd4player);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param availableFences
+     *
+     * @throws RemoteException
+     */
     public void refreshAvailableFences(int availableFences) throws
             RemoteException {
         view.refreshFences(availableFences);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param otherPlayer
+     * @param otherMoney
+     *
+     * @throws RemoteException
+     */
     public void refreshOtherPlayerWallet(String otherPlayer, int otherMoney)
             throws RemoteException {
         view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
