@@ -905,7 +905,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
         result += "con " + rank + " punti";
 
-        layeredPane.add(new RankPannel(result), new Integer(6));
+        layeredPane.add(new RankPanel(result), new Integer(6));
         mainJPanel.revalidate();
         mainJPanel.repaint();
     }
