@@ -5,20 +5,27 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
+ * The class extends JPanel adding a background image and text. The image is
+ * choose according to the text
  *
  * @author Francesco
  */
-public class RankPannel extends JPanel {
+public class RankPanel extends JPanel {
 
     private final JLabel textLabel;
     private final Image image;
 
-    public RankPannel(String text) {
+    /**
+     * create a rankPanel and a jlabel. set dimension, background images
+     * according to the text. add the text to the rankpanel
+     *
+     * @param text
+     */
+    public RankPanel(String text) {
         this.textLabel = new JLabel(text);
         this.setBackground(new Color(0, 0, 0, 0));
         if (text.contains("vinto")) {
@@ -33,12 +40,14 @@ public class RankPannel extends JPanel {
         textLabel.setFont(biggerFont);
         textLabel.setSize(new Dimension(326, 50));
         textLabel.setBounds(33, 31, 326, 50);
-        this.setBounds(235, 160, 326, 444);
+        this.setBounds(Dim.RANK_PANEL_POSITION.getW(), Dim.RANK_PANEL_POSITION.getH(), Dim.RANK_PANEL.getW(), Dim.RANK_PANEL.getH());
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        g.drawImage(image, 0, 0, new Color(0, 0, 0, 0), this);
+        if (image != null) {
+            g.drawImage(image, 0, 0, new Color(0, 0, 0, 0), this);
+        }
         super.paintComponent(g);
     }
 

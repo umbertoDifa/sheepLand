@@ -45,7 +45,7 @@ public class Animal extends JPanel {
         preview = true;
         if (!animalType.equals("blacksheep") && !animalType.equals("wolf")) {
             numLabel = new JLabel("1");
-            numLabel.setPreferredSize(new Dimension(28, 28));
+            numLabel.setPreferredSize(new Dimension(Dim.FONT.getH(), Dim.FONT.getW()));
             numLabel.setBackground(new Color(0, 0, 0, 0));
             numLabel.setForeground(Color.white);
             this.setLayout(null);
@@ -67,12 +67,10 @@ public class Animal extends JPanel {
      * the modality of view
      */
     protected void refreshLabelBounds() {
-        numLabel.setSize(28, 28);
+        numLabel.setSize(Dim.FONT.getW(), Dim.FONT.getH());
         if (preview) {
-            //numLabel.setBounds(widthPreview / 2 - 8, heightPreview / 2 - 16, 28, 28);
             numLabel.setLocation(widthPreview / 2 - 8, heightPreview / 2 - 16);
         } else {
-            //  numLabel.setBounds(width / 2+30, height / 2+30, 28, 28);
             numLabel.setLocation(width / 2 - 10, height / 2 - 16);
 
         }

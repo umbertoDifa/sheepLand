@@ -29,7 +29,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
      */
     public RegionBox() {
         this.setLayout(null);
-        this.setUp((String) null, 52, 78);
+        this.setUp((String) null, Dim.REGION_BOX.getW(), Dim.REGION_BOX.getH());
         this.addMouseListener(this);
 
         repaint();

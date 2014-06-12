@@ -40,7 +40,7 @@ public class InfoPanel extends JPanel implements MouseListener {
      * @param height
      */
     public InfoPanel(Font font, List<Icon> imagesDice, Image imageBackground, int width, int height) {
-        this.setPreferredSize(new Dimension(232, 444));
+        this.setPreferredSize(new Dimension(Dim.INFO_PANEL.getW(), Dim.INFO_PANEL.getH()));
         this.setBackground(new Color(0, 0, 0, 0));
         textArea = new JTextArea();
         textArea.setEditable(false);

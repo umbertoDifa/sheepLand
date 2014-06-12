@@ -46,7 +46,7 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
         moneyText.setFont(font);
         moneyText.setForeground(new Color(64, 64, 64));
         moneyPanel.add(moneyText);
-        moneyPanel.setUp(imgPath2, 38, 40);
+        moneyPanel.setUp(imgPath2, Dim.MONEY_PANEL.getW(), Dim.MONEY_PANEL.getH());
         moneyPanel.setBackground(new Color(0, 0, 0, 0));
         this.setLayout(null);
         GuiView.addComponentsToPane(this, moneyPanel, xText2, yText2);
