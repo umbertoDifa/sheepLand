@@ -585,4 +585,9 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
     }
 
+    public void refreshBankCard(String type, int cardsAvailable) throws
+                                                                        RemoteException {
+        view.refreshBankCard(type, cardsAvailable);
+    }
+
 }

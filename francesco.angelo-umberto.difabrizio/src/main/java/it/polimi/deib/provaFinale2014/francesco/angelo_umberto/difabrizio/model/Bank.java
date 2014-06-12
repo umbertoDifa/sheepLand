@@ -2,9 +2,12 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.exceptions.FinishedFencesException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Contiene le carte che non sono state ancora vendute e i recinti non ancora
@@ -123,6 +126,27 @@ public class Bank {
             return this.findCard(type).getValue();
         } else {
             return GameConstants.PRICE_FOR_SHEEPSBURG.getValue();
+        }
+    }
+    /**
+     * Given a region type returns the number of available cards of that type
+     * @param type region type
+     * @return 
+     */
+    public int getNumberOfAvailableCards(RegionType type) {
+        try {
+            Card availableCard = this.findCard(type);
+            for (int i = 0; i < unusedCards.length; i++) {
+                if (unusedCards[i] == availableCard) {
+                    return GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue() - (i % GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue());
+                }
+            }
+            return 0;
+        } catch (MissingCardException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            //se non ci sono carte di quel tipo 
+            return 0;
         }
     }
 

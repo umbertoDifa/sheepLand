@@ -1574,4 +1574,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
         playersJPanels[getIndexPlayerByNickName(otherPlayer)].setAmount(money);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param regionType
+     * @param availableCards
+     */
+    public void refreshBankCard(String regionType, int availableCards) {
+        //TODO per angelo da implementare
+    }
+
 }

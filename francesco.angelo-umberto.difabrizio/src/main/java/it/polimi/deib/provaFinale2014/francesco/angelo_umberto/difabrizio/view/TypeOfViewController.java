@@ -313,4 +313,12 @@ public interface TypeOfViewController {
      */
     public void refreshFences(int fences);
 
+    /**
+     * Refreshes the number of available cards of a region in the bank
+     *
+     * @param regionType     type of region
+     * @param availableCards number of available cards
+     */
+    public void refreshBankCard(String regionType, int availableCards);
+
 }

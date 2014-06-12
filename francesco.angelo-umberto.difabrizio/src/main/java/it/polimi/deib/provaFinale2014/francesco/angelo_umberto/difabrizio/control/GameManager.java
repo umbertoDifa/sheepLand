@@ -549,6 +549,8 @@ public class GameManager implements Runnable {
 
         refreshSpecialAnimals(client);
 
+        refreshBankCards(client);
+
         try {
             controller.refreshNumberOfAvailableFence(client,
                     GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue() - bank.numberOfUsedFence());
@@ -557,6 +559,27 @@ public class GameManager implements Runnable {
                     ex.getMessage(),
                     ex);
         }
+
+    }
+
+    private void refreshBankCards(String client) {
+        //salvo il numero rimanente di ogni carta
+        int[] availableCards = new int[RegionType.values().length - 1];
+        String[] regionTypes = new String[RegionType.values().length - 1];
+
+        int i = 0;
+
+        for (RegionType type : RegionType.values()) {
+            if (type != RegionType.SHEEPSBURG) {
+                regionTypes[i] = type.toString();
+                availableCards[i] = bank.getNumberOfAvailableCards(type);
+                DebugLogger.println(
+                        "Aggiunta in " + i + " carta " + type + "con numero dispo: " + availableCards[i]);
+                i++;
+            }
+        }
+
+        controller.refreshBankCards(client, regionTypes, availableCards);
 
     }
 
@@ -609,10 +632,12 @@ public class GameManager implements Runnable {
 
                 evolveLambs();
 
-                //informa i player dell'evoluzione dei lamb
+                //informa i player dell'evoluzione dei lamb, dello stato delle regioni,
+                //del numero di carte disponibili di ogni terreno
                 for (String client : clientNickNames) {
                     refreshRegions(client);
                     refreshSpecialAnimals(client);
+                    refreshBankCards(client);
                 }
 
                 //controllo se ho finito il giro
@@ -722,6 +747,7 @@ public class GameManager implements Runnable {
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
             this.players.get(player).chooseAndMakeAction();
+                        
         }
 
         //se sono finiti i recinti normali chiamo l'ultimo giro

@@ -59,7 +59,7 @@ public class ClientSocket {
 
         while (!nickNameAccepted) {
             try {
-               setUpSocketConnection();
+                setUpSocketConnection();
             } catch (IOException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         ex.getMessage(), ex);
@@ -215,6 +215,9 @@ public class ClientSocket {
                 } else if (MessageProtocol.REFRESH_OTHER_PLAYER_MONEY.equals(
                         MessageProtocol.valueOf(received))) {
                     refreshOtherPlayerMoney();
+                } else if (MessageProtocol.BANK_CARD.equals(
+                        MessageProtocol.valueOf(received))) {
+                    refreshBankCard();
                 } else if (MessageProtocol.PLAYER_DISCONNECTED.equals(
                         MessageProtocol.valueOf(
                                 received))) {
@@ -610,6 +613,13 @@ public class ClientSocket {
         int otherMoney = receiveInt();
 
         view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
+    }
+
+    private void refreshBankCard() {
+        String regionType = receiveString();
+        int availableCards = receiveInt();
+        
+        view.refreshBankCard(regionType, availableCards);
     }
 
 }

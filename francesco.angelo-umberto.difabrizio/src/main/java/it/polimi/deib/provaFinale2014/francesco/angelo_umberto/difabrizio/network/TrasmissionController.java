@@ -132,8 +132,9 @@ public abstract class TrasmissionController {
      * @param nickName The player to refresh
      */
     public abstract void refreshMoney(String nickName);
+
     /**
-     * Refreshes teh ammount of money of each player 
+     * Refreshes teh ammount of money of each player
      */
     public abstract void refreshWallets();
 
@@ -270,5 +271,15 @@ public abstract class TrasmissionController {
      */
     public abstract void refreshNumberOfAvailableFence(String client,
                                                        int fenceAvailable);
+
+    /**
+     * Refreshes the number of available cards of each type in the bank
+     *
+     * @param client         client to refresh
+     * @param regionTypes    types of regions
+     * @param availableCards cards availables
+     */
+    public abstract void refreshBankCards(String client, String[] regionTypes,
+                                          int[] availableCards);
 
 }
