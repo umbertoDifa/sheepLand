@@ -16,8 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 /**
- * The class extends JPanel adding the possibility to draw a background
- * image from a list of images and a personalized hide method
+ * The class extends JPanel adding the possibility to draw a background image
+ * from a list of images and a personalized hide method
+ *
  * @author Francesco
  */
 public class InfoPanel extends JPanel implements MouseListener {
@@ -109,7 +110,8 @@ public class InfoPanel extends JPanel implements MouseListener {
 
     /**
      * return the jpanel dimensione
-     * @return 
+     *
+     * @return
      */
     @Override
     public Dimension getPreferredSize() {
@@ -117,8 +119,9 @@ public class InfoPanel extends JPanel implements MouseListener {
     }
 
     /**
-     *  return the jpanel dimensione
-     * @return 
+     * return the jpanel dimensione
+     *
+     * @return
      */
     @Override
     public Dimension getSize() {
@@ -127,7 +130,8 @@ public class InfoPanel extends JPanel implements MouseListener {
 
     /**
      * hide the jpanel if clicked
-     * @param e 
+     *
+     * @param e
      */
     public void mouseClicked(MouseEvent e) {
         this.setVisible(false);

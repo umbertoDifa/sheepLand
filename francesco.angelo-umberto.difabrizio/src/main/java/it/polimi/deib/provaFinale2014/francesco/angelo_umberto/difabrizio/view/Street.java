@@ -29,7 +29,7 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
     public Street(Image image, List<Image> shepherds) {
         this.fence = image;
         this.shepherds = shepherds;
-        super.setUp("", fence.getWidth(this), fence.getHeight(this));
+        super.setUp(null, fence.getWidth(this), fence.getHeight(this));
         this.setBackground(new Color(0, 0, 0, 0));
         this.addMouseListener(this);
 
