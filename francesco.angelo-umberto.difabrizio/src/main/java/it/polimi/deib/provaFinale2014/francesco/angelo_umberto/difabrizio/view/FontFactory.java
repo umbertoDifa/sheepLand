@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The class loads the font and return it when asked
@@ -26,23 +28,27 @@ public class FontFactory {
      */
     private FontFactory() {
         try {
-            myFont = Font.createFont(Font.TRUETYPE_FONT, new File(".\\font\\DenneFreakshow.ttf"));
+            myFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    ".\\font\\DenneFreakshow.ttf"));
             DebugLogger.println("impostato font DenneFeakshow");
             myFont = myFont.deriveFont(Font.PLAIN, 28);
-        } catch (IOException e) {
+        } catch (IOException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            
             myFont = new Font("Verdana", Font.PLAIN, 12);
             DebugLogger.println("nel catch IOEx");
-        } catch (FontFormatException e) {
+        } catch (FontFormatException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            
             myFont = new Font("Verdana", Font.PLAIN, 12);
             DebugLogger.println("nel catch FontFormatEx");
         }
     }
-    
-    /**
-     * return the font loaded
-     * @return 
-     */
-    public static Font getFont(){
+
+    public static Font getFont() {
+
         return myFont;
     }
 }

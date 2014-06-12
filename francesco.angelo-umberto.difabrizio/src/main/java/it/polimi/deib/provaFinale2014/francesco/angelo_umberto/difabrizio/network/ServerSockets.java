@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Server that deals with sockets connections
  *
  * @author francesco.angelo-umberto.difabrizio
  */
@@ -60,8 +61,10 @@ public class ServerSockets implements Runnable {
      * Thread del server
      */
     private final Thread myThread;
+
     /**
      * create a server binded on a certain port
+     *
      * @param port Port to bind the server
      */
     public ServerSockets(int port) {
@@ -79,6 +82,7 @@ public class ServerSockets implements Runnable {
         DebugLogger.turnOffExceptionLog();
 
     }
+
     /**
      * Starts the server
      */
@@ -86,6 +90,9 @@ public class ServerSockets implements Runnable {
         myThread.start();
     }
 
+    /**
+     * {@inheritDoc }
+     */
     public void run() {
         this.startServer();
     }
@@ -96,7 +103,8 @@ public class ServerSockets implements Runnable {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             // porta non disponibile
-            Logger.getLogger(DebugLogger.class.getName()).log(                    Level.SEVERE,                    "Impossibile creare il serverSocket " + e.getMessage(), e);
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    "Impossibile creare il serverSocket " + e.getMessage(), e);
             return;
         }
 
@@ -310,14 +318,23 @@ public class ServerSockets implements Runnable {
 
         private final Thread thread;
 
+        /**
+         * Creates a timer
+         */
         public Timer() {
             this.thread = new Thread(this);
         }
 
+        /**
+         * Starts the timer
+         */
         public void startTimer() {
             this.thread.start();
         }
 
+        /**
+         * {@inheritDoc }
+         */
         public void run() {
             try {
                 //avvio il timer
@@ -336,6 +353,9 @@ public class ServerSockets implements Runnable {
             }
         }
 
+        /**
+         * Stops the timer
+         */
         public void stopTimer() {
             this.thread.interrupt();
             DebugLogger.println("Timer fermato");

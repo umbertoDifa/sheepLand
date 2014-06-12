@@ -11,6 +11,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -65,7 +67,8 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      * @param width
      * @param height
      */
-    protected void setUp(String imgPath, int xText, int yText, int width, int height) {
+    protected void setUp(String imgPath, int xText, int yText, int width,
+                         int height) {
         //salvo le dimensioni
         setDimension(width, height);
 
@@ -82,8 +85,9 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
             int verticalAlign = (int) getAlignmentX();
             int horizontalAlign = (int) getAlignmentY();
             //centrandolo rispetto le coord xText e yText
-            textLabel.setBounds((xText + insets.left + horizontalAlign - width / 2),
-                    (yText + insets.top + verticalAlign - (28 / 2)),
+            textLabel.setBounds(
+                    xText + insets.left + horizontalAlign - width / 2,
+                    yText + insets.top + verticalAlign - (28 / 2),
                     width / 2, 28);
 
             //imposto font e colore font
@@ -145,6 +149,8 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
                 image = null;
             }
         } catch (IOException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
             image = null;
             DebugLogger.println("immagine non impostata" + imgPath);
         }
@@ -183,12 +189,12 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      * @param y
      */
     protected void addPanel(JPanel sonPanel, int x, int y) {
-        //  this.setLayout(null);
         this.add(sonPanel);
         Insets insets = getInsets();
         Dimension size = sonPanel.getPreferredSize();
-        sonPanel.setBounds((x + (int) sonPanel.getAlignmentY() + insets.left),
-                (y + (int) sonPanel.getAlignmentX() + insets.top), (int) size.getWidth(), (int) size.getHeight());
+        sonPanel.setBounds(x + (int) sonPanel.getAlignmentY() + insets.left,
+                y + (int) sonPanel.getAlignmentX() + insets.top,
+                (int) size.getWidth(), (int) size.getHeight());
     }
 
     /**
@@ -208,11 +214,11 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         setOpaque(false);
-        //  super.paintComponent(g);
         Graphics2D g2D = (Graphics2D) g;
         if (image != null) {
             if (opacity) {
-                AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.6);
+                AlphaComposite ac = AlphaComposite.getInstance(
+                        AlphaComposite.SRC_OVER, (float) 0.6);
                 g2D.setComposite(ac);
             }
             g2D.drawImage(image, 0, 0, this);
@@ -235,7 +241,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      */
     @Override
     public Dimension getMaximumSize() {
-        return new Dimension(width, height); //To change body of generated methods, choose Tools | Templates.
+        return new Dimension(width, height);
     }
 
     /**
@@ -244,7 +250,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      */
     @Override
     public Dimension getMinimumSize() {
-        return new Dimension(width, height); //To change body of generated methods, choose Tools | Templates.
+        return new Dimension(width, height);
     }
 
     /**
@@ -252,7 +258,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      */
     @Override
     public Dimension getSize() {
-        return new Dimension(width, height); //To change body of generated methods, choose Tools | Templates.
+        return new Dimension(width, height); 
     }
 
     /**
@@ -261,6 +267,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
      */
     @Override
     public Insets getInsets() {
-        return super.getInsets(); //To change body of generated methods, choose Tools | Templates.
+       
+        return super.getInsets(); 
     }
 }

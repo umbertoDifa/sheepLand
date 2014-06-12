@@ -100,6 +100,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         myThread.start();
     }
 
+    /**
+     * {@inheritDoc }
+     */
     public void run() {
         this.startServer();
     }
@@ -267,14 +270,23 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
 
         private final Thread myThread;
 
+        /**
+         * Creates a timer
+         */
         public Timer() {
             this.myThread = new Thread(this);
         }
 
+        /**
+         * Starts the timer
+         */
         public void startTimer() {
             this.myThread.start();
         }
 
+        /**
+         * {@inheritDoc }
+         */
         public void run() {
             try {
                 //avvio il timer
@@ -293,6 +305,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
             }
         }
 
+        /**
+         * Stops the timer
+         */
         public void stopTimer() {
             this.myThread.interrupt();
             DebugLogger.println("Timer fermato");

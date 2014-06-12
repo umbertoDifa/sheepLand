@@ -9,7 +9,7 @@ import java.util.Scanner;
  * @author Umberto
  */
 public class CommandLineView implements TypeOfViewController {
-    
+
     private final PrintWriter stdOut = new PrintWriter(System.out);
     private final Scanner stdIn = new Scanner(System.in);
 
@@ -25,7 +25,7 @@ public class CommandLineView implements TypeOfViewController {
                               int numbOfLamb) {
         showInfo("La regione " + regionIndex + " ora ha " + numbOfSheep
                 + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni.");
-        
+
     }
 
     /**
@@ -39,20 +39,20 @@ public class CommandLineView implements TypeOfViewController {
     public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd, int shepherdIndex) {
         stdOut.print("La strada " + streetIndex + " è ");
-        
+
         if (fence) {
             stdOut.println(" recintata");
             stdOut.flush();
-            
+
         } else if (nickShepherd != null && !"null".equals(nickShepherd)) {
             stdOut.println(
                     " occupata dal pastore " + shepherdIndex + " del giocatore " + nickShepherd);
             stdOut.flush();
-            
+
         } else {
             stdOut.println(" libera");
             stdOut.flush();
-            
+
         }
     }
 
@@ -68,7 +68,7 @@ public class CommandLineView implements TypeOfViewController {
         showInfo(
                 "La partita ha " + numbOfPlayers + ", il primo giocatore è "
                 + firstPlayer + ", ogni giocatore ha " + shepherd4player);
-        
+
     }
 
     /**
@@ -78,7 +78,7 @@ public class CommandLineView implements TypeOfViewController {
      */
     public void refereshCurrentPlayer(String currentPlayer) {
         showInfo("E' il turno di " + currentPlayer);
-        
+
     }
 
     /**
@@ -91,7 +91,7 @@ public class CommandLineView implements TypeOfViewController {
         //splitta il risultato e raccogli l'outcome
         String[] token = result.split(",");
         String outcome = token[0];
-        
+
         String diceValue = token[1];
         String startRegion = token[2];
         if ("ok".equalsIgnoreCase(outcome)) {
@@ -104,7 +104,7 @@ public class CommandLineView implements TypeOfViewController {
                     "La pecora nera non può muoversi, la strada di valore "
                     + diceValue + " è bloccata o non esiste nella regione " + startRegion);
         }
-        
+
     }
 
     /**
@@ -116,7 +116,7 @@ public class CommandLineView implements TypeOfViewController {
         //splitta il risultato e raccogli l'outcome
         String[] token = result.split(",");
         String outcome = token[0];
-        
+
         if ("ok".equalsIgnoreCase(outcome)) {
             String fence = token[1];
             String ovine = token[2];
@@ -155,17 +155,22 @@ public class CommandLineView implements TypeOfViewController {
         showInfo("Inserisci una strada per il pastore " + shepherdIndex);
         return stdIn.nextLine();
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     */
     public String askMoveOvine() {
         showInfo("Inserisci il tipo di ovino da spostare:");
         String type = stdIn.nextLine();
-        
+
         showInfo("Inserisci la regione di partenza:");
         String startRegion = stdIn.nextLine();
-        
+
         showInfo("Inserisci la regione d'arrivo:");
         String endRegion = stdIn.nextLine();
-        
+
         return startRegion + "," + endRegion + "," + type;
     }
 
@@ -183,7 +188,7 @@ public class CommandLineView implements TypeOfViewController {
                 "Il giocatore " + nickName + " ha posizionato il pastore "
                 + shepherdIndex + " nella strada " + endStreet + " pagando "
                 + price + " danari.");
-        
+
     }
 
     /**
@@ -206,7 +211,7 @@ public class CommandLineView implements TypeOfViewController {
     public void refreshBuyLand(String buyer, String land, int price) {
         showInfo(
                 "Il giocatore " + buyer + " ha acquistato un territorio " + land + " per " + price + " danari");
-        
+
     }
 
     /**
@@ -217,7 +222,7 @@ public class CommandLineView implements TypeOfViewController {
      */
     public void refereshCard(String type, int value) {
         showInfo("Hai una carta " + type + " di valore " + value);
-        
+
     }
 
     /**
@@ -234,10 +239,10 @@ public class CommandLineView implements TypeOfViewController {
         for (int i = 0; i < availableActions.length; i++) {
             stringToPrint += String.valueOf(availableActions[i]) + "- " + availableStringedActions[i] + " \n";
         }
-        
+
         showInfo("Scegli un azione tra:\n" + stringToPrint);
         return stdIn.nextLine();
-        
+
     }
 
     /**
@@ -265,38 +270,53 @@ public class CommandLineView implements TypeOfViewController {
         showInfo(
                 "Il giocatore " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     */
     public String askMoveShepherd() {
         showInfo("Scegliere quale pastore muovere:");
         String idShepherd = stdIn.nextLine();
-        
+
         showInfo(
                 "Scegliere in quale strada spostare il pastore " + idShepherd + ":");
         String stringedStreet = stdIn.nextLine();
-        
+
         return idShepherd + "," + stringedStreet;
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     */
     public String askKillOvine() {
         showInfo("Scegliere quale pastore ucciderà l'ovino:");
         String idShepherd = stdIn.nextLine();
-        
+
         showInfo("Scegliere in quale regione uccidere:");
         String stringedRegion = stdIn.nextLine();
-        
+
         showInfo("Scegliere che tipo di ovino uccidere:\n-Lamb\n-Ram\n-Sheep");
         String type = stdIn.nextLine();
-        
+
         return idShepherd + "," + stringedRegion + "," + type;
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     */
     public String askMateSheepWith() {
         showInfo("Scegli il pastore vicino la regione dell'accoppiamento:");
         String idShepherd = stdIn.nextLine();
-        
+
         showInfo("Scegli la regione dell'accoppiamento:");
         String region = stdIn.nextLine();
-        
+
         return idShepherd + "," + region;
     }
 
@@ -307,12 +327,17 @@ public class CommandLineView implements TypeOfViewController {
         this.showInfo("Benvenuto, il gioco sta per iniziare!");
         //per ora la welcome da tastiera è una sringa normale
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     */
     public String askNickName() {
-        
+
         stdOut.println("Inserisci il tuo nickName:");
         stdOut.flush();
-        
+
         return stdIn.nextLine();
     }
 
@@ -322,7 +347,12 @@ public class CommandLineView implements TypeOfViewController {
     public void showEndGame() {
         this.showInfo("Il gioco è terminato arrivederci!");
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     */
     public String askBuyLand() {
         showInfo(
                 "Che territorio vuoi comprare?\n-Plain\n-Countryside\n-Hill\n-Mountain\n-Desert\n-Lake");
@@ -395,7 +425,7 @@ public class CommandLineView implements TypeOfViewController {
             showInfo(
                     "Il giocatore " + nickName + " ha tentato di accoppiare una pecora con un " + otherType + " ma ha fallito!");
         }
-        
+
     }
 
     /**
@@ -453,7 +483,12 @@ public class CommandLineView implements TypeOfViewController {
             showInfo("Hai perso con " + rank + " punti!");
         }
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @param classification
+     */
     public void showClassification(String classification) {
         showInfo("Classifica: ");
         String[] token = classification.split(",");
@@ -528,5 +563,16 @@ public class CommandLineView implements TypeOfViewController {
     public void refreshOtherPlayerMoney(String otherPlayer, int money) {
         showInfo("Il player " + otherPlayer + "ha " + money + " danari");
     }
-    
+
+    /**
+     * {@inheritDoc }
+     *
+     * @param regionType
+     * @param availableCards
+     */
+    public void refreshBankCard(String regionType, int availableCards) {
+        showInfo(
+                "Nella regione " + regionType + " ci sono ancora " + availableCards + " carte.");
+    }
+
 }

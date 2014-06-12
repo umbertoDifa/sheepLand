@@ -494,7 +494,7 @@ public class SocketTrasmission extends TrasmissionController {
 
             //aggiorna la consapevolezza di ogni altro giocatore rispetto agli altri in quanto a money
             refreshWallets();
-            
+
             return true;
         } else if ("Non puoi pagare il silenzio degli altri pastori".equals(
                 result) || "Il valore del dado è diverso dalla strada del pastore".equals(
@@ -733,14 +733,35 @@ public class SocketTrasmission extends TrasmissionController {
     }
 
     @Override
-    public void refreshNumberOfAvailableFence(String client, int fenceAvailable
-    ) {
+    public void refreshNumberOfAvailableFence(String client, int fenceAvailable) {
         if (canPlayerReceive(client)) {
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     client)).send(MessageProtocol.FENCE_REFRESH.toString());
 
             ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
                     client)).send(fenceAvailable);
+        }
+    }
+
+    @Override
+    public void refreshBankCards(String client, String[] regionTypes,
+                                 int[] availableCards) {
+        if (canPlayerReceive(client)) {
+            //per ogni regione
+            for (int i = 0; i < regionTypes.length; i++) {                
+                //mando il message protocol
+                ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        client)).send(MessageProtocol.BANK_CARD.toString());
+                
+                //mando il nome della regione
+                ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        client)).send(regionTypes[i]);
+                
+                //mando la quantità di carte disponibile
+                ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        client)).send(availableCards[i]);
+            }
+
         }
     }
 

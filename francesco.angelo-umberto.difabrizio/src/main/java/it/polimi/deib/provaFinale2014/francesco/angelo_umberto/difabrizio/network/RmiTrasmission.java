@@ -613,4 +613,22 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    @Override
+    public void refreshBankCards(String client, String[] regionTypes,
+                                 int[] availableCards) {
+        if (canPlayerReceive(client)) {
+            try {
+                for (int i = 0; i < regionTypes.length; i++) {
+                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                            client)).getClientRmi().refreshBankCard(
+                                    regionTypes[i],
+                                    availableCards[i]);
+                }
+
+            } catch (RemoteException ex) {
+                setPlayerOffline(client, ex);
+            }
+        }
+    }
+
 }

@@ -59,6 +59,7 @@ public class Card extends CardBoard implements MouseListener {
     @Override
     public void setText(String text) {
         if (Integer.parseInt(text) < 0) {
+
             this.setUp(".\\images\\numFencesRed.png", Dim.FENCE_POSITION.getW(), Dim.FENCE_POSITION.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
         }
         super.setText(text);
@@ -70,16 +71,17 @@ public class Card extends CardBoard implements MouseListener {
      * @param e
      */
     public void mouseClicked(MouseEvent e) {
-        DebugLogger.println("carta terreno clickata, dentro la catch dell evento");
         repaint();
+        DebugLogger.println(
+                "carta terreno clickata, dentro la catch dell evento");
     }
 
     public void mousePressed(MouseEvent e) {
-
+        //not used
     }
 
     public void mouseReleased(MouseEvent e) {
-
+        //not used        
     }
 
     /**

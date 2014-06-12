@@ -47,9 +47,11 @@ public class Action extends BackgroundAndTextJPanel implements MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
+        //not used
     }
 
     public void mouseReleased(MouseEvent e) {
+        //not used
     }
 
     /**

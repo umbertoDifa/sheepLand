@@ -199,38 +199,42 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
 
     }
 
-    /**
-     * debug method
-     *
-     * @param e
-     */
+/**
+ * {@inheritDoc }
+ * @param e 
+ */
+
     public void mouseClicked(MouseEvent e) {
-        DebugLogger.println("region clickata, dentro la catch dell evento");
         repaint();
     }
-
+/**
+ * {@inheritDoc }
+ * @param e 
+ */
     public void mousePressed(MouseEvent e) {
-
+        //not used
     }
-
+/**
+ * {@inheritDoc }
+ * @param e 
+ */
     public void mouseReleased(MouseEvent e) {
-
+        //not used
     }
 
-    /**
-     * When the mouse enters, the cursor becames Hand
-     *
-     * @param e
-     */
+/**
+ * {@inheritDoc }
+ * @param e 
+ */
     public void mouseEntered(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
-    /**
-     * when the mouse exits the cursor return default cursor
-     *
-     * @param e
-     */
+ 
+/**
+ * {@inheritDoc }
+ * @param e 
+ */
     public void mouseExited(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }

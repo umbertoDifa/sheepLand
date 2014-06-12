@@ -69,8 +69,10 @@ public class Animal extends JPanel {
     protected void refreshLabelBounds() {
         numLabel.setSize(Dim.FONT.getW(), Dim.FONT.getH());
         if (preview) {
+
             numLabel.setLocation(widthPreview / 2 - 8, heightPreview / 2 - 16);
         } else {
+
             numLabel.setLocation(width / 2 - 10, height / 2 - 16);
 
         }
@@ -83,7 +85,7 @@ public class Animal extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         setOpaque(false);
-        //  super.paintComponent(g);
+       
         if (imagePreview != null) {
             if (preview) {
                 g.drawImage(imagePreview, 0, 0, this);

@@ -144,6 +144,17 @@ public interface ClientInterfaceRemote extends Remote {
                                  String outcome) throws RemoteException;
 
     /**
+     * Refreshes the number of cards available of a region in the bank
+     *
+     * @param type           type of region
+     * @param cardsAvailable cards availbles
+     *
+     * @throws RemoteException
+     */
+    public void refreshBankCard(String type, int cardsAvailable) throws
+            RemoteException;
+
+    /**
      * Refreshes the player that a player bought a land
      *
      * @param nickNameBuyer The player who bought the land

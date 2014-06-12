@@ -1095,12 +1095,34 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return buyLand(regionType);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param shepherdNumber
+     * @param regionToMate
+     * @param otherOvineType
+     *
+     * @return
+     *
+     * @throws RemoteException
+     */
     public String mateSheepWithRemote(String shepherdNumber, String regionToMate,
                                       String otherOvineType) throws
             RemoteException {
         return mateSheepWith(shepherdNumber, regionToMate, otherOvineType);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param shepherdNumber
+     * @param region
+     * @param typeToKill
+     *
+     * @return
+     *
+     * @throws RemoteException
+     */
     public String killOvineRemote(String shepherdNumber, String region,
                                   String typeToKill) throws RemoteException {
         return killOvine(shepherdNumber, region, typeToKill);

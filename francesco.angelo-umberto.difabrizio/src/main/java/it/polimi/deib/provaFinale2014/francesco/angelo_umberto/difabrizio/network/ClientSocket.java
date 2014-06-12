@@ -55,46 +55,22 @@ public class ClientSocket {
      */
     protected void startClient() {
         boolean nickNameAccepted = false;
-        boolean nickNameOk = false;
         String connectionResult = "nok";
 
         while (!nickNameAccepted) {
             try {
-                //creo socket server
-                Socket socket = new Socket(ip, port);
-                DebugLogger.println("Connessione stabilita");
-
-                //creo scanner ingresso server
-                serverIn = new Scanner(socket.getInputStream());
-
-                //creo printwriter verso server
-                serverOut = new PrintWriter(socket.getOutputStream());
-                DebugLogger.println(
-                        "Canali di comunicazione impostati");
+                setUpSocketConnection();
             } catch (IOException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         ex.getMessage(), ex);
                 view.showInfo("Il server è spento, impossibile connettersi");
             }
 
-            while (!nickNameOk) {
-                this.nickName = view.askNickName();
-                if ("".equals(nickName) || nickName.contains(",") || nickName.contains(
-                        ":") || nickName.contains(" ")) {
-                    nickNameOk = false;
-                    view.showInfo(
-                            "Il nickName inserito non è valido, prego riprovare.");
-                } else {
-                    nickNameOk = true;
-                }
-            }
-            //da evitare come la peste la stringa vuota come nickname
-            //esplodono i satelliti della nasaF
+            getNickName();
 
             DebugLogger.println("Invio nickName: '" + nickName + "'");
 
-            serverOut.println(nickName);
-            serverOut.flush();
+            sendString(nickName);
 
             connectionResult = receiveString();
             DebugLogger.println(connectionResult);
@@ -102,7 +78,6 @@ public class ClientSocket {
                     connectionResult)) {
                 view.showInfo(
                         "Il tuo nickName non è valido, c'è un altro giocatore con lo stesso nick");
-                nickNameOk = false;
             } else {
                 nickNameAccepted = true;
             }
@@ -117,6 +92,37 @@ public class ClientSocket {
             view.showInfo(connectionResult);
         }
 
+    }
+
+    private void getNickName() {
+        boolean nickNameOk = false;
+        while (!nickNameOk) {
+            this.nickName = view.askNickName();
+            if ("".equals(nickName) || nickName.contains(",") || nickName.contains(
+                    ":") || nickName.contains(" ")) {
+                nickNameOk = false;
+                view.showInfo(
+                        "Il nickName inserito non è valido, prego riprovare.");
+            } else {
+                nickNameOk = true;
+            }
+        }
+        //da evitare come la peste la stringa vuota come nickname
+        //esplodono i satelliti della nasaF
+    }
+
+    private void setUpSocketConnection() throws IOException {
+        //creo socket server
+        Socket socket = new Socket(ip, port);
+        DebugLogger.println("Connessione stabilita");
+
+        //creo scanner ingresso server
+        serverIn = new Scanner(socket.getInputStream());
+
+        //creo printwriter verso server
+        serverOut = new PrintWriter(socket.getOutputStream());
+        DebugLogger.println(
+                "Canali di comunicazione impostati");
     }
 
     private String receiveString() {
@@ -209,6 +215,9 @@ public class ClientSocket {
                 } else if (MessageProtocol.REFRESH_OTHER_PLAYER_MONEY.equals(
                         MessageProtocol.valueOf(received))) {
                     refreshOtherPlayerMoney();
+                } else if (MessageProtocol.BANK_CARD.equals(
+                        MessageProtocol.valueOf(received))) {
+                    refreshBankCard();
                 } else if (MessageProtocol.PLAYER_DISCONNECTED.equals(
                         MessageProtocol.valueOf(
                                 received))) {
@@ -604,6 +613,13 @@ public class ClientSocket {
         int otherMoney = receiveInt();
 
         view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
+    }
+
+    private void refreshBankCard() {
+        String regionType = receiveString();
+        int availableCards = receiveInt();
+        
+        view.refreshBankCard(regionType, availableCards);
     }
 
 }
