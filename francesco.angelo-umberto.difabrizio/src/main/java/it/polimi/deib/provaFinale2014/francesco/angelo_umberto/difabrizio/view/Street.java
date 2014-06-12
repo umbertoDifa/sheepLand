@@ -9,6 +9,8 @@ import java.awt.event.MouseListener;
 import java.util.List;
 
 /**
+ * The class extends BackgroundAndTextJPanel adding method to set background
+ * image from a list of image, return method of the background image
  *
  * @author Francesco
  */
@@ -17,6 +19,13 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
     private final Image fence;
     private final List<Image> shepherds;
 
+    /**
+     * create a Street, set dimension and the possible background images. add
+     * itself as listener for cursor effect.
+     *
+     * @param image
+     * @param shepherds
+     */
     public Street(Image image, List<Image> shepherds) {
         this.fence = image;
         this.shepherds = shepherds;
@@ -34,6 +43,11 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
         repaint();
     }
 
+    /**
+     * debug method
+     *
+     * @param e
+     */
     public void mouseClicked(MouseEvent e) {
         DebugLogger.println("strada clickata, dentro la catch dell evento");
         repaint();
@@ -47,10 +61,20 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
 
     }
 
+    /**
+     * When the mouse enters, the cursor becames Hand
+     *
+     * @param e
+     */
     public void mouseEntered(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
+    /**
+     * when the mouse exits the cursor return default cursor
+     *
+     * @param e
+     */
     public void mouseExited(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
@@ -117,6 +141,9 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
         return (this.getImage() == null);
     }
 
+    /**
+     * set the fance image as background image of the street
+     */
     protected void setFence() {
         setImage("fence");
         this.repaint();
