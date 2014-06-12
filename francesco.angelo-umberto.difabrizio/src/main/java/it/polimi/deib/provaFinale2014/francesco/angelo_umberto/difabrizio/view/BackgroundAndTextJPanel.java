@@ -26,25 +26,37 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     private Image image;
     private int width;
     private int height;
-    private int xImage = 0;
-    private int yImage = 0;
     private boolean opacity = false;
 
+    /**
+     * create the panel, set the jlabel's text with the indicated
+     * text and font
+     * @param font
+     * @param text 
+     */
     protected BackgroundAndTextJPanel(Font font, String text) {
         textLabel.setText(text);
         this.font = font;
     }
 
+    /**
+     * create the jpanel
+     */
     protected BackgroundAndTextJPanel() {
     }
 
+    /**
+     * set the dimension of the jpanel with the indicated dimension
+     * @param width
+     * @param height 
+     */
     protected void setDimension(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
     /**
-     * set the panel's background image corrisponding to the path center the
+     * set the panel's background image corrisponding to the path, centering the
      * Label with xText, yText
      *
      * @param imgPath
@@ -112,6 +124,9 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * remove the background imahe
+     */
     protected void removeImg() {
         this.image = null;
     }
@@ -144,16 +159,24 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
         textLabel.setText(text);
     }
 
+    /**
+     * get the jlabel's text
+     * @return 
+     */
     protected String getText() {
         return textLabel.getText();
     }
 
+    /**
+     * get the background image
+     * @return 
+     */
     protected Image getImage() {
         return this.image;
     }
 
     /**
-     * add a Panel, positioning it with x,y referred to this
+     * add a Panel, positioning it with x,y referred to "this"
      *
      * @param sonPanel
      * @param x
@@ -169,9 +192,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     }
 
     /**
-     * se opacity è vero setto il parametro opacity a vero. se opacity vero
-     * l'img viene visualizzata opaca
-     *
+     * set the jpanel opaque iff opacity parameter is true
      * @param opacity
      */
     protected void setOpacity(boolean opacity) {
@@ -188,37 +209,56 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         setOpaque(false);
         //  super.paintComponent(g);
-        Graphics2D g2D = (Graphics2D) g;;
+        Graphics2D g2D = (Graphics2D) g;
         if (image != null) {
             if (opacity) {
                 AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) 0.6);
                 g2D.setComposite(ac);
             }
-            g2D.drawImage(image, xImage, yImage, this);
+            g2D.drawImage(image, 0, 0, this);
         }
         super.paintComponent(g2D);
     }
 
+    /**
+     * get the jpanel's dimension
+     * @return 
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(width, height);
     }
 
+    /**
+     *  get the jpanel's dimension
+     * @return 
+     */
     @Override
     public Dimension getMaximumSize() {
         return new Dimension(width, height); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *  get the jpanel's dimension
+     * @return 
+     */
     @Override
     public Dimension getMinimumSize() {
         return new Dimension(width, height); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     *  get the jpanel's dimension
+     */
     @Override
     public Dimension getSize() {
         return new Dimension(width, height); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * get the insets of the jpanel
+     * @return 
+     */
     @Override
     public Insets getInsets() {
         return super.getInsets(); //To change body of generated methods, choose Tools | Templates.
