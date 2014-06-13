@@ -51,11 +51,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private JPanel dxBar;
     private JPanel playersContainerJPanel;
     private JComponent layeredHolder;
-    private JLayeredPane layeredPane;
+    protected JLayeredPane layeredPane;
     private InfoPanel infoPanel;
     private NickPanel nickPanel;
     private Street[] streets;
-    private RegionBox[] regionBoxes;
+    protected RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
     private JScrollPane historyScrollPane;
 
@@ -64,14 +64,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private int numOfPlayers;
     private int shepherds4player;
     private HashMap<String, Integer> nickShepherdToStreet;
-    int[] xStreetPoints = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
-    int[] yStreetPoints = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
-    int[] xRegionBoxes = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
-    int[] yRegionBoxes = {131, 269, 349, 111, 73, 226, 194, 134, 185, 243, 285, 412, 349, 490, 549, 488, 410, 420, 292};
+    protected int[] xStreetPoints = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
+    protected int[] yStreetPoints = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
+    protected int[] xRegionBoxes = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
+    protected int[] yRegionBoxes = {131, 269, 349, 111, 73, 226, 194, 134, 185, 243, 285, 412, 349, 490, 549, 488, 410, 420, 292};
     private final Color backgroundColor = new Color(35, 161, 246);
     private final Color noneColor = new Color(0, 0, 0, 0);
     private int lastStreet;
-    private boolean zoomOn;
+    protected boolean zoomOn;
 
     private static final List<String> HOLDER = new LinkedList<String>();
 
@@ -559,7 +559,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param e
      */
     public void mouseReleased(MouseEvent e) {
-        //not used
+        DebugLogger.println("mouse released in : "+e.getLocationOnScreen().x+" "+e.getLocationOnScreen().y);
     }
 
     /**
@@ -685,7 +685,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     /**
      * Set enabled all the regions do they can generate events when clicked
      */
-    private void addAllRegionListener() {
+    protected void addAllRegionListener() {
         for (RegionBox region : regionBoxes) {
             region.setEnabled(true);
         }
@@ -760,10 +760,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
      *
      * @param i
      */
-    private void zoomAnimals(int i) {
+    protected void zoomAnimals(int i) {
         List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
         int j = 0;
         for (Animal animalToHighlight : animalsToHighlight) {
+            
+            //FIXME da rimuovere poi
+            animalToHighlight.setDraggable(true);
+            
             int animalWidth = animalToHighlight.getSize().width;
             int animalHeight = animalToHighlight.getSize().height;
             Point p = regionBoxes[i].getLocation();
@@ -1579,6 +1583,22 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public void refreshBankCard(String regionType, int availableCards) {
         //TODO per angelo da implementare
+    }
+
+    public boolean askWillingTo(String action) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askSellCard(String[] availableCards) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int askPriceCard() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String askBuyMarketCard(String[] cards, int[] prices) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

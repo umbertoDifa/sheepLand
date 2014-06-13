@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.CommandLineView;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.DinamicGui;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.GuiView;
 import java.io.PrintWriter;
 import java.util.Scanner;
