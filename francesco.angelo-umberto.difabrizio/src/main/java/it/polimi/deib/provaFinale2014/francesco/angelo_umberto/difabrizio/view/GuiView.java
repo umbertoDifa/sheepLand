@@ -73,7 +73,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private int lastStreet;
     protected boolean zoomOn;
 
-    private static final List<String> HOLDER = new LinkedList<String>();
+    protected static final List<String> HOLDER = new LinkedList<String>();
 
     /**
      * Constructor of the gui. Create JFrame and starts the setUp of ImagePool
@@ -764,10 +764,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
         int j = 0;
         for (Animal animalToHighlight : animalsToHighlight) {
-            
-            //FIXME da rimuovere poi
-            animalToHighlight.setDraggable(true);
-            
+
             int animalWidth = animalToHighlight.getSize().width;
             int animalHeight = animalToHighlight.getSize().height;
             Point p = regionBoxes[i].getLocation();
@@ -1049,8 +1046,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @return
      */
     public String setUpShepherd(int idShepherd) {
-        //svuoto la history appena il gioco inizia
-        historyPanel.setText("");
 
         //imposto visibilità players
         playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
@@ -1244,7 +1239,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public void refereshCard(String type, int value) {
         hideInfoPanel();
-        cardsJPanels[RegionType.valueOf(type).getIndex()].setText("" + value);
+        cardsJPanels[RegionType.valueOf(type).getIndex()].increase(1);
+        historyPanel.show("Hai ricevuto una carta iniziale di tipo "+ type);
     }
 
     /**

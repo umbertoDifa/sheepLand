@@ -1,9 +1,9 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -12,18 +12,46 @@ import java.util.List;
  */
 public class DinamicGui extends GuiView {
 
-    private static final List<String> holder = new LinkedList<String>();
-
     @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource() instanceof Animal) {
-            for(RegionBox region: regionBoxes){
-//                if(e.getLocationOnScreen() ){
-//                    
-//                }
+            Animal animal = (Animal) e.getSource();
+            synchronized (HOLDER) {
+                HOLDER.add(animal.getAnimalType());
+                HOLDER.notify();
             }
-            //TODO aggiungere a holder regione corrispondente
+            DebugLogger.println("aggiunto a holder "+animal.getAnimalType());
+            for (int i = 0; i < regionBoxes.length; i++) {
+                Point r = regionBoxes[i].getLocationOnScreen();
+                Point m = e.getLocationOnScreen();
+                if (m.x > r.x && m.x < r.x + Dim.REGION_BOX.getW() && m.y > r.y && m.y < r.y + Dim.REGION_BOX.getH()) {
+                    synchronized (HOLDER) {
+                        HOLDER.add(String.valueOf(i));
+                        HOLDER.notify();
+                        DebugLogger.println("aggiunto a holder "+ i);
+                    }
+                }
+            }
+            animal.removeMouseListener(this);
         }
+        
+        
+        //rimuovo tutti gli Animal dal layer 1
+        Component[] toRemove = layeredPane.getComponentsInLayer(1);
+        for (Component componentToRemove : toRemove) {
+            componentToRemove.setVisible(false);
+            layeredPane.remove(componentToRemove);
+        }
+        layeredPane.repaint();
+
+        //per ogni regione
+        for (RegionBox region : regionBoxes) {
+            //rimetto visibili gli animali
+            region.setAnimalsVisibles(true);
+            //in modalità preview
+            region.setAnimalPreview(true);
+        }
+        
     }
 
     /**
@@ -37,7 +65,7 @@ public class DinamicGui extends GuiView {
         List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
         int j = 0;
         for (Animal animalToHighlight : animalsToHighlight) {
-            animalToHighlight.setDraggable(true);
+            
             int animalWidth = animalToHighlight.getSize().width;
             int animalHeight = animalToHighlight.getSize().height;
             Point p = regionBoxes[i].getLocation();
@@ -54,13 +82,13 @@ public class DinamicGui extends GuiView {
 
             if (!"blacksheep".equals(animalToHighlight.getAnimalType())
                     || !"wolf".equals(animalToHighlight.getAnimalType())) {
-                //animalToHighlight.addMouseListener(this);
+                animalToHighlight.addMouseListener(this);
+                animalToHighlight.setDraggable(true);
             }
             layeredPane.add(animalToHighlight, new Integer(1));
             j++;
         }
         layeredPane.repaint();
     }
-
 
 }
