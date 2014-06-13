@@ -868,6 +868,9 @@ public class GameManager implements Runnable {
 
             //lo aggiorno
             this.refreshInitialConditions(clientNickNames[currentPlayer]);
+            
+            //refresh cards
+            refreshCards(currentPlayer);
 
             //gli chiedo di settare tutti i pastori che non aveva settato
             int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(

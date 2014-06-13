@@ -650,6 +650,9 @@ public class RmiTrasmission extends TrasmissionController {
                 return wantToSell;
             } catch (RemoteException ex) {
                 setPlayerOffline(client, ex);
+
+                throw new PlayerDisconnectedException(
+                        "Il player:" + client + " si è disconnesso");
             }
         }
         return false;
@@ -681,6 +684,9 @@ public class RmiTrasmission extends TrasmissionController {
 
             } catch (RemoteException ex) {
                 setPlayerOffline(playerNickName, ex);
+
+                throw new PlayerDisconnectedException(
+                        "Il player:" + playerNickName + " si è disconnesso");
 
             }
 
