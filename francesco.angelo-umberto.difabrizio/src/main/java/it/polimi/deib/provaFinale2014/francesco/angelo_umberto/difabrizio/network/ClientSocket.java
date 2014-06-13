@@ -367,9 +367,9 @@ public class ClientSocket {
     private void refreshCard() {
         String card = receiveString();
 
-        int price = receiveInt();
+        int value = receiveInt();
 
-        view.refereshCard(card, price);
+        view.refereshCard(card, value);
     }
 
     private void refreshBlackSheep() {

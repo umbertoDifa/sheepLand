@@ -103,7 +103,7 @@ public abstract class TrasmissionController {
      *
      * @param nickName The client who bought the card
      * @param card     The card who was bought
-     * @param value    The price
+     * @param value    The value of the card
      */
     public abstract void refreshCard(String nickName, String card, int value);
 

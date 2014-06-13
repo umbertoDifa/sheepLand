@@ -507,6 +507,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //prova a chiedere la strada per il j-esimo pastore                    
                 outcomeOk = gameManager.getController().askSetUpShepherd(
                         playerNickName, shepherdIndex);
+                
+                //resetto il numero di shepherd che il player dovrebbe settare dopo la riconnessione
+                ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(0);
             } catch (PlayerDisconnectedException ex) {
                 DebugLogger.println(
                         "giocatore" + playerNickName + " disconnesso");

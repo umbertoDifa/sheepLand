@@ -614,7 +614,7 @@ public class GameManager implements Runnable {
         boolean lastRound = false;
         int playerOffline = 0;
 
-        while (!(lastRound && roundComplete(this.firstPlayer,this.currentPlayer))) {
+        while (!(lastRound && this.firstPlayer == this.currentPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
 
@@ -643,7 +643,6 @@ public class GameManager implements Runnable {
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentPlayer]);
                 }
-                nextPlayer();
 
                 evolveLambs();
 
@@ -653,18 +652,6 @@ public class GameManager implements Runnable {
                     refreshRegions(client);
                     refreshSpecialAnimals(client);
                     refreshBankCards(client);
-                }
-
-                //controllo se ho finito il giro
-                //se il prossimo a giocare è il primo del giro
-                if (currentPlayer == this.firstPlayer) {
-                    //avvio il market  
-                    this.startMarket();
-                    
-                    //muovo il lupo
-                    DebugLogger.println("muovo lupo");
-                    this.moveSpecialAnimal(this.map.getWolf());
-                    DebugLogger.println("lupo mosso");
                 }
 
             } else {
@@ -683,7 +670,19 @@ public class GameManager implements Runnable {
                             "Tutti i player si sono disconnesi, la partita termina");
                 }
 
-                nextPlayer();
+            }
+            nextPlayer();
+            
+             //controllo se ho finito il giro
+            //se il prossimo a giocare è il primo del giro
+            if (firstPlayer == currentPlayer) {
+                //avvio il market  
+                this.startMarket();
+
+                //muovo il lupo
+                DebugLogger.println("muovo lupo");
+                this.moveSpecialAnimal(this.map.getWolf());
+                DebugLogger.println("lupo mosso");
             }
         }
     }
@@ -700,7 +699,7 @@ public class GameManager implements Runnable {
         //giro di buy
         buyCardsRound(firstBuyer);
         DebugLogger.println("giro buy finito");
-        
+
         //tolgo il check forSale da ogni carta rimasta nel market e tolgo le 
         //carte rimaste dal market
         market.clear();
@@ -711,6 +710,7 @@ public class GameManager implements Runnable {
         int playerOffline = 0;
         boolean wantToSell;
         do {
+            DebugLogger.println("Inizio sell giocatore: "+currentPlayer);
             if (ServerManager.Nick2ClientProxyMap.get(
                     clientNickNames[currentPlayer]).isOnline()) {
 
@@ -751,12 +751,11 @@ public class GameManager implements Runnable {
                             "Tutti i player si sono disconnesi, la partita termina");
                 }
             }
-            
-            DebugLogger.println("Cambio giocatore:");
+
+            DebugLogger.println("Cambio giocatore");
             nextPlayer();
-        } while (!roundComplete(this.firstPlayer,this.currentPlayer));
+        } while (this.firstPlayer != this.currentPlayer);
         DebugLogger.println("fuori dal while del seel");
-        
 
     }
 
@@ -767,12 +766,13 @@ public class GameManager implements Runnable {
         int currentBuyer = firstBuyer;
 
         do {
+            DebugLogger.println("inizio buy giocatore "+currentBuyer);
             if (ServerManager.Nick2ClientProxyMap.get(
                     clientNickNames[currentBuyer]).isOnline()) {
-                
+
                 controller.brodcastCurrentPlayer(clientNickNames[currentBuyer]);
-                
-                try {                    
+
+                try {
                     handleReconnection();
 
                     playerOffline = 1;
@@ -780,7 +780,7 @@ public class GameManager implements Runnable {
                     do {
                         wantToBuy = players.get(currentBuyer).buyCard();
                     } while (wantToBuy);
-                    
+
                 } catch (PlayerDisconnectedException ex) {
 
                     //il giocatore si disconnette durante il suo turno di market
@@ -808,12 +808,10 @@ public class GameManager implements Runnable {
             }
 
             //refresh delle carte possedute da tutti
-            for (int i = 0; i < playersNumber; i++) {
-                refreshCards(i);
-            }
+            brodcastCards();
 
             currentBuyer = nextBuyer(currentBuyer);
-        } while (!roundComplete(firstBuyer,currentBuyer));
+        } while (firstBuyer != currentBuyer);
 
     }
 
@@ -869,7 +867,7 @@ public class GameManager implements Runnable {
             controller.refreshStartGame(clientNickNames[currentPlayer]);
 
             //lo aggiorno
-            this.refreshInitialConditions(clientNickNames[currentPlayer]);            
+            this.refreshInitialConditions(clientNickNames[currentPlayer]);
 
             //gli chiedo di settare tutti i pastori che non aveva settato
             int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
