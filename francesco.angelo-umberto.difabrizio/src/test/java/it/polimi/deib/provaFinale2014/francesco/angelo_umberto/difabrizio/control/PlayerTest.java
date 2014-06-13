@@ -1,18 +1,24 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Market;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.MarketTest;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.RegionType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Shepherd;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Street;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.MissingCardException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.SocketTrasmission;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -128,6 +134,7 @@ public class PlayerTest {
     @Test
     public void testSetShepherdRemote() {
         //se funziona la funzione non remota funziona anche questo
+        assertTrue(true);
     }
 
     /**
@@ -150,54 +157,98 @@ public class PlayerTest {
     /**
      * Test of buyLand method, of class Player.
      */
-    @Ignore
     @Test
     public void testBuyLand() {
         System.out.println("buyLand");
-        String landToBuy = "";
-        Player instance = null;
-        String expResult = "";
+        String landToBuy = "desert";
+
+        gameManager.getMap().setUp();
+
+        instance.setShepherd(0, "14");
+        
+        setUpCards();
+
+
+        String expResult = "Carta acquistata";
         String result = instance.buyLand(landToBuy);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DebugLogger.println(result);
+        assertTrue(result.contains(expResult));
+    }
+
+    private void setUpCards() {
+        //per ogni tipo di regione - sheepsburg 
+        int i;
+        int j;
+        for (i = 0; i < RegionType.values().length - 1; i++) {
+            //per tante quante sono le carte di ogni tipo
+            for (j = 0; j < GameConstants.NUM_CARDS_FOR_REGION_TYPE.getValue(); j++) {
+                //crea una carta col valore giusto( j crescente da 0 al max) e tipo giusto(dipendente da i) 
+                Card cardToAdd = new Card(j, RegionType.values()[i]);
+                //caricala
+                gameManager.getBank().loadCard(cardToAdd);
+            }
+        }
     }
 
     /**
      * Test of mateSheepWith method, of class Player.
      */
-    @Ignore
     @Test
     public void testMateSheepWith() {
         System.out.println("mateSheepWith");
-        String shepherdNumber = "";
-        String regionToMate = "";
-        String otherOvineType = "";
-        Player instance = null;
-        String expResult = "";
+        String shepherdNumber = "0";
+        String regionToMate = "10";
+        String otherOvineType = "sheep";
+        gameManager.getMap().setUp();
+        Street street = null;
+        try {
+            street = gameManager.getMap().convertStringToStreet("19");
+        } catch (StreetNotFoundException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null,
+                    ex);
+        }
+        //aggiungo il pastore 0 in strda 19
+        instance.getMainShepherd().moveTo(street);
+
+        //aggiungo due pecore nella regione 10
+        gameManager.getMap().getRegions()[10].addOvine(
+                new Ovine(OvineType.SHEEP));
+        gameManager.getMap().getRegions()[10].addOvine(
+                new Ovine(OvineType.SHEEP));
+
         String result = instance.mateSheepWith(shepherdNumber, regionToMate,
                 otherOvineType);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
     }
 
     /**
      * Test of killOvine method, of class Player.
      */
-    @Ignore
     @Test
     public void testKillOvine() {
         System.out.println("killOvine");
-        String shepherdNumber = "";
-        String region = "";
-        String typeToKill = "";
-        Player instance = null;
-        String expResult = "";
+        String shepherdNumber = "0";
+        String region = "10";
+        String typeToKill = "sheep";
+
+        gameManager.getMap().setUp();
+
+        Street street = null;
+        try {
+            street = gameManager.getMap().convertStringToStreet("19");
+        } catch (StreetNotFoundException ex) {
+            Logger.getLogger(PlayerTest.class.getName()).log(Level.SEVERE, null,
+                    ex);
+        }
+        //aggiungo il pastore 0 in strda 19
+        instance.getMainShepherd().moveTo(street);
+
+        //aggiungo una pecora nella regione 10
+        gameManager.getMap().getRegions()[10].addOvine(
+                new Ovine(OvineType.SHEEP));
+
         String result = instance.killOvine(shepherdNumber, region, typeToKill);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
     }
 
     /**
@@ -206,6 +257,7 @@ public class PlayerTest {
     @Test
     public void testMoveShepherdRemote() {
         //se funziona la funzione non remota funziona anche questo
+        assertTrue(true);
     }
 
     /**
@@ -214,6 +266,7 @@ public class PlayerTest {
     @Test
     public void testMoveOvineRemote() {
         //se funziona la funzione non remota funziona anche questo
+        assertTrue(true);
     }
 
     /**
@@ -222,6 +275,7 @@ public class PlayerTest {
     @Test
     public void testBuyLandRemote() {
         //se funziona la funzione non remota funziona anche questo
+        assertTrue(true);
     }
 
     /**
@@ -230,6 +284,7 @@ public class PlayerTest {
     @Test
     public void testMateSheepWithRemote() {
         //se funziona la funzione non remota funziona anche questo
+        assertTrue(true);
     }
 
     /**
@@ -238,57 +293,25 @@ public class PlayerTest {
     @Test
     public void testKillOvineRemote() {
         //se funziona la funzione non remota funziona anche questo
+        assertTrue(true);
     }
 
     /**
      * Test of chooseAndMakeAction method, of class Player.
      */
-    @Ignore
     @Test
     public void testChooseAndMakeAction() throws Exception {
-        System.out.println("chooseAndMakeAction");
-        Player instance = null;
-        instance.chooseAndMakeAction();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(true);
+        //needs connection
     }
 
     /**
      * Test of chooseShepherdStreet method, of class Player.
      */
-    @Ignore
     @Test
-    public void testChooseShepherdStreet() throws Exception {
-        System.out.println("chooseShepherdStreet");
-        int shepherdIndex = 0;
-        Player instance = null;
-        instance.chooseShepherdStreet(shepherdIndex);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getSellableCards method, of class Player.
-     */
-    @Test
-    public void testGetSellableCards() {
-        System.out.println("getSellableCards");
-        //aggiungo una carta iniziale al player
-        instance.getMainShepherd().addCard(new Card(1, RegionType.HILL, true));
-
-        //aggiugno altre carte
-        Card carda = new Card(2, RegionType.HILL);
-        carda.setForSale(true);
-        instance.getMainShepherd().addCard(carda);
-        instance.getMainShepherd().addCard(new Card(3, RegionType.HILL));
-        instance.getMainShepherd().addCard(new Card(4, RegionType.MOUNTAIN));
-
-        DebugLogger.println("carte possedute");
-        for (Card card : instance.getMainShepherd().getMyCards()) {
-            DebugLogger.println(
-                    "card: " + card.getType().toString() + " value:" + card.getValue());
-        }
-        instance.getSellableCards();
+    public void testChooseShepherdStreet() {
+        assertTrue(true);
+        //needs connnection
     }
 
     /**
@@ -309,31 +332,19 @@ public class PlayerTest {
     /**
      * Test of sellCard method, of class Player.
      */
-    @Ignore
     @Test
-    public void testSellCard() throws Exception {
-        System.out.println("sellCard");
-        Player instance = null;
-        boolean expResult = false;
-        boolean result = instance.sellCard();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testSellCard() {
+        assertTrue(true);
+        //needs connection
     }
 
     /**
      * Test of buyCard method, of class Player.
      */
-    @Ignore
     @Test
-    public void testBuyCard() throws Exception {
-        System.out.println("buyCard");
-        Player instance = null;
-        boolean expResult = false;
-        boolean result = instance.buyCard();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testBuyCard() {
+        //needs connection
+        assertTrue(true);
     }
 
     /**
@@ -384,6 +395,24 @@ public class PlayerTest {
         assertTrue(market.getCard(RegionType.HILL) != cardToBuy);
         assertTrue(market.getCard(RegionType.HILL).getMarketValue() == 2);
 
+    }
+
+    /**
+     * Test of putCardInMarketRemote method, of class Player.
+     */
+    @Test
+    public void testPutCardInMarketRemote() {
+        //se funziona il locale ok
+        assertTrue(true);
+    }
+
+    /**
+     * Test of payCardFromMarketRemote method, of class Player.
+     */
+    @Test
+    public void testPayCardFromMarketRemote() {
+        //se funziona il locale è ok
+        assertTrue(true);
     }
 
 }

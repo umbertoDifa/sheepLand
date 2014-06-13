@@ -9,9 +9,7 @@ import static org.junit.Assert.*;
  */
 public class WalletTest {
 
-  
-
-    /**
+     /**
      * Test of getAmount method, of class Wallet.
      */
     @Test

@@ -585,15 +585,37 @@ public class ClientRmi implements ClientInterfaceRemote {
         view.refreshOtherPlayerMoney(otherPlayer, otherMoney);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param type           type of card
+     * @param cardsAvailable number of available cards
+     *
+     * @throws RemoteException connection error
+     */
     public void refreshBankCard(String type, int cardsAvailable) throws
             RemoteException {
         view.refreshBankCard(type, cardsAvailable);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     *
+     * @throws RemoteException
+     */
     public boolean askSellCard() throws RemoteException {
         return view.askWillingTo("vendere");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param sellableCards
+     *
+     * @throws RemoteException
+     */
     public void sellCard(String[] sellableCards) throws RemoteException {
         boolean cardValid = false;
         String cardToSell = null;
@@ -625,10 +647,25 @@ public class ClientRmi implements ClientInterfaceRemote {
         playerRmi.putCardInMarketRemote(cardToSell, price);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @return
+     *
+     * @throws RemoteException
+     */
     public boolean askBuyCard() throws RemoteException {
         return view.askWillingTo("comprare");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param buyableCards
+     * @param prices
+     *
+     * @throws RemoteException
+     */
     public void buyCard(String[] buyableCards, int[] prices) throws
             RemoteException {
         String cardToBuy = null;

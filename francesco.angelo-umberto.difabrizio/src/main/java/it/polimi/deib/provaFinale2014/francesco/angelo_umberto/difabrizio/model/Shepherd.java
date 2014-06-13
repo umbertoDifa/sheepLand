@@ -146,8 +146,13 @@ public class Shepherd {
         }
         return false;
     }
-    
-    public void earnMoney(int money){
+
+    /**
+     * Add money to the shepherd wallet
+     *
+     * @param money
+     */
+    public void earnMoney(int money) {
         wallet.setAmount(money + wallet.getAmount());
     }
 

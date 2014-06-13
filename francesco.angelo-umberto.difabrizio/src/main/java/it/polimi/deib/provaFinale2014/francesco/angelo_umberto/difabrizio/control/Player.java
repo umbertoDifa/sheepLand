@@ -141,7 +141,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             try {
                 //se il player si era disconnesso gli rimando il benvenuto
                 handleReconnectionInTheSameTurn();
-                
+
                 DebugLogger.println(
                         "invio le azionio possibiil: " + possibleAction);
                 //raccogli la scelta
@@ -507,9 +507,10 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //prova a chiedere la strada per il j-esimo pastore                    
                 outcomeOk = gameManager.getController().askSetUpShepherd(
                         playerNickName, shepherdIndex);
-                
+
                 //resetto il numero di shepherd che il player dovrebbe settare dopo la riconnessione
-                ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(0);
+                ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
+                        0);
             } catch (PlayerDisconnectedException ex) {
                 DebugLogger.println(
                         "giocatore" + playerNickName + " disconnesso");
@@ -1130,7 +1131,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return killOvine(shepherdNumber, region, typeToKill);
     }
 
-    String[] getSellableCards() {
+    private String[] getSellableCards() {
         List<String> cardsAvailble = new ArrayList<String>();
         DebugLogger.println("Carte vendibili del player " + playerNickName);
 
@@ -1145,6 +1146,12 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         return cardsAvailble.toArray(new String[cardsAvailble.size()]);
     }
 
+    /**
+     * Puts a card in the market with a given price to be sold
+     *
+     * @param card
+     * @param price
+     */
     public void putCardInMarket(String card, int price) {
         for (Card cardToSell : shepherd[0].getMyCards()) {
             if (cardToSell.getType().toString().equalsIgnoreCase(
@@ -1165,6 +1172,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     }
 
+    /**
+     * Sells a card of the player among tha available ones
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
     public boolean sellCard() throws PlayerDisconnectedException {
         String[] sellableCards;
         int numberOfDisconnections = 0;
@@ -1210,7 +1224,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         }
     }
 
-    boolean buyCard() throws PlayerDisconnectedException {
+    /**
+     * Ask to the player which card to buy among the available ones
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
+    protected boolean buyCard() throws PlayerDisconnectedException {
         List<Card> buyableCards;
         int numberOfDisconnections = 0;
 
@@ -1279,6 +1300,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     }
 
+    /**
+     * Payes a card from the market, and changes the owner of that card
+     *
+     * @param card
+     */
     public void payCardFromMarket(String card) {
 
         //devo trovare la carta col costo minore
@@ -1314,11 +1340,26 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         }
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param card
+     * @param price
+     *
+     * @throws RemoteException
+     */
     public void putCardInMarketRemote(String card, int price) throws
             RemoteException {
         this.putCardInMarket(card, price);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param card
+     *
+     * @throws RemoteException
+     */
     public void payCardFromMarketRemote(String card) throws RemoteException {
         this.payCardFromMarket(card);
     }

@@ -19,7 +19,6 @@ public class BlackSheepTest {
         map = new Map();
         map.setUp();
     } 
-
     /**
      * Test of moveThrough method, of class BlackSheep.
      *

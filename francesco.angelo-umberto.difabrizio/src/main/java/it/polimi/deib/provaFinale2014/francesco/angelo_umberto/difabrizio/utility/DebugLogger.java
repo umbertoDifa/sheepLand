@@ -13,7 +13,10 @@ public class DebugLogger {
 
     private DebugLogger() {
     }
-
+    /**
+     * Prints a sentece in debug mode
+     * @param debugPrint 
+     */
     public static void println(String debugPrint) {
         //se il debug è attivo
         if (DEBUG) {

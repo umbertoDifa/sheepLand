@@ -14,7 +14,6 @@ import org.junit.Test;
 public class ShepherdTest {
 
     Map map;
-
     /**
      * Sets up the map
      */
@@ -167,6 +166,45 @@ public class ShepherdTest {
         instance.removeCard(card1);
 
         assertTrue(instance.getMyCards().isEmpty());
+    }
+
+    /**
+     * Test of numOfMyCardsOfType method, of class Shepherd.
+     */
+    @Test
+    public void testNumOfMyCardsOfType() {
+        System.out.println("numOfMyCardsOfType");
+        RegionType chosenType = RegionType.COUNTRYSIDE;
+        Shepherd instance = new Shepherd(20);
+        int expResult = 0;
+        int result = instance.numOfMyCardsOfType(chosenType);
+        assertEquals(expResult, result);
+       
+    }
+
+    /**
+     * Test of ifPossiblePay method, of class Shepherd.
+     */
+    @Test
+    public void testIfPossiblePay() {
+        System.out.println("ifPossiblePay");
+        int price = 50;
+        Shepherd instance = new Shepherd(30);
+        boolean expResult = false;
+        boolean result = instance.ifPossiblePay(price);
+        assertEquals(expResult, result);
+       
+    }
+
+    /**
+     * Test of earnMoney method, of class Shepherd.
+     */
+    @Test
+    public void testEarnMoney() {
+        System.out.println("earnMoney");
+        int money = 10;
+        Shepherd instance = new Shepherd(0);
+        instance.earnMoney(money);        
     }
 
 }
