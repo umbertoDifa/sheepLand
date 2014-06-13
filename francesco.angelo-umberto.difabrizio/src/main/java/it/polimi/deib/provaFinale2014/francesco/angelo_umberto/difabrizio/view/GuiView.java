@@ -128,7 +128,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (int i = 0; i < numOfPlayers; i++) {
             playersJPanels[i] = new Player(nickNames[i], FontFactory.getFont());
             playersJPanels[i].setUp(".\\images\\giocatore" + i + ".png",
-                    ".\\images\\money.png", 145, 81, 20, 40, 200, 99);
+                    ".\\images\\money.png", 145, 81, 20, 40, Dim.PLAYER.getW(), Dim.PLAYER.getH());
         }
 
         for (Player player : playersJPanels) {
@@ -212,21 +212,21 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     private void setUpImageFrameComponents() {
         //aggiungo immagini
-        actions[0].setUp(".\\images\\moveSheep.png", 68, 72);
-        actions[1].setUp(".\\images\\moveShepherd.png", 68, 72);
-        actions[2].setUp(".\\images\\buyLand.png", 68, 72);
-        actions[3].setUp(".\\images\\mateSheep.png", 68, 72);
-        actions[4].setUp(".\\images\\mateRam.png", 68, 72);
-        actions[5].setUp(".\\images\\killOvine.png", 68, 72);
+        actions[0].setUp(".\\images\\moveSheep.png", Dim.ACTION.getW(), Dim.ACTION.getH());
+        actions[1].setUp(".\\images\\moveShepherd.png", Dim.ACTION.getW(), Dim.ACTION.getH());
+        actions[2].setUp(".\\images\\buyLand.png", Dim.ACTION.getW(), Dim.ACTION.getH());
+        actions[3].setUp(".\\images\\mateSheep.png", Dim.ACTION.getW(), Dim.ACTION.getH());
+        actions[4].setUp(".\\images\\mateRam.png", Dim.ACTION.getW(), Dim.ACTION.getH());
+        actions[5].setUp(".\\images\\killOvine.png", Dim.ACTION.getW(), Dim.ACTION.getH());
 
-        cardsJPanels[1].setUp(".\\images\\hill2.png", 139, 91, 105, 104);
-        cardsJPanels[2].setUp(".\\images\\countryside2.png", 139, 91, 105, 104);
-        cardsJPanels[0].setUp(".\\images\\mountain2.png", 139, 91, 105, 104);
-        cardsJPanels[5].setUp(".\\images\\desert2.png", 139, 91, 105, 104);
-        cardsJPanels[4].setUp(".\\images\\lake2.png", 139, 91, 105, 104);
-        cardsJPanels[3].setUp(".\\images\\plain2.png", 139, 91, 105, 104);
+        cardsJPanels[1].setUp(".\\images\\hill2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[2].setUp(".\\images\\countryside2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[0].setUp(".\\images\\mountain2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[5].setUp(".\\images\\desert2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[4].setUp(".\\images\\lake2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[3].setUp(".\\images\\plain2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
 
-        fenceJPanel.setUp(".\\images\\numFences.png", 67, 77, 78, 94);
+        fenceJPanel.setUp(".\\images\\numFences.png", Dim.TEXT_FENCE.getW(), Dim.TEXT_FENCE.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
     }
 
     /**
@@ -248,7 +248,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         dxBar.add(playersContainerJPanel);
         dxBar.add(actionsContainerJPanel);
         dxBar.add(historyScrollPane);
-        addComponentsToPane(mapJPanel, fenceJPanel, 55, 0);
+        addComponentsToPane(mapJPanel, fenceJPanel,
+                Dim.FENCE_POSITION.getW(), Dim.FENCE_POSITION.getH());
         mapJPanel.setLayout(null);
         for (int i = 0; i < streets.length; i++) {
             mapJPanel.addPanel(streets[i], xStreetPoints[i] - 10,
@@ -291,24 +292,20 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     private void setUpDimensionFrameComponents() {
         //setto dimensioni
-        layeredPane.setPreferredSize(new Dimension(900, 800));
-        actionsContainerJPanel.setPreferredSize(
-                new Dimension((68 + 10) * 3, (72 + 5) * 2));
+        layeredPane.setPreferredSize(new Dimension(Dim.MAIN.getW(), Dim.MAIN.getH()));
+        actionsContainerJPanel.setPreferredSize(new Dimension(Dim.ACTIONS_CONTAINER.getW(), Dim.ACTIONS_CONTAINER.getH()));
         //il contenitore dei player ha le dim per contenere sempre 4 player
-        playersContainerJPanel.setPreferredSize(new Dimension(220, (99 + 4) * 4));
-        cardsConteinerJPanel.setPreferredSize(new Dimension(105,
-                (116 + 10) * cardsJPanels.length));
+        playersContainerJPanel.setPreferredSize(new Dimension(Dim.PLAYERS_CONTAINER.getW(), Dim.PLAYERS_CONTAINER.getH()));
+        cardsConteinerJPanel.setPreferredSize(new Dimension(Dim.CARD_CONTAINER.getW(), Dim.CARD_CONTAINER.getH()));
         mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
-        mainJPanel.setBounds(0, 0, 900, 800);
+        mainJPanel.setBounds(0, 0, Dim.MAIN.getW(), Dim.MAIN.getH());
         //la barra di destra ha le dim per contenere sempre 4 player
-        dxBar.setPreferredSize(new Dimension((68 + 10) * 3, 800));
-        infoPanel.setBounds(
-                (int) (mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)),
-                mainJPanel.getPreferredSize().height / 2 - (400), 232, 444);
-        nickPanel.setBounds(
-                (int) (mainJPanel.getPreferredSize().width / 2 - (444 / 2)),
-                mainJPanel.getPreferredSize().height / 2 - (400), 140, 100);
-        historyScrollPane.setPreferredSize(new Dimension((68 + 10) * 3, 80));
+        dxBar.setPreferredSize(new Dimension(Dim.DX_BAR.getW(), Dim.DX_BAR.getH()));
+        infoPanel.setBounds(Dim.INFO_PANEL_POSITION.getW(), Dim.INFO_PANEL_POSITION.getH(),
+                Dim.INFO_PANEL.getW(), Dim.INFO_PANEL.getH());
+        nickPanel.setBounds(Dim.NICK_PANEL_POSITION.getW(), Dim.NICK_PANEL_POSITION.getH(), Dim.NICK_PANEL.getW(), Dim.NICK_PANEL.getH());
+        historyScrollPane.setPreferredSize(new Dimension(Dim.HISTORY.getW(), Dim.HISTORY.getH()));
+
 
     }
 
@@ -991,7 +988,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
         result += "con " + rank + " punti";
 
-        layeredPane.add(new RankPannel(result), new Integer(6));
+        layeredPane.add(new RankPanel(result), new Integer(6));
         mainJPanel.revalidate();
         mainJPanel.repaint();
     }

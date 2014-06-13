@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import javax.swing.JPanel;
 
 /**
- *
+ *The class extends BackgroundAndTextJPanel
  * @author Francesco
  */
 public class MoneyPanel extends BackgroundAndTextJPanel {

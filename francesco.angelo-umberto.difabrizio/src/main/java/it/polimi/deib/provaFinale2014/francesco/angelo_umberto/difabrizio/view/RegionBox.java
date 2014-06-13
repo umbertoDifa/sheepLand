@@ -11,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The class extends BackgroundAndTextJPanel adding images and coordinates for
+ * the preview image. add remove and clone methods for the animals and cursor
+ * effect methods.
  *
  * @author Francesco
  */
@@ -18,16 +21,26 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
 
     private final int[] xPreview = {10, 0, 10, 6, 10};
     private final int[] yPreview = {0, 25, 25, 35, 35};
-    private List<Animal> animals = new ArrayList<Animal>();
+    private final List<Animal> animals = new ArrayList<Animal>();
 
+    /**
+     * Create the Region Box with the default dimensions. add itself as listener
+     * for mouse effects
+     */
     public RegionBox() {
         this.setLayout(null);
-        this.setUp((String) null, 52, 78);
+        this.setUp((String) null, Dim.REGION_BOX.getW(), Dim.REGION_BOX.getH());
         this.addMouseListener(this);
 
         repaint();
     }
 
+    /**
+     * add the indicated animel to the preview image only if absent. always
+     * increase the number of that animal.
+     *
+     * @param typeOfAnimal
+     */
     public void addAnimal(String typeOfAnimal) {
         String animalType = typeOfAnimal.toLowerCase();
         for (Animal animal : animals) {
@@ -64,6 +77,12 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         repaint();
     }
 
+    /**
+     * decrease the number of the indicated animal if present and remove it if
+     * necessary
+     *
+     * @param ovineType
+     */
     public void removeOvine(String ovineType) {
         //per ogni animale nella regione
         for (int i = 0; i < animals.size(); i++) {
@@ -83,6 +102,11 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         }
     }
 
+    /**
+     * remove the indicated special animal
+     *
+     * @param animalType
+     */
     public void removeSpecialAnimal(String animalType) {
         //per ogni animale nella regione
         for (int i = 0; i < animals.size(); i++) {
@@ -124,12 +148,23 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         return result;
     }
 
+    /**
+     * add a number of animal of the indicated type
+     *
+     * @param animalType
+     * @param quantity
+     */
     public void add(String animalType, int quantity) {
         for (int i = 0; i < quantity; i++) {
             addAnimal(animalType.toLowerCase());
         }
     }
 
+    /**
+     * set all the animal of the region visible iff b is true
+     *
+     * @param b
+     */
     public void setAnimalsVisibles(boolean b) {
         for (Animal animal : animals) {
             if (animal != null) {
@@ -138,6 +173,11 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         }
     }
 
+    /**
+     * set the preview modality of the animal iff b is true
+     *
+     * @param b
+     */
     public void setAnimalPreview(boolean b) {
         for (Animal animal : animals) {
             if (animal != null) {
@@ -146,6 +186,9 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         }
     }
 
+    /**
+     * remove all the animal from the region
+     */
     protected void removeAllAnimals() {
         animals.clear();
         for (Component component : this.getComponents()) {
@@ -155,10 +198,12 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         }
 
     }
+
 /**
  * {@inheritDoc }
  * @param e 
  */
+
     public void mouseClicked(MouseEvent e) {
         repaint();
     }
@@ -176,6 +221,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
     public void mouseReleased(MouseEvent e) {
         //not used
     }
+
 /**
  * {@inheritDoc }
  * @param e 
@@ -183,6 +229,8 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
     public void mouseEntered(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
+
+ 
 /**
  * {@inheritDoc }
  * @param e 

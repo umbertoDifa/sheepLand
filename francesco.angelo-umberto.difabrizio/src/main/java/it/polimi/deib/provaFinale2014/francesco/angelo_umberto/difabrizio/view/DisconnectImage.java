@@ -12,7 +12,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 /**
- *
+ * The clas extends JPanel adding a background image
+ * of the disconnection
  * @author Francesco
  */
 public class DisconnectImage extends JPanel {

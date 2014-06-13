@@ -9,13 +9,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * The class loads the font and return it when asked
  * @author Francesco
  */
 public class FontFactory {
 
     private static Font myFont;
-
+    
+    /**
+     * create and object of the class and call the method to load the font
+     */
+    public static void createFont(){
+        new FontFactory();
+    }
+    
+    /**
+     * load and save the font
+     */
     private FontFactory() {
         try {
             myFont = Font.createFont(Font.TRUETYPE_FONT, new File(
@@ -37,11 +47,8 @@ public class FontFactory {
         }
     }
 
-    public static void createFont() {
-        new FontFactory();
-    }
-
     public static Font getFont() {
+
         return myFont;
     }
 }

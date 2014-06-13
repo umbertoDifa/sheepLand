@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
+ * The class load and return when asked the images
  *
  * @author Francesco
  */
@@ -17,9 +18,19 @@ public class ImagePool {
 
     private static final HashMap<String, Image> nameImageMap = new HashMap<String, Image>();
 
+    /**
+     * create an ImagePool
+     */
     private ImagePool() {
     }
 
+    /**
+     * add to the hashmap of the images the image corrisponding to the relative
+     * path, with the indicated name
+     *
+     * @param imgPath
+     * @param name
+     */
     public static void add(String imgPath, String name) {
         try {
             Image image = ImageIO.read(new File(imgPath));
@@ -28,11 +39,17 @@ public class ImagePool {
         } catch (IOException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            
+
             DebugLogger.println("immagine " + name + " non aggiunta al pool");
         }
     }
 
+    /**
+     * return the image corrisponding to the indicated name
+     *
+     * @param name
+     * @return
+     */
     public static Image getByName(String name) {
         return nameImageMap.get(name);
     }
