@@ -42,7 +42,7 @@ public class Bank {
             //fino all'ultimo, se le carte da distribuire sono più dei terreni
             //allora ricomincio dalla prima
             this.initialCards.add(new Card(0,
-                    RegionType.values()[i % numInitialCard]));
+                    RegionType.values()[i % numInitialCard], true));
         }
     }
 
@@ -65,7 +65,8 @@ public class Bank {
         this.initialCards.remove(index);
         return returnableCard; //ritornala
     }
-
+    
+    
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
      * la ritorna se esiste eliminandola da quelle disponibili altrimenti
@@ -128,10 +129,13 @@ public class Bank {
             return GameConstants.PRICE_FOR_SHEEPSBURG.getValue();
         }
     }
+
     /**
      * Given a region type returns the number of available cards of that type
+     *
      * @param type region type
-     * @return 
+     *
+     * @return
      */
     public int getNumberOfAvailableCards(RegionType type) {
         try {

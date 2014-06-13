@@ -6,6 +6,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Market;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
@@ -63,6 +64,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     private String possibleAction;
 
+    private final Market market;
+
     /**
      * Creates a player connected to a given gameManager and one and only one
      * player = client. It sets up the array of shepherd as well as their wallet
@@ -71,14 +74,16 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      *
      * @param gameManager    The game manager controlling the game
      * @param playerNickName The nickName to whom the player is associated
+     * @param market         il market in cui il player vendrà le carte
      *
      * @throws RemoteException When the remote rmi call fails
      */
-    public Player(GameManager gameManager, String playerNickName) throws
+    public Player(GameManager gameManager, String playerNickName, Market market)
+            throws
             RemoteException {
         this.playerNickName = playerNickName;
         this.gameManager = gameManager;
-
+        this.market = market;
         this.shepherd = new Shepherd[gameManager.shepherd4player];
 
         if (gameManager.shepherd4player >= ControlConstants.SHEPHERD_FOR_FEW_PLAYERS.getValue()) {
@@ -135,20 +140,8 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         do {
             try {
                 //se il player si era disconnesso gli rimando il benvenuto
-                if (ServerManager.Nick2ClientProxyMap.get(
-                        playerNickName).needRefresh()) {
-                    //setto il needRefresh a false
-                    ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
-                            false);
-
-                    DebugLogger.println(
-                            "il giocatore " + playerNickName + " ha bisogno di un avvio gioco prima di ricominciare a giocare");
-
-                    gameManager.getController().refreshStartGame(
-                            playerNickName);
-                    gameManager.refreshInitialConditions(playerNickName);
-
-                }
+                handleReconnectionInTheSameTurn();
+                
                 DebugLogger.println(
                         "invio le azionio possibiil: " + possibleAction);
                 //raccogli la scelta
@@ -184,6 +177,25 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 }
             }
         } while (!outcomeOk);
+
+    }
+
+    private void handleReconnectionInTheSameTurn() {
+        //se il player si era disconnesso gli rimando il benvenuto
+        if (ServerManager.Nick2ClientProxyMap.get(
+                playerNickName).needRefresh()) {
+
+            //setto il needRefresh a false
+            ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
+                    false);
+
+            DebugLogger.println(
+                    "il giocatore " + playerNickName + "ha bisogno di un start game");
+
+            gameManager.getController().refreshStartGame(
+                    playerNickName);
+            gameManager.refreshInitialConditions(playerNickName);
+        }
 
     }
 
@@ -487,20 +499,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         while (!outcomeOk) {
             try {
                 //se il player si era disconnesso gli rimando il benvenuto
-                if (ServerManager.Nick2ClientProxyMap.get(
-                        playerNickName).needRefresh()) {
-
-                    //setto il needRefresh a false
-                    ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
-                            false);
-
-                    DebugLogger.println(
-                            "il giocatore " + playerNickName + "ha bisogno di un start game");
-
-                    gameManager.getController().refreshStartGame(
-                            playerNickName);
-                    gameManager.refreshInitialConditions(playerNickName);
-                }
+                handleReconnectionInTheSameTurn();
 
                 DebugLogger.println(
                         "chiedo posizionamento del pastore " + shepherdIndex + " al giocatore " + playerNickName);
@@ -1126,6 +1125,199 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     public String killOvineRemote(String shepherdNumber, String region,
                                   String typeToKill) throws RemoteException {
         return killOvine(shepherdNumber, region, typeToKill);
+    }
+
+    String[] getSellableCards() {
+        List<String> cardsAvailble = new ArrayList<String>();
+        DebugLogger.println("Carte vendibili del player " + playerNickName);
+
+        for (Card card : shepherd[0].getMyCards()) {
+            if (!card.isForSale() && !card.isInitial()) {
+                cardsAvailble.add(card.getType().toString());
+                DebugLogger.println(
+                        card.getType().toString() + " di valore " + card.getValue());
+            }
+        }
+
+        return cardsAvailble.toArray(new String[cardsAvailble.size()]);
+    }
+
+    public void putCardInMarket(String card, int price) {
+        for (Card cardToSell : shepherd[0].getMyCards()) {
+            if (cardToSell.getType().toString().equalsIgnoreCase(
+                    card) && !cardToSell.isForSale() && !cardToSell.isInitial()) {
+
+                //ho torvato la carta da vendere
+                cardToSell.setForSale(true);
+                cardToSell.setMarketValue(price);
+
+                market.addCard(cardToSell, gameManager.getPlayerIndexByNickName(
+                        playerNickName));
+                DebugLogger.println(
+                        "messa carta " + cardToSell.getType().toString()
+                        + " del giocatore " + playerNickName + " nel market per " + price);
+                break;
+            }
+        }
+
+    }
+
+    public boolean sellCard() throws PlayerDisconnectedException {
+        String[] sellableCards;
+        int numberOfDisconnections = 0;
+        //cerco le carte che il player può vendere     
+        sellableCards = getSellableCards();
+        if (sellableCards.length > 0) {
+            while (true) {
+                try {
+                    handleReconnectionInTheSameTurn();
+                    //se ce ne sono
+                    //chiedo quali vendere
+                    return gameManager.getController().sellCard(playerNickName,
+                            sellableCards);
+                } catch (PlayerDisconnectedException ex) {
+                    DebugLogger.println(
+                            "giocatore" + playerNickName + " disconnesso");
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
+
+                    //se il player si disconnette                   
+                    numberOfDisconnections++;
+
+                    //controllo il numero di volte che si è disconnesso nello stesso turno
+                    if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                        throw new PlayerDisconnectedException(
+                                "giocatore disconnesso durante market");
+                    }
+
+                    //se ha ancora chances lo metto in pausa
+                    try {
+                        Thread.sleep(
+                                NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(DebugLogger.class.getName()).log(
+                                Level.SEVERE,
+                                ex1.getMessage(), ex1);
+                    }
+                }
+            }
+        } else {
+            DebugLogger.println("non ci sono carte da vendere");
+            return false;
+        }
+    }
+
+    boolean buyCard() throws PlayerDisconnectedException {
+        List<Card> buyableCards;
+        int numberOfDisconnections = 0;
+
+        //cerco le carte che il player può comprare     
+        buyableCards = getBuyableCards();
+
+        if (buyableCards.size() > 0) {
+            while (true) {
+                try {
+                    handleReconnectionInTheSameTurn();
+                    //se ce ne sono
+                    //chiedo quali vendere
+                    return gameManager.getController().buyCard(playerNickName,
+                            buyableCards);
+                } catch (PlayerDisconnectedException ex) {
+                    DebugLogger.println(
+                            "giocatore" + playerNickName + " disconnesso");
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
+
+                    //se il player si disconnette                   
+                    numberOfDisconnections++;
+
+                    //controllo il numero di volte che si è disconnesso nello stesso turno
+                    if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+                        throw new PlayerDisconnectedException(
+                                "giocatore disconnesso durante market");
+                    }
+
+                    //se ha ancora chances lo metto in pausa
+                    try {
+                        Thread.sleep(
+                                NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(DebugLogger.class.getName()).log(
+                                Level.SEVERE,
+                                ex1.getMessage(), ex1);
+                    }
+                }
+            }
+        } else {
+            DebugLogger.println("non ci sono carte da comprare");
+            return false;
+        }
+    }
+
+    private List<Card> getBuyableCards() {
+        //per ogni tipo di carta consulto il market per saper se c'è quel
+        //tipo e quanto costa        
+        //confronto il costo con quello che posso permettermi
+        //se posso permettermelo lo aggiungo alle carte comprabili
+        //tirotno le carte comprabili
+
+        List<Card> cards = new ArrayList<Card>();
+        Card tmpCard;
+
+        for (RegionType type : RegionType.values()) {
+            if (type != RegionType.SHEEPSBURG) {
+                tmpCard = market.getCard(type);
+                if (tmpCard != null && tmpCard.getMarketValue() <= shepherd[0].getWallet().getAmount()) {
+                    cards.add(tmpCard);
+                }
+            }
+        }
+        return cards;
+
+    }
+
+    public void payCardFromMarket(String card) {
+
+        //devo trovare la carta col costo minore
+        Card cardToExchange = market.getCard(RegionType.valueOf(
+                card.toUpperCase()));
+        DebugLogger.println("carta da comprare trovata");
+
+        //tolgo il forSale alla carta
+        cardToExchange.setForSale(false);
+        DebugLogger.println("for sale cambiata");
+
+        //trovo il player che l'ha venduta
+        int owner = market.getOwnerByCard(cardToExchange);
+        DebugLogger.println("owner trovato :" + owner);
+
+        //diminuisco i soldi del player
+        shepherd[0].ifPossiblePay(cardToExchange.getMarketValue());
+
+        //aggiungo i soldi al venditore
+        gameManager.players.get(owner).getMainShepherd().earnMoney(
+                cardToExchange.getMarketValue());
+
+        //do la carta al player
+        shepherd[0].addCard(cardToExchange);
+
+        //la tolgo da chi la venduta
+        gameManager.players.get(owner).getMainShepherd().removeCard(
+                cardToExchange);
+
+        //la tolgo al market        
+        if (market.removeCard(cardToExchange, owner)) {
+            DebugLogger.println("Carta rimossa dal market");
+        }
+    }
+
+    public void putCardInMarketRemote(String card, int price) throws
+            RemoteException {
+        this.putCardInMarket(card, price);
+    }
+
+    public void payCardFromMarketRemote(String card) throws RemoteException {
+        this.payCardFromMarket(card);
     }
 
 }

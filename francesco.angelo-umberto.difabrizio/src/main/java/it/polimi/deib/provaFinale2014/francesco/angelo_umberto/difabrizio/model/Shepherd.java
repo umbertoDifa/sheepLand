@@ -126,7 +126,7 @@ public class Shepherd {
      *
      * @param card Carta da rimuovere
      */
-    protected void removeCard(Card card) {
+    public void removeCard(Card card) {
         this.myCards.remove(card);
     }
 
@@ -145,6 +145,10 @@ public class Shepherd {
             return true;
         }
         return false;
+    }
+    
+    public void earnMoney(int money){
+        wallet.setAmount(money + wallet.getAmount());
     }
 
 }

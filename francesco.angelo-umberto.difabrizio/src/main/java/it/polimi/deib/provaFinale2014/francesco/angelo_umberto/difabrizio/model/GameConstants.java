@@ -26,7 +26,7 @@ public enum GameConstants {
      * Numero di recinti finali
      */
     NUM_FINAL_FENCES(12),
-    NUM_NOT_FINAL_FENCES(5),//FIXME was 20
+    NUM_NOT_FINAL_FENCES(10),//FIXME was 20
     /**
      * Numero di recinti, finali + non finali
      */

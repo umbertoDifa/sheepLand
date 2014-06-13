@@ -1,7 +1,10 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * It's the view responsable to deal with the input-output from the console
@@ -561,7 +564,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param money
      */
     public void refreshOtherPlayerMoney(String otherPlayer, int money) {
-        showInfo("Il player " + otherPlayer + "ha " + money + " danari");
+        showInfo("Il player " + otherPlayer + " ha " + money + " danari");
     }
 
     /**
@@ -573,6 +576,56 @@ public class CommandLineView implements TypeOfViewController {
     public void refreshBankCard(String regionType, int availableCards) {
         showInfo(
                 "Nella regione " + regionType + " ci sono ancora " + availableCards + " carte.");
+    }
+
+    public boolean askWillingTo(String action) {
+        String choice;
+        do {
+            showInfo("Vuoi " + action + " una carta?(S/N)");
+            choice = stdIn.nextLine();
+
+            if ("S".equalsIgnoreCase(choice)) {
+                return true;
+            } else if ("N".equalsIgnoreCase(choice)) {
+                return false;
+            }
+            showInfo("Scelta non valida. Riprovare.");
+        } while (true);
+    }
+
+    public String askSellCard(String[] availableCards) {
+        showInfo("Carte da vendere disponibili:");
+        for (int i = 0; i < availableCards.length; i++) {
+            showInfo("-" + availableCards[i]);
+        }
+
+        showInfo("Scegli una carta da vendere:");
+        return stdIn.nextLine();
+    }
+
+    public int askPriceCard() {
+        int price;
+        do {
+            try {
+                showInfo("A quanto vuoi vendere la carta?");
+                price = Integer.parseInt(stdIn.nextLine());
+                return price;
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                        ex.getMessage(), ex);
+            }
+            showInfo("Il prezzo inserito non è valido");
+        } while (true);
+    }
+
+    public String askBuyMarketCard(String[] cards, int[] prices) {
+        showInfo("Carte disponibili da acquistare:");
+
+        for (int i = 0; i < cards.length; i++) {
+            showInfo("-Carta: " + cards[i] + " prezzo: " + prices[i]);
+        }
+        showInfo("Scegli una carta da acquistare:");
+        return stdIn.nextLine();
     }
 
 }

@@ -255,6 +255,31 @@ public interface ClientInterfaceRemote extends Remote {
      * @throws RemoteException If there's a connection problem
      */
     public String setUpShepherd(int idShepherd) throws RemoteException;
+    /**
+     * Asks to the client if he wants to sell cards
+     * @return true if he wants, false if not
+     * @throws RemoteException connection error
+     */
+    public boolean askSellCard() throws RemoteException;
+    /**
+     * Sell a card of the player among the available one
+     * @param sellableCards
+     * @throws RemoteException 
+     */
+    public void sellCard(String[] sellableCards) throws RemoteException;
+    
+    /**
+     * asks if the player want ot buy a card
+     * @return true if he wants, false if not
+     * @throws RemoteException 
+     */
+    public boolean askBuyCard() throws RemoteException;
+    /**
+     * Buy a card among the available ones
+     * @param buyableCards available card to buy
+     * @throws RemoteException 
+     */
+    public void buyCard(String[] buyableCards,int []prices) throws RemoteException;
 
     /**
      * Asks to the player to choose an action

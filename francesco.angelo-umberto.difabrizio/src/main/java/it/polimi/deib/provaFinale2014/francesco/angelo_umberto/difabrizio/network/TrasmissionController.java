@@ -1,6 +1,7 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.control.Player;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import java.util.HashMap;
 import java.util.List;
@@ -281,5 +282,32 @@ public abstract class TrasmissionController {
      */
     public abstract void refreshBankCards(String client, String[] regionTypes,
                                           int[] availableCards);
+
+    /**
+     * Asks to the user to sell a card
+     *
+     * @param client        which user
+     * @param sellableCards which card he can sell
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
+    public abstract boolean sellCard(String client, String[] sellableCards)
+            throws PlayerDisconnectedException;
+
+    /**
+     * Ask to the user to buy a card
+     *
+     * @param playerNickName which user
+     * @param buyableCards   which card to buy
+     *
+     * @return
+     *
+     * @throws PlayerDisconnectedException
+     */
+    public abstract boolean buyCard(String playerNickName,
+                                    List<Card> buyableCards) throws
+            PlayerDisconnectedException;
 
 }

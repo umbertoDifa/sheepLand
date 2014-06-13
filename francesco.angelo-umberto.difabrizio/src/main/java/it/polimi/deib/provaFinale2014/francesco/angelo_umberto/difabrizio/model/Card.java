@@ -9,6 +9,8 @@ public class Card {
 
     private int value;
     private int marketValue;
+    private boolean forSale;
+    private boolean initial;
 
     private final RegionType type;
 
@@ -28,14 +30,30 @@ public class Card {
         return value;
     }
 
+    public boolean isInitial() {
+        return initial;
+    }
+    
+    
+
     /**
      *
      * @param value Valore da assegnare alla carta
      * @param type  Tipo di carta
      */
     public Card(int value, RegionType type) {
+        this(value, type, false);
+    }
+    /**
+     * Create a card
+     * @param value value of the card
+     * @param type type
+     * @param initial if the card is initial
+     */
+    public Card(int value, RegionType type, boolean initial) {
         this.value = value;
         this.type = type;
+        this.initial = initial;
 
         //inizialmente il valore di mercato è settato al valore della carta
         this.marketValue = this.value;
@@ -65,6 +83,24 @@ public class Card {
      */
     public void setMarketValue(int marketValue) {
         this.marketValue = marketValue;
+    }
+
+    /**
+     * Returns if a card is for sale
+     *
+     * @return true if it's for sale, false if not
+     */
+    public boolean isForSale() {
+        return forSale;
+    }
+
+    /**
+     * Setes the for sale variable
+     *
+     * @param forSale true if the card has to be sold
+     */
+    public void setForSale(boolean forSale) {
+        this.forSale = forSale;
     }
 
 }

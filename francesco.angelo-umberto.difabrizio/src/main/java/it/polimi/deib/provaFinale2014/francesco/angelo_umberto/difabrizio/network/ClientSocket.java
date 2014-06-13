@@ -152,6 +152,16 @@ public class ClientSocket {
         serverOut.flush();
     }
 
+    private void sendBoolean(boolean message) {
+        serverOut.println(message);
+        serverOut.flush();
+    }
+
+    private void sendInt(int message) {
+        serverOut.println(message);
+        serverOut.flush();
+    }
+
     private void waitCommand() {
         boolean endOfGame = false;
         try {
@@ -218,6 +228,14 @@ public class ClientSocket {
                 } else if (MessageProtocol.BANK_CARD.equals(
                         MessageProtocol.valueOf(received))) {
                     refreshBankCard();
+                } else if (MessageProtocol.MARKET_BUY.equals(
+                        MessageProtocol.valueOf(received))) {
+                    buyCardFromMarket();
+                } else if (MessageProtocol.MARKET_SELL.equals(
+                        MessageProtocol.valueOf(
+                                received))) {
+                    sellCardToMarket();
+
                 } else if (MessageProtocol.PLAYER_DISCONNECTED.equals(
                         MessageProtocol.valueOf(
                                 received))) {
@@ -618,8 +636,95 @@ public class ClientSocket {
     private void refreshBankCard() {
         String regionType = receiveString();
         int availableCards = receiveInt();
-        
+
         view.refreshBankCard(regionType, availableCards);
+    }
+
+    private void sellCardToMarket() {
+        String[] cards;
+
+        boolean wantToSell = (view.askWillingTo("vendere"));
+        sendBoolean(wantToSell);
+
+        if (wantToSell) {
+            //receive number of cards
+            int numberOfCards = receiveInt();
+
+            cards = new String[numberOfCards];
+
+            for (int i = 0; i < numberOfCards; i++) {
+                cards[i] = receiveString();
+            }
+            String cardToSell = null;
+            boolean cardValid = false;
+
+            while (!cardValid) {
+
+                cardToSell = view.askSellCard(cards);
+                DebugLogger.println("Carta da vendere:" + cardToSell);
+
+                //check card
+                for (String card : cards) {
+                    if (card.equalsIgnoreCase(cardToSell)) {
+                        cardValid = true;
+                        break;
+                    }
+                }
+            }
+            boolean priceValid = false;
+            int price = 1;
+
+            while (!priceValid) {
+                price = view.askPriceCard();
+                if (price > 0 && price <= 4) {
+                    priceValid = true;
+                }
+            }
+            DebugLogger.println(
+                    "Invio carta da vendere " + cardToSell + " per un prezzo di " + price);
+            sendString(cardToSell);
+            sendInt(price);
+        }
+    }
+
+    private void buyCardFromMarket() {
+        boolean wantToBuy = (view.askWillingTo("comprare"));
+        DebugLogger.println("Decisione di comparare: " + wantToBuy);
+
+        sendBoolean(wantToBuy);
+        if (wantToBuy) {
+            //ricevo quante carte disponibili
+            int numberOfCards = receiveInt();
+            String[] cards = new String[numberOfCards];
+            int[] prices = new int[numberOfCards];
+
+            for (int i = 0; i < numberOfCards; i++) {
+                cards[i] = receiveString();
+                prices[i] = receiveInt();
+                DebugLogger.println(
+                        "Ricevuta carta " + i + " di tipo " + cards[i] + " per il prezzo di " + prices[i]);
+            }
+            String cardToBuy = null;
+            boolean cardValid = false;
+
+            while (!cardValid) {
+
+                cardToBuy = view.askBuyMarketCard(cards, prices);
+                DebugLogger.println("Carta da comprare:" + cardToBuy);
+
+                //check card
+                for (String card : cards) {
+                    if (card.equalsIgnoreCase(cardToBuy)) {
+                        cardValid = true;
+                        break;
+                    }
+                }
+            }
+            DebugLogger.println(
+                    "Invio carta da comprare " + cardToBuy);
+            sendString(cardToBuy);
+        }
+
     }
 
 }

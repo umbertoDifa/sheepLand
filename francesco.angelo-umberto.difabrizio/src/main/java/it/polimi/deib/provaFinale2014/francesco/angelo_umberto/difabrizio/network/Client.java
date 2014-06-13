@@ -51,7 +51,8 @@ public class Client {
                 stdOut.flush();
                 String typeOfConnection = stdIn.nextLine();
 
-                stdOut.println("Scegli interfaccia:\n1- CLC\n2- GUI");
+                stdOut.println(
+                        "Scegli interfaccia:\n1- CLC\n2- GUI statica\n3-GUI dinamica");
                 stdOut.flush();
                 String typeOfInterface = stdIn.nextLine();
 
@@ -68,6 +69,11 @@ public class Client {
                         ClientSocket client = new ClientSocket(ip,
                                 socketPort,
                                 new GuiView());
+                        client.startClient();
+                        valid = true;
+                    } else if ("3".equals(typeOfInterface)) {
+                        ClientSocket client = new ClientSocket(ip, socketPort,
+                                new DinamicGui());
                         client.startClient();
                         valid = true;
                     }
@@ -96,6 +102,23 @@ public class Client {
                         try {
                             client = new ClientRmi(ip, rmiPort, nameServer,
                                     new GuiView());
+                            client.startClient();
+                            DebugLogger.println("Client remoto attivo");
+                            synchronized (LOCK) {
+                                LOCK.wait();
+                            }
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(DebugLogger.class.getName()).log(
+                                    Level.SEVERE,
+                                    null, ex);
+                        }
+                        valid = true;
+                    } else if ("3".equals(typeOfInterface)) {
+                        //rmi-Gui dinamic
+                        ClientRmi client;
+                        try {
+                            client = new ClientRmi(ip, rmiPort, nameServer,
+                                    new DinamicGui());
                             client.startClient();
                             DebugLogger.println("Client remoto attivo");
                             synchronized (LOCK) {

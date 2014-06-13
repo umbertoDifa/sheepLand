@@ -82,4 +82,17 @@ public interface PlayerRemote extends Remote {
      */
     public String killOvineRemote(String shepherdNumber, String region,
                             String typeToKill) throws RemoteException;
+    /**
+     * Interface to calle the putCardInMarket of the player
+     * @param card
+     * @param price
+     * @throws RemoteException 
+     */
+    public void putCardInMarketRemote(String card, int price) throws RemoteException;
+    /**
+     * Interface to call teh sasme method in player
+     * @param card card to buy
+     * @throws RemoteException 
+     */
+    public void payCardFromMarketRemote(String card) throws RemoteException;
 }

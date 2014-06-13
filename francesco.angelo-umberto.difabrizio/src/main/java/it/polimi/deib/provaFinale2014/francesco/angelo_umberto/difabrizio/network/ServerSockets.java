@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -130,7 +131,7 @@ public class ServerSockets implements Runnable {
                 DebugLogger.println("Chiedo nick");
                 String nickName = getNickName();
 
-                if (isNewPlayer(nickName)) {
+                if (nickName != null && isNewPlayer(nickName)) {
 
                     //se non ho attivato tutte le partite
                     if (ServerManager.activatedGames < maxNumberOfGames) {
@@ -163,7 +164,7 @@ public class ServerSockets implements Runnable {
                         clientNickNames.clear();
 
                     }
-                } else {
+                } else if(nickName != null) {
                     if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
                         DebugLogger.println("Client già in gioco");
                         //rigettalo
@@ -239,7 +240,15 @@ public class ServerSockets implements Runnable {
 
     private String getNickName() throws IOException {
         Scanner fromLastClient = new Scanner(clientSocket.getInputStream());
-        return fromLastClient.nextLine();
+        try {
+            return fromLastClient.nextLine();
+        } catch (NoSuchElementException ex) {
+            //il client che doveva darmi il nick si disconnette
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            return null;
+        }
+
     }
 
     /**

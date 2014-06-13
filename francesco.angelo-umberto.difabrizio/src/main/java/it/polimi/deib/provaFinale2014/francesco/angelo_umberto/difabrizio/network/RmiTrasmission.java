@@ -1,10 +1,12 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.BlackSheep;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Card;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.SpecialAnimal;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Wolf;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -631,4 +633,58 @@ public class RmiTrasmission extends TrasmissionController {
         }
     }
 
+    @Override
+    public boolean sellCard(String client, String[] sellableCards) throws
+            PlayerDisconnectedException {
+        if (canPlayerReceive(client)) {
+            try {
+                //ricevo se vuole vendere
+                boolean wantToSell = ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        client)).getClientRmi().askSellCard();
+
+                if (wantToSell) {
+                    //invio carte
+                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                            client)).getClientRmi().sellCard(sellableCards);
+                }
+                return wantToSell;
+            } catch (RemoteException ex) {
+                setPlayerOffline(client, ex);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean buyCard(String playerNickName, List<Card> buyableCards)
+            throws PlayerDisconnectedException {
+        if (canPlayerReceive(playerNickName)) {
+            try {
+                //ricevo se vuole comprare
+                boolean wantToBuy = ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        playerNickName)).getClientRmi().askBuyCard();
+
+                if (wantToBuy) {
+                    String[] names = new String[buyableCards.size()];
+                    int[] prices = new int[buyableCards.size()];
+
+                    for (int i = 0; i < buyableCards.size(); i++) {
+                        names[i] = buyableCards.get(i).getType().toString();
+                        prices[i] = buyableCards.get(i).getMarketValue();
+                    }
+                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                            playerNickName)).getClientRmi().buyCard(names,
+                                    prices);
+
+                }
+                return wantToBuy;
+
+            } catch (RemoteException ex) {
+                setPlayerOffline(playerNickName, ex);
+
+            }
+
+        }
+        return false;
+    }
 }

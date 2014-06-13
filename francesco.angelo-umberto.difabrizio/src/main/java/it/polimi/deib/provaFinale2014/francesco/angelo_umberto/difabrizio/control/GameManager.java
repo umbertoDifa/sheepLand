@@ -7,6 +7,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Dice;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.GameConstants;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Map;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Market;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Ovine;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.OvineType;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.Region;
@@ -44,7 +45,10 @@ public class GameManager implements Runnable {
      * of the streets as well as the position of the blackSheep and the wolf
      */
     private final Map map;
-    private final List<Player> players = new ArrayList<Player>();
+    /**
+     * List of players in the game
+     */
+    protected final List<Player> players = new ArrayList<Player>();
     private final String[] clientNickNames;
     private final int playersNumber;
     /**
@@ -70,6 +74,8 @@ public class GameManager implements Runnable {
      */
     private final Bank bank;
 
+    private final Market market;
+
     /**
      * Creates a game manager connecting it to a given list of clientNickNames
      * and with a specified type of connection
@@ -94,6 +100,8 @@ public class GameManager implements Runnable {
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
+
+        this.market = new Market(playersNumber);
 
         //setto il pastore principale
         if (this.playersNumber <= ControlConstants.NUM_FEW_PLAYERS.getValue()) {
@@ -166,7 +174,7 @@ public class GameManager implements Runnable {
         for (int i = 0; i < playersNumber; i++) {
             try {
                 //lo aggiungo alla lista dei giocatori
-                players.add(new Player(this, clientNickNames[i]));
+                players.add(new Player(this, clientNickNames[i], market));
             } catch (RemoteException ex) {
                 Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                         ex.getMessage(), ex);
@@ -193,7 +201,7 @@ public class GameManager implements Runnable {
 
         setUpFences();
 
-        setUpShift();
+        this.firstPlayer = setUpShift();
 
         DebugLogger.println(
                 "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
@@ -303,11 +311,11 @@ public class GameManager implements Runnable {
         }
     }
 
-    private void setUpShift() {
+    private int setUpShift() {
         //creo oggetto random
         Random random = new Random();
         //imposto il primo giocatore a caso tra quelli presenti
-        this.firstPlayer = random.nextInt(this.playersNumber);
+        return random.nextInt(this.playersNumber);
     }
 
     /**
@@ -490,7 +498,14 @@ public class GameManager implements Runnable {
         }
     }
 
-    private int getPlayerIndexByNickName(String nickName) {
+    /**
+     * Given a nickName returns the index in the list of players
+     *
+     * @param nickName nickNmae of the player
+     *
+     * @return index
+     */
+    protected int getPlayerIndexByNickName(String nickName) {
         for (int i = 0; i < playersNumber; i++) {
             if (players.get(i).getPlayerNickName().equals(
                     nickName)) {
@@ -599,7 +614,7 @@ public class GameManager implements Runnable {
         boolean lastRound = false;
         int playerOffline = 0;
 
-        while (!(lastRound && roundComplete())) {
+        while (!(lastRound && roundComplete(this.firstPlayer,this.currentPlayer))) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
 
@@ -644,7 +659,8 @@ public class GameManager implements Runnable {
                 //se il prossimo a giocare è il primo del giro
                 if (currentPlayer == this.firstPlayer) {
                     //avvio il market  
-                    //FIXME this.startMarket();
+                    this.startMarket();
+                    
                     //muovo il lupo
                     DebugLogger.println("muovo lupo");
                     this.moveSpecialAnimal(this.map.getWolf());
@@ -672,20 +688,158 @@ public class GameManager implements Runnable {
         }
     }
 
-    private boolean roundComplete() {
+    private void startMarket() throws UnexpectedEndOfGameException {
+        //giro di sell
+        DebugLogger.println("inizio giro sell");
+        sellCardsRound();
+
+        //creo random player
+        int firstBuyer = setUpShift();
+        DebugLogger.println("primo giocatore ad acquistare: " + firstBuyer);
+
+        //giro di buy
+        buyCardsRound(firstBuyer);
+        DebugLogger.println("giro buy finito");
+        
+        //tolgo il check forSale da ogni carta rimasta nel market e tolgo le 
+        //carte rimaste dal market
+        market.clear();
+        DebugLogger.println("Market pulito");
+    }
+
+    private void sellCardsRound() throws UnexpectedEndOfGameException {
+        int playerOffline = 0;
+        boolean wantToSell;
+        do {
+            if (ServerManager.Nick2ClientProxyMap.get(
+                    clientNickNames[currentPlayer]).isOnline()) {
+
+                controller.brodcastCurrentPlayer(clientNickNames[currentPlayer]);
+
+                try {
+                    handleReconnection();
+
+                    playerOffline = 1;
+
+                    do {
+
+                        wantToSell = players.get(currentPlayer).sellCard();
+
+                    } while (wantToSell);
+                } catch (PlayerDisconnectedException ex) {
+
+                    //il giocatore si disconnette durante il suo turno di market
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
+
+                    controller.brodcastPlayerDisconnected(
+                            clientNickNames[currentPlayer]);
+                }
+            } else {
+                DebugLogger.println(
+                        "Player offline:" + clientNickNames[currentPlayer]);
+                //player offline
+                playerOffline++;
+
+                //skip player               
+                controller.brodcastPlayerDisconnected(
+                        clientNickNames[currentPlayer]);
+
+                if (playerOffline == this.playersNumber) {
+                    //tutti i player sono offline termino la partita
+                    throw new UnexpectedEndOfGameException(
+                            "Tutti i player si sono disconnesi, la partita termina");
+                }
+            }
+            
+            DebugLogger.println("Cambio giocatore:");
+            nextPlayer();
+        } while (!roundComplete(this.firstPlayer,this.currentPlayer));
+        DebugLogger.println("fuori dal while del seel");
+        
+
+    }
+
+    private void buyCardsRound(int firstBuyer) throws
+            UnexpectedEndOfGameException {
+        int playerOffline = 0;
+        boolean wantToBuy;
+        int currentBuyer = firstBuyer;
+
+        do {
+            if (ServerManager.Nick2ClientProxyMap.get(
+                    clientNickNames[currentBuyer]).isOnline()) {
+                
+                controller.brodcastCurrentPlayer(clientNickNames[currentBuyer]);
+                
+                try {                    
+                    handleReconnection();
+
+                    playerOffline = 1;
+
+                    do {
+                        wantToBuy = players.get(currentBuyer).buyCard();
+                    } while (wantToBuy);
+                    
+                } catch (PlayerDisconnectedException ex) {
+
+                    //il giocatore si disconnette durante il suo turno di market
+                    Logger.getLogger(DebugLogger.class.getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
+
+                    controller.brodcastPlayerDisconnected(
+                            clientNickNames[currentBuyer]);
+                }
+            } else {
+                DebugLogger.println(
+                        "Player offline:" + clientNickNames[currentBuyer]);
+                //player offline
+                playerOffline++;
+
+                //skip player               
+                controller.brodcastPlayerDisconnected(
+                        clientNickNames[currentBuyer]);
+
+                if (playerOffline == this.playersNumber) {
+                    //tutti i player sono offline termino la partita
+                    throw new UnexpectedEndOfGameException(
+                            "Tutti i player si sono disconnesi, la partita termina");
+                }
+            }
+
+            //refresh delle carte possedute da tutti
+            for (int i = 0; i < playersNumber; i++) {
+                refreshCards(i);
+            }
+
+            currentBuyer = nextBuyer(currentBuyer);
+        } while (!roundComplete(firstBuyer,currentBuyer));
+
+    }
+
+    private int nextBuyer(int currentBuyer) {
+        //aggiorno il player che gioca 
+        currentBuyer++;
+        //conto in modulo playersNumber
+        currentBuyer %= this.playersNumber;
+
+        return currentBuyer;
+    }
+
+    private boolean roundComplete(int first, int current) {
         if (ServerManager.Nick2ClientProxyMap.get(
-                clientNickNames[firstPlayer]).isOnline()) {
-            return currentPlayer == this.firstPlayer;
+                clientNickNames[first]).isOnline()) {
+            return current == first;
         }
         int temporaryFirstPlayer;
 
         for (int i = 0; i < this.playersNumber; i++) {
             //aggiorno il firstPlayer temporaneo
-            temporaryFirstPlayer = (this.firstPlayer + 1) % this.playersNumber;
+            temporaryFirstPlayer = (first + 1) % this.playersNumber;
 
             if (ServerManager.Nick2ClientProxyMap.get(
                     clientNickNames[temporaryFirstPlayer]).isOnline()) {
-                return currentPlayer == temporaryFirstPlayer;
+                return current == temporaryFirstPlayer;
             }
         }
 
@@ -715,7 +869,7 @@ public class GameManager implements Runnable {
             controller.refreshStartGame(clientNickNames[currentPlayer]);
 
             //lo aggiorno
-            this.refreshInitialConditions(clientNickNames[currentPlayer]);
+            this.refreshInitialConditions(clientNickNames[currentPlayer]);            
 
             //gli chiedo di settare tutti i pastori che non aveva settato
             int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
@@ -747,7 +901,7 @@ public class GameManager implements Runnable {
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
             this.players.get(player).chooseAndMakeAction();
-                        
+
         }
 
         //se sono finiti i recinti normali chiamo l'ultimo giro

@@ -586,8 +586,68 @@ public class ClientRmi implements ClientInterfaceRemote {
     }
 
     public void refreshBankCard(String type, int cardsAvailable) throws
-                                                                        RemoteException {
+            RemoteException {
         view.refreshBankCard(type, cardsAvailable);
+    }
+
+    public boolean askSellCard() throws RemoteException {
+        return view.askWillingTo("vendere");
+    }
+
+    public void sellCard(String[] sellableCards) throws RemoteException {
+        boolean cardValid = false;
+        String cardToSell = null;
+
+        while (!cardValid) {
+
+            cardToSell = view.askSellCard(sellableCards);
+            DebugLogger.println("Carta da vendere:" + cardToSell);
+
+            //check card
+            for (String card : sellableCards) {
+                if (card.equalsIgnoreCase(cardToSell)) {
+                    cardValid = true;
+                    break;
+                }
+            }
+        }
+        boolean priceValid = false;
+        int price = 1;
+
+        while (!priceValid) {
+            price = view.askPriceCard();
+            if (price > 0 && price <= 4) {
+                priceValid = true;
+            }
+        }
+        DebugLogger.println(
+                "Invio carta da vendere " + cardToSell + " per un prezzo di " + price);
+        playerRmi.putCardInMarketRemote(cardToSell, price);
+    }
+
+    public boolean askBuyCard() throws RemoteException {
+        return view.askWillingTo("comprare");
+    }
+
+    public void buyCard(String[] buyableCards, int[] prices) throws
+            RemoteException {
+        String cardToBuy = null;
+        boolean cardValid = false;
+
+        while (!cardValid) {
+
+            cardToBuy = view.askBuyMarketCard(buyableCards, prices);
+            DebugLogger.println("Carta da comprare:" + cardToBuy);
+
+            //check card
+            for (String card : buyableCards) {
+                if (card.equalsIgnoreCase(cardToBuy)) {
+                    cardValid = true;
+                    break;
+                }
+            }
+        }
+        playerRmi.payCardFromMarketRemote(cardToBuy);
     }
 
 }

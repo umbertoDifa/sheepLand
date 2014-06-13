@@ -107,9 +107,61 @@ public class SocketClientProxy extends ClientProxy {
      * @throws PlayerDisconnectedException if the player disconnects during is
      *                                     own shift
      */
-    protected String receive() throws PlayerDisconnectedException {
+    protected String receiveString() throws PlayerDisconnectedException {
         try {
             String answer = fromClient.nextLine();
+            return answer;
+        } catch (NoSuchElementException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            DebugLogger.println(
+                    "C'è stato un errore ricevendo dal client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE);
+            throw new PlayerDisconnectedException("Il player si è disconnesso");
+        }
+    }
+
+    /**
+     * Riceve un messaggio dal client
+     *
+     * @return il boolean ricevuta dal client
+     *
+     * @throws PlayerDisconnectedException if the player disconnects during is
+     *                                     own shift
+     */
+    protected boolean receiveBoolean() throws PlayerDisconnectedException {
+        try {
+            boolean answer = fromClient.nextBoolean();
+
+            //skip new line
+            receiveString();
+
+            return answer;
+        } catch (NoSuchElementException ex) {
+            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
+                    ex.getMessage(), ex);
+            DebugLogger.println(
+                    "C'è stato un errore ricevendo dal client lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE);
+            throw new PlayerDisconnectedException("Il player si è disconnesso");
+        }
+    }
+
+    /**
+     * Riceve un int dal client
+     *
+     * @return il int ricevuta dal client
+     *
+     * @throws PlayerDisconnectedException if the player disconnects during is
+     *                                     own shift
+     */
+    protected int receiveInt() throws PlayerDisconnectedException {
+        try {
+            int answer = fromClient.nextInt();
+
+            //skip new line
+            receiveString();
+
             return answer;
         } catch (NoSuchElementException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,

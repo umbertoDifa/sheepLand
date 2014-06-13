@@ -321,4 +321,40 @@ public interface TypeOfViewController {
      */
     public void refreshBankCard(String regionType, int availableCards);
 
+    /**
+     * Asks to the player if he wants to sell cards
+     *
+     * @param action comprare o vendere
+     *
+     * @return true if he want, false if not
+     */
+    public boolean askWillingTo(String action);
+
+    /**
+     * ask which card to sell between the available ones
+     *
+     *
+     * @param availableCards cards that can be sold
+     *
+     * @return the chosen card
+     */
+    public String askSellCard(String[] availableCards);
+
+    /**
+     * Asks the price at which a card must be sold
+     *
+     * @return
+     */
+    public int askPriceCard();
+
+    /**
+     * Asks whihc card to buy in the market among tha availables ones
+     *
+     * @param cards  available cards
+     * @param prices prices of those cards
+     *
+     * @return chose card
+     */
+    public String askBuyMarketCard(String[] cards, int[] prices);
+
 }
