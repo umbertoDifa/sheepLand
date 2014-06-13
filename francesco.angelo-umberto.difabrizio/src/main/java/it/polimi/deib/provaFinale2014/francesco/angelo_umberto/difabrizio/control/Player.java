@@ -56,7 +56,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * action in the current shift
      */
     protected Shepherd lastShepherd;
-    private static final String noSameShepherdString = "Non è possibile muovere due pastori diversi nello stesso turno";
+    private static final String NO_SAME_SHEPHERD_STRING = "Non è possibile muovere due pastori diversi nello stesso turno";
 
     /**
      * Lista di azioni che un player può fare, si aggiorna ad ogni azione del
@@ -182,11 +182,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
     private void handleReconnectionInTheSameTurn() {
         //se il player si era disconnesso gli rimando il benvenuto
-        if (ServerManager.Nick2ClientProxyMap.get(
+        if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                 playerNickName).needRefresh()) {
 
             //setto il needRefresh a false
-            ServerManager.Nick2ClientProxyMap.get(playerNickName).setRefreshNeeded(
+            ServerManager.NICK_2_CLIENT_PROXY_MAP.get(playerNickName).setRefreshNeeded(
                     false);
 
             DebugLogger.println(
@@ -509,7 +509,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                         playerNickName, shepherdIndex);
 
                 //resetto il numero di shepherd che il player dovrebbe settare dopo la riconnessione
-                ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.get(playerNickName).setNumberOfShepherdStillToSet(
                         0);
             } catch (PlayerDisconnectedException ex) {
                 DebugLogger.println(
@@ -524,7 +524,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                 //controllo il numero di volte che si è disconnesso nello stesso turno
                 if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
                     //salvo quanti pastori deve ancora settare
-                    ServerManager.Nick2ClientProxyMap.get(playerNickName).setNumberOfShepherdStillToSet(
+                    ServerManager.NICK_2_CLIENT_PROXY_MAP.get(playerNickName).setNumberOfShepherdStillToSet(
                             gameManager.shepherd4player - shepherdIndex);
 
                     throw new PlayerDisconnectedException(
@@ -590,7 +590,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         Street startStreet = currentShepherd.getStreet();
 
         if (lastShepherd != null && currentShepherd != lastShepherd) {
-            return noSameShepherdString;
+            return NO_SAME_SHEPHERD_STRING;
         }
 
         Street endStreet;
@@ -779,7 +779,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         //confermo di usare lo stesso pastore
         if (lastShepherd != null && lastShepherd != shepherd[shepherdIndex]) {
-            return noSameShepherdString;
+            return NO_SAME_SHEPHERD_STRING;
         }
 
         //controllo se la regione chiesta confina con la strada del pastore indicato 
@@ -871,7 +871,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
 
         //confermo di usare lo stesso pastore
         if (lastShepherd != null && lastShepherd != shepherd[shepherdIndex]) {
-            return noSameShepherdString;
+            return NO_SAME_SHEPHERD_STRING;
         }
 
         //se il pastore confina con la regione indicata

@@ -23,7 +23,7 @@ public class ServerManager {
      * interface to comunicate with the client and can be a socket proxy or an
      * rmi proxy
      */
-    public static final Map<String, ClientProxy> Nick2ClientProxyMap = new HashMap<String, ClientProxy>();
+    public static final Map<String, ClientProxy> NICK_2_CLIENT_PROXY_MAP = new HashMap<String, ClientProxy>();
     /**
      * It represents the number of active games. Since it's static it can be
      * modified by any thread which decrements it before dying

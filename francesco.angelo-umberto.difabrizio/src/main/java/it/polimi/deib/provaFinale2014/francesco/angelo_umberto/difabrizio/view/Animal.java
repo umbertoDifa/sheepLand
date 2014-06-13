@@ -36,21 +36,22 @@ public class Animal extends DraggableImageComponent {
         this.animalType = animalType;
         imagePreview = ImagePool.getByName(animalType + "P");
         image = ImagePool.getByName(animalType);
-        
+
         //setto l img da visualizzare
         super.setImage(image);
-        
+
         this.setDraggable(false);
-        
+
         widthPreview = imagePreview.getWidth(this);
         heightPreview = imagePreview.getHeight(this);
         width = image.getWidth(this);
         height = image.getHeight(this);
         preview = true;
-        this.setBackground(new Color(0,0,0,0));
-        if (!animalType.equals("blacksheep") && !animalType.equals("wolf")) {
+        this.setBackground(new Color(0, 0, 0, 0));
+        if (!"blacksheep".equals(animalType) && !"wolf".equals(animalType)) {
             numLabel = new JLabel("1");
-            numLabel.setPreferredSize(new Dimension(Dim.FONT.getH(), Dim.FONT.getW()));
+            numLabel.setPreferredSize(new Dimension(Dim.FONT.getH(),
+                    Dim.FONT.getW()));
             numLabel.setBackground(new Color(0, 0, 0, 0));
             numLabel.setForeground(Color.white);
             this.setLayout(null);
@@ -157,6 +158,7 @@ public class Animal extends DraggableImageComponent {
      * exists
      *
      * @return
+     *
      * @throws CloneNotSupportedException
      */
     @Override

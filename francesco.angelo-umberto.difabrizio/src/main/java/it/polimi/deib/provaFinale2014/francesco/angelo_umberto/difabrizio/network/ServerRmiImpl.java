@@ -141,7 +141,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
     public boolean connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException {
         //se il client che tenta di connettersi non esiste
-        if (!ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
+        if (!ServerManager.NICK_2_CLIENT_PROXY_MAP.containsKey(nickName)) {
 
             //se ci sono partite da poter avviare
             if (ServerManager.activatedGames < maxNumberOfGames) {
@@ -150,7 +150,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 clientNickNames.add(nickName);
                 DebugLogger.println(nickName + ": added");
 
-                ServerManager.Nick2ClientProxyMap.put(nickName,
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.put(nickName,
                         new RmiClientProxy(client));
                 //se è il primo player
                 if (numberOfPlayers == 1) {
@@ -167,7 +167,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 //comunque vada lo mappo
             } else {
                 DebugLogger.println("Client rifiutato");
-                RmiClientProxy clientToReject = (RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                RmiClientProxy clientToReject = (RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         nickName);
                 clientToReject.getClientRmi().disconnect(
                         "Il server è pieno riporavare più tardi");
@@ -175,7 +175,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 return false;
             }
         } else {
-            if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
+            if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).isOnline()) {
                 DebugLogger.println("Client già in gioco");
                 //rigettalo
                 client.disconnect(
@@ -187,22 +187,22 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                 DebugLogger.println("Client tenta di riconnettersi");
 
                 //salvo se aveva pastori da mettere
-                int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
+                int shepherdToSet = ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         nickName).getNumberOfShepherdStillToSet();
 
-                ServerManager.Nick2ClientProxyMap.remove(nickName);
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(nickName);
                 DebugLogger.println(nickName + " rimosso");
                 //metto il nuovo
-                ServerManager.Nick2ClientProxyMap.put(nickName,
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.put(nickName,
                         new RmiClientProxy(client));
                 DebugLogger.println(nickName + " aggiunto");
                 //setto il refresh
-                ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).setRefreshNeeded(
                         true);
                 DebugLogger.println(nickName + " settato refresh");
 
                 //setto i pastori mancanti
-                ServerManager.Nick2ClientProxyMap.get(nickName).setNumberOfShepherdStillToSet(
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).setNumberOfShepherdStillToSet(
                         shepherdToSet);
                 DebugLogger.println(
                         nickName + " settato pastori da mettere a " + shepherdToSet);
@@ -231,7 +231,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
                     "Ci scusiamo, non ci sono abbastanza giocatori per una partita");
             //elimina il loro record dai giocatori attivi
             for (String client : clientNickNames) {
-                ServerManager.Nick2ClientProxyMap.remove(client);
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(client);
             }
         }
         //comunque vada svuota la lista dei socket
@@ -245,7 +245,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         DebugLogger.println("Rifiuto Client.");
 
         //per tutti i client
-        for (Map.Entry pairs : ServerManager.Nick2ClientProxyMap.entrySet()) {
+        for (Map.Entry pairs : ServerManager.NICK_2_CLIENT_PROXY_MAP.entrySet()) {
             //se il loro nick è tra quelli in lista di attesa
             String nick = (String) pairs.getKey();
             if (clientNickNames.contains(nick)) {

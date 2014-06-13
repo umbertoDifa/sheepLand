@@ -65,8 +65,7 @@ public class Bank {
         this.initialCards.remove(index);
         return returnableCard; //ritornala
     }
-    
-    
+
     /**
      * Cerca una carta del tipo specificato nell'array delle carte disponibili e
      * la ritorna se esiste eliminandola da quelle disponibili altrimenti
@@ -220,11 +219,12 @@ public class Bank {
      * @param card Carta da caricare
      */
     public void loadCard(Card card) {
-        for (int i = 0; i < GameConstants.NUM_CARDS.getValue(); i++)
+        for (int i = 0; i < GameConstants.NUM_CARDS.getValue(); i++) {
             if (unusedCards[i] == null) {
                 unusedCards[i] = card;
                 return;
             }
+        }
     }
 
     /**

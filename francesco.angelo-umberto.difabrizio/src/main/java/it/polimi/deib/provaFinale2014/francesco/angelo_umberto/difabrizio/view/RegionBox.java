@@ -87,7 +87,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         //per ogni animale nella regione
         for (int i = 0; i < animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
-            if (animals.get(i).getAnimalType().equals(ovineType.toLowerCase())) {
+            if (animals.get(i).getAnimalType().equalsIgnoreCase(ovineType)) {
                 //se di quel tipo di animale vi è almeno 1 occorrenza
                 if (animals.get(i).getNum() > 0) {
                     //decrementa le occorrenze
@@ -111,7 +111,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         //per ogni animale nella regione
         for (int i = 0; i < animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
-            if (animals.get(i).getAnimalType().equals(animalType.toLowerCase())) {
+            if (animals.get(i).getAnimalType().equalsIgnoreCase(animalType)) {
                 this.remove(animals.get(i));
                 animals.remove(animals.get(i));
             }

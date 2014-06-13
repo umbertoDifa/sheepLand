@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
  */
 public class ImagePool {
 
-    private static final HashMap<String, Image> nameImageMap = new HashMap<String, Image>();
+    private static final HashMap<String, Image> NAME_IMAGE_MAP = new HashMap<String, Image>();
 
     /**
      * create an ImagePool
@@ -34,7 +34,7 @@ public class ImagePool {
     public static void add(String imgPath, String name) {
         try {
             Image image = ImageIO.read(new File(imgPath));
-            nameImageMap.put(name, image);
+            NAME_IMAGE_MAP.put(name, image);
             DebugLogger.println("immagine " + name + " aggiunta al pool");
         } catch (IOException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
@@ -51,6 +51,6 @@ public class ImagePool {
      * @return
      */
     public static Image getByName(String name) {
-        return nameImageMap.get(name);
+        return NAME_IMAGE_MAP.get(name);
     }
 }

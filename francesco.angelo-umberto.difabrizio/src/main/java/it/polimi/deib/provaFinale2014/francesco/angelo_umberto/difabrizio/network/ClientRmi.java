@@ -67,10 +67,7 @@ public class ClientRmi implements ClientInterfaceRemote {
 
             //cerco l'oggetto nel registry
             serverRmi = (ServerRmi) registry.lookup(
-                    nameServer);
-
-            Scanner stdIn = new Scanner(System.in);
-            PrintWriter stdOut = new PrintWriter(System.out);
+                    nameServer);          
 
             DebugLogger.println(
                     "Canali di comunicazione impostati");

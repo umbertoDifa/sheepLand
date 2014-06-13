@@ -40,8 +40,8 @@ public abstract class TrasmissionController {
      * @return true se il giocatore è online e aggiornato, false altrimenti
      */
     protected boolean canPlayerReceive(String nickName) {
-        return ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()
-                && !ServerManager.Nick2ClientProxyMap.get(nickName).needRefresh();
+        return ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).isOnline()
+                && !ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).needRefresh();
     }
 
     /**
