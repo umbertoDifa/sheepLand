@@ -37,7 +37,7 @@ import javax.swing.*;
  * @author Francesco
  */
 public class GuiView implements MouseListener, TypeOfViewController,
-                                ActionListener {
+        ActionListener {
 
     private JFrame frame;
     private JPanel mainJPanel;
@@ -58,6 +58,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     protected RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
     private JScrollPane historyScrollPane;
+    private Market market;
 
     private String[] nickNames;
     private String myNickName;
@@ -305,7 +306,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 Dim.INFO_PANEL.getW(), Dim.INFO_PANEL.getH());
         nickPanel.setBounds(Dim.NICK_PANEL_POSITION.getW(), Dim.NICK_PANEL_POSITION.getH(), Dim.NICK_PANEL.getW(), Dim.NICK_PANEL.getH());
         historyScrollPane.setPreferredSize(new Dimension(Dim.HISTORY.getW(), Dim.HISTORY.getH()));
-
 
     }
 
@@ -559,7 +559,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param e
      */
     public void mouseReleased(MouseEvent e) {
-        DebugLogger.println("mouse released in : "+e.getLocationOnScreen().x+" "+e.getLocationOnScreen().y);
+        DebugLogger.println("mouse released in : " + e.getLocationOnScreen().x + " " + e.getLocationOnScreen().y);
     }
 
     /**
@@ -590,7 +590,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param y
      */
     public static void addComponentsToPane(Container panelFather,
-                                           JComponent panelSon, int x, int y) {
+            JComponent panelSon, int x, int y) {
 
         panelFather.setLayout(null);
         panelFather.add(panelSon);
@@ -625,6 +625,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         ImagePool.add(".\\images\\nickPanel.png", "nickPanel");
         ImagePool.add(".\\images\\cup.png", "cup");
         ImagePool.add(".\\images\\lose.png", "lose");
+
     }
 
     /**
@@ -870,6 +871,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].increase(
                 1);
+        String bankNum = cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].bankNum.getText();
+        cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].bankNum.setText(String.valueOf(Integer.parseInt(bankNum) - 1));
         playersJPanels[getIndexPlayerByNickName(myNickName)].pay(
                 Integer.parseInt(price));
         historyPanel.show(
@@ -898,7 +901,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param shepherd4player
      */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
-                                      int shepherd4player) {
+            int shepherd4player) {
         this.nickNames = nickNames;
         this.numOfPlayers = nickNames.length;
         this.shepherds4player = shepherd4player;
@@ -965,7 +968,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param newType
      */
     public void showMateSheepWith(String region, String otherType,
-                                  String newType) {
+            String newType) {
         //TODO animazione accoppiamento?
         hideInfoPanel();
 
@@ -1069,7 +1072,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param numbOfLamb
      */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         hideInfoPanel();
 
         regionBoxes[regionIndex].removeAllAnimals();
@@ -1094,7 +1097,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param shepherdIndex
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd, int shepherdIndex) {
+            String nickShepherd, int shepherdIndex) {
         hideInfoPanel();
 
         if (fence) {
@@ -1119,7 +1122,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param price
      */
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-                                    String streetIndex, int price) {
+            String streetIndex, int price) {
         hideInfoPanel();
 
         DebugLogger.println(
@@ -1164,6 +1167,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         hideInfoPanel();
 
         playersJPanels[getIndexPlayerByNickName(buyer)].pay(price);
+        String bankNum = cardsJPanels[RegionType.valueOf(land.toUpperCase()).getIndex()].bankNum.getText();
+        cardsJPanels[RegionType.valueOf(land.toUpperCase()).getIndex()].bankNum.setText(String.valueOf(Integer.parseInt(bankNum) - 1));
         showInfo("Il giocatore " + buyer + " ha acquistato un territorio "
                 + land + " per " + price + " danari");
     }
@@ -1177,7 +1182,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param outcome
      */
     public void refreshKillOvine(String killer, String region, String type,
-                                 String outcome) {
+            String outcome) {
         hideInfoPanel();
         if ("ok".equals(outcome)) {
             regionBoxes[Integer.parseInt(region)].removeOvine(type);
@@ -1240,7 +1245,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void refereshCard(String type, int value) {
         hideInfoPanel();
         cardsJPanels[RegionType.valueOf(type).getIndex()].increase(1);
-        historyPanel.show("Hai ricevuto una carta iniziale di tipo "+ type);
+        historyPanel.show("Hai ricevuto una carta iniziale di tipo " + type);
     }
 
     /**
@@ -1361,7 +1366,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @return
      */
     public String chooseAction(int[] availableActions,
-                               String[] availableStringedActions) {
+            String[] availableStringedActions) {
 
         hideInfoPanel();
 
@@ -1397,8 +1402,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param outcome
      */
     public void refreshMateSheepWith(String nickName, String region,
-                                     String otherType, String newType,
-                                     String outcome) {
+            String otherType, String newType,
+            String outcome) {
 
         hideInfoPanel();
 
@@ -1423,7 +1428,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param endRegion
      */
     public void refreshMoveOvine(String nickName, String type,
-                                 String startRegion, String endRegion) {
+            String startRegion, String endRegion) {
 
         hideInfoPanel();
 
@@ -1442,7 +1447,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (Card cardsJPanel : cardsJPanels) {
             cardsJPanel.setEnabled(true);
         }
-        historyPanel.show("Seleziona il territorio da comprare");
+        historyPanel.show("Seleziona il territorio da comprare dalla barra laterale sinistra");
         String idResult = getAnswerByHolder();
         return RegionType.getRegionByIndex(Integer.parseInt(idResult));
     }
@@ -1578,11 +1583,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param availableCards
      */
     public void refreshBankCard(String regionType, int availableCards) {
-        //TODO per angelo da implementare
+        cardsJPanels[RegionType.valueOf(regionType.toUpperCase()).getIndex()].bankNum.setText(String.valueOf(availableCards));
     }
 
     public boolean askWillingTo(String action) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     public String askSellCard(String[] availableCards) {
