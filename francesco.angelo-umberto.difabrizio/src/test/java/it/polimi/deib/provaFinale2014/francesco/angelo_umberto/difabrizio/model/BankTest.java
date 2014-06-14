@@ -12,10 +12,11 @@ import static org.junit.Assert.*;
 public class BankTest {
 
     Bank instance;
-  
+
     /**
      * Sets up a new bank with the game constants
-     * @throws Exception 
+     *
+     * @throws Exception
      */
     @Before
     public void setUp() throws Exception {
@@ -23,6 +24,10 @@ public class BankTest {
         instance = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
     /**
@@ -57,9 +62,11 @@ public class BankTest {
         }
 
     }
+
     /**
      * Tests the get card method
-     * @throws MissingCardException 
+     *
+     * @throws MissingCardException
      */
     @Test(expected = MissingCardException.class)
     public void testGetCardException() throws MissingCardException {
@@ -152,6 +159,7 @@ public class BankTest {
 
     /**
      * Test of getFence method, of class Bank.
+     *
      * @throws java.lang.Exception
      */
     @Test
@@ -240,6 +248,7 @@ public class BankTest {
 
     /**
      * Test of numberOfUsedFence method, getFence e loadFence, of class Bank.
+     *
      * @throws java.lang.Exception
      */
     @Test
@@ -302,6 +311,7 @@ public class BankTest {
 
     /**
      * Test of getPriceOfCard method, of class Bank.
+     *
      * @throws java.lang.Exception
      */
     @Test
@@ -348,6 +358,38 @@ public class BankTest {
         }
         //verifico exception
         assertTrue(exCounter == 100);
+    }
+
+    /**
+     * Test of getPriceOfCard method, of class Bank.
+     */
+    @Test
+    public void testGetPriceOfCard() throws MissingCardException {
+        System.out.println("getPriceOfCard");
+        RegionType type = RegionType.MOUNTAIN;
+        instance.loadCard(new Card(2, RegionType.MOUNTAIN));
+
+        int expResult = 2;
+
+        int result = instance.getPriceOfCard(type);
+        assertEquals(expResult, result);
+
+    }
+
+    /**
+     * Test of getNumberOfAvailableCards method, of class Bank.
+     */
+    @Test
+    public void testGetNumberOfAvailableCards() {
+        System.out.println("getNumberOfAvailableCards");
+        RegionType type = RegionType.MOUNTAIN;       
+
+        int expResult = 0;
+        
+        int result = instance.getNumberOfAvailableCards(type);
+        
+        assertEquals(expResult, result);
+     
     }
 
 }

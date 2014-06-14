@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
  * @author Umberto
  */
 public class DiceTest {
-
+  
     /**
      * Test of roll method, of class Dice.
      */

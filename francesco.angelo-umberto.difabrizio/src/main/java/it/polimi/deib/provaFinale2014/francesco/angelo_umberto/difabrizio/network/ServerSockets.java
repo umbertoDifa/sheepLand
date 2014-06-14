@@ -158,14 +158,14 @@ public class ServerSockets implements Runnable {
                         // rifiuto client
                         handleClientRejection(
                                 "Ci sono troppe partite attive riprovare più tardi");
-                        ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                        ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                                 nickName)).getSocket().close();
-                        ServerManager.Nick2ClientProxyMap.remove(nickName);
+                        ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(nickName);
                         clientNickNames.clear();
 
                     }
                 } else if(nickName != null) {
-                    if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
+                    if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).isOnline()) {
                         DebugLogger.println("Client già in gioco");
                         //rigettalo
                         rejectNameSake(clientSocket);
@@ -174,20 +174,20 @@ public class ServerSockets implements Runnable {
                         //rimuovo la vecchia instanza
                         DebugLogger.println("Client tenta di riconnettersi");
                         //salvo se aveva pastori da mettere
-                        int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
+                        int shepherdToSet = ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                                 nickName).getNumberOfShepherdStillToSet();
 
-                        ServerManager.Nick2ClientProxyMap.remove(nickName);
+                        ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(nickName);
 
                         //metto il nuovo
-                        ServerManager.Nick2ClientProxyMap.put(nickName,
+                        ServerManager.NICK_2_CLIENT_PROXY_MAP.put(nickName,
                                 new SocketClientProxy(clientSocket));
 
                         //setto il refresh
-                        ServerManager.Nick2ClientProxyMap.get(nickName).setRefreshNeeded(
+                        ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).setRefreshNeeded(
                                 true);
 
-                        ServerManager.Nick2ClientProxyMap.get(nickName).setNumberOfShepherdStillToSet(
+                        ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).setNumberOfShepherdStillToSet(
                                 shepherdToSet);
                         DebugLogger.println(
                                 nickName + " settato pastori da mettere a " + shepherdToSet);
@@ -228,7 +228,7 @@ public class ServerSockets implements Runnable {
                     "Mi dispiace non ci sono abbastanza giocatori per una partita, riprovare più tardi.");
             //elimina il loro record dai giocatori attivi
             for (String client : clientNickNames) {
-                ServerManager.Nick2ClientProxyMap.remove(client);
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(client);
             }
 
         }
@@ -261,11 +261,11 @@ public class ServerSockets implements Runnable {
      */
     private boolean isNewPlayer(String nickName) {
 
-        if (ServerManager.Nick2ClientProxyMap.containsKey(nickName)) {
+        if (ServerManager.NICK_2_CLIENT_PROXY_MAP.containsKey(nickName)) {
             return false;
         } else {
             //aggiungilo alla map
-            ServerManager.Nick2ClientProxyMap.put(nickName,
+            ServerManager.NICK_2_CLIENT_PROXY_MAP.put(nickName,
                     new SocketClientProxy(clientSocket));
             //aggiungilo ai client in connessione
             clientNickNames.add(nickName);
@@ -283,7 +283,7 @@ public class ServerSockets implements Runnable {
         DebugLogger.println("Rifiuto Client.");
 
         //per tutti i client
-        for (Map.Entry pairs : ServerManager.Nick2ClientProxyMap.entrySet()) {
+        for (Map.Entry pairs : ServerManager.NICK_2_CLIENT_PROXY_MAP.entrySet()) {
             //se il loro nick è tra quelli in lista di attesa
             String nick = (String) pairs.getKey();
             if (clientNickNames.contains(nick)) {

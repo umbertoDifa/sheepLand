@@ -33,7 +33,7 @@ public class RmiTrasmission extends TrasmissionController {
                               int numbOfRam, int numbOfLamb) {
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshRegion(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().refreshRegion(
                         regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
@@ -57,7 +57,7 @@ public class RmiTrasmission extends TrasmissionController {
                               String nickNameOfShepherdPlayer, int shepherdIndex) {
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshStreet(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().refreshStreet(
                         streetIndex, fence, nickNameOfShepherdPlayer,
                         shepherdIndex);
             } catch (RemoteException ex) {
@@ -79,7 +79,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName) && !nickName.equals(nickNamePlayer)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refereshCurrentPlayer(
                                     nickNamePlayer);
                 } catch (RemoteException ex) {
@@ -101,7 +101,7 @@ public class RmiTrasmission extends TrasmissionController {
     public void refreshCard(String nickName, String card, int value) {
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshCard(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().refreshCard(
                         card, value);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
@@ -130,7 +130,7 @@ public class RmiTrasmission extends TrasmissionController {
                 nickName = (String) pairs.getKey();
                 if (!nickName.equals(nickNameMover) && canPlayerReceive(nickName)) {
 
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshMoveShepherd(
                                     nickNameMover, shepherdInedx, endStreet,
                                     price);
@@ -157,7 +157,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameKiller) && canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshKillOvine(
                                     nickNameKiller, region, type, outcome);
 
@@ -183,7 +183,7 @@ public class RmiTrasmission extends TrasmissionController {
     public boolean askSetUpShepherd(String nickName, int shepherdIndex) throws
             PlayerDisconnectedException {
         try {
-            String chosenStreet = ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+            String chosenStreet = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     nickName)).getClientRmi().setUpShepherd(
                             shepherdIndex);
 
@@ -221,7 +221,7 @@ public class RmiTrasmission extends TrasmissionController {
         DebugLogger.println("Chiedo azione a " + nickName);
 
         try {
-            String action = ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+            String action = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     nickName)).getClientRmi().chooseAction(possibleActions);
 
             DebugLogger.println("ricevuto: " + action);
@@ -280,7 +280,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameMover) && canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshMoveOvine(
                                     nickNameMover, startRegion, endRegion,
                                     ovineType);
@@ -302,10 +302,10 @@ public class RmiTrasmission extends TrasmissionController {
     @Override
     public void refreshStartGame(String nickName) {
 
-        if (ServerManager.Nick2ClientProxyMap.get(nickName).isOnline()) {
+        if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).isOnline()) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().welcome();
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().connectPlayer(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().welcome();
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().connectPlayer(
                         getNick2PlayerMap().get(nickName));
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
@@ -329,7 +329,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameBuyer) && canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshBuyLand(
                                     nickNameBuyer, boughtLand, price);
                 } catch (RemoteException ex) {
@@ -374,7 +374,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameMater) && canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshMateSheepWith(
                                     nickNameMater, region, otherType, newType,
                                     outcome);
@@ -397,7 +397,7 @@ public class RmiTrasmission extends TrasmissionController {
         DebugLogger.println("refresh money a " + nickName);
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshMoney(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().refreshMoney(
                         ""
                         + getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
             } catch (RemoteException ex) {
@@ -420,7 +420,7 @@ public class RmiTrasmission extends TrasmissionController {
     ) {
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         nickName)).getClientRmi().showMyRank(
                                 "" + winner, "" + score);
             } catch (RemoteException ex) {
@@ -442,10 +442,10 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().showClassification(
                                     classification);
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().disconnect(
                                     "Il gioco è terminato\nArriverderci!");
 
@@ -463,7 +463,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshBlackSheep(
                                     movementResult);
 
@@ -481,7 +481,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshWolf(
                                     movementResult);
 
@@ -502,7 +502,7 @@ public class RmiTrasmission extends TrasmissionController {
             String nickName = (String) pairs.getKey();
             if (canPlayerReceive(nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().disconnect(
                                     "La partita è terminata a causa di mancanza di giocatori, ci scusiamo");
 
@@ -520,7 +520,7 @@ public class RmiTrasmission extends TrasmissionController {
                                              String region) {
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(nickName)).getClientRmi().refreshSpecialAnimalInitialPosition(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).getClientRmi().refreshSpecialAnimalInitialPosition(
                         animal + "," + region);
 
             } catch (RemoteException ex) {
@@ -538,7 +538,7 @@ public class RmiTrasmission extends TrasmissionController {
             if (!nickName.equals(nickNameDisconnected) && canPlayerReceive(
                     nickName)) {
                 try {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshPlayerDisconnected(
                                     nickNameDisconnected);
 
@@ -554,7 +554,7 @@ public class RmiTrasmission extends TrasmissionController {
         Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                 ex.getMessage(), ex);
 
-        ServerManager.Nick2ClientProxyMap.get(nickName).setStatus(
+        ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).setStatus(
                 NetworkConstants.OFFLINE);
 
         DebugLogger.println(
@@ -567,7 +567,7 @@ public class RmiTrasmission extends TrasmissionController {
     ) {
         if (canPlayerReceive(nickName)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         nickName)).getClientRmi().refreshGameParameters(
                                 nickNames, wallets, shepherd4player);
 
@@ -581,7 +581,7 @@ public class RmiTrasmission extends TrasmissionController {
     public void refreshNumberOfAvailableFence(String client, int fenceAvailable) {
         if (canPlayerReceive(client)) {
             try {
-                ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         client)).getClientRmi().refreshAvailableFences(
                                 fenceAvailable);
 
@@ -601,7 +601,7 @@ public class RmiTrasmission extends TrasmissionController {
                         String other = (String) couple.getKey();
                         if (!nickName.equals(other)) {
 
-                            ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                            ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                                     nickName)).getClientRmi().refreshOtherPlayerWallet(
                                             other,
                                             getNick2PlayerMap().get(other).getMainShepherd().getWallet().getAmount());
@@ -621,7 +621,7 @@ public class RmiTrasmission extends TrasmissionController {
         if (canPlayerReceive(client)) {
             try {
                 for (int i = 0; i < regionTypes.length; i++) {
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             client)).getClientRmi().refreshBankCard(
                                     regionTypes[i],
                                     availableCards[i]);
@@ -639,12 +639,12 @@ public class RmiTrasmission extends TrasmissionController {
         if (canPlayerReceive(client)) {
             try {
                 //ricevo se vuole vendere
-                boolean wantToSell = ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                boolean wantToSell = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         client)).getClientRmi().askSellCard();
 
                 if (wantToSell) {
                     //invio carte
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             client)).getClientRmi().sellCard(sellableCards);
                 }
                 return wantToSell;
@@ -664,7 +664,7 @@ public class RmiTrasmission extends TrasmissionController {
         if (canPlayerReceive(playerNickName)) {
             try {
                 //ricevo se vuole comprare
-                boolean wantToBuy = ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                boolean wantToBuy = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         playerNickName)).getClientRmi().askBuyCard();
 
                 if (wantToBuy) {
@@ -675,7 +675,7 @@ public class RmiTrasmission extends TrasmissionController {
                         names[i] = buyableCards.get(i).getType().toString();
                         prices[i] = buyableCards.get(i).getMarketValue();
                     }
-                    ((RmiClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             playerNickName)).getClientRmi().buyCard(names,
                                     prices);
 

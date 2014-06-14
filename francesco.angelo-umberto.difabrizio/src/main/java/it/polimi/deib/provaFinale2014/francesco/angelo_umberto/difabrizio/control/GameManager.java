@@ -429,13 +429,13 @@ public class GameManager implements Runnable {
         //elimo i nickName dalla mappa e se sono socket chiudo il socket
         for (String client : clientNickNames) {
             try {
-                if (ServerManager.Nick2ClientProxyMap.get(
+                if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         client) instanceof SocketClientProxy) {
-                    ((SocketClientProxy) ServerManager.Nick2ClientProxyMap.get(
+                    ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             client)).getSocket().close();
                 }
 
-                ServerManager.Nick2ClientProxyMap.remove(client);
+                ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(client);
             } catch (IOException ex) {
                 //il client che stavo eliminando ha già chiuso il socket
                 //poco male
@@ -619,7 +619,7 @@ public class GameManager implements Runnable {
             DebugLogger.println("Avvio esecuzione turno");
 
             //se il player è Online
-            if (ServerManager.Nick2ClientProxyMap.get(
+            if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).isOnline()) {
                 try {
                     handleReconnection();
@@ -711,7 +711,7 @@ public class GameManager implements Runnable {
         boolean wantToSell;
         do {
             DebugLogger.println("Inizio sell giocatore: "+currentPlayer);
-            if (ServerManager.Nick2ClientProxyMap.get(
+            if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).isOnline()) {
 
                 controller.brodcastCurrentPlayer(clientNickNames[currentPlayer]);
@@ -767,7 +767,7 @@ public class GameManager implements Runnable {
 
         do {
             DebugLogger.println("inizio buy giocatore "+currentBuyer);
-            if (ServerManager.Nick2ClientProxyMap.get(
+            if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentBuyer]).isOnline()) {
 
                 controller.brodcastCurrentPlayer(clientNickNames[currentBuyer]);
@@ -815,7 +815,8 @@ public class GameManager implements Runnable {
 
     }
 
-    private int nextBuyer(int currentBuyer) {
+    private int nextBuyer(int current) {
+        int currentBuyer = current;
         //aggiorno il player che gioca 
         currentBuyer++;
         //conto in modulo playersNumber
@@ -825,7 +826,7 @@ public class GameManager implements Runnable {
     }
 
     private boolean roundComplete(int first, int current) {
-        if (ServerManager.Nick2ClientProxyMap.get(
+        if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                 clientNickNames[first]).isOnline()) {
             return current == first;
         }
@@ -835,7 +836,7 @@ public class GameManager implements Runnable {
             //aggiorno il firstPlayer temporaneo
             temporaryFirstPlayer = (first + 1) % this.playersNumber;
 
-            if (ServerManager.Nick2ClientProxyMap.get(
+            if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[temporaryFirstPlayer]).isOnline()) {
                 return current == temporaryFirstPlayer;
             }
@@ -856,11 +857,11 @@ public class GameManager implements Runnable {
 
     private void handleReconnection() throws PlayerDisconnectedException {
         //controllo se il player ha bisogno di un refresh
-        if (ServerManager.Nick2ClientProxyMap.get(
+        if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                 clientNickNames[currentPlayer]).needRefresh()) {
 
             //setto il needRefresh a false
-            ServerManager.Nick2ClientProxyMap.get(
+            ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).setRefreshNeeded(false);
 
             //avvio il player che è tornato in partita
@@ -873,7 +874,7 @@ public class GameManager implements Runnable {
             refreshCards(currentPlayer);
 
             //gli chiedo di settare tutti i pastori che non aveva settato
-            int shepherdToSet = ServerManager.Nick2ClientProxyMap.get(
+            int shepherdToSet = ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).getNumberOfShepherdStillToSet();
 
             for (int i = 0; i < shepherdToSet; i++) {

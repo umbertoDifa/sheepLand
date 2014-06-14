@@ -343,8 +343,8 @@ public class ClientSocket {
         int[] wallets = new int[(token.length - 1) / 2];
 
         DebugLogger.println("lunghezza" + token.length);
-
-        for (int i = 0, j = 0; i < token.length - 1; j++) {
+        int i = 0;
+        for (int j = 0; i < token.length - 1; j++) {
             nickNames[j] = token[i];
             wallets[j] = Integer.parseInt(token[i + 1]);
 

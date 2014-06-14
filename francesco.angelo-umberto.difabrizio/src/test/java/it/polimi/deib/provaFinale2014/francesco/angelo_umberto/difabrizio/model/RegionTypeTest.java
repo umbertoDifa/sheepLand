@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -93,5 +92,18 @@ public class RegionTypeTest {
         types.addAll(Arrays.asList(RegionType.values()));
         
         System.err.println(types);
+    }
+
+    /**
+     * Test of getRegionByIndex method, of class RegionType.
+     */
+    @Test
+    public void testGetRegionByIndex() {
+        System.out.println("getRegionByIndex");
+        int index = 0;
+        String expResult = "Mountain";
+        String result = RegionType.getRegionByIndex(index);
+        assertTrue(result.equalsIgnoreCase(expResult));
+       
     }
 }

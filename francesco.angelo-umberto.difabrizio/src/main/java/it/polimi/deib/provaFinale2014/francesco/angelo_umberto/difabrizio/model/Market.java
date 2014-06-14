@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Market in which player sold their cards, can add a card or remove it and when
+ * queried it gives back a desidered card if it's present in the market
  *
  * @author francesco.angelo-umberto.difabrizio
  */
@@ -13,6 +15,11 @@ public class Market {
     private final int playersNumber;
     private List<List<Card>> playersThatSellCards;
 
+    /**
+     * Creates the market for a given number of player
+     *
+     * @param playersNumber
+     */
     public Market(int playersNumber) {
         this.playersNumber = playersNumber;
 

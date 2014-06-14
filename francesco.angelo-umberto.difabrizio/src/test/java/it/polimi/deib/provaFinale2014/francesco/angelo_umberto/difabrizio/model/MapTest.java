@@ -4,6 +4,7 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
+import java.util.List;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -56,6 +57,7 @@ public class MapTest {
 
     /**
      * Test of convertStringToStreet method, of class Map.
+     *
      * @throws java.lang.Exception
      */
     @Test
@@ -333,6 +335,34 @@ public class MapTest {
         assertTrue(map.getNodeIndex(map.getStreets()[12]) == 12);
         assertTrue(map.getNodeIndex(map.getStreets()[1]) == 1);
         assertTrue(map.getNodeIndex(map.getStreets()[0]) == 0);
+    }
+
+    /**
+     * Test of numberOfOvineIn method, of class Map.
+     */
+    @Test
+    public void testNumberOfOvineIn() throws RegionNotFoundException {
+        System.out.println("numberOfOvineIn");
+        RegionType type = RegionType.COUNTRYSIDE;
+        Map instance = new Map();
+        instance.setUp();
+        instance.getBlackSheep().setAt(instance.convertStringToRegion("10"));
+        int expResult = 0;
+        int result = instance.numberOfOvineIn(type);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getAllOvines method, of class Map.
+     */
+    @Test
+    public void testGetAllOvines() {
+        System.out.println("getAllOvines");
+        Map instance = new Map();
+        instance.setUp();
+        List<Ovine> result = instance.getAllOvines();
+        assertEquals(0, result.size());
+
     }
 
 }

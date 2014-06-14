@@ -1,7 +1,6 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model;
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
-import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,10 +38,6 @@ public class WolfTest {
         map.getBlackSheep().setAt(map.getRegions()[SHEEPSBURG_ID]);
         map.getWolf().setAt(map.getRegions()[SHEEPSBURG_ID]);
 
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**

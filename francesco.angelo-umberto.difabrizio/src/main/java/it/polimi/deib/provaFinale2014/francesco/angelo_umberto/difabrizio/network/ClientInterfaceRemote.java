@@ -97,7 +97,13 @@ public interface ClientInterfaceRemote extends Remote {
     public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) throws
             RemoteException;
-
+    
+    /**
+     * Refreshes the money of an other player
+     * @param otherPlayer
+     * @param otherMoney
+     * @throws RemoteException 
+     */
     public void refreshOtherPlayerWallet(String otherPlayer, int otherMoney)
             throws RemoteException;
 
