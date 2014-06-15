@@ -1303,7 +1303,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
         hideInfoPanel();
         if (value != -2) {
             cardsJPanels[RegionType.valueOf(type).getIndex()].increase(1);
-            historyPanel.show("Hai ricevuto una carta iniziale di tipo " + type);
         } else {
             removeAllCards();
         }

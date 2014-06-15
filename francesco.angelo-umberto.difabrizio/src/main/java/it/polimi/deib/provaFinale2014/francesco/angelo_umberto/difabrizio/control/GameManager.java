@@ -18,16 +18,20 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.NodeNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.RegionNotFoundException;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.model.exceptions.StreetNotFoundException;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.PlayerDisconnectedException;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.ServerManager;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.SocketClientProxy;
+import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.network.TrasmissionController;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +44,8 @@ import java.util.logging.Logger;
 public class GameManager implements Runnable {
 
     private final Thread myThread;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     /**
      * The map of a certain game. It holds the charateristics of the region and
      * of the streets as well as the position of the blackSheep and the wolf
@@ -120,6 +126,13 @@ public class GameManager implements Runnable {
         controller.setNick2PlayerMap(this.clientNickNames, players);
 
         myThread = new Thread(this);
+
+        final ScheduledFuture<?> connectionCheckerHandle = scheduler.scheduleWithFixedDelay(new Runnable() {
+            public void run() {
+                GameManager.controller.checkConnection();
+            }
+        }, 5, 15, TimeUnit.SECONDS
+        );
     }
 
     /**
@@ -175,9 +188,11 @@ public class GameManager implements Runnable {
             try {
                 //lo aggiungo alla lista dei giocatori
                 players.add(new Player(this, clientNickNames[i], market));
+
             } catch (RemoteException ex) {
-                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        ex.getMessage(), ex);
+                Logger.getLogger(DebugLogger.class
+                        .getName()).log(Level.SEVERE,
+                                ex.getMessage(), ex);
                 throw new RemoteException(
                         "Il player:" + clientNickNames[i] + " si è disconnesso");
             }
@@ -304,10 +319,12 @@ public class GameManager implements Runnable {
             try {
                 for (j = 0; j < this.shepherd4player; j++) {
                     players.get(currentPlayer).chooseShepherdStreet(j);
+
                 }
             } catch (PlayerDisconnectedException ex) {
-                Logger.getLogger(DebugLogger.class.getName()).log(
-                        Level.SEVERE, ex.getMessage(), ex);
+                Logger.getLogger(DebugLogger.class
+                        .getName()).log(
+                                Level.SEVERE, ex.getMessage(), ex);
                 //player disconnesso salto i suoi pastori
 
                 controller.brodcastPlayerDisconnected(
@@ -376,10 +393,12 @@ public class GameManager implements Runnable {
         try {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
+
         } catch (FinishedFencesException ex) {
 
-            Logger.getLogger(DebugLogger.class.getName()).log(
-                    Level.SEVERE, ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(
+                            Level.SEVERE, ex.getMessage(), ex);
         }
         //se il gioco va come deve o se finisco i recinti quando non devono cmq calcolo i punteggi
         //stilo la classifica in ordine decrescente
@@ -419,16 +438,18 @@ public class GameManager implements Runnable {
         DebugLogger.println("SetUpGame Effettuato");
         try {
             this.playTheGame();
+
         } catch (UnexpectedEndOfGameException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(), ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(), ex);
             //avvioso tutti i player della fine del gioco improvvisa
             //questo perchè se c'è solo un giocatore in partita la chiudo
             //però lo devo avvisare
             controller.unexpectedEndOfGame();
         }
 
-        //gameFinished
+//gameFinished
         DebugLogger.println("Gioco terminato");
 
         //elimo i nickName dalla mappa e se sono socket chiudo il socket
@@ -441,11 +462,13 @@ public class GameManager implements Runnable {
                 }
 
                 ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(client);
+
             } catch (IOException ex) {
                 //il client che stavo eliminando ha già chiuso il socket
                 //poco male
-                Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                        ex.getMessage(), ex);
+                Logger.getLogger(DebugLogger.class
+                        .getName()).log(Level.SEVERE,
+                                ex.getMessage(), ex);
             }
         }
 
@@ -541,9 +564,10 @@ public class GameManager implements Runnable {
                             map.getBlackSheep().getMyRegion()));
 
         } catch (NodeNotFoundException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(),
-                    ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(),
+                            ex);
         }
 
     }
@@ -574,10 +598,12 @@ public class GameManager implements Runnable {
         try {
             controller.refreshNumberOfAvailableFence(client,
                     GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue() - bank.numberOfUsedFence());
+
         } catch (FinishedFencesException ex) {
-            Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
-                    ex.getMessage(),
-                    ex);
+            Logger.getLogger(DebugLogger.class
+                    .getName()).log(Level.SEVERE,
+                            ex.getMessage(),
+                            ex);
         }
 
     }
@@ -638,18 +664,20 @@ public class GameManager implements Runnable {
 
                     //the shepherd used is set to none too
                     players.get(currentPlayer).lastShepherd = null;
-                    
+
                     //the movement of at least a shepherd is set to false
                     players.get(currentPlayer).hasMovedShepherd = false;
-                    
+
                     //the number of actions made is set to 0
                     players.get(currentPlayer).numberOfActionsMade = 0;
 
                     lastRound = this.executeShift(currentPlayer);
+
                 } catch (PlayerDisconnectedException ex) {
                     //il giocatore si disconnette durante il suo turno
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
+                    Logger.getLogger(DebugLogger.class
+                            .getName()).log(
+                                    Level.SEVERE, ex.getMessage(), ex);
 
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentPlayer]);
@@ -737,11 +765,13 @@ public class GameManager implements Runnable {
                         wantToSell = players.get(currentPlayer).sellCard();
 
                     } while (wantToSell);
+
                 } catch (PlayerDisconnectedException ex) {
 
                     //il giocatore si disconnette durante il suo turno di market
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
+                    Logger.getLogger(DebugLogger.class
+                            .getName()).log(
+                                    Level.SEVERE, ex.getMessage(), ex);
 
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentPlayer]);
@@ -795,8 +825,9 @@ public class GameManager implements Runnable {
                 } catch (PlayerDisconnectedException ex) {
 
                     //il giocatore si disconnette durante il suo turno di market
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
+                    Logger.getLogger(DebugLogger.class
+                            .getName()).log(
+                                    Level.SEVERE, ex.getMessage(), ex);
 
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentBuyer]);
@@ -917,7 +948,7 @@ public class GameManager implements Runnable {
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
             this.players.get(player).numberOfActionsMade = i;
-            
+
             DebugLogger.println(
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
@@ -1064,4 +1095,5 @@ public class GameManager implements Runnable {
 
         }
     }
+
 }
