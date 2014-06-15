@@ -1,6 +1,5 @@
 package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
-import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
@@ -166,9 +165,9 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
      * @param b
      */
     public void setAnimalsVisibles(boolean b) {
-        for (Animal animal : animals) {
-            if (animal != null) {
-                animal.setVisible(b);
+        for (int i=0; i<animals.size(); i++) {
+            if (animals.get(i) != null) {
+                animals.get(i).setVisible(b);
             }
         }
     }
@@ -179,9 +178,9 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
      * @param b
      */
     public void setAnimalPreview(boolean b) {
-        for (Animal animal : animals) {
-            if (animal != null) {
-                animal.setPreview(b);
+        for (int i=0; i<animals.size(); i++) {
+            if (animals.get(i) != null) {
+                animals.get(i).setPreview(b);
             }
         }
     }

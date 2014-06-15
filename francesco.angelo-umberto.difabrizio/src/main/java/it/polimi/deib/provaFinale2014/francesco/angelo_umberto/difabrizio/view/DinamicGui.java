@@ -13,14 +13,28 @@ import java.util.List;
 public class DinamicGui extends GuiView {
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mousePressed(MouseEvent e) {
         if (e.getSource() instanceof Animal) {
             Animal animal = (Animal) e.getSource();
             synchronized (HOLDER) {
                 HOLDER.add(animal.getAnimalType());
                 HOLDER.notify();
+                DebugLogger.println("aggiunto a holder " + animal.getAnimalType());
+
             }
-            DebugLogger.println("aggiunto a holder "+animal.getAnimalType());
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e
+    ) {
+        if (e.getSource() instanceof Animal) {
+            Animal animal = (Animal) e.getSource();
+//            synchronized (HOLDER) {
+//                HOLDER.add(animal.getAnimalType());
+//                HOLDER.notify();
+////            }
+//            DebugLogger.println("aggiunto a holder " + animal.getAnimalType());
             for (int i = 0; i < regionBoxes.length; i++) {
                 Point r = regionBoxes[i].getLocationOnScreen();
                 Point m = e.getLocationOnScreen();
@@ -28,14 +42,13 @@ public class DinamicGui extends GuiView {
                     synchronized (HOLDER) {
                         HOLDER.add(String.valueOf(i));
                         HOLDER.notify();
-                        DebugLogger.println("aggiunto a holder "+ i);
+                        DebugLogger.println("aggiunto a holder " + i);
                     }
                 }
             }
             animal.removeMouseListener(this);
         }
-        
-        
+
         //rimuovo tutti gli Animal dal layer 1
         Component[] toRemove = layeredPane.getComponentsInLayer(1);
         for (Component componentToRemove : toRemove) {
@@ -51,7 +64,7 @@ public class DinamicGui extends GuiView {
             //in modalità preview
             region.setAnimalPreview(true);
         }
-        
+
     }
 
     /**
@@ -61,11 +74,12 @@ public class DinamicGui extends GuiView {
      * @param i
      */
     @Override
-    protected void zoomAnimals(int i) {
+    protected void zoomAnimals(int i
+    ) {
         List<Animal> animalsToHighlight = regionBoxes[i].cloneAndHideAnimals();
         int j = 0;
         for (Animal animalToHighlight : animalsToHighlight) {
-            
+
             int animalWidth = animalToHighlight.getSize().width;
             int animalHeight = animalToHighlight.getSize().height;
             Point p = regionBoxes[i].getLocation();

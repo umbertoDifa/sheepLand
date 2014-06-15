@@ -380,7 +380,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             market.getButtonKo().setEnabled(false);
             market.getButtonOk().setEnabled(false);
 
-        } else if (e.getSource() instanceof JButton && market.getPriceButtons().contains((JButton)e.getSource())) {
+        } else if (e.getSource() instanceof JButton && market.getPriceButtons().contains((JButton) e.getSource())) {
             for (int i = 0; i < market.getPriceButtons().size(); i++) {
                 if (e.getSource() == market.getPriceButtons().get(i)) {
                     synchronized (HOLDER) {
@@ -777,8 +777,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println("nella getanswerbyholder");
 
         synchronized (HOLDER) {
-            HOLDER.clear();
             // wait for answer
+            HOLDER.clear();
             while (HOLDER.isEmpty()) {
                 DebugLogger.println("nel while");
 
@@ -1051,7 +1051,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         layeredPane.add(new RankPanel(result), new Integer(6));
         mainJPanel.revalidate();
         mainJPanel.repaint();
-        
+
     }
 
     /**
@@ -1390,10 +1390,22 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         playersJPanels[getIndexPlayerByNickName(player)].setEnabled(false);
         playersJPanels[getIndexPlayerByNickName(player)].setOpacity(true);
-        playersJPanels[getIndexPlayerByNickName(player)].setLayout(
-                new BorderLayout());
-        playersJPanels[getIndexPlayerByNickName(player)].add(
-                new DisconnectImage(), BorderLayout.CENTER);
+
+        boolean hasImage = false;
+        Component[] comps = playersJPanels[getIndexPlayerByNickName(player)].getComponents();
+        for (Component comp : comps) {
+            if (comp instanceof DisconnectImage) {
+                hasImage = true;
+            }
+        }
+
+        if (!hasImage) {
+            playersJPanels[getIndexPlayerByNickName(player)].setLayout(
+                    new BorderLayout());
+            playersJPanels[getIndexPlayerByNickName(player)].add(
+                    new DisconnectImage(), BorderLayout.CENTER);
+        }
+        
         historyPanel.show("Il giocatore " + player + " si è disconnesso");
         dxBar.revalidate();
         dxBar.repaint();
@@ -1431,13 +1443,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         hideInfoPanel();
 
-        //imposto visibilità players
-        playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
-        for (int i = 0; i < playersJPanels.length; i++) {
-            if (getIndexPlayerByNickName(myNickName) != i) {
-                playersJPanels[i].isNotYourShift();
-            }
-        }
+        setMyShiftView();
 
         //imposto cliccabili solo le actions
         for (int i = 0; i < availableActions.length; i++) {
@@ -1648,8 +1654,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public boolean askWillingTo(String action) {
+        setMyShiftView();
+
         DebugLogger.println("ASK WILLING TO " + action);
         market.askWillingToView(action);
+
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+
         String answer = getAnswerByHolder();
         Boolean boolAnswer = true;
         if ("true".equals(answer)) {
@@ -1672,6 +1684,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (Card card : cards) {
             card.addMouseListener(this);
         }
+
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+
         String cardToSell = getAnswerByHolder();
         market.setVisible(false);
         return cardToSell;
@@ -1683,6 +1699,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (JButton button : buttons) {
             button.addActionListener(this);
         }
+
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+
         int price = Integer.parseInt(getAnswerByHolder());
         market.setVisible(false);
         return price;
@@ -1697,6 +1717,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (Card card : cards) {
             card.addMouseListener(this);
         }
+
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
+
         String answer = getAnswerByHolder();
         market.setVisible(false);
 
@@ -1706,6 +1730,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private void removeAllCards() {
         for (Card card : cardsJPanels) {
             card.setText("0");
+        }
+    }
+
+    private void setMyShiftView() {
+        //imposto visibilità players
+        playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
+        for (int i = 0; i < playersJPanels.length; i++) {
+            if (getIndexPlayerByNickName(myNickName) != i) {
+                playersJPanels[i].isNotYourShift();
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 /**
  *
@@ -21,16 +24,21 @@ class Market extends JPanel {
     private final JButton buttonKo = new JButton("no");
 
     //bottoni valori
-    private final List<JButton> buttonsPrice = new ArrayList<JButton>();
+    private final List<JButton> buttonsPrice;
     
     //carte
-    private List<Card> cards = new ArrayList<Card>();
+    private List<Card> cards;
 
     //scritta
-    private final JLabel label = new JLabel();
+    private final JLabel label;
     
     //img sfondo
     private final Image image;
+    
+    //card container
+    private final JPanel cardContainer;
+    
+    private JScrollPane scroll;
 
 /**
  * create market with specified dimension, with a label for text messages,
@@ -39,13 +47,24 @@ class Market extends JPanel {
  * @param height 
  */
     public Market(int width, int height) {
+        this.buttonsPrice = new ArrayList<JButton>();
+        this.cards = new ArrayList<Card>();
+        this.label = new JLabel();
+        this.cardContainer = new JPanel();
+        this.scroll = new JScrollPane(cardContainer);
+        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         this.setPreferredSize(new Dimension(Dim.MARKET.getW(), Dim.MARKET.getH()));
         image = ImagePool.getByName("market");
         this.setLayout(null);
         this.add(label);
+        this.add(scroll);
         label.setFont(FontFactory.getFont());
         label.setBounds(50, 30, 430, 30);
+        scroll.setBounds(100, 100, 70*5, 70*2);
+        cardContainer.setPreferredSize(new Dimension(70*5, 70*5));
+        cardContainer.setLayout(new FlowLayout());
 
         this.buttonOk.setFont(FontFactory.getFont());
         this.buttonKo.setFont(FontFactory.getFont());
@@ -82,6 +101,7 @@ class Market extends JPanel {
     protected void askWillingToView(String action) {
         this.setVisible(true);
         removeOldCards();
+        scroll.setVisible(false);
 
         for (JButton button : buttonsPrice) {
             button.setVisible(false);
@@ -102,20 +122,23 @@ class Market extends JPanel {
     protected void askWhatSellView(String[] availableSellCards) {
         this.setVisible(true);
         removeOldCards();
+        scroll.setVisible(true);
 
         this.buttonOk.setVisible(false);
         this.buttonKo.setVisible(false);
 
         this.label.setText("MARKET: quali carte vuoi vendere?");
 
-        for (int i = 0; i < availableSellCards.length; i++) {
+        for (int i = 0, j=0; i < availableSellCards.length; i++) {
             Card card = new Card(FontFactory.getFont(), "", "", availableSellCards[i]);
             cards.add(card);
             card.setUp(".\\images\\" + availableSellCards[i].toLowerCase() + "2.png", 30, 30, 60, 60);
             card.setEnabled(true);
-            this.add(card);
-            card.setBounds((100 + i * 70), 100, 60, 60);
+            card.setPreferredSize(new Dimension(60, 60));
+            cardContainer.add(card);
         }
+        scroll.revalidate();
+        scroll.repaint();
     }
 
     /**
@@ -126,6 +149,7 @@ class Market extends JPanel {
      */
     public void askBuyView(String[] availableCards, int[] prices) {
         this.setVisible(true);
+        scroll.setVisible(true);
         
         removeOldCards();
 
@@ -139,9 +163,11 @@ class Market extends JPanel {
             cards.add(card);
             card.setUp(".\\images\\" + availableCards[i].toLowerCase() + "2.png", 30, 30, 60, 60);
             card.setEnabled(true);
-            this.add(card);
-            card.setBounds((100 + i * 70), 100, 60, 60);
+            card.setPreferredSize(new Dimension(60, 60));
+            cardContainer.add(card);
         }
+        scroll.revalidate();
+        scroll.repaint();
     }
 
     /**
@@ -149,6 +175,7 @@ class Market extends JPanel {
      */
     public void askPriceView() {
         this.setVisible(true);
+        scroll.setVisible(false);
         removeOldCards();
         this.label.setText("MARKET: a quanto la vuoi vendere?");
         for (JButton b : buttonsPrice) {
@@ -195,10 +222,10 @@ class Market extends JPanel {
      */
     private void removeOldCards() {
         cards.clear();
-        Component[] components = this.getComponents();
+        Component[] components = this.cardContainer.getComponents();
         for (Component comp : components) {
             if (comp instanceof Card) {
-                this.remove(comp);
+                cardContainer.remove(comp);
             }
         }
     }
