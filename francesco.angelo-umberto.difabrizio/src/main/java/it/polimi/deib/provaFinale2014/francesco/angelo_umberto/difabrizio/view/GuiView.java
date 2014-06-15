@@ -181,6 +181,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         actions[3] = new Action("Accoppia pecore");
         actions[4] = new Action("Accoppia montone e percora");
         actions[5] = new Action("Uccidi ovino");
+        market = new Market(Dim.MARKET.getW(), Dim.MARKET.getH());
 
         for (int i = 0; i < cardsJPanels.length; i++) {
             cardsJPanels[i] = new Card(FontFactory.getFont(), "9", "0");
@@ -239,6 +240,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         layeredPane.add(mainJPanel, new Integer(0));
         layeredPane.add(infoPanel, new Integer(3));
         layeredPane.add(nickPanel, new Integer(2));
+        layeredPane.add(market, new Integer(4));
         layeredPane.revalidate();
 
         mainJPanel.setLayout(new FlowLayout());
@@ -306,6 +308,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 Dim.INFO_PANEL.getW(), Dim.INFO_PANEL.getH());
         nickPanel.setBounds(Dim.NICK_PANEL_POSITION.getW(), Dim.NICK_PANEL_POSITION.getH(), Dim.NICK_PANEL.getW(), Dim.NICK_PANEL.getH());
         historyScrollPane.setPreferredSize(new Dimension(Dim.HISTORY.getW(), Dim.HISTORY.getH()));
+        market.setBounds(Dim.MARKET_POSITION.getW(), Dim.MARKET_POSITION.getH(), Dim.MARKET.getW(), Dim.MARKET.getH());
 
     }
 
@@ -340,6 +343,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
             card.addMouseListener(this);
             card.setEnabled(false);
         }
+
+        market.getButtonOk().addActionListener(this);
+        market.getButtonKo().addActionListener(this);
     }
 
     /**
@@ -349,10 +355,39 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param e
      */
     public void actionPerformed(ActionEvent e) {
-        myNickName = nickPanel.getMyNickName();
-        synchronized (HOLDER) {
-            HOLDER.add(myNickName);
-            HOLDER.notify();
+        if (e.getSource() == nickPanel.getButton()) {
+            myNickName = nickPanel.getMyNickName();
+            synchronized (HOLDER) {
+                HOLDER.add(myNickName);
+                HOLDER.notify();
+            }
+
+        } else if (e.getSource() == market.getButtonOk()) {
+            synchronized (HOLDER) {
+                HOLDER.add("true");
+                HOLDER.notify();
+            }
+            market.getButtonOk().setEnabled(false);
+            market.getButtonKo().setEnabled(false);
+
+        } else if (e.getSource() == market.getButtonKo()) {
+            synchronized (HOLDER) {
+                HOLDER.add("false");
+                HOLDER.notify();
+            }
+            market.getButtonKo().setEnabled(false);
+            market.getButtonOk().setEnabled(false);
+
+        } else if (market.getPriceButtons().contains(e.getSource())) {
+            for (int i = 0; i < market.getPriceButtons().size(); i++) {
+                if (e.getSource() == market.getPriceButtons().get(i)) {
+                    synchronized (HOLDER) {
+                        HOLDER.add(String.valueOf(i + 1));
+                        HOLDER.notify();
+                    }
+                }
+                market.getPriceButtons().get(i).setEnabled(false);
+            }
         }
     }
 
@@ -364,6 +399,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public void mouseClicked(MouseEvent e) {
         synchronized (HOLDER) {
+            DebugLogger.println("dentro mouse clicked");
             if (e.getSource() instanceof Action && ((Action) e.getSource()).isEnabled()) {
                 actionClicked(e);
 
@@ -375,7 +411,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 streetClicked(e);
 
             } else if (e.getSource() instanceof CardBoard && ((CardBoard) e.getSource()).isEnabled()) {
-
+                DebugLogger.println("dentro mouse clicked di una Cardboard");
                 cardBoardClicked(e);
 
             } else if (e.getSource() instanceof RegionBox && ((RegionBox) e.getSource()).isEnabled()) {
@@ -475,6 +511,17 @@ public class GuiView implements MouseListener, TypeOfViewController,
             }
             cardsJPanels[i].setEnabled(false);
             cardsJPanels[i].revalidate();
+        }
+
+        for (int i = 0; i < market.getCards().size(); i++) {
+            if (e.getSource().equals(market.getCards().get(i))) {
+                DebugLogger.println("carta terreno " + i + "selezionata");
+                HOLDER.add(market.getCards().get(i).getType());
+                HOLDER.notify();
+                DebugLogger.println(
+                        "aggiunto a holder carta terreno " + market.getCards().get(i).getType());
+            }
+            market.getCards().get(i).setEnabled(false);
         }
         mainJPanel.revalidate();
         mainJPanel.repaint();
@@ -599,6 +646,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         Dimension size = panelSon.getPreferredSize();
         panelSon.setBounds(x + insets.left, y + insets.top,
                 size.width, size.height);
+        panelFather.revalidate();
         panelFather.repaint();
     }
 
@@ -625,6 +673,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         ImagePool.add(".\\images\\nickPanel.png", "nickPanel");
         ImagePool.add(".\\images\\cup.png", "cup");
         ImagePool.add(".\\images\\lose.png", "lose");
+        ImagePool.add(".\\images\\market.png", "market");
 
     }
 
@@ -1244,8 +1293,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public void refereshCard(String type, int value) {
         hideInfoPanel();
-        cardsJPanels[RegionType.valueOf(type).getIndex()].increase(1);
-        historyPanel.show("Hai ricevuto una carta iniziale di tipo " + type);
+        if (value != -2) {
+            cardsJPanels[RegionType.valueOf(type).getIndex()].increase(1);
+            historyPanel.show("Hai ricevuto una carta iniziale di tipo " + type);
+        } else {
+            removeAllCards();
+        }
     }
 
     /**
@@ -1587,20 +1640,65 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public boolean askWillingTo(String action) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
+        DebugLogger.println("ASK WILLING TO "+ action);
+        market.askWillingToView(action);
+        String answer = getAnswerByHolder();
+        Boolean boolAnswer = true;
+        if("true".equals(answer)){
+            boolAnswer = true;
+        }else if ("false".equals(answer)){
+            boolAnswer = false;
+        }else{
+            DebugLogger.println("askWilling catcha risposta sbagliata!!!!:" +answer);
+        }
+        if (boolAnswer == false) {
+            market.setVisible(false);
+        }
+        return boolAnswer;
     }
 
     public String askSellCard(String[] availableCards) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        market.askWhatSellView(availableCards);
+
+        List<Card> cards = market.getCards();
+        for (Card card : cards) {
+            card.addMouseListener(this);
+        }
+        String cardToSell = getAnswerByHolder();
+        market.setVisible(false);
+        return cardToSell;
     }
 
     public int askPriceCard() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        market.askPriceView();
+        List<JButton> buttons = market.getPriceButtons();
+        for (JButton button : buttons) {
+            button.addActionListener(this);
+        }
+        int price = Integer.parseInt(getAnswerByHolder());
+        market.setVisible(false);
+        return price;
+
     }
 
-    public String askBuyMarketCard(String[] cards, int[] prices) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String askBuyMarketCard(String[] availableCards, int[] prices) {
+
+        market.askBuyView(availableCards, prices);
+
+        List<Card> cards = market.getCards();
+        for (Card card : cards) {
+            card.addMouseListener(this);
+        }
+        String answer = getAnswerByHolder();
+        market.setVisible(false);
+
+        return answer;
+    }
+
+    private void removeAllCards() {
+        for(Card card : cardsJPanels){
+            card.setText("0");
+        }
     }
 
 }
