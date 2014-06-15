@@ -38,10 +38,10 @@ public class RmiTrasmission extends TrasmissionController {
                                 regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
-
+                
             }
         }
-
+        
     }
 
     /**
@@ -64,10 +64,10 @@ public class RmiTrasmission extends TrasmissionController {
                                 shepherdIndex);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
-
+                
             }
         }
-
+        
     }
 
     /**
@@ -88,7 +88,7 @@ public class RmiTrasmission extends TrasmissionController {
                     setPlayerOffline(nickName, ex);
                 }
             }
-
+            
         }
     }
 
@@ -108,10 +108,10 @@ public class RmiTrasmission extends TrasmissionController {
                                 card, value);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
-
+                
             }
         }
-
+        
     }
 
     /**
@@ -126,13 +126,13 @@ public class RmiTrasmission extends TrasmissionController {
     public void refreshMoveShepherd(String nickNameMover, int shepherdInedx,
                                     String endStreet, int price) {
         String nickName = null;
-
+        
         try {
             //per tutti i nick tranne quello dato refresha
             for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
                 nickName = (String) pairs.getKey();
                 if (!nickName.equals(nickNameMover) && canPlayerReceive(nickName)) {
-
+                    
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshMoveShepherd(
                                     nickNameMover, shepherdInedx, endStreet,
@@ -163,12 +163,12 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshKillOvine(
                                     nickNameKiller, region, type, outcome);
-
+                    
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
                 }
             }
-
+            
         }
     }
 
@@ -199,9 +199,9 @@ public class RmiTrasmission extends TrasmissionController {
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-
+            
             setPlayerOffline(nickName, ex);
-
+            
             throw new PlayerDisconnectedException(
                     "Il player:" + nickName + " si è disconnesso");
         }
@@ -222,13 +222,13 @@ public class RmiTrasmission extends TrasmissionController {
     public boolean askChooseAction(String nickName, String possibleActions)
             throws PlayerDisconnectedException {
         DebugLogger.println("Chiedo azione a " + nickName);
-
+        
         try {
             String action = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     nickName)).getClientRmi().chooseAction(possibleActions);
-
+            
             DebugLogger.println("ricevuto: " + action);
-
+            
             if (!action.contains("null")) {
                 //tokenizza 
                 String token[] = action.split(",", -1);
@@ -258,24 +258,24 @@ public class RmiTrasmission extends TrasmissionController {
                         refreshKillOvine(nickName, token[1], token[2], token[3]);
                         refreshWallets();
                         return true;
-
+                    
                     default:
                         return false;
                 }
             }
             return false;
-
+            
         } catch (RemoteException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-
+            
             setPlayerOffline(nickName, ex);
-
+            
             throw new PlayerDisconnectedException(
                     "Il player:" + nickName + " si è disconnesso");
         }
     }
-
+    
     @Override
     public void refreshMoveOvine(String nickNameMover, String startRegion,
                                  String endRegion, String ovineType) {
@@ -289,12 +289,12 @@ public class RmiTrasmission extends TrasmissionController {
                                     ovineType);
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
-
+                    
                 }
             }
-
+            
         }
-
+        
     }
 
     /**
@@ -304,7 +304,7 @@ public class RmiTrasmission extends TrasmissionController {
      */
     @Override
     public void refreshStartGame(String nickName) {
-
+        
         if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).isOnline()) {
             try {
                 ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
@@ -316,7 +316,7 @@ public class RmiTrasmission extends TrasmissionController {
                 setPlayerOffline(nickName, ex);
             }
         }
-
+        
     }
 
     /**
@@ -329,7 +329,7 @@ public class RmiTrasmission extends TrasmissionController {
     @Override
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
                                int price) {
-
+        
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
             if (!nickName.equals(nickNameBuyer) && canPlayerReceive(nickName)) {
@@ -339,12 +339,12 @@ public class RmiTrasmission extends TrasmissionController {
                                     nickNameBuyer, boughtLand, price);
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
-
+                    
                 }
             }
-
+            
         }
-
+        
     }
 
     /**
@@ -387,9 +387,9 @@ public class RmiTrasmission extends TrasmissionController {
                     setPlayerOffline(nickName, ex);
                 }
             }
-
+            
         }
-
+        
     }
 
     /**
@@ -408,9 +408,9 @@ public class RmiTrasmission extends TrasmissionController {
                                 + getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
-
+                
             }
-
+            
         }
     }
 
@@ -431,7 +431,7 @@ public class RmiTrasmission extends TrasmissionController {
                                 "" + winner, "" + score);
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
-
+                
             }
         }
     }
@@ -454,16 +454,16 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().disconnect(
                                     "Il gioco è terminato\nArriverderci!");
-
+                    
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
-
+                    
                 }
             }
-
+            
         }
     }
-
+    
     private void refreshBlackSheep(String movementResult) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -472,16 +472,16 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshBlackSheep(
                                     movementResult);
-
+                    
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
-
+                    
                 }
             }
-
+            
         }
     }
-
+    
     private void refreshWolf(String movementResult) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
             String nickName = (String) pairs.getKey();
@@ -490,12 +490,12 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshWolf(
                                     movementResult);
-
+                    
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
                 }
             }
-
+            
         }
     }
 
@@ -511,15 +511,15 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().disconnect(
                                     "La partita è terminata a causa di mancanza di giocatori, ci scusiamo");
-
+                    
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
                 }
             }
-
+            
         }
     }
-
+    
     @Override
     public void refreshSpecialAnimalPosition(String nickName,
                                              SpecialAnimal animal,
@@ -529,15 +529,15 @@ public class RmiTrasmission extends TrasmissionController {
                 ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         nickName)).getClientRmi().refreshSpecialAnimalInitialPosition(
                                 animal + "," + region);
-
+                
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
-
+                
             }
         }
-
+        
     }
-
+    
     @Override
     public void brodcastPlayerDisconnected(String nickNameDisconnected) {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -548,26 +548,26 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             nickName)).getClientRmi().refreshPlayerDisconnected(
                                     nickNameDisconnected);
-
+                    
                 } catch (RemoteException ex) {
                     setPlayerOffline(nickName, ex);
                 }
             }
-
+            
         }
     }
-
+    
     private void setPlayerOffline(String nickName, Exception ex) {
         Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                 ex.getMessage(), ex);
-
+        
         ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).setStatus(
                 NetworkConstants.OFFLINE);
-
+        
         DebugLogger.println(
                 "Il player:" + nickName + " si è disconnesso, lo setto su offline");
     }
-
+    
     @Override
     public void refreshGameParameters(String nickName, String[] nickNames,
                                       int[] wallets, int shepherd4player
@@ -577,13 +577,13 @@ public class RmiTrasmission extends TrasmissionController {
                 ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         nickName)).getClientRmi().refreshGameParameters(
                                 nickNames, wallets, shepherd4player);
-
+                
             } catch (RemoteException ex) {
                 setPlayerOffline(nickName, ex);
             }
         }
     }
-
+    
     @Override
     public void refreshNumberOfAvailableFence(String client, int fenceAvailable) {
         if (canPlayerReceive(client)) {
@@ -591,13 +591,13 @@ public class RmiTrasmission extends TrasmissionController {
                 ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         client)).getClientRmi().refreshAvailableFences(
                                 fenceAvailable);
-
+                
             } catch (RemoteException ex) {
                 setPlayerOffline(client, ex);
             }
         }
     }
-
+    
     @Override
     public void refreshWallets() {
         for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
@@ -607,7 +607,7 @@ public class RmiTrasmission extends TrasmissionController {
                     for (Map.Entry couple : getNick2PlayerMap().entrySet()) {
                         String other = (String) couple.getKey();
                         if (!nickName.equals(other)) {
-
+                            
                             ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                                     nickName)).getClientRmi().refreshOtherPlayerWallet(
                                             other,
@@ -615,7 +615,7 @@ public class RmiTrasmission extends TrasmissionController {
                             DebugLogger.println(
                                     "invio wallet di: " + other + " al giocatore: " + nickName + " con denari " + getNick2PlayerMap().get(
                                             other).getMainShepherd().getWallet().getAmount());
-
+                            
                         }
                     }
                 }
@@ -624,7 +624,7 @@ public class RmiTrasmission extends TrasmissionController {
             }
         }
     }
-
+    
     @Override
     public void refreshBankCards(String client, String[] regionTypes,
                                  int[] availableCards) {
@@ -636,13 +636,13 @@ public class RmiTrasmission extends TrasmissionController {
                                     regionTypes[i],
                                     availableCards[i]);
                 }
-
+                
             } catch (RemoteException ex) {
                 setPlayerOffline(client, ex);
             }
         }
     }
-
+    
     @Override
     public boolean sellCard(String client, String[] sellableCards) throws
             PlayerDisconnectedException {
@@ -652,7 +652,7 @@ public class RmiTrasmission extends TrasmissionController {
                 //ricevo se vuole vendere
                 boolean wantToSell = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         client)).getClientRmi().askSellCard();
-
+                
                 if (wantToSell) {
                     DebugLogger.println(
                             "invio carte vendibili perchè voleva vendere a " + client);
@@ -663,14 +663,14 @@ public class RmiTrasmission extends TrasmissionController {
                 return wantToSell;
             } catch (RemoteException ex) {
                 setPlayerOffline(client, ex);
-
+                
                 throw new PlayerDisconnectedException(
                         "Il player:" + client + " si è disconnesso");
             }
         }
         return false;
     }
-
+    
     @Override
     public boolean buyCard(String playerNickName, List<Card> buyableCards)
             throws PlayerDisconnectedException {
@@ -680,13 +680,13 @@ public class RmiTrasmission extends TrasmissionController {
                 //ricevo se vuole comprare
                 boolean wantToBuy = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         playerNickName)).getClientRmi().askBuyCard();
-
+                
                 if (wantToBuy) {
                     DebugLogger.println(
                             "ricevuto wantToBuy true da " + playerNickName);
                     String[] names = new String[buyableCards.size()];
                     int[] prices = new int[buyableCards.size()];
-
+                    
                     for (int i = 0; i < buyableCards.size(); i++) {
                         names[i] = buyableCards.get(i).getType().toString();
                         prices[i] = buyableCards.get(i).getMarketValue();
@@ -694,19 +694,33 @@ public class RmiTrasmission extends TrasmissionController {
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             playerNickName)).getClientRmi().buyCard(names,
                                     prices);
-
+                    
                 }
                 return wantToBuy;
-
+                
             } catch (RemoteException ex) {
                 setPlayerOffline(playerNickName, ex);
-
+                
                 throw new PlayerDisconnectedException(
                         "Il player:" + playerNickName + " si è disconnesso");
-
+                
             }
-
+            
         }
         return false;
+    }
+    
+    @Override
+    public void checkConnection() {
+        for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            try {
+                DebugLogger.println("Invio check a :" + nickName);
+                ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                        nickName)).getClientRmi().checkConnection();
+            } catch (RemoteException ex) {
+                setPlayerOffline(nickName, ex);
+            }
+        }
     }
 }

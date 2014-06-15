@@ -2,13 +2,11 @@ package it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.netwo
 
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utility.DebugLogger;
 import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.view.TypeOfViewController;
-import java.io.PrintWriter;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,7 +65,7 @@ public class ClientRmi implements ClientInterfaceRemote {
 
             //cerco l'oggetto nel registry
             serverRmi = (ServerRmi) registry.lookup(
-                    nameServer);          
+                    nameServer);
 
             DebugLogger.println(
                     "Canali di comunicazione impostati");
@@ -683,6 +681,10 @@ public class ClientRmi implements ClientInterfaceRemote {
             }
         }
         playerRmi.payCardFromMarketRemote(cardToBuy);
+    }
+
+    public void checkConnection() throws RemoteException {
+        //basicalli do nothing if this call succedes is enough
     }
 
 }

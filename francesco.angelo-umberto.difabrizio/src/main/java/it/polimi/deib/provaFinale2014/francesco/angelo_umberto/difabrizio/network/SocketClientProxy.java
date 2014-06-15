@@ -45,6 +45,15 @@ public class SocketClientProxy extends ClientProxy {
         }
     }
 
+    protected void checkConnection() {
+        if (socket.isClosed() || socket.isInputShutdown() || socket.isOutputShutdown()) {
+            DebugLogger.println(
+                    "Il socket è closed lo status è posto su offline");
+            super.setStatus(NetworkConstants.OFFLINE);
+        }
+
+    }
+
     /**
      * Returns the socket
      *

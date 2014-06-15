@@ -924,4 +924,15 @@ public class SocketTrasmission extends TrasmissionController {
         return false;
     }
 
+    @Override
+    public void checkConnection() {
+        DebugLogger.println("Inizio check connessioni");
+        for (Map.Entry pairs : getNick2PlayerMap().entrySet()) {
+            String nickName = (String) pairs.getKey();
+            DebugLogger.println("Invio check a " + nickName);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).checkConnection();
+        }
+    }
+
 }

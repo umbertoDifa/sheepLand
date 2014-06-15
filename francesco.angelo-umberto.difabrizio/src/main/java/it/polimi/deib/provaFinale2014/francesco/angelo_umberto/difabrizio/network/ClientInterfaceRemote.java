@@ -316,5 +316,10 @@ public interface ClientInterfaceRemote extends Remote {
      * @throws RemoteException If there's a connection problem
      */
     public void showClassification(String classification) throws RemoteException;
+    /**
+     * Check if client is online
+     * @throws RemoteException 
+     */
+    public void checkConnection() throws RemoteException;
 
 }

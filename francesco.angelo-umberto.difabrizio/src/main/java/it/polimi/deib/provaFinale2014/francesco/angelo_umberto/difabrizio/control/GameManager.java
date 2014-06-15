@@ -45,7 +45,9 @@ public class GameManager implements Runnable {
 
     private final Thread myThread;
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
+            1);
+    private final ScheduledFuture<?> connectionCheckerHandle;
     /**
      * The map of a certain game. It holds the charateristics of the region and
      * of the streets as well as the position of the blackSheep and the wolf
@@ -87,10 +89,10 @@ public class GameManager implements Runnable {
      * and with a specified type of connection
      *
      * @param clientNickNames NickNames of the clients connected to the game
-     * @param controller Type of connection between cllient and server
+     * @param controller      Type of connection between cllient and server
      */
     public GameManager(List<String> clientNickNames,
-            TrasmissionController controller) {
+                       TrasmissionController controller) {
 
         this.controller = controller;
         //salvo il numero di player
@@ -127,11 +129,12 @@ public class GameManager implements Runnable {
 
         myThread = new Thread(this);
 
-        final ScheduledFuture<?> connectionCheckerHandle = scheduler.scheduleWithFixedDelay(new Runnable() {
-            public void run() {
-                GameManager.controller.checkConnection();
-            }
-        }, 5, 15, TimeUnit.SECONDS
+        connectionCheckerHandle = scheduler.scheduleWithFixedDelay(
+                new Runnable() {
+                    public void run() {
+                        GameManager.this.controller.checkConnection();
+                    }
+                }, 5, 15, TimeUnit.SECONDS
         );
     }
 
@@ -261,7 +264,8 @@ public class GameManager implements Runnable {
         for (int j = 0; j < numberOfCards; j++) {
             Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
                     j);
-            DebugLogger.println("Invio carta: " + card.getType().toString() + "al giocatore :" + indexOfPlayer);
+            DebugLogger.println(
+                    "Invio carta: " + card.getType().toString() + "al giocatore :" + indexOfPlayer);
             controller.refreshCard(clientNickNames[indexOfPlayer],
                     card.getType().toString(), card.getValue());
         }
@@ -330,6 +334,7 @@ public class GameManager implements Runnable {
                 controller.brodcastPlayerDisconnected(
                         clientNickNames[currentPlayer]);
             }
+
         }
     }
 
@@ -640,7 +645,7 @@ public class GameManager implements Runnable {
     }
 
     private void executeRounds() throws FinishedFencesException,
-            UnexpectedEndOfGameException {
+                                        UnexpectedEndOfGameException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
         int playerOffline = 0;
@@ -936,7 +941,7 @@ public class GameManager implements Runnable {
     }
 
     private boolean executeShift(int player) throws FinishedFencesException,
-            PlayerDisconnectedException {
+                                                    PlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
         controller.brodcastCurrentPlayer(clientNickNames[player]);

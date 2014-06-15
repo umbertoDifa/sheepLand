@@ -310,4 +310,9 @@ public abstract class TrasmissionController {
                                     List<Card> buyableCards) throws
             PlayerDisconnectedException;
 
+    /**
+     * Checks which player is online e which is not
+     */
+    public abstract void checkConnection();
+
 }
