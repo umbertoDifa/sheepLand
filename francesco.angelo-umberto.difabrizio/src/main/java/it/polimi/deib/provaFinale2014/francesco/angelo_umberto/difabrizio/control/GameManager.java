@@ -250,7 +250,7 @@ public class GameManager implements Runnable {
             controller.refreshCard(clientNickNames[indexOfPlayer],
                     card.getType().toString(), card.getValue());
         }
-    }
+    }       
 
     private void setUpInitialCards() {
 
@@ -814,7 +814,12 @@ public class GameManager implements Runnable {
 
             //refresh delle carte possedute da tutti
             brodcastCards();
-
+            
+            //refresh dei soldi
+            controller.refreshWallets();
+            
+            controller.refreshMoney(clientNickNames[currentBuyer]);
+            
             currentBuyer = nextBuyer(currentBuyer);
         } while (firstBuyer != currentBuyer);
 
