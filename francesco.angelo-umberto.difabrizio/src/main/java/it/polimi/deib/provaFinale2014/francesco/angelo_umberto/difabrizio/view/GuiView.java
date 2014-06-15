@@ -57,7 +57,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private Street[] streets;
     protected RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
-    private JScrollPane historyScrollPane;    
+    private JScrollPane historyScrollPane;
     private Market market;
 
     private String[] nickNames;
@@ -364,6 +364,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         } else if (e.getSource() == market.getButtonOk()) {
             synchronized (HOLDER) {
+                DebugLogger.println("bottone ok aggiunge a holde true");
                 HOLDER.add("true");
                 HOLDER.notify();
             }
@@ -372,19 +373,21 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         } else if (e.getSource() == market.getButtonKo()) {
             synchronized (HOLDER) {
+                DebugLogger.println("bottone ko aggiunge a holde false");
                 HOLDER.add("false");
                 HOLDER.notify();
             }
             market.getButtonKo().setEnabled(false);
             market.getButtonOk().setEnabled(false);
 
-        } else if (market.getPriceButtons().contains(e.getSource())) {
+        } else if (e.getSource() instanceof JButton && market.getPriceButtons().contains((JButton)e.getSource())) {
             for (int i = 0; i < market.getPriceButtons().size(); i++) {
                 if (e.getSource() == market.getPriceButtons().get(i)) {
                     synchronized (HOLDER) {
-                        DebugLogger.println("bottone price aggiunge a holder "+String.valueOf(i+1));
+                        DebugLogger.println("bottone price aggiunge a holder " + String.valueOf(i + 1));
                         HOLDER.add(String.valueOf(i + 1));
                         HOLDER.notify();
+                        break;
                     }
                 }
                 market.getPriceButtons().get(i).setEnabled(false);
@@ -403,12 +406,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             DebugLogger.println("dentro mouse clicked");
             if (e.getSource() instanceof Action && ((Action) e.getSource()).isEnabled()) {
                 actionClicked(e);
+                DebugLogger.println("dentro mouse clicked di una action");
 
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
 
             } else if (e.getSource() instanceof Street && ((Street) e.getSource()).isEnabled()) {
-
+                DebugLogger.println("dentro mouse clicked di una strada");
                 streetClicked(e);
 
             } else if (e.getSource() instanceof CardBoard && ((CardBoard) e.getSource()).isEnabled()) {
@@ -416,11 +420,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 cardBoardClicked(e);
 
             } else if (e.getSource() instanceof RegionBox && ((RegionBox) e.getSource()).isEnabled()) {
-
+                DebugLogger.println("dentro mouse clicked di una regione");
                 regionClicked(e);
 
             } else if (e.getSource() instanceof Animal && ((Animal) e.getSource()).isEnabled()) {
-
+                DebugLogger.println("dentro mouse clicked di una animal");
                 animalClicked(e);
 
             }
@@ -568,6 +572,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 Animal animal = (Animal) component;
                 //se ha AnimalType uguale all AnimalType di chi ha generato l evento
                 if (animal.getAnimalType().equals(chosenAnimal.getAnimalType())) {
+                    DebugLogger.println("dentro la catch di animalclicked");
                     //aggiungo ad holder il corrispondente tipo
                     HOLDER.add(animal.getAnimalType());
                     HOLDER.notify();
@@ -772,6 +777,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println("nella getanswerbyholder");
 
         synchronized (HOLDER) {
+            HOLDER.clear();
             // wait for answer
             while (HOLDER.isEmpty()) {
                 DebugLogger.println("nel while");
@@ -891,7 +897,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * {@inheritDoc }
      */
     public void showEndGame() {
-        showInfo("Il gioco è terminato. Arrivederci.");
+        historyPanel.show("Il gioco è terminato. Arrivederci.");
     }
 
     /**
@@ -1045,6 +1051,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         layeredPane.add(new RankPanel(result), new Integer(6));
         mainJPanel.revalidate();
         mainJPanel.repaint();
+        
     }
 
     /**
@@ -1641,16 +1648,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     public boolean askWillingTo(String action) {
-        DebugLogger.println("ASK WILLING TO "+ action);
+        DebugLogger.println("ASK WILLING TO " + action);
         market.askWillingToView(action);
         String answer = getAnswerByHolder();
         Boolean boolAnswer = true;
-        if("true".equals(answer)){
+        if ("true".equals(answer)) {
             boolAnswer = true;
-        }else if ("false".equals(answer)){
+        } else if ("false".equals(answer)) {
             boolAnswer = false;
-        }else{
-            DebugLogger.println("askWilling catcha risposta sbagliata!!!!:" +answer);
+        } else {
+            DebugLogger.println("askWilling catcha risposta sbagliata!!!!:" + answer);
         }
         if (boolAnswer == false) {
             market.setVisible(false);
@@ -1697,7 +1704,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     private void removeAllCards() {
-        for(Card card : cardsJPanels){
+        for (Card card : cardsJPanels) {
             card.setText("0");
         }
     }

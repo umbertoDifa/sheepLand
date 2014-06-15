@@ -815,6 +815,10 @@ public class GameManager implements Runnable {
             //refresh delle carte possedute da tutti
             brodcastCards();
 
+            for(String client: clientNickNames){
+                controller.refreshMoney(client);
+            }
+            
             currentBuyer = nextBuyer(currentBuyer);
         } while (firstBuyer != currentBuyer);
 
