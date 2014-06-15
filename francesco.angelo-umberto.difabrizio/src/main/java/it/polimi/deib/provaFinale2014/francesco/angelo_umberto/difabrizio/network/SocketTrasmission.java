@@ -29,17 +29,22 @@ public class SocketTrasmission extends TrasmissionController {
     public void refreshRegion(String nickName, int regionIndex, int numbOfSheep,
                               int numbOfRam, int numbOfLamb) {
         if (canPlayerReceive(nickName)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.REGION.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.REGION.toString());
 
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    regionIndex);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    numbOfSheep);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    numbOfRam);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    numbOfLamb);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            regionIndex);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            numbOfSheep);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            numbOfRam);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            numbOfLamb);
         }
     }
 
@@ -55,16 +60,21 @@ public class SocketTrasmission extends TrasmissionController {
     public void refreshStreet(String nickName, int streetIndex, boolean fence,
                               String nickNameOfShepherdPlayer, int shepherdIndex) {
         if (canPlayerReceive(nickName)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.STREET.toString());
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    streetIndex);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    fence);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    nickNameOfShepherdPlayer);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    shepherdIndex);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.STREET.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            streetIndex);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            fence);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            nickNameOfShepherdPlayer);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            shepherdIndex);
         }
     }
 
@@ -97,12 +107,15 @@ public class SocketTrasmission extends TrasmissionController {
      */
     public void refreshCard(String nickName, String type, int value) {
         if (canPlayerReceive(nickName)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.CARD.toString());
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    type);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    value);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.CARD.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            type);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            value);
         }
     }
 
@@ -541,15 +554,17 @@ public class SocketTrasmission extends TrasmissionController {
 
             DebugLogger.println(
                     "invio risultato mateSheepWith " + result + "," + type);
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    result + "," + type);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            result + "," + type);
 
             refreshMateSheepWith(nickName, region, type, token[1], "ok");
             return true;
         } else if ("Il valore del dado è diverso dalla strada del pastore".equals(
                 result)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    result);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            result);
             refreshMateSheepWith(nickName, region, type, token[1], "nok");
             return true;
         }
@@ -567,10 +582,12 @@ public class SocketTrasmission extends TrasmissionController {
     @Override
     public void refreshStartGame(String nickName) {
         if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName).isOnline()) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    "Avvio gioco");
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.WELCOME.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            "Avvio gioco");
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.WELCOME.toString());
         }
 
     }
@@ -598,11 +615,13 @@ public class SocketTrasmission extends TrasmissionController {
     @Override
     public void refreshMoney(String nickName) {
         if (canPlayerReceive(nickName)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.MONEY.toString());
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    ""
-                    + getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.MONEY.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            ""
+                            + getNick2PlayerMap().get(nickName).getMainShepherd().getWallet().getAmount());
         }
 
     }
@@ -618,10 +637,12 @@ public class SocketTrasmission extends TrasmissionController {
     public void sendRank(boolean winner, String nickName, int score) {
         DebugLogger.println("Send result to " + nickName);
         if (canPlayerReceive(nickName)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.SHOW_MY_RANK.toString());
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    winner + "," + score);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.SHOW_MY_RANK.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            winner + "," + score);
         }
     }
 
@@ -657,11 +678,13 @@ public class SocketTrasmission extends TrasmissionController {
                                              SpecialAnimal animal,
                                              String region) {
         if (canPlayerReceive(nickName)) {
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    MessageProtocol.SPECIAL_ANIMAL_POSITION.toString());
-            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(nickName)).send(
-                    animal.toString() + ","
-                    + region);
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            MessageProtocol.SPECIAL_ANIMAL_POSITION.toString());
+            ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
+                    nickName)).send(
+                            animal.toString() + ","
+                            + region);
         }
     }
 
@@ -749,6 +772,9 @@ public class SocketTrasmission extends TrasmissionController {
                         ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                                 nickName)).send(
                                         getNick2PlayerMap().get(other).getMainShepherd().getWallet().getAmount());
+                        DebugLogger.println(
+                                "invio wallet di: " + other + " al giocatore: " + nickName + " con denari " + getNick2PlayerMap().get(
+                                        other).getMainShepherd().getWallet().getAmount());
                     }
                 }
 
