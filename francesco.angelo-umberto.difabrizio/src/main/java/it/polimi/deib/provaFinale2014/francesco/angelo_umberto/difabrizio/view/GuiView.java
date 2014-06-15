@@ -57,14 +57,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private Street[] streets;
     protected RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
-    private JScrollPane historyScrollPane;
-    private Market market;
+    private JScrollPane historyScrollPane;    
 
     private String[] nickNames;
     private String myNickName;
     private int numOfPlayers;
     private int shepherds4player;
-    private Map<String, Integer> nickShepherdToStreet;
+    private Map<String, Integer> NICK_SHEPHERD_TO_STREET;
     protected int[] xStreetPoints = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
     protected int[] yStreetPoints = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
     protected int[] xRegionBoxes = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
@@ -139,11 +138,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
             player.setBackground(noneColor);
         }
 
-        nickShepherdToStreet = new HashMap();
+        NICK_SHEPHERD_TO_STREET = new HashMap();
 
         for (int i = 0; i < numOfPlayers; i++) {
             for (int j = 0; j < shepherds4player; j++) {
-                nickShepherdToStreet.put(nickNames[i] + "-" + j, null);
+                NICK_SHEPHERD_TO_STREET.put(nickNames[i] + "-" + j, null);
             }
         }
 
@@ -862,9 +861,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @return
      */
     private String getShepherdByStreet(String streetOfMyShepherd) {
-        for (Map.Entry pairs : nickShepherdToStreet.entrySet()) {
+        for (Map.Entry pairs : NICK_SHEPHERD_TO_STREET.entrySet()) {
             String key = (String) pairs.getKey();
-            if (Integer.toString(nickShepherdToStreet.get(key)).equals(
+            if (Integer.toString(NICK_SHEPHERD_TO_STREET.get(key)).equals(
                     streetOfMyShepherd)) {
                 return key.split("-", -1)[1];
             }
@@ -938,7 +937,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         hideInfoPanel();
         refreshStreet(Integer.parseInt(streetIndex), false, myNickName,
                 shepherdIndex);
-        nickShepherdToStreet.putIfAbsent(myNickName + "-" + shepherdIndex,
+        NICK_SHEPHERD_TO_STREET.putIfAbsent(myNickName + "-" + shepherdIndex,
                 Integer.valueOf(streetIndex));
     }
 
@@ -977,12 +976,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         playersJPanels[getIndexPlayerByNickName(myNickName)].pay(
                 Integer.parseInt(priceToMove));
         //metto il recinto nella strada dove si trovava
-        streets[nickShepherdToStreet.get(myNickName + "-" + idShepherd)].setFence();
+        streets[NICK_SHEPHERD_TO_STREET.get(myNickName + "-" + idShepherd)].setFence();
         //aggiorno l img della strada d arrivo
         streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(
                 myNickName));
         //aggiorno la hashmap
-        nickShepherdToStreet.replace(myNickName + "-" + idShepherd, lastStreet);
+        NICK_SHEPHERD_TO_STREET.replace(myNickName + "-" + idShepherd, lastStreet);
 
         //decremento recinti
         fenceJPanel.decrease(1);
@@ -1156,7 +1155,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             String playerIndexStringed = String.valueOf(
                     indexPlayer);
             streets[streetIndex].setImage("shepherd" + playerIndexStringed);
-            nickShepherdToStreet.putIfAbsent(nickShepherd + "-" + shepherdIndex,
+            NICK_SHEPHERD_TO_STREET.putIfAbsent(nickShepherd + "-" + shepherdIndex,
                     streetIndex);
         }
 
@@ -1181,10 +1180,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         //non una setShepherd e quindi faccio una
         //refresh della strada di partenza
         //cerco la strada dov'era il pastore e metto un recinto, lo faccio pagare
-        if (nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex) != null) {
+        if (NICK_SHEPHERD_TO_STREET.get(nickNameMover + "-" + shepherdIndex) != null) {
             DebugLogger.println("metto fence");
-            streets[nickShepherdToStreet.get(nickNameMover + "-" + shepherdIndex)].setFence();
-            nickShepherdToStreet.replace(nickNameMover + "-" + shepherdIndex,
+            streets[NICK_SHEPHERD_TO_STREET.get(nickNameMover + "-" + shepherdIndex)].setFence();
+            NICK_SHEPHERD_TO_STREET.replace(nickNameMover + "-" + shepherdIndex,
                     Integer.parseInt(streetIndex));
 
             //decremento recinti
@@ -1197,7 +1196,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 shepherdIndex);
         DebugLogger.println("posiziono " + nickNameMover + " in " + streetIndex
         );
-        if (null != nickShepherdToStreet.putIfAbsent(
+        if (null != NICK_SHEPHERD_TO_STREET.putIfAbsent(
                 nickNameMover + "-" + shepherdIndex, Integer.parseInt(
                         streetIndex))) {
             DebugLogger.println(" risultato putifabsent ok");
