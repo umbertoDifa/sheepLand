@@ -20,6 +20,9 @@ public class DisconnectImage extends JPanel {
 
     private Image image;
 
+    /**
+     * Create a disconnected image setting the background image
+     */
     public DisconnectImage() {
         try {
             image = ImageIO.read(new File(".\\images\\disconnect.png"));

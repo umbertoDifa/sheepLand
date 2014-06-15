@@ -51,10 +51,18 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private JPanel dxBar;
     private JPanel playersContainerJPanel;
     private JComponent layeredHolder;
+
+    /**
+     * the layeredPane contains all the layers of the frame
+     */
     protected JLayeredPane layeredPane;
     private InfoPanel infoPanel;
     private NickPanel nickPanel;
     private Street[] streets;
+
+    /**
+     * Array of RegionBox containing all the regions in the map
+     */
     protected RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
     private JScrollPane historyScrollPane;
@@ -65,15 +73,35 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private int numOfPlayers;
     private int shepherds4player;
     private Map<String, Integer> NICK_SHEPHERD_TO_STREET;
+
+    /**
+     * array of x-coordinates of all the top-left point of each streets
+     */
     protected int[] xStreetPoints = {126, 252, 342, 152, 200, 248, 289, 322, 353, 406, 81, 238, 307, 389, 437, 153, 219, 256, 292, 382, 186, 329, 151, 222, 298, 382, 118, 158, 228, 263, 298, 364, 421, 188, 225, 296, 326, 371, 124, 259, 188, 296};
+    /**
+     * array of y-coordinates of all the top-left point of each streets
+     */
     protected int[] yStreetPoints = {176, 114, 119, 223, 202, 179, 166, 195, 217, 171, 251, 232, 241, 237, 251, 281, 292, 266, 290, 286, 321, 321, 348, 343, 343, 340, 381, 413, 413, 367, 401, 406, 385, 461, 481, 474, 449, 494, 521, 503, 578, 552};
+    /**
+     * array of x-coordinates of all the top-left point of each regions
+     */
     protected int[] xRegionBoxes = {62, 88, 168, 168, 281, 170, 257, 343, 408, 322, 399, 381, 313, 309, 227, 156, 244, 81, 236};
+    /**
+     * array of y-coordinates of all the top-left point of each regions
+     */
     protected int[] yRegionBoxes = {131, 269, 349, 111, 73, 226, 194, 134, 185, 243, 285, 412, 349, 490, 549, 488, 410, 420, 292};
     private final Color backgroundColor = new Color(35, 161, 246);
     private final Color noneColor = new Color(0, 0, 0, 0);
     private int lastStreet;
+
+    /**
+     * boolean to indicate to zoom or not the animals in regions when clicked
+     */
     protected boolean zoomOn;
 
+    /**
+     * object used to syncronize the comunication
+     */
     protected static final List<String> HOLDER = new LinkedList<String>();
 
     /**
@@ -442,9 +470,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (int i = 0; i < actions.length; i++) {
             if (e.getSource().equals(actions[i])) {
                 DebugLogger.println(" azione " + i + "selezionata");
-
-                HOLDER.add(String.valueOf(i + 1));
-                HOLDER.notify();
+                synchronized (HOLDER) {
+                    HOLDER.add(String.valueOf(i + 1));
+                    HOLDER.notify();
+                }
                 DebugLogger.println("aggiunto a holder azione " + i);
                 switch (i) {
                     case 0:
@@ -491,8 +520,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (int i = 0; i < streets.length; i++) {
             if (e.getSource().equals(streets[i])) {
                 DebugLogger.println("strada " + i + "selezionata");
-                HOLDER.add(String.valueOf(i));
-                HOLDER.notify();
+                synchronized (HOLDER) {
+                    HOLDER.add(String.valueOf(i));
+                    HOLDER.notify();
+                }
                 DebugLogger.println("aggiunto a holder strada " + i);
             }
             streets[i].setEnabled(false);
@@ -509,8 +540,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (int i = 0; i < cardsJPanels.length; i++) {
             if (e.getSource().equals(cardsJPanels[i])) {
                 DebugLogger.println("carta terreno " + i + "selezionata");
-                HOLDER.add(String.valueOf(i));
-                HOLDER.notify();
+                synchronized (HOLDER) {
+                    HOLDER.add(String.valueOf(i));
+                    HOLDER.notify();
+                }
                 DebugLogger.println(
                         "aggiunto a holder carta terreno " + i);
             }
@@ -521,8 +554,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (int i = 0; i < market.getCards().size(); i++) {
             if (e.getSource().equals(market.getCards().get(i))) {
                 DebugLogger.println("carta terreno " + i + "selezionata");
-                HOLDER.add(market.getCards().get(i).getType());
-                HOLDER.notify();
+                synchronized (HOLDER) {
+                    HOLDER.add(market.getCards().get(i).getType());
+                    HOLDER.notify();
+                }
                 DebugLogger.println(
                         "aggiunto a holder carta terreno " + market.getCards().get(i).getType());
             }
@@ -542,8 +577,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (int i = 0; i < regionBoxes.length; i++) {
             if (e.getSource().equals(regionBoxes[i])) {
                 DebugLogger.println("regione " + i + "selezionata");
-                HOLDER.add(String.valueOf(i));
-                HOLDER.notify();
+                synchronized (HOLDER) {
+                    HOLDER.add(String.valueOf(i));
+                    HOLDER.notify();
+                }
                 if (zoomOn) {
                     zoomAnimals(i);
                 }
@@ -574,8 +611,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 if (animal.getAnimalType().equals(chosenAnimal.getAnimalType())) {
                     DebugLogger.println("dentro la catch di animalclicked");
                     //aggiungo ad holder il corrispondente tipo
-                    HOLDER.add(animal.getAnimalType());
-                    HOLDER.notify();
+                    synchronized (HOLDER) {
+                        HOLDER.add(animal.getAnimalType());
+                        HOLDER.notify();
+                    }
                 }
             }
         }
@@ -1404,7 +1443,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             playersJPanels[getIndexPlayerByNickName(player)].add(
                     new DisconnectImage(), BorderLayout.CENTER);
         }
-        
+
         historyPanel.show("Il giocatore " + player + " si è disconnesso");
         dxBar.revalidate();
         dxBar.repaint();

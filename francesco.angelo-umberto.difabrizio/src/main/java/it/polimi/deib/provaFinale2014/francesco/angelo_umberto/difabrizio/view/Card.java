@@ -16,6 +16,9 @@ import javax.swing.JLabel;
  */
 public class Card extends CardBoard implements MouseListener {
 
+    /**
+     * The number corrisponding to the remaining cards in the bank
+     */
     protected JLabel bankNum;
     private String type;
 
@@ -39,6 +42,15 @@ public class Card extends CardBoard implements MouseListener {
         this.addMouseListener(this);
     }
 
+    /**
+     * create a Card setting the type, font, 
+     * bankNum (how many remaining cards are in the bank), 
+     * myCardNum (how many cards i have of that type)
+     * @param font
+     * @param bankNum
+     * @param myCardNum
+     * @param type 
+     */
     public Card(Font font, String bankNum, String myCardNum, String type) {
         this(font, bankNum, myCardNum);
         this.type = type;
@@ -108,6 +120,10 @@ public class Card extends CardBoard implements MouseListener {
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
+    /**
+     * return the type of the card
+     * @return 
+     */
     protected String getType() {
         return type;
     }
