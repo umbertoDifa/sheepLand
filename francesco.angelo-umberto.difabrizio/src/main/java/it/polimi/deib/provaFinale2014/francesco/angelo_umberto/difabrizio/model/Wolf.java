@@ -74,5 +74,12 @@ public class Wolf extends SpecialAnimal {
         return "sheep";
 
     }
+    
+    
+    @Override
+    public String toString() {
+        return "Wolf";
+    }
+
 
 }

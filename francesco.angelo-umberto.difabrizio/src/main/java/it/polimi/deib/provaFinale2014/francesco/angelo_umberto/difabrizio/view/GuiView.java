@@ -58,6 +58,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     protected RegionBox[] regionBoxes;
     private HistoryPanel historyPanel;
     private JScrollPane historyScrollPane;    
+    private Market market;
 
     private String[] nickNames;
     private String myNickName;
@@ -381,6 +382,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             for (int i = 0; i < market.getPriceButtons().size(); i++) {
                 if (e.getSource() == market.getPriceButtons().get(i)) {
                     synchronized (HOLDER) {
+                        DebugLogger.println("bottone price aggiunge a holder "+String.valueOf(i+1));
                         HOLDER.add(String.valueOf(i + 1));
                         HOLDER.notify();
                     }

@@ -1185,6 +1185,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //cerco le carte che il player può vendere     
         sellableCards = getSellableCards();
         if (sellableCards.length > 0) {
+            DebugLogger.println("invio carte vendibili dal player");
             while (true) {
                 try {
                     handleReconnectionInTheSameTurn();

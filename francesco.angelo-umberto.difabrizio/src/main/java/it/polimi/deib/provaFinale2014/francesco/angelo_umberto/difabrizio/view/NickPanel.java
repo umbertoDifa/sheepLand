@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -21,7 +20,7 @@ import javax.swing.JTextArea;
  */
 public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
-    private JTextArea area;
+    private final JTextArea area;
     private final Font font;
     private final int width;
     private final int height;
@@ -106,4 +105,7 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
         //not used
     }
 
+    protected JButton getButton(){
+        return button;
+    }
 }

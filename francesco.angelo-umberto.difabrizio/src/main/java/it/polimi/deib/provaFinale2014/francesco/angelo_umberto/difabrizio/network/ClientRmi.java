@@ -603,6 +603,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws RemoteException
      */
     public boolean askSellCard() throws RemoteException {
+        DebugLogger.println("ricevo richiesta di vendere carte");
         return view.askWillingTo("vendere");
     }
 

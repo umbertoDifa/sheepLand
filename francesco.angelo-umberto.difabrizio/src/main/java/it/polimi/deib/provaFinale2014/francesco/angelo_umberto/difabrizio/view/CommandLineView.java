@@ -25,7 +25,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param numbOfLamb
      */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         showInfo("La regione " + regionIndex + " ora ha " + numbOfSheep
                 + " pecore, " + numbOfLamb + " agnelli, " + numbOfRam + " montoni.");
 
@@ -40,7 +40,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param shepherdIndex
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd, int shepherdIndex) {
+            String nickShepherd, int shepherdIndex) {
         stdOut.print("La strada " + streetIndex + " è ");
 
         if (fence) {
@@ -67,7 +67,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param shepherd4player
      */
     public void refereshGameParameters(int numbOfPlayers, String firstPlayer,
-                                       int shepherd4player) {
+            int shepherd4player) {
         showInfo(
                 "La partita ha " + numbOfPlayers + ", il primo giocatore è "
                 + firstPlayer + ", ogni giocatore ha " + shepherd4player);
@@ -186,7 +186,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param price
      */
     public void refreshMoveShepherd(String nickName, int shepherdIndex,
-                                    String endStreet, int price) {
+            String endStreet, int price) {
         showInfo(
                 "Il giocatore " + nickName + " ha posizionato il pastore "
                 + shepherdIndex + " nella strada " + endStreet + " pagando "
@@ -224,7 +224,9 @@ public class CommandLineView implements TypeOfViewController {
      * @param value
      */
     public void refereshCard(String type, int value) {
-        showInfo("Hai una carta " + type + " di valore " + value);
+        if (value != -2) {
+            showInfo("Hai una carta " + type + " di valore " + value);
+        }
 
     }
 
@@ -237,7 +239,7 @@ public class CommandLineView implements TypeOfViewController {
      * @return
      */
     public String chooseAction(int[] availableActions,
-                               String[] availableStringedActions) {
+            String[] availableStringedActions) {
         String stringToPrint = "";
         for (int i = 0; i < availableActions.length; i++) {
             stringToPrint += String.valueOf(availableActions[i]) + "- " + availableStringedActions[i] + " \n";
@@ -268,8 +270,8 @@ public class CommandLineView implements TypeOfViewController {
      * @param endRegion
      */
     public void refreshMoveOvine(String nickName, String type,
-                                 String startRegion,
-                                 String endRegion) {
+            String startRegion,
+            String endRegion) {
         showInfo(
                 "Il giocatore " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
@@ -418,8 +420,8 @@ public class CommandLineView implements TypeOfViewController {
      * @param outcome
      */
     public void refreshMateSheepWith(String nickName, String region,
-                                     String otherType, String newType,
-                                     String outcome) {
+            String otherType, String newType,
+            String outcome) {
         if ("ok".equals(outcome)) {
             showInfo(
                     "Il giocatore " + nickName + " ha accoppiato una pecora con un "
@@ -440,7 +442,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param outcome
      */
     public void refreshKillOvine(String killer, String region, String type,
-                                 String outcome) {
+            String outcome) {
         if ("ok".equals(outcome)) {
             showInfo(
                     "Il giocatore " + killer + " ha ucciso un ovino " + type + " nella regione " + region);
@@ -458,7 +460,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param newType
      */
     public void showMateSheepWith(String region, String otherType,
-                                  String newType) {
+            String newType) {
         showInfo(
                 "Hai fatto accoppiare una pecora con un " + otherType
                 + " nella regione " + region + " ed è nato un " + newType);
@@ -540,7 +542,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param shepherd4player
      */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
-                                      int shepherd4player) {
+            int shepherd4player) {
         showInfo("Giocatori:");
         for (int i = 0; i < nickNames.length; i++) {
             showInfo(nickNames[i] + " denari: " + wallets[i]);

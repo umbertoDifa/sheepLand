@@ -33,7 +33,9 @@ public enum Dim {
     FENCE_POSITION(55, 0),
     INFO_PANEL_POSITION(330, 0), //(mainJPanel.getPreferredSize().width / 2.5 - (444 / 2)), mainJPanel.getPreferredSize().height / 2 - (400)
     NICK_PANEL_POSITION(382, 70), // mainJPanel.getPreferredSize().width / 2 - (444 / 2)),   mainJPanel.getPreferredSize().height / 2 - (400)
-    RANK_PANEL_POSITION(235, 160);
+    RANK_PANEL_POSITION(235, 160),
+    MARKET(497,385), 
+    MARKET_POSITION(193,65);
 
     private int width;
     private int height;

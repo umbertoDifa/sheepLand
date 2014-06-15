@@ -29,4 +29,9 @@ public class BlackSheep extends SpecialAnimal {
         }
 
     }
+    
+    @Override
+    public String toString(){
+        return "BlackSheep";
+    }
 }

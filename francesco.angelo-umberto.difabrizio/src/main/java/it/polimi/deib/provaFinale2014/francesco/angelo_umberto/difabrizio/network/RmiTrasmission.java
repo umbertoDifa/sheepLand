@@ -638,11 +638,13 @@ public class RmiTrasmission extends TrasmissionController {
             PlayerDisconnectedException {
         if (canPlayerReceive(client)) {
             try {
+                DebugLogger.println("chiedo se vuole vendere a "+client);
                 //ricevo se vuole vendere
                 boolean wantToSell = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         client)).getClientRmi().askSellCard();
 
                 if (wantToSell) {
+                    DebugLogger.println("invio carte vendibili perchè voleva vendere a "+client);
                     //invio carte
                     ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             client)).getClientRmi().sellCard(sellableCards);
@@ -663,11 +665,13 @@ public class RmiTrasmission extends TrasmissionController {
             throws PlayerDisconnectedException {
         if (canPlayerReceive(playerNickName)) {
             try {
+                DebugLogger.println("invio buy card a "+playerNickName);
                 //ricevo se vuole comprare
                 boolean wantToBuy = ((RmiClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                         playerNickName)).getClientRmi().askBuyCard();
 
                 if (wantToBuy) {
+                    DebugLogger.println("ricevuto wantToBuy true da "+playerNickName);
                     String[] names = new String[buyableCards.size()];
                     int[] prices = new int[buyableCards.size()];
 

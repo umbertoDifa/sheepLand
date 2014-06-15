@@ -81,10 +81,10 @@ public class GameManager implements Runnable {
      * and with a specified type of connection
      *
      * @param clientNickNames NickNames of the clients connected to the game
-     * @param controller      Type of connection between cllient and server
+     * @param controller Type of connection between cllient and server
      */
     public GameManager(List<String> clientNickNames,
-                       TrasmissionController controller) {
+            TrasmissionController controller) {
 
         this.controller = controller;
         //salvo il numero di player
@@ -237,11 +237,16 @@ public class GameManager implements Runnable {
     }
 
     private void refreshCards(int indexOfPlayer) {
+        int clearPastCards = - 2;
+
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
+        controller.refreshCard(clientNickNames[indexOfPlayer],
+                RegionType.COUNTRYSIDE.toString(), clearPastCards);
 
         for (int j = 0; j < numberOfCards; j++) {
             Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
                     j);
+            DebugLogger.println("Invio carta: " + card.getType().toString() + "al giocatore :" + indexOfPlayer);
             controller.refreshCard(clientNickNames[indexOfPlayer],
                     card.getType().toString(), card.getValue());
         }
@@ -609,7 +614,7 @@ public class GameManager implements Runnable {
     }
 
     private void executeRounds() throws FinishedFencesException,
-                                        UnexpectedEndOfGameException {
+            UnexpectedEndOfGameException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
         int playerOffline = 0;
@@ -672,8 +677,8 @@ public class GameManager implements Runnable {
 
             }
             nextPlayer();
-            
-             //controllo se ho finito il giro
+
+            //controllo se ho finito il giro
             //se il prossimo a giocare è il primo del giro
             if (firstPlayer == currentPlayer) {
                 //avvio il market  
@@ -710,7 +715,7 @@ public class GameManager implements Runnable {
         int playerOffline = 0;
         boolean wantToSell;
         do {
-            DebugLogger.println("Inizio sell giocatore: "+currentPlayer);
+            DebugLogger.println("Inizio sell giocatore: " + currentPlayer);
             if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).isOnline()) {
 
@@ -755,7 +760,7 @@ public class GameManager implements Runnable {
             DebugLogger.println("Cambio giocatore");
             nextPlayer();
         } while (this.firstPlayer != this.currentPlayer);
-        DebugLogger.println("fuori dal while del seel");
+        DebugLogger.println("fuori dal while del sell");
 
     }
 
@@ -766,7 +771,7 @@ public class GameManager implements Runnable {
         int currentBuyer = firstBuyer;
 
         do {
-            DebugLogger.println("inizio buy giocatore "+currentBuyer);
+            DebugLogger.println("inizio buy giocatore " + currentBuyer);
             if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentBuyer]).isOnline()) {
 
@@ -869,7 +874,7 @@ public class GameManager implements Runnable {
 
             //lo aggiorno
             this.refreshInitialConditions(clientNickNames[currentPlayer]);
-            
+
             //refresh cards
             refreshCards(currentPlayer);
 
@@ -887,7 +892,7 @@ public class GameManager implements Runnable {
     }
 
     private boolean executeShift(int player) throws FinishedFencesException,
-                                                    PlayerDisconnectedException {
+            PlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
 
         controller.brodcastCurrentPlayer(clientNickNames[player]);
