@@ -37,7 +37,7 @@ import javax.swing.*;
  * @author Francesco
  */
 public class GuiView implements MouseListener, TypeOfViewController,
-        ActionListener {
+                                ActionListener {
 
     private JFrame frame;
     private JPanel mainJPanel;
@@ -121,15 +121,21 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private void setUpPlayers() {
         //rendo visibile il panel
         mainJPanel.setVisible(true);
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
         //istanzio
         playersJPanels = new Player[numOfPlayers];
         for (int i = 0; i < numOfPlayers; i++) {
             playersJPanels[i] = new Player(nickNames[i], FontFactory.getFont());
             playersJPanels[i].setUp(".\\images\\giocatore" + i + ".png",
-                    ".\\images\\money.png", 145, 81, 20, 40, Dim.PLAYER.getW(), Dim.PLAYER.getH());
+                    ".\\images\\money.png", 145, 81, 20, 40, Dim.PLAYER.getW(),
+                    Dim.PLAYER.getH());
         }
 
         for (Player player : playersJPanels) {
@@ -147,7 +153,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             }
         }
 
-        frame.revalidate();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
     }
 
     /**
@@ -214,21 +226,35 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     private void setUpImageFrameComponents() {
         //aggiungo immagini
-        actions[0].setUp(".\\images\\moveSheep.png", Dim.ACTION.getW(), Dim.ACTION.getH());
-        actions[1].setUp(".\\images\\moveShepherd.png", Dim.ACTION.getW(), Dim.ACTION.getH());
-        actions[2].setUp(".\\images\\buyLand.png", Dim.ACTION.getW(), Dim.ACTION.getH());
-        actions[3].setUp(".\\images\\mateSheep.png", Dim.ACTION.getW(), Dim.ACTION.getH());
-        actions[4].setUp(".\\images\\mateRam.png", Dim.ACTION.getW(), Dim.ACTION.getH());
-        actions[5].setUp(".\\images\\killOvine.png", Dim.ACTION.getW(), Dim.ACTION.getH());
+        actions[0].setUp(".\\images\\moveSheep.png", Dim.ACTION.getW(),
+                Dim.ACTION.getH());
+        actions[1].setUp(".\\images\\moveShepherd.png", Dim.ACTION.getW(),
+                Dim.ACTION.getH());
+        actions[2].setUp(".\\images\\buyLand.png", Dim.ACTION.getW(),
+                Dim.ACTION.getH());
+        actions[3].setUp(".\\images\\mateSheep.png", Dim.ACTION.getW(),
+                Dim.ACTION.getH());
+        actions[4].setUp(".\\images\\mateRam.png", Dim.ACTION.getW(),
+                Dim.ACTION.getH());
+        actions[5].setUp(".\\images\\killOvine.png", Dim.ACTION.getW(),
+                Dim.ACTION.getH());
 
-        cardsJPanels[1].setUp(".\\images\\hill2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
-        cardsJPanels[2].setUp(".\\images\\countryside2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
-        cardsJPanels[0].setUp(".\\images\\mountain2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
-        cardsJPanels[5].setUp(".\\images\\desert2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
-        cardsJPanels[4].setUp(".\\images\\lake2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
-        cardsJPanels[3].setUp(".\\images\\plain2.png", Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[1].setUp(".\\images\\hill2.png", Dim.TEXT_CARD.getW(),
+                Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[2].setUp(".\\images\\countryside2.png",
+                Dim.TEXT_CARD.getW(), Dim.TEXT_CARD.getH(), Dim.CARD.getW(),
+                Dim.CARD.getH());
+        cardsJPanels[0].setUp(".\\images\\mountain2.png", Dim.TEXT_CARD.getW(),
+                Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[5].setUp(".\\images\\desert2.png", Dim.TEXT_CARD.getW(),
+                Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[4].setUp(".\\images\\lake2.png", Dim.TEXT_CARD.getW(),
+                Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
+        cardsJPanels[3].setUp(".\\images\\plain2.png", Dim.TEXT_CARD.getW(),
+                Dim.TEXT_CARD.getH(), Dim.CARD.getW(), Dim.CARD.getH());
 
-        fenceJPanel.setUp(".\\images\\numFences.png", Dim.TEXT_FENCE.getW(), Dim.TEXT_FENCE.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
+        fenceJPanel.setUp(".\\images\\numFences.png", Dim.TEXT_FENCE.getW(),
+                Dim.TEXT_FENCE.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
     }
 
     /**
@@ -295,20 +321,30 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     private void setUpDimensionFrameComponents() {
         //setto dimensioni
-        layeredPane.setPreferredSize(new Dimension(Dim.MAIN.getW(), Dim.MAIN.getH()));
-        actionsContainerJPanel.setPreferredSize(new Dimension(Dim.ACTIONS_CONTAINER.getW(), Dim.ACTIONS_CONTAINER.getH()));
+        layeredPane.setPreferredSize(new Dimension(Dim.MAIN.getW(),
+                Dim.MAIN.getH()));
+        actionsContainerJPanel.setPreferredSize(new Dimension(
+                Dim.ACTIONS_CONTAINER.getW(), Dim.ACTIONS_CONTAINER.getH()));
         //il contenitore dei player ha le dim per contenere sempre 4 player
-        playersContainerJPanel.setPreferredSize(new Dimension(Dim.PLAYERS_CONTAINER.getW(), Dim.PLAYERS_CONTAINER.getH()));
-        cardsConteinerJPanel.setPreferredSize(new Dimension(Dim.CARD_CONTAINER.getW(), Dim.CARD_CONTAINER.getH()));
+        playersContainerJPanel.setPreferredSize(new Dimension(
+                Dim.PLAYERS_CONTAINER.getW(), Dim.PLAYERS_CONTAINER.getH()));
+        cardsConteinerJPanel.setPreferredSize(new Dimension(
+                Dim.CARD_CONTAINER.getW(), Dim.CARD_CONTAINER.getH()));
         mainJPanel.setPreferredSize(mainJPanel.getPreferredSize());
         mainJPanel.setBounds(0, 0, Dim.MAIN.getW(), Dim.MAIN.getH());
         //la barra di destra ha le dim per contenere sempre 4 player
-        dxBar.setPreferredSize(new Dimension(Dim.DX_BAR.getW(), Dim.DX_BAR.getH()));
-        infoPanel.setBounds(Dim.INFO_PANEL_POSITION.getW(), Dim.INFO_PANEL_POSITION.getH(),
+        dxBar.setPreferredSize(new Dimension(Dim.DX_BAR.getW(),
+                Dim.DX_BAR.getH()));
+        infoPanel.setBounds(Dim.INFO_PANEL_POSITION.getW(),
+                Dim.INFO_PANEL_POSITION.getH(),
                 Dim.INFO_PANEL.getW(), Dim.INFO_PANEL.getH());
-        nickPanel.setBounds(Dim.NICK_PANEL_POSITION.getW(), Dim.NICK_PANEL_POSITION.getH(), Dim.NICK_PANEL.getW(), Dim.NICK_PANEL.getH());
-        historyScrollPane.setPreferredSize(new Dimension(Dim.HISTORY.getW(), Dim.HISTORY.getH()));
-        market.setBounds(Dim.MARKET_POSITION.getW(), Dim.MARKET_POSITION.getH(), Dim.MARKET.getW(), Dim.MARKET.getH());
+        nickPanel.setBounds(Dim.NICK_PANEL_POSITION.getW(),
+                Dim.NICK_PANEL_POSITION.getH(), Dim.NICK_PANEL.getW(),
+                Dim.NICK_PANEL.getH());
+        historyScrollPane.setPreferredSize(new Dimension(Dim.HISTORY.getW(),
+                Dim.HISTORY.getH()));
+        market.setBounds(Dim.MARKET_POSITION.getW(), Dim.MARKET_POSITION.getH(),
+                Dim.MARKET.getW(), Dim.MARKET.getH());
 
     }
 
@@ -380,11 +416,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
             market.getButtonKo().setEnabled(false);
             market.getButtonOk().setEnabled(false);
 
-        } else if (e.getSource() instanceof JButton && market.getPriceButtons().contains((JButton) e.getSource())) {
+        } else if (e.getSource() instanceof JButton && market.getPriceButtons().contains(
+                (JButton) e.getSource())) {
             for (int i = 0; i < market.getPriceButtons().size(); i++) {
                 if (e.getSource() == market.getPriceButtons().get(i)) {
                     synchronized (HOLDER) {
-                        DebugLogger.println("bottone price aggiunge a holder " + String.valueOf(i + 1));
+                        DebugLogger.println(
+                                "bottone price aggiunge a holder " + String.valueOf(
+                                        i + 1));
                         HOLDER.add(String.valueOf(i + 1));
                         HOLDER.notify();
                         break;
@@ -408,8 +447,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 actionClicked(e);
                 DebugLogger.println("dentro mouse clicked di una action");
 
-                mainJPanel.revalidate();
-                mainJPanel.repaint();
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    public void run() {
+                        mainJPanel.revalidate();
+                        mainJPanel.repaint();
+                    }
+                });
 
             } else if (e.getSource() instanceof Street && ((Street) e.getSource()).isEnabled()) {
                 DebugLogger.println("dentro mouse clicked di una strada");
@@ -477,8 +521,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             actions[i].setEnabled(false);
             actions[i].setOpaqueView(true);
         }
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -515,6 +564,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                         "aggiunto a holder carta terreno " + i);
             }
             cardsJPanels[i].setEnabled(false);
+
             cardsJPanels[i].revalidate();
         }
 
@@ -524,12 +574,18 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 HOLDER.add(market.getCards().get(i).getType());
                 HOLDER.notify();
                 DebugLogger.println(
-                        "aggiunto a holder carta terreno " + market.getCards().get(i).getType());
+                        "aggiunto a holder carta terreno " + market.getCards().get(
+                                i).getType());
             }
             market.getCards().get(i).setEnabled(false);
         }
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -612,7 +668,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param e
      */
     public void mouseReleased(MouseEvent e) {
-        DebugLogger.println("mouse released in : " + e.getLocationOnScreen().x + " " + e.getLocationOnScreen().y);
+        DebugLogger.println(
+                "mouse released in : " + e.getLocationOnScreen().x + " " + e.getLocationOnScreen().y);
     }
 
     /**
@@ -643,7 +700,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param y
      */
     public static void addComponentsToPane(Container panelFather,
-            JComponent panelSon, int x, int y) {
+                                           JComponent panelSon, int x, int y) {
 
         panelFather.setLayout(null);
         panelFather.add(panelSon);
@@ -871,8 +928,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private String getShepherdByStreet(String streetOfMyShepherd) {
         for (Map.Entry pairs : NICK_SHEPHERD_TO_STREET.entrySet()) {
             String key = (String) pairs.getKey();
-            if (Integer.toString(NICK_SHEPHERD_TO_STREET.get(key)).equals(
-                    streetOfMyShepherd)) {
+            if (NICK_SHEPHERD_TO_STREET.get(key) != null && Integer.toString(
+                    NICK_SHEPHERD_TO_STREET.get(key)).equals(
+                            streetOfMyShepherd)) {
                 return key.split("-", -1)[1];
             }
         }
@@ -913,8 +971,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
         infoPanel.hideDice();
         infoPanel.setText(info);
         infoPanel.setVisible(true);
-        this.layeredHolder.revalidate();
-        this.layeredHolder.repaint();
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -928,7 +992,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].increase(
                 1);
         String bankNum = cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].bankNum.getText();
-        cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].bankNum.setText(String.valueOf(Integer.parseInt(bankNum) - 1));
+        cardsJPanels[RegionType.valueOf(boughLand.toUpperCase()).getIndex()].bankNum.setText(
+                String.valueOf(Integer.parseInt(bankNum) - 1));
         playersJPanels[getIndexPlayerByNickName(myNickName)].pay(
                 Integer.parseInt(price));
         historyPanel.show(
@@ -957,7 +1022,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param shepherd4player
      */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
-            int shepherd4player) {
+                                      int shepherd4player) {
         this.nickNames = nickNames;
         this.numOfPlayers = nickNames.length;
         this.shepherds4player = shepherd4player;
@@ -989,13 +1054,19 @@ public class GuiView implements MouseListener, TypeOfViewController,
         streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(
                 myNickName));
         //aggiorno la hashmap
-        NICK_SHEPHERD_TO_STREET.replace(myNickName + "-" + idShepherd, lastStreet);
+        NICK_SHEPHERD_TO_STREET.replace(myNickName + "-" + idShepherd,
+                lastStreet);
 
         //decremento recinti
         fenceJPanel.decrease(1);
 
-        mapJPanel.revalidate();
-        mapJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -1012,8 +1083,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
 
-        mapJPanel.revalidate();
-        mapJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mapJPanel.revalidate();
+                mapJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -1024,7 +1100,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param newType
      */
     public void showMateSheepWith(String region, String otherType,
-            String newType) {
+                                  String newType) {
         //TODO animazione accoppiamento?
         hideInfoPanel();
 
@@ -1049,8 +1125,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
         result += "con " + rank + " punti";
 
         layeredPane.add(new RankPanel(result), new Integer(6));
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
     }
 
@@ -1108,12 +1189,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public String setUpShepherd(int idShepherd) {
 
         //imposto visibilità players
-        playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
-        for (int i = 0; i < playersJPanels.length; i++) {
-            if (getIndexPlayerByNickName(myNickName) != i) {
-                playersJPanels[i].isNotYourShift();
-            }
-        }
+        setMyShiftView();
 
         setFreeStreetsClickable();
         showInfo("Scegli dove posizionare la pedina");
@@ -1129,7 +1205,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param numbOfLamb
      */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-            int numbOfLamb) {
+                              int numbOfLamb) {
         hideInfoPanel();
 
         regionBoxes[regionIndex].removeAllAnimals();
@@ -1154,7 +1230,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param shepherdIndex
      */
     public void refreshStreet(int streetIndex, boolean fence,
-            String nickShepherd, int shepherdIndex) {
+                              String nickShepherd, int shepherdIndex) {
         hideInfoPanel();
 
         if (fence) {
@@ -1164,7 +1240,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
             String playerIndexStringed = String.valueOf(
                     indexPlayer);
             streets[streetIndex].setImage("shepherd" + playerIndexStringed);
-            NICK_SHEPHERD_TO_STREET.putIfAbsent(nickShepherd + "-" + shepherdIndex,
+            NICK_SHEPHERD_TO_STREET.putIfAbsent(
+                    nickShepherd + "-" + shepherdIndex,
                     streetIndex);
         }
 
@@ -1179,7 +1256,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param price
      */
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-            String streetIndex, int price) {
+                                    String streetIndex, int price) {
         hideInfoPanel();
 
         DebugLogger.println(
@@ -1191,7 +1268,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         //cerco la strada dov'era il pastore e metto un recinto, lo faccio pagare
         if (NICK_SHEPHERD_TO_STREET.get(nickNameMover + "-" + shepherdIndex) != null) {
             DebugLogger.println("metto fence");
-            streets[NICK_SHEPHERD_TO_STREET.get(nickNameMover + "-" + shepherdIndex)].setFence();
+            streets[NICK_SHEPHERD_TO_STREET.get(
+                    nickNameMover + "-" + shepherdIndex)].setFence();
             NICK_SHEPHERD_TO_STREET.replace(nickNameMover + "-" + shepherdIndex,
                     Integer.parseInt(streetIndex));
 
@@ -1210,7 +1288,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
                         streetIndex))) {
             DebugLogger.println(" risultato putifabsent ok");
         }
+        
+        SwingUtilities.invokeLater(new Runnable() {
 
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -1225,7 +1310,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         playersJPanels[getIndexPlayerByNickName(buyer)].pay(price);
         String bankNum = cardsJPanels[RegionType.valueOf(land.toUpperCase()).getIndex()].bankNum.getText();
-        cardsJPanels[RegionType.valueOf(land.toUpperCase()).getIndex()].bankNum.setText(String.valueOf(Integer.parseInt(bankNum) - 1));
+        cardsJPanels[RegionType.valueOf(land.toUpperCase()).getIndex()].bankNum.setText(
+                String.valueOf(Integer.parseInt(bankNum) - 1));
         showInfo("Il giocatore " + buyer + " ha acquistato un territorio "
                 + land + " per " + price + " danari");
     }
@@ -1239,7 +1325,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param outcome
      */
     public void refreshKillOvine(String killer, String region, String type,
-            String outcome) {
+                                 String outcome) {
         hideInfoPanel();
         if ("ok".equals(outcome)) {
             regionBoxes[Integer.parseInt(region)].removeOvine(type);
@@ -1290,7 +1376,15 @@ public class GuiView implements MouseListener, TypeOfViewController,
             }
         }
 
-        showInfo("E' il turno di " + currenPlayer);
+        historyPanel.show("E' il turno di " + currenPlayer);
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
+
     }
 
     /**
@@ -1404,10 +1498,16 @@ public class GuiView implements MouseListener, TypeOfViewController,
             playersJPanels[getIndexPlayerByNickName(player)].add(
                     new DisconnectImage(), BorderLayout.CENTER);
         }
-        
+
         historyPanel.show("Il giocatore " + player + " si è disconnesso");
-        dxBar.revalidate();
-        dxBar.repaint();
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -1438,7 +1538,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @return
      */
     public String chooseAction(int[] availableActions,
-            String[] availableStringedActions) {
+                               String[] availableStringedActions) {
 
         hideInfoPanel();
 
@@ -1450,8 +1550,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             actions[availableActions[i] - 1].setOpaqueView(false);
         }
 
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
         historyPanel.show("Scegli un azione");
 
@@ -1468,8 +1573,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param outcome
      */
     public void refreshMateSheepWith(String nickName, String region,
-            String otherType, String newType,
-            String outcome) {
+                                     String otherType, String newType,
+                                     String outcome) {
 
         hideInfoPanel();
 
@@ -1494,14 +1599,19 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param endRegion
      */
     public void refreshMoveOvine(String nickName, String type,
-            String startRegion, String endRegion) {
+                                 String startRegion, String endRegion) {
 
         hideInfoPanel();
 
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
-        mapJPanel.revalidate();
-        mapJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
     /**
@@ -1513,7 +1623,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (Card cardsJPanel : cardsJPanels) {
             cardsJPanel.setEnabled(true);
         }
-        historyPanel.show("Seleziona il territorio da comprare dalla barra laterale sinistra");
+        historyPanel.show(
+                "Seleziona il territorio da comprare dalla barra laterale sinistra");
         String idResult = getAnswerByHolder();
         return RegionType.getRegionByIndex(Integer.parseInt(idResult));
     }
@@ -1649,7 +1760,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param availableCards
      */
     public void refreshBankCard(String regionType, int availableCards) {
-        cardsJPanels[RegionType.valueOf(regionType.toUpperCase()).getIndex()].bankNum.setText(String.valueOf(availableCards));
+        cardsJPanels[RegionType.valueOf(regionType.toUpperCase()).getIndex()].bankNum.setText(
+                String.valueOf(availableCards));
     }
 
     public boolean askWillingTo(String action) {
@@ -1658,8 +1770,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println("ASK WILLING TO " + action);
         market.askWillingToView(action);
 
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
         String answer = getAnswerByHolder();
         Boolean boolAnswer = true;
@@ -1668,7 +1785,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         } else if ("false".equals(answer)) {
             boolAnswer = false;
         } else {
-            DebugLogger.println("askWilling catcha risposta sbagliata!!!!:" + answer);
+            DebugLogger.println(
+                    "askWilling catcha risposta sbagliata!!!!:" + answer);
         }
         if (boolAnswer == false) {
             market.setVisible(false);
@@ -1684,8 +1802,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             card.addMouseListener(this);
         }
 
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
         String cardToSell = getAnswerByHolder();
         market.setVisible(false);
@@ -1699,8 +1822,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             button.addActionListener(this);
         }
 
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
         int price = Integer.parseInt(getAnswerByHolder());
         market.setVisible(false);
@@ -1717,8 +1845,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
             card.addMouseListener(this);
         }
 
-        mainJPanel.revalidate();
-        mainJPanel.repaint();
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
 
         String answer = getAnswerByHolder();
         market.setVisible(false);
@@ -1740,6 +1873,14 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 playersJPanels[i].isNotYourShift();
             }
         }
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                mainJPanel.revalidate();
+                mainJPanel.repaint();
+            }
+        });
     }
 
 }
