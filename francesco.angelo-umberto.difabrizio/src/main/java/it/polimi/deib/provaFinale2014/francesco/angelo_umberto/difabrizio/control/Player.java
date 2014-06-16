@@ -51,14 +51,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     protected int lastAction;
     /**
-     * Says if the player has moved the shepherd at least once in the last shift
-     */
-    protected boolean hasMovedShepherd;
-    /**
-     * Has the number of actions alredy made
-     */
-    protected int numberOfActionsMade;
-    /**
      * It's the last shepherd who was used by the player to make an action. It's
      * null if no shepherd was used, which means the player didn't make any
      * action in the current shift
@@ -215,57 +207,28 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     private void createActionList() {
         //nessuna azione disponibile inizialmente                
         possibleAction = "";
-        if (!hasMovedShepherd && numberOfActionsMade < GameConstants.NUM_ACTIONS.getValue() - 1) {
-            for (OvineType type : OvineType.values()) {
-                if (canMoveOvine(type) && lastAction != ActionConstants.MOVE_OVINE.getValue()) {
-                    possibleAction += "1-Sposta ovino,";
-                    break;
-                }
-            }
 
-            possibleAction += "2-Sposta pastore,";
+        for (OvineType type : OvineType.values()) {
+            if (canMoveOvine(type) && lastAction != ActionConstants.MOVE_OVINE.getValue()) {
+                possibleAction += "1-Sposta ovino,";
+                break;
+            }
+        }
 
-            //aggiungi acquisto carta se possibile
-            if (canBuyCard() && lastAction != ActionConstants.BUY_LAND.getValue()) {
-                possibleAction += "3-Compra terreno,";
-            }
-            if (canMateSheep() && lastAction != ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue()) {
-                possibleAction += "4-Accoppia pecore,";
-            }
-            if (canMateSheepWithRam() && lastAction != ActionConstants.MATE_SHEEP_WITH_RAM.getValue()) {
-                possibleAction += "5-Accoppia montone e pecora,";
-            }
-            if (canKillOvine() && lastAction != ActionConstants.KILL_OVINE.getValue()) {
-                possibleAction += "6-Abbatti ovino";
-            }
-        } else if (!hasMovedShepherd) {
-            //ultima azione solo mossa pastore
-            possibleAction += "2-Sposta pastore,";
-        } else {
-            //ha già mosso il pastore può fare quello che vuole
+        possibleAction += "2-Sposta pastore,";
 
-            for (OvineType type : OvineType.values()) {
-                if (canMoveOvine(type)) {
-                    possibleAction += "1-Sposta ovino,";
-                    break;
-                }
-            }
-
-            possibleAction += "2-Sposta pastore,";
-
-            //aggiungi acquisto carta se possibile
-            if (canBuyCard()) {
-                possibleAction += "3-Compra terreno,";
-            }
-            if (canMateSheep()) {
-                possibleAction += "4-Accoppia pecore,";
-            }
-            if (canMateSheepWithRam()) {
-                possibleAction += "5-Accoppia montone e pecora,";
-            }
-            if (canKillOvine()) {
-                possibleAction += "6-Abbatti ovino";
-            }
+        //aggiungi acquisto carta se possibile
+        if (canBuyCard() && lastAction != ActionConstants.BUY_LAND.getValue()) {
+            possibleAction += "3-Compra terreno,";
+        }
+        if (canMateSheep() && lastAction != ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue()) {
+            possibleAction += "4-Accoppia pecore,";
+        }
+        if (canMateSheepWithRam() && lastAction != ActionConstants.MATE_SHEEP_WITH_RAM.getValue()) {
+            possibleAction += "5-Accoppia montone e pecora,";
+        }
+        if (canKillOvine() && lastAction != ActionConstants.KILL_OVINE.getValue()) {
+            possibleAction += "6-Abbatti ovino";
         }
 
     }
@@ -666,7 +629,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             DebugLogger.println("Pastore posizionato");
             lastShepherd = currentShepherd;
             lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
-            hasMovedShepherd = true;
             return "Pastore spostato,0";
         } else if (currentShepherd.ifPossiblePay(
                 GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
@@ -685,7 +647,6 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
             lastShepherd = currentShepherd;
             lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
-            hasMovedShepherd = true;
             return "Pastore spostato," + GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue();
 
         }

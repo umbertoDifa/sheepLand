@@ -668,13 +668,7 @@ public class GameManager implements Runnable {
                     players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
 
                     //the shepherd used is set to none too
-                    players.get(currentPlayer).lastShepherd = null;
-
-                    //the movement of at least a shepherd is set to false
-                    players.get(currentPlayer).hasMovedShepherd = false;
-
-                    //the number of actions made is set to 0
-                    players.get(currentPlayer).numberOfActionsMade = 0;
+                    players.get(currentPlayer).lastShepherd = null;                   
 
                     lastRound = this.executeShift(currentPlayer);
 
@@ -952,8 +946,6 @@ public class GameManager implements Runnable {
 
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
-            this.players.get(player).numberOfActionsMade = i;
-
             DebugLogger.println(
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
