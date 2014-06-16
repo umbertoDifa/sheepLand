@@ -19,11 +19,11 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -73,7 +73,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private String myNickName;
     private int numOfPlayers;
     private int shepherds4player;
-    private Map<String, Integer> NICK_SHEPHERD_TO_STREET;
+    private ConcurrentMap<String, Integer> NICK_SHEPHERD_TO_STREET;
 
     /**
      * array of x-coordinates of all the top-left point of each streets
