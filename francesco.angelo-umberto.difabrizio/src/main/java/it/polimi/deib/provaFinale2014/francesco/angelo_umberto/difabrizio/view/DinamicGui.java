@@ -14,7 +14,7 @@ public class DinamicGui extends GuiView {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getSource() instanceof Animal) {
+        if (e.getSource() instanceof Animal && ((Animal) e.getSource()).isEnabled()) {
             Animal animal = (Animal) e.getSource();
             synchronized (HOLDER) {
                 HOLDER.add(animal.getAnimalType());
@@ -28,7 +28,7 @@ public class DinamicGui extends GuiView {
     @Override
     public void mouseReleased(MouseEvent e
     ) {
-        if (e.getSource() instanceof Animal) {
+        if (e.getSource() instanceof Animal && ((Action) e.getSource()).isEnabled()) {
             DebugLogger.println("mouse released su un animal");
             Animal animal = (Animal) e.getSource();
             for (int i = 0; i < regionBoxes.length; i++) {
