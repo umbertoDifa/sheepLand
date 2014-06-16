@@ -104,7 +104,11 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
         //not used
     }
-
+    
+    /**
+     * return the button to submit the nickname
+     * @return 
+     */
     protected JButton getButton(){
         return button;
     }

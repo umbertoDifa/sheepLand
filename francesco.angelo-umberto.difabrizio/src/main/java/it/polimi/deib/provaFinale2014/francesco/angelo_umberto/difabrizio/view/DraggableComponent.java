@@ -12,18 +12,30 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 
+/**
+ * The class extends JPanel adding the possibility to set the jpanel
+ * draggable and to drag the JPanel
+ * @author Francesco
+ */
 public class DraggableComponent extends JPanel {
 
 
     private boolean draggable = true;
     
-    // 2D Point representing the coordinate where mouse is, relative parent container
+    /**
+     * 2D Point representing the coordinate where mouse is, relative parent container
+     */
     protected Point anchorPoint;
     
-    // Default mouse cursor for dragging action
+    /**
+     * Default mouse cursor for dragging action
+     */
     protected Cursor draggingCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
-
+    /**
+     * create a draggable component setting listener to with drag functions
+     * opacity and background
+     */
     public DraggableComponent() {
         addDragListeners();
         setOpaque(true);

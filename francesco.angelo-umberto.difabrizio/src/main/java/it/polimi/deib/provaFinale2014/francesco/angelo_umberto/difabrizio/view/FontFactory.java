@@ -47,8 +47,11 @@ public class FontFactory {
         }
     }
 
+    /**
+     * return the font loaded
+     * @return 
+     */
     public static Font getFont() {
-
         return myFont;
     }
 }

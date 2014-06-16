@@ -18,7 +18,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- *
+ * The class extends JPanel, adding the possibility to set a background image,
+ * set a JLabel and to position the JLabel inside the panel.
  * @author Francesco
  */
 public abstract class BackgroundAndTextJPanel extends JPanel {
@@ -255,6 +256,7 @@ public abstract class BackgroundAndTextJPanel extends JPanel {
 
     /**
      *  get the jpanel's dimension
+     * @return 
      */
     @Override
     public Dimension getSize() {

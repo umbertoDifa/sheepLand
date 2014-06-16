@@ -123,6 +123,7 @@ public interface TypeOfViewController {
      * @param streetIndex  Which street
      * @param fence        If there is a fence
      * @param nickShepherd If there is a shepherd
+     * @param shepherdIndex
      */
     public void refreshStreet(int streetIndex, boolean fence,
                               String nickShepherd, int shepherdIndex);

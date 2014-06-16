@@ -11,9 +11,15 @@ import java.awt.image.ImageObserver;
  * backgraound setting it by setImage method.
  */
 public class DraggableImageComponent extends DraggableComponent implements ImageObserver {
-
+    
+    /**
+     * background image of the component draggable
+     */
     protected Image imageToShow;
 
+    /**
+     * create a draggable image component
+     */
     public DraggableImageComponent() {
         super();
         setLayout(null);

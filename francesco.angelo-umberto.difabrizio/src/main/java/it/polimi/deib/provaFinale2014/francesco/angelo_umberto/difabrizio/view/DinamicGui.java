@@ -14,12 +14,12 @@ public class DinamicGui extends GuiView {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getSource() instanceof Animal) {
+        if (e.getSource() instanceof Animal && ((Animal) e.getSource()).isEnabled()) {
             Animal animal = (Animal) e.getSource();
             synchronized (HOLDER) {
                 HOLDER.add(animal.getAnimalType());
                 HOLDER.notify();
-                DebugLogger.println("aggiunto a holder " + animal.getAnimalType());
+                DebugLogger.println("aggiunto a holder animale " + animal.getAnimalType());
 
             }
         }
@@ -28,13 +28,9 @@ public class DinamicGui extends GuiView {
     @Override
     public void mouseReleased(MouseEvent e
     ) {
-        if (e.getSource() instanceof Animal) {
+        if (e.getSource() instanceof Animal && ((Action) e.getSource()).isEnabled()) {
+            DebugLogger.println("mouse released su un animal");
             Animal animal = (Animal) e.getSource();
-//            synchronized (HOLDER) {
-//                HOLDER.add(animal.getAnimalType());
-//                HOLDER.notify();
-////            }
-//            DebugLogger.println("aggiunto a holder " + animal.getAnimalType());
             for (int i = 0; i < regionBoxes.length; i++) {
                 Point r = regionBoxes[i].getLocationOnScreen();
                 Point m = e.getLocationOnScreen();
@@ -42,27 +38,28 @@ public class DinamicGui extends GuiView {
                     synchronized (HOLDER) {
                         HOLDER.add(String.valueOf(i));
                         HOLDER.notify();
-                        DebugLogger.println("aggiunto a holder " + i);
+                        DebugLogger.println("aggiunto a holder animale " + i);
                     }
                 }
             }
+
+            DebugLogger.println("rimuovo animali zoomati");
+            //rimuovo tutti gli Animal dal layer 1
+            Component[] toRemove = layeredPane.getComponentsInLayer(1);
+            for (Component componentToRemove : toRemove) {
+                componentToRemove.setVisible(false);
+                layeredPane.remove(componentToRemove);
+            }
+            layeredPane.repaint();
+
+            //per ogni regione
+            for (RegionBox region : regionBoxes) {
+                //rimetto visibili gli animali
+                region.setAnimalsVisibles(true);
+                //in modalità preview
+                region.setAnimalPreview(true);
+            }
             animal.removeMouseListener(this);
-        }
-
-        //rimuovo tutti gli Animal dal layer 1
-        Component[] toRemove = layeredPane.getComponentsInLayer(1);
-        for (Component componentToRemove : toRemove) {
-            componentToRemove.setVisible(false);
-            layeredPane.remove(componentToRemove);
-        }
-        layeredPane.repaint();
-
-        //per ogni regione
-        for (RegionBox region : regionBoxes) {
-            //rimetto visibili gli animali
-            region.setAnimalsVisibles(true);
-            //in modalità preview
-            region.setAnimalPreview(true);
         }
 
     }
