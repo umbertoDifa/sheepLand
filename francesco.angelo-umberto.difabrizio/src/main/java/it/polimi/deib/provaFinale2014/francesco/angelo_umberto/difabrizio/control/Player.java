@@ -902,10 +902,20 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
         //lancio il dado degli altri giocatori
         numbOfShepherdToPay = 0;
         for (Street street : shepherd[shepherdIndex].getStreet().getNeighbourStreets()) {
-            if (street.hasShepherd() && Dice.roll() >= GameConstants.MIN_DICE_VALUE_TO_PAY_SILENCE.getValue()) {
-                //aumento il numero di pastori da pagare e lo inserisco nella lista
-                numbOfShepherdToPay++;
-                shepherdToPay.add(street.getShepherd());
+            if (street.hasShepherd()) {
+                //controlle che il pastore vicino non sia dello stesso pastore
+                boolean wrongShepherd = false;
+
+                for (Shepherd shepher : shepherd) {
+                    if (shepher == street.getShepherd()) {
+                        wrongShepherd = true;
+                    }
+                }
+                if (!wrongShepherd && Dice.roll() >= GameConstants.MIN_DICE_VALUE_TO_PAY_SILENCE.getValue()) {
+                    //aumento il numero di pastori da pagare e lo inserisco nella lista
+                    numbOfShepherdToPay++;
+                    shepherdToPay.add(street.getShepherd());
+                }
             }
         }
 
