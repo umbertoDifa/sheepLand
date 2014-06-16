@@ -11,7 +11,6 @@ import java.util.List;
  * @author Francesco
  */
 public class DinamicGui extends GuiView {
-       
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -20,16 +19,22 @@ public class DinamicGui extends GuiView {
             synchronized (HOLDER) {
                 HOLDER.add(animal.getAnimalType());
                 HOLDER.notify();
-                DebugLogger.println("aggiunto a holder animale " + animal.getAnimalType());
+                DebugLogger.println(
+                        "aggiunto a holder animale " + animal.getAnimalType());
 
             }
         }
     }
 
     @Override
-    public void mouseReleased(MouseEvent e
-    ) {
-        if (e.getSource() instanceof Animal && ((Animal) e.getSource()).isEnabled()) {
+    protected void animalClicked(MouseEvent e) {
+        //not useful
+        DebugLogger.println("animale clickato nella dinamic");
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (e.getSource() instanceof Animal && ((Animal) e.getSource()).isEnabled() && !kill) {
             DebugLogger.println("mouse released su un animal");
             Animal animal = (Animal) e.getSource();
             for (int i = 0; i < regionBoxes.length; i++) {
@@ -61,8 +66,9 @@ public class DinamicGui extends GuiView {
                 region.setAnimalPreview(true);
             }
             animal.removeMouseListener(this);
-        }
 
+        }
+        kill = false;
     }
 
     /**
@@ -93,9 +99,11 @@ public class DinamicGui extends GuiView {
                     animalWidth, animalHeight);
 
             if (!"blacksheep".equals(animalToHighlight.getAnimalType())
-                    || !"wolf".equals(animalToHighlight.getAnimalType())) {
+                    && !"wolf".equals(animalToHighlight.getAnimalType())) {
                 animalToHighlight.addMouseListener(this);
-                animalToHighlight.setDraggable(true);
+                if (!kill) {
+                    animalToHighlight.setDraggable(true);
+                }
             }
             layeredPane.add(animalToHighlight, new Integer(1));
             j++;

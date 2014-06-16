@@ -30,7 +30,7 @@ public class CardBoard extends BackgroundAndTextJPanel {
         
         //se minore di zero setto l img all'img dei recinti finali
         if (newAmmount < 0) {
-            this.setUp(".\\images\\numFencesRed.png", Dim.FENCE_POSITION.getW(), Dim.FENCE_POSITION.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
+            this.setUp(".\\images\\numFencesRed.png", Dim.TEXT_FENCE.getW(), Dim.TEXT_FENCE.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
         }
         
         //setto il nuovo ammount

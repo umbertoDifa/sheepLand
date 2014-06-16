@@ -73,6 +73,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private int numOfPlayers;
     private int shepherds4player;
     private Map<String, Integer> NICK_SHEPHERD_TO_STREET;
+    /**
+     * indicate the kill state
+     */
+    protected boolean kill = false;
 
     /**
      * array of x-coordinates of all the top-left point of each streets
@@ -292,7 +296,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         //setto la struttura
         frame.setLayout(null);
         layeredPane.add(mainJPanel, new Integer(0));
-        layeredPane.add(infoPanel, new Integer(3));
+        layeredPane.add(infoPanel, new Integer(7));
         layeredPane.add(nickPanel, new Integer(2));
         layeredPane.add(market, new Integer(4));
         layeredPane.revalidate();
@@ -652,7 +656,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      *
      * @param e
      */
-    private void animalClicked(MouseEvent e) {
+    protected void animalClicked(MouseEvent e) {
 
         //casto l'oggetto che ha generato l evento a Animal
         Animal chosenAnimal = (Animal) e.getSource();
@@ -1313,8 +1317,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
             DebugLogger.println("metto fence");
             streets[NICK_SHEPHERD_TO_STREET.get(
                     nickNameMover + "-" + shepherdIndex)].setFence();
-            
-            myReplace(NICK_SHEPHERD_TO_STREET, nickNameMover + "-" + shepherdIndex, Integer.parseInt(streetIndex));     
+
+            myReplace(NICK_SHEPHERD_TO_STREET,
+                    nickNameMover + "-" + shepherdIndex, Integer.parseInt(
+                            streetIndex));
 
             //decremento recinti
             fenceJPanel.decrease(1);
@@ -1602,8 +1608,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         });
 
         historyPanel.show("Scegli un azione");
-
-        return getAnswerByHolder();
+        String answer = getAnswerByHolder();
+        return answer;
     }
 
     /**
@@ -1720,6 +1726,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public String askKillOvine() {
         setMyStreetClickable();
+        kill = true;
 
         historyPanel.show("Seleziona il tuo pastore");
         String streetOfMyShepherd = getAnswerByHolder();
@@ -1784,6 +1791,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public void refreshFences(int fences) {
         fenceJPanel.setText(String.valueOf(fences));
+        if (fences < 0) {
+            fenceJPanel.setUp(".\\images\\numFencesRed.png",
+                    Dim.TEXT_FENCE.getW(),
+                    Dim.TEXT_FENCE.getH(), Dim.FENCE.getW(), Dim.FENCE.getH());
+        }
     }
 
     /**
