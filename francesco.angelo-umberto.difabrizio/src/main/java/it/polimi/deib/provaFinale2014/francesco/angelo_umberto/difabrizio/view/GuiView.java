@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -167,7 +168,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             player.setBackground(noneColor);
         }
 
-        NICK_SHEPHERD_TO_STREET = new HashMap();
+        NICK_SHEPHERD_TO_STREET = new ConcurrentHashMap<String, Integer>();
 
         for (int i = 0; i < numOfPlayers; i++) {
             for (int j = 0; j < shepherds4player; j++) {
@@ -500,7 +501,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                                 "Scelta azione: Uccidi ovino.");
                         break;
                     default:
-                        historyPanel.show("L'azione scelta non è eseguibile.");
+                        historyPanel.show("L'azione scelta non e' eseguibile.");
                 }
             }
             actions[i].setEnabled(false);
@@ -581,12 +582,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     HOLDER.add(String.valueOf(i));
                     HOLDER.notify();
                 }
+                disableAllRegionListener();
                 if (zoomOn) {
                     zoomAnimals(i);
                 }
             }
         }
-        disableAllRegionListener();
     }
 
     /**
@@ -603,7 +604,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         //per ogni oggetto nel layeredPane
         for (Component component : layeredPane.getComponents()) {
-            //se è un Animal
+            //se e' un Animal
             if (component instanceof Animal) {
                 //lo casto ad Animal
                 Animal animal = (Animal) component;
@@ -631,7 +632,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         for (RegionBox region : regionBoxes) {
             //rimetto visibili gli animali
             region.setAnimalsVisibles(true);
-            //in modalità preview
+            //in modalitÃ  preview
             region.setAnimalPreview(true);
         }
     }
@@ -754,7 +755,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param result the dice result to show
      */
     private void showResultDice(int result) {
-        infoPanel.setText("è uscito: ");
+        infoPanel.setText("e' uscito: ");
         infoPanel.setDice(result);
         infoPanel.setVisible(true);
     }
@@ -829,7 +830,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                             ex.getMessage(), ex);
                 }
             }
-            //la risposta che accetto è la prima
+            //la risposta che accetto e' la prima
             result = HOLDER.remove(0);
             HOLDER.clear();
             DebugLogger.println("prelevato da holder " + result);
@@ -936,7 +937,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * {@inheritDoc }
      */
     public void showEndGame() {
-        historyPanel.show("Il gioco è terminato. Arrivederci.");
+        historyPanel.show("Il gioco e' terminato. Arrivederci.");
     }
 
     /**
@@ -1116,7 +1117,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void showUnexpectedEndOfGame() {
         hideInfoPanel();
 
-        showInfo("Il gioco è terminato per mancanza di giocatori, si scusiamo.");
+        showInfo("Il gioco e' terminato per mancanza di giocatori, si scusiamo.");
     }
 
     /**
@@ -1146,7 +1147,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public String setUpShepherd(int idShepherd) {
 
-        //imposto visibilità players
+        //imposto visibilitÃ  players
         playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
         for (int i = 0; i < playersJPanels.length; i++) {
             if (getIndexPlayerByNickName(myNickName) != i) {
@@ -1224,7 +1225,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         DebugLogger.println(
                 "in refresh move shepherd con " + shepherdIndex + " e " + streetIndex + " e " + nickNameMover);
 
-        //Se vi è una strada di partenza vuol dire che l'azione è una MoveOvine
+        //Se vi e' una strada di partenza vuol dire che l'azione e' una MoveOvine
         //non una setShepherd e quindi faccio una
         //refresh della strada di partenza
         //cerco la strada dov'era il pastore e metto un recinto, lo faccio pagare
@@ -1367,10 +1368,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     "blacksheep");
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("blacksheep");
             historyPanel.show(
-                    "La pecora nera si è spostata dalla regione " + startRegion
+                    "La pecora nera si e' spostata dalla regione " + startRegion
                     + " alla regione " + endRegion);
         } else if ("nok".equalsIgnoreCase(outcome)) {
-            historyPanel.show("La pecora nera non può muoversi");
+            historyPanel.show("La pecora nera non puo' muoversi");
         }
     }
 
@@ -1398,11 +1399,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
             regionBoxes[Integer.parseInt(endRegion)].addAnimal("wolf");
             if ("ok".equalsIgnoreCase(fence)) {
                 historyPanel.show(
-                        "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
+                        "Il lupo si e' mosso dalla regione " + startRegion + " alla regione " + endRegion
                         + " passando sulla strada di valore " + diceValue + " e saltando la recinzione!");
             } else {
                 historyPanel.show(
-                        "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
+                        "Il lupo si e' mosso dalla regione " + startRegion + " alla regione " + endRegion
                         + " passando per la strada di valore " + diceValue);
             }
             if (!"nok".equalsIgnoreCase(ovine)) {
@@ -1413,7 +1414,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             String diceValue = token[1];
             String startRegion = token[2];
             historyPanel.show(
-                    "Il lupo non è riuscito a passare attraverso la strada di valore "
+                    "Il lupo non e' riuscito a passare attraverso la strada di valore "
                     + diceValue + " nella regione " + startRegion);
         }
     }
@@ -1444,7 +1445,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     new DisconnectImage(), BorderLayout.CENTER);
         }
 
-        historyPanel.show("Il giocatore " + player + " si è disconnesso");
+        historyPanel.show("Il giocatore " + player + " si e' disconnesso");
         dxBar.revalidate();
         dxBar.repaint();
     }
@@ -1516,7 +1517,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             regionBoxes[Integer.parseInt(region)].addAnimal(newType);
             showInfo(
                     "Il giocatore " + nickName + " ha accoppiato una pecora con un "
-                    + otherType + " nella regione " + region + " ed è nato un " + newType + "!");
+                    + otherType + " nella regione " + region + " ed e' nato un " + newType + "!");
 
         } else {
             showInfo(
@@ -1772,7 +1773,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     private void setMyShiftView() {
-        //imposto visibilità players
+        //imposto visibilitÃ  players
         playersJPanels[getIndexPlayerByNickName(myNickName)].isYourShift();
         for (int i = 0; i < playersJPanels.length; i++) {
             if (getIndexPlayerByNickName(myNickName) != i) {
