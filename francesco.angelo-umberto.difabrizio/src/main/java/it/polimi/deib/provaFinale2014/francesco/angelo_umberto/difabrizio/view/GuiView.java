@@ -19,11 +19,10 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -73,7 +72,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private String myNickName;
     private int numOfPlayers;
     private int shepherds4player;
-    private ConcurrentMap<String, Integer> NICK_SHEPHERD_TO_STREET;
+    private Map<String, Integer> NICK_SHEPHERD_TO_STREET;
 
     /**
      * array of x-coordinates of all the top-left point of each streets
@@ -174,7 +173,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             player.setBackground(noneColor);
         }
 
-        NICK_SHEPHERD_TO_STREET = new ConcurrentHashMap<String, Integer>();
+        NICK_SHEPHERD_TO_STREET = new HashMap<String, Integer>();
 
         for (int i = 0; i < numOfPlayers; i++) {
             for (int j = 0; j < shepherds4player; j++) {
@@ -1050,8 +1049,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         hideInfoPanel();
         refreshStreet(Integer.parseInt(streetIndex), false, myNickName,
                 shepherdIndex);
-        NICK_SHEPHERD_TO_STREET.putIfAbsent(myNickName + "-" + shepherdIndex,
+        myPutIfAbsent(NICK_SHEPHERD_TO_STREET, myNickName + "-" + shepherdIndex,
                 Integer.valueOf(streetIndex));
+
     }
 
     /**
@@ -1094,7 +1094,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
         streets[lastStreet].setImage("shepherd" + getIndexPlayerByNickName(
                 myNickName));
         //aggiorno la hashmap
-        NICK_SHEPHERD_TO_STREET.replace(myNickName + "-" + idShepherd,
+
+        myReplace(NICK_SHEPHERD_TO_STREET, myNickName + "-" + idShepherd,
                 lastStreet);
 
         //decremento recinti
@@ -1228,10 +1229,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public String setUpShepherd(int idShepherd) {
 
-
         //imposto visibilità players
         setMyShiftView();
-
 
         setFreeStreetsClickable();
         showInfo("Scegli dove posizionare la pedina");
@@ -1282,9 +1281,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
             String playerIndexStringed = String.valueOf(
                     indexPlayer);
             streets[streetIndex].setImage("shepherd" + playerIndexStringed);
-            NICK_SHEPHERD_TO_STREET.putIfAbsent(
+
+            myPutIfAbsent(NICK_SHEPHERD_TO_STREET,
                     nickShepherd + "-" + shepherdIndex,
                     streetIndex);
+
         }
 
     }
@@ -1312,8 +1313,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
             DebugLogger.println("metto fence");
             streets[NICK_SHEPHERD_TO_STREET.get(
                     nickNameMover + "-" + shepherdIndex)].setFence();
-            NICK_SHEPHERD_TO_STREET.replace(nickNameMover + "-" + shepherdIndex,
-                    Integer.parseInt(streetIndex));
+            
+            myReplace(NICK_SHEPHERD_TO_STREET, nickNameMover + "-" + shepherdIndex, Integer.parseInt(streetIndex));     
 
             //decremento recinti
             fenceJPanel.decrease(1);
@@ -1325,12 +1326,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 shepherdIndex);
         DebugLogger.println("posiziono " + nickNameMover + " in " + streetIndex
         );
-        if (null != NICK_SHEPHERD_TO_STREET.putIfAbsent(
+
+        myPutIfAbsent(NICK_SHEPHERD_TO_STREET,
                 nickNameMover + "-" + shepherdIndex, Integer.parseInt(
-                        streetIndex))) {
-            DebugLogger.println(" risultato putifabsent ok");
-        }
-        
+                        streetIndex));
+
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -1924,6 +1924,21 @@ public class GuiView implements MouseListener, TypeOfViewController,
                 mainJPanel.repaint();
             }
         });
+    }
+
+    private void myPutIfAbsent(Map<String, Integer> mappa, String key,
+                               Integer value) {
+        if (mappa.get(key) == null) {
+            // è null perchè non esiste o è stato volontariamente mappato a null
+            mappa.put(key, value);
+        }
+    }
+
+    private void myReplace(Map<String, Integer> mappa, String key,
+                           Integer value) {
+        mappa.remove(key);
+        mappa.put(key, value);
+
     }
 
 }

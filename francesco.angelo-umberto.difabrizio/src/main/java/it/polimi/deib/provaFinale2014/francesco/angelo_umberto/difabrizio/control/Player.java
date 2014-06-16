@@ -1195,34 +1195,40 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return gameManager.getController().sellCard(playerNickName,
                             sellableCards);
                 } catch (PlayerDisconnectedException ex) {
-                    DebugLogger.println(
-                            "giocatore" + playerNickName + " disconnesso");
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
-
                     //se il player si disconnette                   
                     numberOfDisconnections++;
 
-                    //controllo il numero di volte che si è disconnesso nello stesso turno
-                    if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
-                        throw new PlayerDisconnectedException(
-                                "giocatore disconnesso durante market");
-                    }
-
-                    //se ha ancora chances lo metto in pausa
-                    try {
-                        Thread.sleep(
-                                NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
-                    } catch (InterruptedException ex1) {
-                        Logger.getLogger(DebugLogger.class.getName()).log(
-                                Level.SEVERE,
-                                ex1.getMessage(), ex1);
-                    }
+                    handleTemporaryDisoconnection(ex, numberOfDisconnections);
                 }
             }
         } else {
             DebugLogger.println("non ci sono carte da vendere");
             return false;
+        }
+    }
+
+    private void handleTemporaryDisoconnection(Exception ex,
+                                               int numberOfDisconnections)
+            throws PlayerDisconnectedException {
+        DebugLogger.println(
+                "giocatore" + playerNickName + " disconnesso");
+        Logger.getLogger(DebugLogger.class.getName()).log(
+                Level.SEVERE, ex.getMessage(), ex);
+
+        //controllo il numero di volte che si è disconnesso nello stesso turno
+        if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
+            throw new PlayerDisconnectedException(
+                    "giocatore disconnesso durante market");
+        }
+
+        //se ha ancora chances lo metto in pausa
+        try {
+            Thread.sleep(
+                    NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
+        } catch (InterruptedException ex1) {
+            Logger.getLogger(DebugLogger.class.getName()).log(
+                    Level.SEVERE,
+                    ex1.getMessage(), ex1);
         }
     }
 
@@ -1249,29 +1255,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
                     return gameManager.getController().buyCard(playerNickName,
                             buyableCards);
                 } catch (PlayerDisconnectedException ex) {
-                    DebugLogger.println(
-                            "giocatore" + playerNickName + " disconnesso");
-                    Logger.getLogger(DebugLogger.class.getName()).log(
-                            Level.SEVERE, ex.getMessage(), ex);
-
-                    //se il player si disconnette                   
                     numberOfDisconnections++;
 
-                    //controllo il numero di volte che si è disconnesso nello stesso turno
-                    if (numberOfDisconnections >= NetworkConstants.MAX_NUMBER_OF_DISCONNETIONS.getValue()) {
-                        throw new PlayerDisconnectedException(
-                                "giocatore disconnesso durante market");
-                    }
-
-                    //se ha ancora chances lo metto in pausa
-                    try {
-                        Thread.sleep(
-                                NetworkConstants.TIMEOUT_PLAYER_RECONNECTION.getValue());
-                    } catch (InterruptedException ex1) {
-                        Logger.getLogger(DebugLogger.class.getName()).log(
-                                Level.SEVERE,
-                                ex1.getMessage(), ex1);
-                    }
+                    handleTemporaryDisoconnection(ex, numberOfDisconnections);
                 }
             }
         } else {

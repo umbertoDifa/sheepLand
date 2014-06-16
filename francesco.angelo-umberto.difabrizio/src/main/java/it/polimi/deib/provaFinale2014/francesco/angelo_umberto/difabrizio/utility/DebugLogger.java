@@ -8,8 +8,8 @@ import java.util.logging.Logger;
  */
 public class DebugLogger {
 
-    private static final boolean DEBUG = false;
-    private static final boolean PARENT_HANDLERS_ON = false;
+    private static final boolean DEBUG = true;
+    private static final boolean PARENT_HANDLERS_ON = true;
 
     private DebugLogger() {
     }
