@@ -101,7 +101,7 @@ public class CommandLineView implements TypeOfViewController {
             String endRegion = token[3];
             showInfo(
                     "La pecora nera si è spostata da la regione " + startRegion
-                    + " alla regione " + endRegion + " passando per la strada di valore " + diceValue);
+                    + " alla regione " + endRegion + " passando per la  strada di valore " + diceValue);
         } else if ("nok".equalsIgnoreCase(outcome)) {
             showInfo(
                     "La pecora nera non può muoversi, la strada di valore "
@@ -132,7 +132,7 @@ public class CommandLineView implements TypeOfViewController {
                         + " passando sulla strada di valore " + diceValue + " e saltando la recinzione!");
             } else {
                 showInfo(
-                        "Il lupo si è mosso dalla regione " + startRegion + " alla regione " + endRegion
+                        "Il lupo si è mosso dalla  regione " + startRegion + " alla regione " + endRegion
                         + " passando per la strada di valore " + diceValue);
             }
             if (!"nok".equalsIgnoreCase(ovine)) {
@@ -143,7 +143,7 @@ public class CommandLineView implements TypeOfViewController {
             String startRegion = token[2];
             showInfo(
                     "Il lupo non è riuscito a passare attraverso la strada di valore "
-                    + diceValue + " nella regione " + startRegion);
+                    + diceValue + " nella region " + startRegion);
         }
     }
 
@@ -188,8 +188,8 @@ public class CommandLineView implements TypeOfViewController {
     public void refreshMoveShepherd(String nickName, int shepherdIndex,
             String endStreet, int price) {
         showInfo(
-                "Il giocatore " + nickName + " ha posizionato il pastore "
-                + shepherdIndex + " nella strada " + endStreet + " pagando "
+                " Il giocatore " + nickName + " ha posizionato il  pastore "
+                + shepherdIndex + " nella strada " + endStreet + "  pagando "
                 + price + " danari.");
 
     }
@@ -201,7 +201,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param streetIndex
      */
     public void showSetShepherd(int shepherdIndex, String streetIndex) {
-        showInfo("Pastore " + shepherdIndex + " posizionato in " + streetIndex);
+        showInfo(" Pastore " + shepherdIndex + " posizionato in " + streetIndex);
     }
 
     /**
@@ -213,7 +213,7 @@ public class CommandLineView implements TypeOfViewController {
      */
     public void refreshBuyLand(String buyer, String land, int price) {
         showInfo(
-                "Il giocatore " + buyer + " ha acquistato un territorio " + land + " per " + price + " danari");
+                "Il player " + buyer + " ha acquistato un territorio " + land + " per " + price + " danari");
 
     }
 
@@ -273,7 +273,7 @@ public class CommandLineView implements TypeOfViewController {
             String startRegion,
             String endRegion) {
         showInfo(
-                "Il giocatore " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
+                "Il  giocatore  " + nickName + " ha spostato un " + type + " da " + startRegion + " a " + endRegion);
     }
 
     /**
@@ -282,11 +282,11 @@ public class CommandLineView implements TypeOfViewController {
      * @return
      */
     public String askMoveShepherd() {
-        showInfo("Scegliere quale pastore muovere:");
+        showInfo("Scegliere quale  pastore muovere:");
         String idShepherd = stdIn.nextLine();
 
         showInfo(
-                "Scegliere in quale strada spostare il pastore " + idShepherd + ":");
+                "Scegliere in quale strada spostare il pastore  " + idShepherd + ":");
         String stringedStreet = stdIn.nextLine();
 
         return idShepherd + "," + stringedStreet;
@@ -384,7 +384,7 @@ public class CommandLineView implements TypeOfViewController {
      */
     public void showKillOvine(String region, String type, String shepherdPayed) {
         showInfo(
-                "Hai ucciso un " + type + " nella regione " + region + " pagando " + shepherdPayed + " pastori per il silenzio");
+                "Hai ucciso un " + type + " nel la regione " + region + " pagando " + shepherdPayed + " pastori per il silenzio");
     }
 
     /**
@@ -424,11 +424,11 @@ public class CommandLineView implements TypeOfViewController {
             String outcome) {
         if ("ok".equals(outcome)) {
             showInfo(
-                    "Il giocatore " + nickName + " ha accoppiato una pecora con un "
-                    + otherType + " nella regione " + region + " ed è nato un " + newType + "!");
+                    " Il  giocatore  " + nickName + " ha accoppiato una pecora con un "
+                    + otherType + " nella  regione " + region + " ed è  nato un " + newType + "!");
         } else {
             showInfo(
-                    "Il giocatore " + nickName + " ha tentato di accoppiare una pecora con un " + otherType + " ma ha fallito!");
+                    "Il giocator " + nickName + " ha tentato di accoppiare una pecora con un " + otherType + " ma ha fallito!");
         }
 
     }
@@ -445,10 +445,10 @@ public class CommandLineView implements TypeOfViewController {
             String outcome) {
         if ("ok".equals(outcome)) {
             showInfo(
-                    "Il giocatore " + killer + " ha ucciso un ovino " + type + " nella regione " + region);
+                    "Il player  " + killer + " ha ucciso un ovino " + type + "  nella regione " + region);
         } else {
             showInfo(
-                    "Il giocatore " + killer + " ha tentato di uccidere un " + type + " nella regione " + region);
+                    "Il  player " + killer + " ha tentato di uccidere un " + type + " nella regione  " + region);
         }
     }
 
@@ -463,7 +463,7 @@ public class CommandLineView implements TypeOfViewController {
             String newType) {
         showInfo(
                 "Hai fatto accoppiare una pecora con un " + otherType
-                + " nella regione " + region + " ed è nato un " + newType);
+                + " nella  regione  " + region + " ed è nato un " + newType);
     }
 
     /**
@@ -483,7 +483,7 @@ public class CommandLineView implements TypeOfViewController {
      */
     public void showMyRank(Boolean winner, String rank) {
         if (winner) {
-            showInfo("Hai vinto con " + rank + " punti!");
+            showInfo("Hai vinto con " + rank + " punti !");
         } else {
             showInfo("Hai perso con " + rank + " punti!");
         }
@@ -512,9 +512,9 @@ public class CommandLineView implements TypeOfViewController {
     public void specialAnimalInitialCondition(String region) {
         String[] token = region.split(",");
         if ("Wolf".equals(token[0])) {
-            showInfo("Il lupo si trova nella regione " + token[1]);
+            showInfo("Il lupo si trova nela regione " + token[1]);
         } else if ("BlackSheep".equals(token[0])) {
-            showInfo("La pecora nera si trova nella regione " + token[1]);
+            showInfo("La pecora nera si trova nella  regione  " + token[1]);
         }
     }
 
@@ -524,7 +524,7 @@ public class CommandLineView implements TypeOfViewController {
      * @param player
      */
     public void refreshPlayerDisconnected(String player) {
-        showInfo("Il giocatore " + player + " si è disconnesso");
+        showInfo("Il giocatore  " + player + " si è disconnesso");
     }
 
     /**

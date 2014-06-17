@@ -4,7 +4,6 @@ import it.polimi.deib.provaFinale2014.francesco.angelo_umberto.difabrizio.utilit
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
