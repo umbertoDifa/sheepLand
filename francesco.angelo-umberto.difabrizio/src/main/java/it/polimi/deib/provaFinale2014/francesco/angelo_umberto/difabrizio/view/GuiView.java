@@ -1604,15 +1604,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
             actions[availableActions[i] - 1].setOpaqueView(false);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            /**
-             * run
-             */
-            public void run() {
-                mainJPanel.revalidate();
-                mainJPanel.repaint();
-            }
-        });
+        mainJPanel.revalidate();
+        mainJPanel.repaint();
 
         historyPanel.show("Scegli un azione");
         return getAnswerByHolder();

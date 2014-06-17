@@ -13,7 +13,7 @@ public enum NetworkConstants {
     /**
      * Player has 10 seconds to reconnect during is own turn
      */
-    TIMEOUT_PLAYER_RECONNECTION(15000),
+    TIMEOUT_PLAYER_RECONNECTION(20000),
     /**
      * How many times can the player disconnect in his own turn without losing
      * his shift
@@ -23,7 +23,7 @@ public enum NetworkConstants {
     /**
      * Default seconds to wait before timeout the clients connection to a game
      */
-    DEFAULT_TIMEOUT_ACCEPT(15),
+    DEFAULT_TIMEOUT_ACCEPT(20),
     /**
      * The default minimum number of clients for a game
      */
