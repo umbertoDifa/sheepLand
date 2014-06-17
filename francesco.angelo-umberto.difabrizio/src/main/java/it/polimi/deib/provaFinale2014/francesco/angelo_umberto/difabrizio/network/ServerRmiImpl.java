@@ -23,18 +23,11 @@ import java.util.logging.Logger;
  * @author Umberto
  */
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
-                                                                  Runnable {
+        Runnable {
 
     private final int maxNumberOfGames;
     private final int maxClientsForGame;
     private final int minClientsForGame;
-
-    /**
-     * It contains the seconds that the timeout waits before interrupting the
-     * process that waits for client's connections, it's set up by the
-     * constructor.
-     */
-    private final int secondsBeforeAcceptTimeout;
 
     /**
      * Timeout in milliseconds for the client's connections
@@ -75,7 +68,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
      * binding
      *
      * @param serverName The name which will be used by the server to bind
-     * @param port       Port to bind to
+     * @param port Port to bind to
      *
      * @throws RemoteException
      */
@@ -89,8 +82,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi,
         this.maxNumberOfGames = NetworkConstants.DEFAULT_MAX_GAMES.getValue();
         this.maxClientsForGame = NetworkConstants.DEFAULT_MAX_CLIENTS_FOR_GAME.getValue();
         this.minClientsForGame = NetworkConstants.DEFAULT_MIN_CLIENTS_FOR_GAME.getValue();
-        this.secondsBeforeAcceptTimeout = NetworkConstants.DEFAULT_TIMEOUT_ACCEPT.getValue();
-        this.timeoutAccept = secondsBeforeAcceptTimeout * NetworkConstants.MILLISECONDS_IN_SECONDS.getValue();
+
+        this.timeoutAccept = NetworkConstants.DEFAULT_TIMEOUT_ACCEPT.getValue() * NetworkConstants.MILLISECONDS_IN_SECONDS.getValue();
     }
 
     /**

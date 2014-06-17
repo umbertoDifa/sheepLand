@@ -122,7 +122,7 @@ public class DinamicGui extends GuiView {
                 animalToHighlight.setDraggable(false);
             }
 
-            layeredPane.add(animalToHighlight, new Integer(1));
+            layeredPane.add(animalToHighlight, Integer.valueOf(1));
             j++;
         }
         layeredPane.repaint();

@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -16,7 +17,7 @@ import javax.imageio.ImageIO;
  */
 public class ImagePool {
 
-    private static final HashMap<String, Image> NAME_IMAGE_MAP = new HashMap<String, Image>();
+    private static final Map<String, Image> NAME_IMAGE_MAP = new HashMap<String, Image>();
 
     /**
      * create an ImagePool

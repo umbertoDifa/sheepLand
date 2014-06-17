@@ -37,7 +37,7 @@ import javax.swing.*;
  * @author Francesco
  */
 public class GuiView implements MouseListener, TypeOfViewController,
-                                ActionListener {
+        ActionListener {
 
     private JFrame frame;
     private JPanel mainJPanel;
@@ -225,7 +225,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         actions[3] = new Action("Accoppia pecore");
         actions[4] = new Action("Accoppia montone e percora");
         actions[5] = new Action("Uccidi ovino");
-        market = new Market(Dim.MARKET.getW(), Dim.MARKET.getH());
+        market = new Market();
 
         for (int i = 0; i < cardsJPanels.length; i++) {
             cardsJPanels[i] = new Card(FontFactory.getFont(), "9", "0");
@@ -295,10 +295,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
     private void setUpFrameStructure() {
         //setto la struttura
         frame.setLayout(null);
-        layeredPane.add(mainJPanel, new Integer(0));
-        layeredPane.add(infoPanel, new Integer(7));
-        layeredPane.add(nickPanel, new Integer(2));
-        layeredPane.add(market, new Integer(4));
+        layeredPane.add(mainJPanel, Integer.valueOf(0));
+        layeredPane.add(infoPanel, Integer.valueOf(7));
+        layeredPane.add(nickPanel, Integer.valueOf(2));
+        layeredPane.add(market, Integer.valueOf(4));
         layeredPane.revalidate();
 
         mainJPanel.setLayout(new FlowLayout());
@@ -453,9 +453,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
             for (int i = 0; i < market.getPriceButtons().size(); i++) {
                 if (e.getSource() == market.getPriceButtons().get(i)) {
                     synchronized (HOLDER) {
+                        String buttone = String.valueOf(i + 1);
+                        
                         DebugLogger.println(
-                                "bottone price aggiunge a holder " + String.valueOf(
-                                        i + 1));
+                                "bottone price aggiunge a holder " + buttone);
                         HOLDER.add(String.valueOf(i + 1));
                         HOLDER.notify();
                         break;
@@ -743,7 +744,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param y
      */
     public static void addComponentsToPane(Container panelFather,
-                                           JComponent panelSon, int x, int y) {
+            JComponent panelSon, int x, int y) {
 
         panelFather.setLayout(null);
         panelFather.add(panelSon);
@@ -807,17 +808,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
         infoPanel = new InfoPanel(FontFactory.getFont(), listIcon, imageBg, 232,
                 444);
-    }
-
-    /**
-     * show infoPanel with the result of the dice
-     *
-     * @param result the dice result to show
-     */
-    private void showResultDice(int result) {
-        infoPanel.setText("e' uscito: ");
-        infoPanel.setDice(result);
-        infoPanel.setVisible(true);
     }
 
     /**
@@ -940,7 +930,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
                     || !"wolf".equals(animalToHighlight.getAnimalType())) {
                 animalToHighlight.addMouseListener(this);
             }
-            layeredPane.add(animalToHighlight, new Integer(1));
+            layeredPane.add(animalToHighlight, Integer.valueOf(1));
             j++;
         }
         layeredPane.repaint();
@@ -1066,7 +1056,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param shepherd4player
      */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
-                                      int shepherd4player) {
+            int shepherd4player) {
         this.nickNames = nickNames;
         this.numOfPlayers = nickNames.length;
         this.shepherds4player = shepherd4player;
@@ -1145,7 +1135,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param newType
      */
     public void showMateSheepWith(String region, String otherType,
-                                  String newType) {
+            String newType) {
         //TODO animazione accoppiamento?
         hideInfoPanel();
 
@@ -1169,7 +1159,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
         result += "con " + rank + " punti";
 
-        layeredPane.add(new RankPanel(result), new Integer(6));
+        layeredPane.add(new RankPanel(result), Integer.valueOf(6));
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -1250,7 +1240,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param numbOfLamb
      */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         hideInfoPanel();
 
         regionBoxes[regionIndex].removeAllAnimals();
@@ -1275,7 +1265,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param shepherdIndex
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd, int shepherdIndex) {
+            String nickShepherd, int shepherdIndex) {
         hideInfoPanel();
 
         if (fence) {
@@ -1303,7 +1293,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param price
      */
     public void refreshMoveShepherd(String nickNameMover, int shepherdIndex,
-                                    String streetIndex, int price) {
+            String streetIndex, int price) {
         hideInfoPanel();
 
         DebugLogger.println(
@@ -1373,7 +1363,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param outcome
      */
     public void refreshKillOvine(String killer, String region, String type,
-                                 String outcome) {
+            String outcome) {
         hideInfoPanel();
         if ("ok".equals(outcome)) {
             regionBoxes[Integer.parseInt(region)].removeOvine(type);
@@ -1462,7 +1452,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
         String[] token = result.split(",");
         String outcome = token[0];
 
-        String diceValue = token[1];
         String startRegion = token[2];
         if ("ok".equalsIgnoreCase(outcome)) {
             String endRegion = token[3];
@@ -1587,7 +1576,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @return
      */
     public String chooseAction(int[] availableActions,
-                               String[] availableStringedActions) {
+            String[] availableStringedActions) {
 
         hideInfoPanel();
 
@@ -1622,8 +1611,8 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param outcome
      */
     public void refreshMateSheepWith(String nickName, String region,
-                                     String otherType, String newType,
-                                     String outcome) {
+            String otherType, String newType,
+            String outcome) {
 
         hideInfoPanel();
 
@@ -1648,7 +1637,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
      * @param endRegion
      */
     public void refreshMoveOvine(String nickName, String type,
-                                 String startRegion, String endRegion) {
+            String startRegion, String endRegion) {
 
         hideInfoPanel();
 
@@ -1843,7 +1832,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
             DebugLogger.println(
                     "askWilling catcha risposta sbagliata!!!!:" + answer);
         }
-        if (boolAnswer == false) {
+        if (!boolAnswer) {
             market.setVisible(false);
         }
         return boolAnswer;
@@ -1939,7 +1928,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     private void myPutIfAbsent(Map<String, Integer> mappa, String key,
-                               Integer value) {
+            Integer value) {
         if (mappa.get(key) == null) {
             // è null perchè non esiste o è stato volontariamente mappato a null
             mappa.put(key, value);
@@ -1947,7 +1936,7 @@ public class GuiView implements MouseListener, TypeOfViewController,
     }
 
     private void myReplace(Map<String, Integer> mappa, String key,
-                           Integer value) {
+            Integer value) {
         mappa.remove(key);
         mappa.put(key, value);
 

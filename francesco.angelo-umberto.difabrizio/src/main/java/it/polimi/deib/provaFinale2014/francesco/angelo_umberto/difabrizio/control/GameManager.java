@@ -882,29 +882,6 @@ public class GameManager implements Runnable {
         return currentBuyer;
     }
 
-    private boolean roundComplete(int first, int current) {
-        if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
-                clientNickNames[first]).isOnline()) {
-            return current == first;
-        }
-        int temporaryFirstPlayer;
-
-        for (int i = 0; i < this.playersNumber; i++) {
-            //aggiorno il firstPlayer temporaneo
-            temporaryFirstPlayer = (first + 1) % this.playersNumber;
-
-            if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
-                    clientNickNames[temporaryFirstPlayer]).isOnline()) {
-                return current == temporaryFirstPlayer;
-            }
-        }
-
-        //se ho girato tutti i player e nessuno è online
-        // ritorno false e sarà l'execute rounds ad accorgersi di dover terminare
-        //la partita senza client
-        return false;
-    }
-
     private void nextPlayer() {
         //aggiorno il player che gioca 
         currentPlayer++;

@@ -231,7 +231,7 @@ public class RmiTrasmission extends TrasmissionController {
             
             if (!action.contains("null")) {
                 //tokenizza 
-                String token[] = action.split(",", -1);
+                String[] token = action.split(",", -1);
 
                 //switcha l'azione e refreshia tutti in base  all'azinoe fatta dal player
                 switch (token[0].charAt(0)) {

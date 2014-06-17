@@ -15,8 +15,7 @@ import javax.swing.JPanel;
  * @author Francesco
  */
 public class RankPanel extends JPanel {
-
-    private final JLabel textLabel;
+    
     private final Image image;
 
     /**
@@ -26,7 +25,7 @@ public class RankPanel extends JPanel {
      * @param text
      */
     public RankPanel(String text) {
-        this.textLabel = new JLabel(text);
+        JLabel textLabel = new JLabel(text);
         this.setBackground(new Color(0, 0, 0, 0));
         if (text.contains("vinto")) {
             image = ImagePool.getByName("cup");

@@ -25,28 +25,26 @@ class Market extends JPanel {
 
     //bottoni valori
     private final List<JButton> buttonsPrice;
-    
+
     //carte
     private List<Card> cards;
 
     //scritta
     private final JLabel label;
-    
+
     //img sfondo
     private final Image image;
-    
+
     //card container
     private final JPanel cardContainer;
-    
-    private JScrollPane scroll;
 
-/**
- * create market with specified dimension, with a label for text messages,
- * buttons for y/n answer and buttons for price answer.
- * @param width
- * @param height 
- */
-    public Market(int width, int height) {
+    private final JScrollPane scroll;
+
+    /**
+     * create market with specified dimension, with a label for text messages,
+     * buttons for y/n answer and buttons for price answer.
+     */
+    public Market() {
         this.buttonsPrice = new ArrayList<JButton>();
         this.cards = new ArrayList<Card>();
         this.label = new JLabel();
@@ -62,8 +60,8 @@ class Market extends JPanel {
         this.add(scroll);
         label.setFont(FontFactory.getFont());
         label.setBounds(50, 30, 430, 30);
-        scroll.setBounds(100, 100, 70*5, 70*2);
-        cardContainer.setPreferredSize(new Dimension(70*5, 70*5));
+        scroll.setBounds(100, 100, 70 * 5, 70 * 2);
+        cardContainer.setPreferredSize(new Dimension(70 * 5, 70 * 5));
         cardContainer.setLayout(new FlowLayout());
 
         this.buttonOk.setFont(FontFactory.getFont());
@@ -96,7 +94,8 @@ class Market extends JPanel {
 
     /**
      * set up the market to get the will to do it or not the action
-     * @param action 
+     *
+     * @param action
      */
     protected void askWillingToView(String action) {
         this.setVisible(true);
@@ -116,8 +115,10 @@ class Market extends JPanel {
     }
 
     /**
-     * set up the market to get what cards he wants to sell form the availableSellCards
-     * @param availableSellCards 
+     * set up the market to get what cards he wants to sell form the
+     * availableSellCards
+     *
+     * @param availableSellCards
      */
     protected void askWhatSellView(String[] availableSellCards) {
         this.setVisible(true);
@@ -129,7 +130,7 @@ class Market extends JPanel {
 
         this.label.setText("MARKET: quali carte vuoi vendere?");
 
-        for (int i = 0, j=0; i < availableSellCards.length; i++) {
+        for (int i = 0; i < availableSellCards.length; i++) {
             Card card = new Card(FontFactory.getFont(), "", "", availableSellCards[i]);
             cards.add(card);
             card.setUp(".\\images\\" + availableSellCards[i].toLowerCase() + "2.png", 30, 30, 60, 60);
@@ -142,15 +143,16 @@ class Market extends JPanel {
     }
 
     /**
-     * set up the market to get what cards he wants to buy from the availableCards
-     * at the specified price
+     * set up the market to get what cards he wants to buy from the
+     * availableCards at the specified price
+     *
      * @param availableCards
-     * @param prices 
+     * @param prices
      */
     public void askBuyView(String[] availableCards, int[] prices) {
         this.setVisible(true);
         scroll.setVisible(true);
-        
+
         removeOldCards();
 
         this.buttonOk.setVisible(false);
@@ -187,7 +189,8 @@ class Market extends JPanel {
 
     /**
      * return the button for ok answer
-     * @return 
+     *
+     * @return
      */
     protected JButton getButtonOk() {
         return buttonOk;
@@ -195,7 +198,8 @@ class Market extends JPanel {
 
     /**
      * return the button for ko answer
-     * @return 
+     *
+     * @return
      */
     protected JButton getButtonKo() {
         return buttonKo;
@@ -203,7 +207,8 @@ class Market extends JPanel {
 
     /**
      * return the list of all cards, to sell or buy
-     * @return 
+     *
+     * @return
      */
     public List<Card> getCards() {
         return cards;
@@ -211,7 +216,8 @@ class Market extends JPanel {
 
     /**
      * get all the prices buttons
-     * @return 
+     *
+     * @return
      */
     public List<JButton> getPriceButtons() {
         return buttonsPrice;
@@ -229,7 +235,7 @@ class Market extends JPanel {
             }
         }
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         setOpaque(false);
@@ -238,6 +244,5 @@ class Market extends JPanel {
         }
         super.paintComponent(g);
     }
-
 
 }

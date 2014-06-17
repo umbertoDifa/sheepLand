@@ -86,17 +86,17 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
         //per ogni animale nella regione
         for (int i = 0; i < animals.size(); i++) {
             //se il tipo è uguale a quello da rimuovere
-            if (animals.get(i).getAnimalType().equalsIgnoreCase(ovineType)) {
+            if (animals.get(i).getAnimalType().equalsIgnoreCase(ovineType)
+                    && animals.get(i).getNum() > 0) {
                 //se di quel tipo di animale vi è almeno 1 occorrenza
-                if (animals.get(i).getNum() > 0) {
-                    //decrementa le occorrenze
-                    animals.get(i).setNum(animals.get(i).getNum() - 1);
-                    //nel caso rimuovilo
-                    if (animals.get(i).getNum() == 0) {
-                        this.remove(animals.get(i));
-                        animals.remove(animals.get(i));
-                    }
+                //decrementa le occorrenze
+                animals.get(i).setNum(animals.get(i).getNum() - 1);
+                //nel caso rimuovilo
+                if (animals.get(i).getNum() == 0) {
+                    this.remove(animals.get(i));
+                    animals.remove(animals.get(i));
                 }
+
             }
         }
     }
@@ -165,7 +165,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
      * @param b
      */
     public void setAnimalsVisibles(boolean b) {
-        for (int i=0; i<animals.size(); i++) {
+        for (int i = 0; i < animals.size(); i++) {
             if (animals.get(i) != null) {
                 animals.get(i).setVisible(b);
             }
@@ -178,7 +178,7 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
      * @param b
      */
     public void setAnimalPreview(boolean b) {
-        for (int i=0; i<animals.size(); i++) {
+        for (int i = 0; i < animals.size(); i++) {
             if (animals.get(i) != null) {
                 animals.get(i).setPreview(b);
             }
@@ -198,42 +198,47 @@ public class RegionBox extends BackgroundAndTextJPanel implements MouseListener 
 
     }
 
-/**
- * {@inheritDoc }
- * @param e 
- */
-
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseClicked(MouseEvent e) {
         repaint();
     }
-/**
- * {@inheritDoc }
- * @param e 
- */
+
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mousePressed(MouseEvent e) {
         //not used
     }
-/**
- * {@inheritDoc }
- * @param e 
- */
+
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseReleased(MouseEvent e) {
         //not used
     }
 
-/**
- * {@inheritDoc }
- * @param e 
- */
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseEntered(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
- 
-/**
- * {@inheritDoc }
- * @param e 
- */
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseExited(MouseEvent e) {
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }

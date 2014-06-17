@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Region extends Node {
 
-    final private RegionType type;
+    private final RegionType type;
     private final List<Ovine> myOvines;
 
     /**

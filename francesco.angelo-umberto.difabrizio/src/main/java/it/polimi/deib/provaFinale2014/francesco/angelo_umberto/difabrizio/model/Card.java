@@ -13,29 +13,7 @@ public class Card {
     private boolean initial;
 
     private final RegionType type;
-
-    /**
-     *
-     * @return Il tipo di regione della carta
-     */
-    public RegionType getType() {
-        return type;
-    }
-
-    /**
-     *
-     * @return Il valore della carta
-     */
-    public int getValue() {
-        return value;
-    }
-
-    public boolean isInitial() {
-        return initial;
-    }
     
-    
-
     /**
      *
      * @param value Valore da assegnare alla carta
@@ -59,6 +37,27 @@ public class Card {
         this.marketValue = this.value;
     }
 
+
+    /**
+     *
+     * @return Il tipo di regione della carta
+     */
+    public RegionType getType() {
+        return type;
+    }
+
+    /**
+     *
+     * @return Il valore della carta
+     */
+    public int getValue() {
+        return value;
+    }
+
+    public boolean isInitial() {
+        return initial;
+    }
+           
     /**
      * Setta il valore della carta a value
      *

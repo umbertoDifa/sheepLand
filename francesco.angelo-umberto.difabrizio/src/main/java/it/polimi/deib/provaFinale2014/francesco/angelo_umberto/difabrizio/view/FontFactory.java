@@ -10,19 +10,13 @@ import java.util.logging.Logger;
 
 /**
  * The class loads the font and return it when asked
+ *
  * @author Francesco
  */
 public class FontFactory {
 
     private static Font myFont;
-    
-    /**
-     * create and object of the class and call the method to load the font
-     */
-    public static void createFont(){
-        new FontFactory();
-    }
-    
+
     /**
      * load and save the font
      */
@@ -35,21 +29,29 @@ public class FontFactory {
         } catch (IOException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            
+
             myFont = new Font("Verdana", Font.PLAIN, 12);
             DebugLogger.println("nel catch IOEx");
         } catch (FontFormatException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
-            
+
             myFont = new Font("Verdana", Font.PLAIN, 12);
             DebugLogger.println("nel catch FontFormatEx");
         }
     }
 
     /**
+     * create and object of the class and call the method to load the font
+     */
+    public static void createFont() {
+        new FontFactory();
+    }
+
+    /**
      * return the font loaded
-     * @return 
+     *
+     * @return
      */
     public static Font getFont() {
         return myFont;

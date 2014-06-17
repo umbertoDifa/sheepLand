@@ -24,6 +24,9 @@ public class Client {
      */
     protected static final Object LOCK = new Object();
 
+    private Client() {
+    }
+
     /**
      * Starts the client asking the nickName, the type of connection and the
      * type of view preferred
@@ -149,9 +152,6 @@ public class Client {
                     answer));
 
         } while ("S".equalsIgnoreCase(answer));
-    }
-
-    private Client() {
     }
 
 }

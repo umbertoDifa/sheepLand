@@ -39,12 +39,12 @@ public enum NetworkConstants {
 
     private final int value;
 
-    public int getValue() {
-        return value;
-    }
-
     private NetworkConstants(int value) {
         this.value = value;
+    }
+
+    public int getValue() {
+        return value;
     }
 
 }

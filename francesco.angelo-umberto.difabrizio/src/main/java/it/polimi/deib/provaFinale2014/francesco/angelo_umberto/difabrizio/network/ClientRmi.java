@@ -24,8 +24,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     private final String nameServer;
 
     private final TypeOfViewController view;
-
-    private ServerRmi serverRmi;
+ 
     private PlayerRemote playerRmi;
     private Registry registry;
 
@@ -37,13 +36,13 @@ public class ClientRmi implements ClientInterfaceRemote {
     /**
      * Creates an rmi client setting it's variables.
      *
-     * @param ip         The ip to which it will connect to find the server
-     * @param port       The port to search the server
+     * @param ip The ip to which it will connect to find the server
+     * @param port The port to search the server
      * @param nameServer The name to which the server is binded
-     * @param view       The kind of view wanted by the user
+     * @param view The kind of view wanted by the user
      */
     public ClientRmi(String ip, int port, String nameServer,
-                     TypeOfViewController view) {
+            TypeOfViewController view) {
         this.nameServer = nameServer;
         this.port = port;
         this.ip = ip;
@@ -64,7 +63,7 @@ public class ClientRmi implements ClientInterfaceRemote {
             registry = LocateRegistry.getRegistry(ip, port);
 
             //cerco l'oggetto nel registry
-            serverRmi = (ServerRmi) registry.lookup(
+            ServerRmi serverRmi = (ServerRmi) registry.lookup(
                     nameServer);
 
             DebugLogger.println(
@@ -83,7 +82,7 @@ public class ClientRmi implements ClientInterfaceRemote {
                 //connettiti
                 connectionResult = serverRmi.connect(this, nickName);
 
-            } while (connectionResult == false);
+            } while (!connectionResult);
 
             //crea uno skeleton affinche il server possa chiamare dei metodi su di te
             registry.rebind(nickName, this);
@@ -107,7 +106,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param numbOfLamb
      */
     public void refreshRegion(int regionIndex, int numbOfSheep, int numbOfRam,
-                              int numbOfLamb) {
+            int numbOfLamb) {
         view.refreshRegion(regionIndex, numbOfSheep, numbOfRam, numbOfLamb);
     }
 
@@ -119,7 +118,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param nickShepherd
      */
     public void refreshStreet(int streetIndex, boolean fence,
-                              String nickShepherd, int shepherdIndex) {
+            String nickShepherd, int shepherdIndex) {
         view.refreshStreet(streetIndex, fence, nickShepherd, shepherdIndex);
     }
 
@@ -284,7 +283,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param ovineType
      */
     public void refreshMoveOvine(String nickNameMover, String startRegion,
-                                 String endRegion, String ovineType) {
+            String endRegion, String ovineType) {
         view.refreshMoveOvine(nickNameMover, ovineType, startRegion, endRegion);
     }
 
@@ -319,7 +318,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param price
      */
     public void refreshMoveShepherd(String nickName, int indexShepherd,
-                                    String newStreet, int price) {
+            String newStreet, int price) {
         view.refreshMoveShepherd(nickName, indexShepherd, newStreet, price);
     }
 
@@ -329,7 +328,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws java.rmi.RemoteException
      */
     public void refreshBuyLand(String nickNameBuyer, String boughtLand,
-                               int price) throws RemoteException {
+            int price) throws RemoteException {
         view.refreshBuyLand(nickNameBuyer, boughtLand, price);
     }
 
@@ -386,8 +385,8 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @param outcome
      */
     public void refreshMateSheepWith(String nickNameMater, String region,
-                                     String otherType, String newType,
-                                     String outcome) {
+            String otherType, String newType,
+            String outcome) {
         view.refreshMateSheepWith(nickName, region, otherType, newType, outcome);
     }
 
@@ -430,7 +429,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      */
     public void disconnect(String message) {
         view.showInfo(message);
-        if (connectionResult == true) {
+        if (connectionResult) {
             try {
                 UnicastRemoteObject.unexportObject(this, true);
                 registry.unbind(nickName);
@@ -512,7 +511,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws RemoteException
      */
     public void refreshKillOvine(String nickNameKiller, String region,
-                                 String type, String outcome) throws
+            String type, String outcome) throws
             RemoteException {
         view.refreshKillOvine(nickNameKiller, region, type, outcome);
     }
@@ -550,7 +549,7 @@ public class ClientRmi implements ClientInterfaceRemote {
      * @throws RemoteException
      */
     public void refreshGameParameters(String[] nickNames, int[] wallets,
-                                      int shepherd4player)
+            int shepherd4player)
             throws RemoteException {
         view.refreshGameParameters(nickNames, wallets, shepherd4player);
     }
@@ -583,7 +582,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     /**
      * {@inheritDoc }
      *
-     * @param type           type of card
+     * @param type type of card
      * @param cardsAvailable number of available cards
      *
      * @throws RemoteException connection error

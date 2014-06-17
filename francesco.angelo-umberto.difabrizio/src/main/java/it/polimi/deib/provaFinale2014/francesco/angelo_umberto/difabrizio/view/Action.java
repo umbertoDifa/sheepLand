@@ -11,9 +11,7 @@ import java.awt.event.MouseListener;
  * to set the opacity and a tooltipText.
  * @author Francesco
  */
-public class Action extends BackgroundAndTextJPanel implements MouseListener {
-    private final String toolTipText;
-    
+public class Action extends BackgroundAndTextJPanel implements MouseListener {    
     /**
      * Create a JPanel Action, with the toolTipText indicated.
      * It removes the background color, add itself to the mouselistener
@@ -24,7 +22,6 @@ public class Action extends BackgroundAndTextJPanel implements MouseListener {
         setOpacity(true);
         this.setBackground(new Color(0, 0, 0, 0));
         this.addMouseListener(this);
-        this.toolTipText = toolTipText;
         this.setToolTipText(toolTipText);
     }
 

@@ -15,12 +15,13 @@ import javax.swing.JLabel;
  * @author Francesco
  */
 public class Card extends CardBoard implements MouseListener {
-
+    
+    private String type;
+    
     /**
      * The number corrisponding to the remaining cards in the bank
      */
     protected JLabel bankNum;
-    private String type;
 
     /**
      * create the Card with inside a JLabel with the indicated font, text for

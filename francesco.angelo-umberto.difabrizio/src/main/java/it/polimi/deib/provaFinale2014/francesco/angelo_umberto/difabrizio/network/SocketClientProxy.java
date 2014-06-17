@@ -118,8 +118,7 @@ public class SocketClientProxy extends ClientProxy {
      */
     protected String receiveString() throws PlayerDisconnectedException {
         try {
-            String answer = fromClient.nextLine();
-            return answer;
+            return fromClient.nextLine();
         } catch (NoSuchElementException ex) {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);

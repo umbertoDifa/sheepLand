@@ -43,25 +43,10 @@ public class DraggableComponent extends JPanel {
     }
 
     /**
-     * We have to define this method because a JComponent is a void box. So we
-     * have to define how it will be painted. We create a simple filled
-     * rectangle.
-     *
-     * @param g Graphics object as canvas
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-    }
-
-    /**
      * Add Mouse Motion Listener with drag function
      */
     private void addDragListeners() {
        
-        //This handle is a reference to THIS beacause in next Mouse Adapter
-        //"this" is not allowed
-        final DraggableComponent handle = this;
         addMouseMotionListener(new MouseAdapter() {
 
             @Override

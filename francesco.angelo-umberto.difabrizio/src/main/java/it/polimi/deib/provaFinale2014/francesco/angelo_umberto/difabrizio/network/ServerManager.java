@@ -30,6 +30,9 @@ public class ServerManager {
      */
     public static int activatedGames = 0;
 
+    private ServerManager() {
+    }
+
     /**
      * Main method, creates a serverMangager and starts it
      *
@@ -91,9 +94,6 @@ public class ServerManager {
         stdOut.println("Thread server attivato.");
         stdOut.flush();
 
-    }
-
-    private ServerManager() {
     }
 
 }

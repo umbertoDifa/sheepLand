@@ -13,35 +13,35 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 /**
- * The class extends JPanel adding text area to insert text, and a button
- * to hide and disable the possibility to insert text, and a method to return
- * the text
+ * The class extends JPanel adding text area to insert text, and a button to
+ * hide and disable the possibility to insert text, and a method to return the
+ * text
+ *
  * @author Francesco
  */
 public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
     private final JTextArea area;
-    private final Font font;
     private final int width;
     private final int height;
 
     private final JButton button;
 
     /**
-     * Create a NickPanel with textarea and button
-     * set dimension, font and listeners. the gui listen
-     * the event of the button
-     * @param gui 
+     * Create a NickPanel with textarea and button set dimension, font and
+     * listeners. the gui listen the event of the button
+     *
+     * @param gui
      */
     public NickPanel(GuiView gui) {
         this.button = new JButton("Login");
         this.width = 140;
         this.height = 100;
-        this.font = FontFactory.getFont();
+        Font font = FontFactory.getFont();
         button.setFont(font);
 
         this.setBackground(Color.BLUE);
-        this.area = new JTextArea(""+ (int) (Math.random() * 10));
+        this.area = new JTextArea("" + (int) (Math.random() * 10));
         area.setPreferredSize(new Dimension(140, 60));
         this.area.addKeyListener(this);
         this.setLayout(new BorderLayout());
@@ -56,7 +56,8 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
     /**
      * return the text of the textarea
-     * @return 
+     *
+     * @return
      */
     public String getMyNickName() {
         return area.getText();
@@ -64,15 +65,17 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
     /**
      * when the button is clicked hide the jpanel
-     * @param e 
+     *
+     * @param e
      */
     public void actionPerformed(ActionEvent e) {
-        this.setVisible(false);        
+        this.setVisible(false);
     }
 
     /**
      * return the jpanel dimensions
-     * @return 
+     *
+     * @return
      */
     @Override
     public Dimension getPreferredSize() {
@@ -80,8 +83,9 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     }
 
     /**
-     *  return the jpanel dimensions
-     * @return 
+     * return the jpanel dimensions
+     *
+     * @return
      */
     @Override
     public Dimension getSize() {
@@ -90,7 +94,8 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
 
     /**
      * repaint when the user type a character
-     * @param e 
+     *
+     * @param e
      */
     public void keyTyped(KeyEvent e) {
         this.revalidate();
@@ -104,12 +109,13 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent e) {
         //not used
     }
-    
+
     /**
      * return the button to submit the nickname
-     * @return 
+     *
+     * @return
      */
-    protected JButton getButton(){
+    protected JButton getButton() {
         return button;
     }
 }
