@@ -20,7 +20,7 @@ public class DinamicGui extends GuiView {
                 HOLDER.add(animal.getAnimalType());
                 HOLDER.notify();
                 DebugLogger.println(
-                        "aggiunto a holder animale " + animal.getAnimalType());
+                        "aggiunto nella dinamic a holder animale " + animal.getAnimalType());
 
             }
         }
@@ -44,31 +44,43 @@ public class DinamicGui extends GuiView {
                     synchronized (HOLDER) {
                         HOLDER.add(String.valueOf(i));
                         HOLDER.notify();
-                        DebugLogger.println("aggiunto a holder animale " + i);
+                        DebugLogger.println("aggiunto nella dinamic a holder regione " + i);
                     }
                 }
             }
 
-            DebugLogger.println("rimuovo animali zoomati");
-            //rimuovo tutti gli Animal dal layer 1
-            Component[] toRemove = layeredPane.getComponentsInLayer(1);
-            for (Component componentToRemove : toRemove) {
-                componentToRemove.setVisible(false);
-                layeredPane.remove(componentToRemove);
-            }
-            layeredPane.repaint();
+            removeZoomedAnimals();
 
-            //per ogni regione
-            for (RegionBox region : regionBoxes) {
-                //rimetto visibili gli animali
-                region.setAnimalsVisibles(true);
-                //in modalità preview
-                region.setAnimalPreview(true);
-            }
-            animal.removeMouseListener(this);
+            addSmallAnimalsBack();
+
+        } else if (e.getSource() instanceof Animal && ((Animal) e.getSource()).isEnabled()) {
+            kill = false;
+            removeZoomedAnimals();
+            addSmallAnimalsBack();
 
         }
-        kill = false;
+
+    }
+
+    private void addSmallAnimalsBack() {
+        //per ogni regione
+        for (RegionBox region : regionBoxes) {
+            //rimetto visibili gli animali
+            region.setAnimalsVisibles(true);
+            //in modalità preview
+            region.setAnimalPreview(true);
+        }
+    }
+
+    private void removeZoomedAnimals() {
+        DebugLogger.println("rimuovo animali zoomati");
+        //rimuovo tutti gli Animal dal layer 1
+        Component[] toRemove = layeredPane.getComponentsInLayer(1);
+        for (Component componentToRemove : toRemove) {
+            componentToRemove.setVisible(false);
+            layeredPane.remove(componentToRemove);
+        }
+        layeredPane.repaint();
     }
 
     /**
@@ -101,10 +113,15 @@ public class DinamicGui extends GuiView {
             if (!"blacksheep".equals(animalToHighlight.getAnimalType())
                     && !"wolf".equals(animalToHighlight.getAnimalType())) {
                 animalToHighlight.addMouseListener(this);
-                if (!kill) {
-                    animalToHighlight.setDraggable(true);
-                }
+
             }
+            if (!kill && !"blacksheep".equals(animalToHighlight.getAnimalType())
+                    && !"wolf".equals(animalToHighlight.getAnimalType())) {
+                animalToHighlight.setDraggable(true);
+            } else {
+                animalToHighlight.setDraggable(false);
+            }
+
             layeredPane.add(animalToHighlight, new Integer(1));
             j++;
         }

@@ -42,9 +42,9 @@ import java.util.logging.Logger;
  * @author francesco.angelo-umberto.difabrizio
  */
 public class GameManager implements Runnable {
-    
+
     private final Thread myThread;
-    
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
             1);
     private final ScheduledFuture<?> connectionCheckerHandle;
@@ -81,7 +81,7 @@ public class GameManager implements Runnable {
      * take them during the game
      */
     private final Bank bank;
-    
+
     private final Market market;
 
     /**
@@ -93,7 +93,7 @@ public class GameManager implements Runnable {
      */
     public GameManager(List<String> clientNickNames,
             TrasmissionController controller) {
-        
+
         this.controller = controller;
         //salvo il numero di player
         this.playersNumber = clientNickNames.size();
@@ -108,7 +108,7 @@ public class GameManager implements Runnable {
         this.bank = new Bank(GameConstants.NUM_CARDS.getValue(),
                 GameConstants.NUM_INITIAL_CARDS.getValue(),
                 GameConstants.NUM_FENCES.getValue());
-        
+
         this.market = new Market(playersNumber);
 
         //setto il pastore principale
@@ -124,11 +124,11 @@ public class GameManager implements Runnable {
             Logger.getLogger(DebugLogger.class.getName()).log(Level.SEVERE,
                     ex.getMessage(), ex);
         }
-        
+
         controller.setNick2PlayerMap(this.clientNickNames, players);
-        
+
         myThread = new Thread(this);
-        
+
         connectionCheckerHandle = scheduler.scheduleWithFixedDelay(
                 new Runnable() {
                     public void run() {
@@ -149,9 +149,9 @@ public class GameManager implements Runnable {
      * {@inheritDoc }
      */
     public void run() {
-        
+
         this.startGame();
-        
+
     }
 
     /**
@@ -191,7 +191,7 @@ public class GameManager implements Runnable {
             try {
                 //lo aggiungo alla lista dei giocatori
                 players.add(new Player(this, clientNickNames[i], market));
-                
+
             } catch (RemoteException ex) {
                 Logger.getLogger(DebugLogger.class
                         .getName()).log(Level.SEVERE,
@@ -208,59 +208,59 @@ public class GameManager implements Runnable {
      */
     private void setUpGame() {
         DebugLogger.println("Avvio partita");
-        
+
         brodcastStartGame();
-        
+
         setUpMap();
-        
+
         setUpAnimals();
-        
+
         setUpCards();
-        
+
         setUpFences();
-        
+
         this.firstPlayer = setUpShift();
-        
+
         DebugLogger.println(
                 "SetUpShift Terminato: il primo giocatore e'" + this.firstPlayer);
-        
+
         setUpInitialCards();
-        
+
         brodcastInitialCondition();
-        
+
         brodcastCards();
-        
+
         this.setUpShepherds();
-        
+
         DebugLogger.println("SetUpshpherds terminato");
-        
+
     }
-    
+
     private void brodcastStartGame() {
         for (String client : clientNickNames) {
             controller.refreshStartGame(client);
         }
     }
-    
+
     private void brodcastInitialCondition() {
         for (String client : clientNickNames) {
             this.refreshInitialConditions(client);
         }
     }
-    
+
     private void brodcastCards() {
         for (int i = 0; i < playersNumber; i++) {
             refreshCards(i);
         }
     }
-    
+
     private void refreshCards(int indexOfPlayer) {
         int clearPastCards = - 2;
-        
+
         int numberOfCards = players.get(indexOfPlayer).shepherd[0].getMyCards().size();
         controller.refreshCard(clientNickNames[indexOfPlayer],
                 RegionType.COUNTRYSIDE.toString(), clearPastCards);
-        
+
         for (int j = 0; j < numberOfCards; j++) {
             Card card = players.get(indexOfPlayer).shepherd[0].getMyCards().get(
                     j);
@@ -270,17 +270,17 @@ public class GameManager implements Runnable {
                     card.getType().toString(), card.getValue());
         }
     }
-    
+
     private void setUpInitialCards() {
-        
+
         for (int i = 0; i < clientNickNames.length; i++) {
             //aggiungi la carta prendendola dalle carte iniziali della banca
             Card initialCard = this.bank.getInitialCard();
-            
+
             this.players.get(i).shepherd[0].addCard(
                     initialCard);
         }
-        
+
     }
 
     /**
@@ -323,7 +323,7 @@ public class GameManager implements Runnable {
             try {
                 for (j = 0; j < this.shepherd4player; j++) {
                     players.get(currentPlayer).chooseShepherdStreet(j);
-                    
+
                 }
             } catch (PlayerDisconnectedException ex) {
                 Logger.getLogger(DebugLogger.class
@@ -334,10 +334,10 @@ public class GameManager implements Runnable {
                 controller.brodcastPlayerDisconnected(
                         clientNickNames[currentPlayer]);
             }
-            
+
         }
     }
-    
+
     private int setUpShift() {
         //creo oggetto random
         Random random = new Random();
@@ -390,17 +390,17 @@ public class GameManager implements Runnable {
             }
         }
     }
-    
+
     private void playTheGame() throws UnexpectedEndOfGameException {
         int[][] classification;
         int numOfWinners = 1;
-        
+
         try {
             DebugLogger.println("Avvio esecuzione giri");
             this.executeRounds();
-            
+
         } catch (FinishedFencesException ex) {
-            
+
             Logger.getLogger(DebugLogger.class
                     .getName()).log(
                             Level.SEVERE, ex.getMessage(), ex);
@@ -415,7 +415,7 @@ public class GameManager implements Runnable {
                 numOfWinners++;
             }
         }
-        
+
         int i;
         //per tutti i vincitori
         for (i = 0; i < numOfWinners; i++) {
@@ -427,23 +427,23 @@ public class GameManager implements Runnable {
         for (; i < playersNumber; i++) {
             controller.sendRank(false, clientNickNames[classification[0][i]],
                     classification[1][i]);
-            
+
         }
-        
+
         DebugLogger.println("invio classifica");
-        
+
         controller.sendClassification(classificationToString(classification));
-        
+
     }
-    
+
     private void startGame() {
         DebugLogger.println("SetUpGameAvviato");
         this.setUpGame();
-        
+
         DebugLogger.println("SetUpGame Effettuato");
         try {
             this.playTheGame();
-            
+
         } catch (UnexpectedEndOfGameException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -453,7 +453,7 @@ public class GameManager implements Runnable {
             //però lo devo avvisare
             controller.unexpectedEndOfGame();
         }
-        
+
         //kill thread che checka le connessioni
         scheduler.schedule(new Runnable() {
             public void run() {
@@ -471,9 +471,9 @@ public class GameManager implements Runnable {
                     ((SocketClientProxy) ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                             client)).getSocket().close();
                 }
-                
+
                 ServerManager.NICK_2_CLIENT_PROXY_MAP.remove(client);
-                
+
             } catch (IOException ex) {
                 //il client che stavo eliminando ha già chiuso il socket
                 //poco male
@@ -486,7 +486,7 @@ public class GameManager implements Runnable {
         //diminuisco il numero di partite attive
         ServerManager.activatedGames--;
     }
-    
+
     private void refreshRegions(String client) {
         int numbOfSheep, numbOfLamb, numbOfRam;
         for (int i = 0; i < this.map.getRegions().length; i++) {
@@ -506,9 +506,9 @@ public class GameManager implements Runnable {
             controller.refreshRegion(client, i, numbOfSheep,
                     numbOfRam, numbOfLamb);
         }
-        
+
     }
-    
+
     private void refreshStreets(String client) {
         boolean fence;
         String playerOnTheStreet;
@@ -530,7 +530,7 @@ public class GameManager implements Runnable {
                 //cerco l'index dello shepherd
                 shepherdIndex = getShepherdIndex(playerIndex,
                         street.getShepherd());
-                
+
             }
             controller.refreshStreet(client, i, fence, playerOnTheStreet,
                     shepherdIndex);
@@ -553,7 +553,7 @@ public class GameManager implements Runnable {
         }
         return -1;
     }
-    
+
     private int getShepherdIndex(int playerIndex, Shepherd shepherd) {
         for (int i = 0; i < players.get(playerIndex).shepherd.length; i++) {
             if (shepherd == players.get(playerIndex).shepherd[i]) {
@@ -562,7 +562,7 @@ public class GameManager implements Runnable {
         }
         return -1;
     }
-    
+
     private void refreshSpecialAnimals(String client) {
         try {
             //refresh wolf position
@@ -573,14 +573,14 @@ public class GameManager implements Runnable {
             controller.refreshSpecialAnimalPosition(client,
                     map.getBlackSheep(), "" + map.getNodeIndex(
                             map.getBlackSheep().getMyRegion()));
-            
+
         } catch (NodeNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(),
                             ex);
         }
-        
+
     }
 
     /**
@@ -592,40 +592,40 @@ public class GameManager implements Runnable {
      */
     protected void refreshInitialConditions(String client) {
         int[] wallets = getWalletsAmmount();
-        
+
         controller.refreshGameParameters(client, clientNickNames, wallets,
                 shepherd4player);
-        
+
         refreshRegions(client);
-        
+
         refreshStreets(client);
-        
+
         controller.refreshMoney(client);
-        
+
         refreshSpecialAnimals(client);
-        
+
         refreshBankCards(client);
-        
+
         try {
             controller.refreshNumberOfAvailableFence(client,
                     GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue() - bank.numberOfUsedFence());
-            
+
         } catch (FinishedFencesException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
                             ex.getMessage(),
                             ex);
         }
-        
+
     }
-    
+
     private void refreshBankCards(String client) {
         //salvo il numero rimanente di ogni carta
         int[] availableCards = new int[RegionType.values().length - 1];
         String[] regionTypes = new String[RegionType.values().length - 1];
-        
+
         int i = 0;
-        
+
         for (RegionType type : RegionType.values()) {
             if (type != RegionType.SHEEPSBURG) {
                 regionTypes[i] = type.toString();
@@ -635,27 +635,27 @@ public class GameManager implements Runnable {
                 i++;
             }
         }
-        
+
         controller.refreshBankCards(client, regionTypes, availableCards);
-        
+
     }
-    
+
     private int[] getWalletsAmmount() {
         int[] wallets = new int[clientNickNames.length];
-        
+
         for (int i = 0; i < clientNickNames.length; i++) {
             wallets[i] = players.get(i).getMainShepherd().getWallet().getAmount();
         }
-        
+
         return wallets;
     }
-    
+
     private void executeRounds() throws FinishedFencesException,
             UnexpectedEndOfGameException {
         currentPlayer = this.firstPlayer;
         boolean lastRound = false;
         int playerOffline = 0;
-        
+
         while (!(lastRound && this.firstPlayer == this.currentPlayer)) {
             //prova a fare un turno
             DebugLogger.println("Avvio esecuzione turno");
@@ -674,21 +674,23 @@ public class GameManager implements Runnable {
                     players.get(currentPlayer).lastAction = ActionConstants.NO_ACTION.getValue();
 
                     //the shepherd used is set to none too
-                    players.get(currentPlayer).lastShepherd = null;                   
+                    players.get(currentPlayer).lastShepherd = null;
 
+                    //pastore non mosso
+                    players.get(currentPlayer).hasMovedShepherd = false;
 
                     lastRound = this.executeShift(currentPlayer);
-                    
+
                 } catch (PlayerDisconnectedException ex) {
                     //il giocatore si disconnette durante il suo turno
                     Logger.getLogger(DebugLogger.class
                             .getName()).log(
                                     Level.SEVERE, ex.getMessage(), ex);
-                    
+
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentPlayer]);
                 }
-                
+
                 evolveLambs();
 
                 //informa i player dell'evoluzione dei lamb, dello stato delle regioni,
@@ -698,7 +700,7 @@ public class GameManager implements Runnable {
                     refreshSpecialAnimals(client);
                     refreshBankCards(client);
                 }
-                
+
             } else {
                 DebugLogger.println(
                         "Player offline:" + clientNickNames[currentPlayer]);
@@ -708,13 +710,13 @@ public class GameManager implements Runnable {
                 //skip player               
                 controller.brodcastPlayerDisconnected(
                         clientNickNames[currentPlayer]);
-                
+
                 if (playerOffline == this.playersNumber) {
                     //tutti i player sono offline termino la partita
                     throw new UnexpectedEndOfGameException(
                             "Tutti i player si sono disconnesi, la partita termina");
                 }
-                
+
             }
             nextPlayer();
 
@@ -731,7 +733,7 @@ public class GameManager implements Runnable {
             }
         }
     }
-    
+
     private void startMarket() throws UnexpectedEndOfGameException {
         //giro di sell
         DebugLogger.println("inizio giro sell");
@@ -750,7 +752,7 @@ public class GameManager implements Runnable {
         market.clear();
         DebugLogger.println("Market pulito");
     }
-    
+
     private void sellCardsRound() throws UnexpectedEndOfGameException {
         int playerOffline = 0;
         boolean wantToSell;
@@ -758,27 +760,27 @@ public class GameManager implements Runnable {
             DebugLogger.println("Inizio sell giocatore: " + currentPlayer);
             if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).isOnline()) {
-                
+
                 controller.brodcastCurrentPlayer(clientNickNames[currentPlayer]);
-                
+
                 try {
                     handleReconnection();
-                    
+
                     playerOffline = 1;
-                    
+
                     do {
-                        
+
                         wantToSell = players.get(currentPlayer).sellCard();
-                        
+
                     } while (wantToSell);
-                    
+
                 } catch (PlayerDisconnectedException ex) {
 
                     //il giocatore si disconnette durante il suo turno di market
                     Logger.getLogger(DebugLogger.class
                             .getName()).log(
                                     Level.SEVERE, ex.getMessage(), ex);
-                    
+
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentPlayer]);
                 }
@@ -791,50 +793,50 @@ public class GameManager implements Runnable {
                 //skip player               
                 controller.brodcastPlayerDisconnected(
                         clientNickNames[currentPlayer]);
-                
+
                 if (playerOffline == this.playersNumber) {
                     //tutti i player sono offline termino la partita
                     throw new UnexpectedEndOfGameException(
                             "Tutti i player si sono disconnesi, la partita termina");
                 }
             }
-            
+
             DebugLogger.println("Cambio giocatore");
             nextPlayer();
         } while (this.firstPlayer != this.currentPlayer);
         DebugLogger.println("fuori dal while del sell");
-        
+
     }
-    
+
     private void buyCardsRound(int firstBuyer) throws
             UnexpectedEndOfGameException {
         int playerOffline = 0;
         boolean wantToBuy;
         int currentBuyer = firstBuyer;
-        
+
         do {
             DebugLogger.println("inizio buy giocatore " + currentBuyer);
             if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentBuyer]).isOnline()) {
-                
+
                 controller.brodcastCurrentPlayer(clientNickNames[currentBuyer]);
-                
+
                 try {
                     handleReconnection();
-                    
+
                     playerOffline = 1;
-                    
+
                     do {
                         wantToBuy = players.get(currentBuyer).buyCard();
                     } while (wantToBuy);
-                    
+
                 } catch (PlayerDisconnectedException ex) {
 
                     //il giocatore si disconnette durante il suo turno di market
                     Logger.getLogger(DebugLogger.class
                             .getName()).log(
                                     Level.SEVERE, ex.getMessage(), ex);
-                    
+
                     controller.brodcastPlayerDisconnected(
                             clientNickNames[currentBuyer]);
                 }
@@ -847,7 +849,7 @@ public class GameManager implements Runnable {
                 //skip player               
                 controller.brodcastPlayerDisconnected(
                         clientNickNames[currentBuyer]);
-                
+
                 if (playerOffline == this.playersNumber) {
                     //tutti i player sono offline termino la partita
                     throw new UnexpectedEndOfGameException(
@@ -860,37 +862,37 @@ public class GameManager implements Runnable {
 
             //refresh dei soldi
             controller.refreshWallets();
-            
+
             for (String client : clientNickNames) {
                 controller.refreshMoney(client);
             }
-            
+
             currentBuyer = nextBuyer(currentBuyer);
         } while (firstBuyer != currentBuyer);
-        
+
     }
-    
+
     private int nextBuyer(int current) {
         int currentBuyer = current;
         //aggiorno il player che gioca 
         currentBuyer++;
         //conto in modulo playersNumber
         currentBuyer %= this.playersNumber;
-        
+
         return currentBuyer;
     }
-    
+
     private boolean roundComplete(int first, int current) {
         if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                 clientNickNames[first]).isOnline()) {
             return current == first;
         }
         int temporaryFirstPlayer;
-        
+
         for (int i = 0; i < this.playersNumber; i++) {
             //aggiorno il firstPlayer temporaneo
             temporaryFirstPlayer = (first + 1) % this.playersNumber;
-            
+
             if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[temporaryFirstPlayer]).isOnline()) {
                 return current == temporaryFirstPlayer;
@@ -902,14 +904,14 @@ public class GameManager implements Runnable {
         //la partita senza client
         return false;
     }
-    
+
     private void nextPlayer() {
         //aggiorno il player che gioca 
         currentPlayer++;
         //conto in modulo playersNumber
         currentPlayer %= this.playersNumber;
     }
-    
+
     private void handleReconnection() throws PlayerDisconnectedException {
         //controllo se il player ha bisogno di un refresh
         if (ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
@@ -931,40 +933,41 @@ public class GameManager implements Runnable {
             //gli chiedo di settare tutti i pastori che non aveva settato
             int shepherdToSet = ServerManager.NICK_2_CLIENT_PROXY_MAP.get(
                     clientNickNames[currentPlayer]).getNumberOfShepherdStillToSet();
-            
+
             for (int i = 0; i < shepherdToSet; i++) {
                 players.get(currentPlayer).chooseShepherdStreet(
                         shepherd4player - shepherdToSet + i);
             }
-            
+
         }
-        
+
     }
-    
+
     private boolean executeShift(int player) throws FinishedFencesException,
             PlayerDisconnectedException {
         DebugLogger.println("Broadcast giocatore di turno");
-        
+
         controller.brodcastCurrentPlayer(clientNickNames[player]);
-        
+
         DebugLogger.println("Muovo pecora nera");
         //muovo la pecora nera
         this.moveSpecialAnimal(this.map.getBlackSheep());
 
         //faccio fare le azioni al giocatore
         for (int i = 0; i < GameConstants.NUM_ACTIONS.getValue(); i++) {
-
+            players.get(currentPlayer).numberOfActions = i;
+            
             DebugLogger.println(
                     "Avvio choose and make action per il player " + player);
             //scegli l'azione e falla
             this.players.get(player).chooseAndMakeAction();
-            
+
         }
 
         //se sono finiti i recinti normali chiamo l'ultimo giro
         return this.bank.numberOfUsedFence() >= GameConstants.NUM_FENCES.getValue() - GameConstants.NUM_FINAL_FENCES.getValue();
     }
-    
+
     private void moveSpecialAnimal(SpecialAnimal animal) {
         //salvo la regione in cui si trova l'animale
         Region actualAnimalRegion = animal.getMyRegion();
@@ -973,11 +976,11 @@ public class GameManager implements Runnable {
         //cerco la strada che dovrebbe attraversare
         Street potentialWalkthroughStreet;
         int streetValue = Dice.roll();
-        
+
         try {
             startRegionIndex = map.getNodeIndex(
                     actualAnimalRegion);
-            
+
             potentialWalkthroughStreet = this.map.getStreetByValue(
                     actualAnimalRegion, streetValue);
 
@@ -993,7 +996,7 @@ public class GameManager implements Runnable {
             controller.refreshSpecialAnimal(animal,
                     result + "," + streetValue + "," + startRegionIndex + "," + map.getNodeIndex(
                             endRegion));
-            
+
         } catch (StreetNotFoundException ex) {
             Logger.getLogger(DebugLogger.class
                     .getName()).log(Level.SEVERE,
@@ -1033,10 +1036,10 @@ public class GameManager implements Runnable {
         }
         return null;
     }
-    
+
     private int[][] calculatePoints() {
         DebugLogger.println("Calculate points");
-        
+
         int[][] classification = new int[2][playersNumber];
         int tmp1, tmp2;
         //per ogni giocatore
@@ -1051,7 +1054,7 @@ public class GameManager implements Runnable {
             }
             //aggiungo i soldi avanzati
             classification[1][i] += player.shepherd[0].getWallet().getAmount();
-            
+
             DebugLogger.println(
                     "player " + clientNickNames[i] + " punti " + classification[1][i]);
             i++;
@@ -1070,10 +1073,10 @@ public class GameManager implements Runnable {
                 }
             }
         }
-        
+
         return classification;
     }
-    
+
     private String classificationToString(int[][] classification) {
         String result = "";
         for (int i = 0; i < playersNumber; i++) {
@@ -1082,7 +1085,7 @@ public class GameManager implements Runnable {
         DebugLogger.println("creta classifica stringhizzata " + result);
         return result;
     }
-    
+
     private void evolveLambs() {
         //per tutti gli ovini sulla mappa
         for (Ovine ovine : map.getAllOvines()) {
@@ -1097,8 +1100,8 @@ public class GameManager implements Runnable {
                     ovine.setAge(ovine.getAge() + 1);
                 }
             }
-            
+
         }
     }
-    
+
 }

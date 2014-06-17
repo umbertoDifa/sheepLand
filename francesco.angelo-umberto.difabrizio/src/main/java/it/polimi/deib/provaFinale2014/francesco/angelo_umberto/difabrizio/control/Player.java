@@ -51,6 +51,14 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      */
     protected int lastAction;
     /**
+     * Number of action made by the plyaer
+     */
+    protected int numberOfActions;
+    /**
+     * If the player has moved the shepherd in the current shift
+     */
+    protected boolean hasMovedShepherd;
+    /**
      * It's the last shepherd who was used by the player to make an action. It's
      * null if no shepherd was used, which means the player didn't make any
      * action in the current shift
@@ -72,9 +80,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * ammount. It sets up the sharing of wallet and cards between shepherds of
      * the same player
      *
-     * @param gameManager    The game manager controlling the game
+     * @param gameManager The game manager controlling the game
      * @param playerNickName The nickName to whom the player is associated
-     * @param market         il market in cui il player vendrà le carte
+     * @param market il market in cui il player vendrà le carte
      *
      * @throws RemoteException When the remote rmi call fails
      */
@@ -128,8 +136,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * finchè il risultato non è valido
      *
      * @throws PlayerDisconnectedException if the player disconnects in his
-     *                                     shift more than a maximum number of
-     *                                     chances
+     * shift more than a maximum number of chances
      */
     protected void chooseAndMakeAction() throws PlayerDisconnectedException {
 
@@ -207,28 +214,34 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     private void createActionList() {
         //nessuna azione disponibile inizialmente                
         possibleAction = "";
-
-        for (OvineType type : OvineType.values()) {
-            if (canMoveOvine(type) && lastAction != ActionConstants.MOVE_OVINE.getValue()) {
-                possibleAction += "1-Sposta ovino,";
-                break;
+        if (numberOfActions < GameConstants.NUM_ACTIONS.getValue() - 1 || hasMovedShepherd) {
+            //non ultima azione o pastore mosso
+            for (OvineType type : OvineType.values()) {
+                if (canMoveOvine(type) && lastAction != ActionConstants.MOVE_OVINE.getValue()) {
+                    possibleAction += "1-Sposta ovino,";
+                    break;
+                }
             }
-        }
 
-        possibleAction += "2-Sposta pastore,";
+            possibleAction += "2-Sposta pastore,";
 
-        //aggiungi acquisto carta se possibile
-        if (canBuyCard() && lastAction != ActionConstants.BUY_LAND.getValue()) {
-            possibleAction += "3-Compra terreno,";
-        }
-        if (canMateSheep() && lastAction != ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue()) {
-            possibleAction += "4-Accoppia pecore,";
-        }
-        if (canMateSheepWithRam() && lastAction != ActionConstants.MATE_SHEEP_WITH_RAM.getValue()) {
-            possibleAction += "5-Accoppia montone e pecora,";
-        }
-        if (canKillOvine() && lastAction != ActionConstants.KILL_OVINE.getValue()) {
-            possibleAction += "6-Abbatti ovino";
+            //aggiungi acquisto carta se possibile
+            if (canBuyCard() && lastAction != ActionConstants.BUY_LAND.getValue()) {
+                possibleAction += "3-Compra terreno,";
+            }
+            if (canMateSheep() && lastAction != ActionConstants.MATE_SHEEP_WITH_SHEEP.getValue()) {
+                possibleAction += "4-Accoppia pecore,";
+            }
+            if (canMateSheepWithRam() && lastAction != ActionConstants.MATE_SHEEP_WITH_RAM.getValue()) {
+                possibleAction += "5-Accoppia montone e pecora,";
+            }
+            if (canKillOvine() && lastAction != ActionConstants.KILL_OVINE.getValue()) {
+                possibleAction += "6-Abbatti ovino";
+            }
+
+        } else {
+            //ultima azione e pastore non mosso
+            possibleAction += "2-Sposta pastore,";
         }
 
     }
@@ -372,9 +385,9 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * può arrivare passando per la strada occupata dal pastore del giocatore.
      *
      *
-     * @param type         type of ovine to move
+     * @param type type of ovine to move
      * @param finishRegion Region where to move the ovine
-     * @param beginRegion  Regione where the ovine is
+     * @param beginRegion Regione where the ovine is
      *
      * @return "ovino mosso" se tutto ok, una stringa di errore altrimenti
      */
@@ -449,11 +462,11 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * una stringa di successo altrimenti una stringa che spiega l'errore
      * accaduto
      *
-     * @param indexShepherd  Index of the Shepherd in the player's array
+     * @param indexShepherd Index of the Shepherd in the player's array
      * @param stringedStreet Street that the shepherd has to move to
      *
      * @return "Pastore posizionato" if everything goes right, an error string
-     *         if an exeption is caught.
+     * if an exeption is caught.
      */
     public String setShepherd(int indexShepherd, String stringedStreet) {
 
@@ -485,7 +498,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @param shepherdIndex The shepherd to set
      *
      * @throws PlayerDisconnectedException If the player disconnects while
-     *                                     putting his shepherd on the map
+     * putting his shepherd on the map
      */
     protected void chooseShepherdStreet(int shepherdIndex) throws
             PlayerDisconnectedException {
@@ -549,7 +562,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * It's the method called by the client to set up the shepherd which in turn
      * call the setShepherd
      *
-     * @param idShepherd     id of the shepherd to set
+     * @param idShepherd id of the shepherd to set
      * @param stringedStreet Street where to set the shepherd
      *
      * @return The result of the action
@@ -629,6 +642,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             DebugLogger.println("Pastore posizionato");
             lastShepherd = currentShepherd;
             lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
+            hasMovedShepherd = true;
             return "Pastore spostato,0";
         } else if (currentShepherd.ifPossiblePay(
                 GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue())) {
@@ -647,6 +661,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
             }
             lastShepherd = currentShepherd;
             lastAction = ActionConstants.MOVE_SHEPHERD.getValue();
+            hasMovedShepherd = true;
             return "Pastore spostato," + GameConstants.PRICE_FOR_SHEPHERD_JUMP.getValue();
 
         }
@@ -740,15 +755,15 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * The region must be next to one of the shepherds.
      *
      * @param shepherdNumber Which shepherd is next to the region where to mate
-     *                       sheep and other ovine
-     * @param regionToMate   The region with the sheep and the other animal
+     * sheep and other ovine
+     * @param regionToMate The region with the sheep and the other animal
      * @param otherOvineType The other ovine to mate with the sheep
      *
      * @return "Accoppiamento eseguito",[ovineCreated] if the mate goes
-     *         allright, an error string if not
+     * allright, an error string if not
      */
     public String mateSheepWith(String shepherdNumber, String regionToMate,
-                                String otherOvineType) {
+            String otherOvineType) {
 
         int shepherdIndex;
         String type;
@@ -833,13 +848,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * the given type of ovine is killed, and the killer pays the silence
      *
      * @param shepherdNumber The shepherd who kills the ovine
-     * @param region         The region of the ovine
-     * @param typeToKill     The typo of ovine to kill
+     * @param region The region of the ovine
+     * @param typeToKill The typo of ovine to kill
      *
      * @return The result of the action
      */
     public String killOvine(String shepherdNumber, String region,
-                            String typeToKill) {
+            String typeToKill) {
         int shepherdIndex;
         int numbOfShepherdToPay;
         List<Shepherd> shepherdToPay = new ArrayList<Shepherd>();
@@ -1070,7 +1085,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * It's the remote interface to call the method moveShepherd
      *
      * @param shepherdIndex shepherd to move
-     * @param newStreet     end street of the shepherd
+     * @param newStreet end street of the shepherd
      *
      * @return the result of the action
      *
@@ -1086,13 +1101,13 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * Calls the method move ovine.
      *
      * @param startRegion Region of the ovine
-     * @param endRegion   Region where to move the ovine
-     * @param type        Type of ovine to move
+     * @param endRegion Region where to move the ovine
+     * @param type Type of ovine to move
      *
      * @return The result of the action
      */
     public String moveOvineRemote(String startRegion, String endRegion,
-                                  String type) {
+            String type) {
         return this.moveOvine(startRegion, endRegion, type);
     }
 
@@ -1121,7 +1136,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @throws RemoteException
      */
     public String mateSheepWithRemote(String shepherdNumber, String regionToMate,
-                                      String otherOvineType) throws
+            String otherOvineType) throws
             RemoteException {
         return mateSheepWith(shepherdNumber, regionToMate, otherOvineType);
     }
@@ -1138,7 +1153,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
      * @throws RemoteException
      */
     public String killOvineRemote(String shepherdNumber, String region,
-                                  String typeToKill) throws RemoteException {
+            String typeToKill) throws RemoteException {
         return killOvine(shepherdNumber, region, typeToKill);
     }
 
@@ -1218,7 +1233,7 @@ public class Player extends UnicastRemoteObject implements PlayerRemote {
     }
 
     private void handleTemporaryDisoconnection(Exception ex,
-                                               int numberOfDisconnections)
+            int numberOfDisconnections)
             throws PlayerDisconnectedException {
         DebugLogger.println(
                 "giocatore" + playerNickName + " disconnesso");

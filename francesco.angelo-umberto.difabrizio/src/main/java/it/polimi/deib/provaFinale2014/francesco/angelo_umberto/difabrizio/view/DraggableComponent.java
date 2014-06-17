@@ -75,7 +75,6 @@ public class DraggableComponent extends JPanel {
             public void mouseDragged(MouseEvent e) {
                 Toolkit tk = Toolkit.getDefaultToolkit();
                 Dimension bestsize = tk.getBestCursorSize(24, 24);
-                DebugLogger.println("dimensioni ideali cursore "+bestsize.width+","+bestsize.height);
                 Cursor c;
                 if (bestsize.width != 0) {
                     c = tk.createCustomCursor(tk.getImage(".\\images\\closedHandCursor.gif"), new Point(0,0), "closedHand");
