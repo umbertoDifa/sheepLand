@@ -41,7 +41,7 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
         button.setFont(font);
 
         this.setBackground(Color.BLUE);
-        this.area = new JTextArea("Inserisci qui il tuo nickName");
+        this.area = new JTextArea("Inserisci qui il tuo nickname");
         this.area.setLineWrap(true);
         area.setPreferredSize(new Dimension(140, 60));
         this.area.addKeyListener(this);

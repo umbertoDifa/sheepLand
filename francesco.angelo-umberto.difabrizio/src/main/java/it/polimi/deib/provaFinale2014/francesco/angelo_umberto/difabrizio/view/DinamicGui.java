@@ -110,13 +110,15 @@ public class DinamicGui extends GuiView {
                             (Math.PI / 4) + ((Math.PI * j) / 2))) / 1.5),
                     animalWidth, animalHeight);
 
-            if (!"blacksheep".equals(animalToHighlight.getAnimalType())
-                    && !"wolf".equals(animalToHighlight.getAnimalType())) {
+//            if (!"blacksheep".equals(animalToHighlight.getAnimalType())
+//                    && !"wolf".equals(animalToHighlight.getAnimalType())) {
                 animalToHighlight.addMouseListener(this);
 
-            }
-            if (!kill && !"blacksheep".equals(animalToHighlight.getAnimalType())
-                    && !"wolf".equals(animalToHighlight.getAnimalType())) {
+//            }
+                
+//   && !"blacksheep".equals(animalToHighlight.getAnimalType()) && !"wolf".equals(animalToHighlight.getAnimalType())
+                
+            if (!kill) {
                 animalToHighlight.setDraggable(true);
             } else {
                 animalToHighlight.setDraggable(false);
