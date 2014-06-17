@@ -579,7 +579,11 @@ public class CommandLineView implements TypeOfViewController {
         showInfo(
                 "Nella regione " + regionType + " ci sono ancora " + availableCards + " carte.");
     }
-
+    /**
+     * {@inheritDoc }
+     * @param action
+     * @return 
+     */
     public boolean askWillingTo(String action) {
         String choice;
         do {
@@ -594,7 +598,11 @@ public class CommandLineView implements TypeOfViewController {
             showInfo("Scelta non valida. Riprovare.");
         } while (true);
     }
-
+    /**
+     * {@inheritDoc }
+     * @param availableCards
+     * @return 
+     */
     public String askSellCard(String[] availableCards) {
         showInfo("Carte da vendere disponibili:");
         for (int i = 0; i < availableCards.length; i++) {
@@ -604,7 +612,10 @@ public class CommandLineView implements TypeOfViewController {
         showInfo("Scegli una carta da vendere:");
         return stdIn.nextLine();
     }
-
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public int askPriceCard() {
         int price;
         do {
@@ -619,7 +630,12 @@ public class CommandLineView implements TypeOfViewController {
             showInfo("Il prezzo inserito non è valido");
         } while (true);
     }
-
+    /**
+     * {@inheritDoc }
+     * @param cards
+     * @param prices
+     * @return 
+     */
     public String askBuyMarketCard(String[] cards, int[] prices) {
         showInfo("Carte disponibili da acquistare:");
 

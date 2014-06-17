@@ -42,11 +42,17 @@ public class Action extends BackgroundAndTextJPanel implements MouseListener {
         revalidate();
         repaint();
     }
-
+    /**
+     * {@inheritDoc }
+     * @param e 
+     */
     public void mousePressed(MouseEvent e) {
         //not used
     }
-
+    /**
+     * {@inheritDoc }
+     * @param e 
+     */
     public void mouseReleased(MouseEvent e) {
         //not used
     }

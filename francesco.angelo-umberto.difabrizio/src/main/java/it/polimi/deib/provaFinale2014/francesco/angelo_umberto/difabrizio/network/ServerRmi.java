@@ -15,6 +15,6 @@ public interface ServerRmi extends Remote {
      * @return true if the client could connect, false if not
      * @throws RemoteException if there's a connection problem
      */
-    public boolean connect(ClientInterfaceRemote client, String nickName) throws
+    boolean connect(ClientInterfaceRemote client, String nickName) throws
             RemoteException;
 }

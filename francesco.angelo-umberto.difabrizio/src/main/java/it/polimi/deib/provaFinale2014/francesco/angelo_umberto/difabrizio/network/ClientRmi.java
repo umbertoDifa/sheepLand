@@ -24,7 +24,7 @@ public class ClientRmi implements ClientInterfaceRemote {
     private final String nameServer;
 
     private final TypeOfViewController view;
- 
+
     private PlayerRemote playerRmi;
     private Registry registry;
 
@@ -682,6 +682,11 @@ public class ClientRmi implements ClientInterfaceRemote {
         playerRmi.payCardFromMarketRemote(cardToBuy);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @throws RemoteException
+     */
     public void checkConnection() throws RemoteException {
         //basicalli do nothing if this call succedes is enough
     }

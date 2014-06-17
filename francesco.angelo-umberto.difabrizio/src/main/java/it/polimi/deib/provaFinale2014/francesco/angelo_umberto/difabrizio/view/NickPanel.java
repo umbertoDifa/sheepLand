@@ -101,11 +101,17 @@ public class NickPanel extends JPanel implements ActionListener, KeyListener {
         this.revalidate();
         this.repaint();
     }
-
+    /**
+     * {@inheritDoc }
+     * @param e 
+     */
     public void keyPressed(KeyEvent e) {
         //not used
     }
-
+    /**
+     * {@inheritDoc }
+     * @param e 
+     */
     public void keyReleased(KeyEvent e) {
         //not used
     }

@@ -53,11 +53,21 @@ public class Street extends BackgroundAndTextJPanel implements MouseListener {
         repaint();
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mousePressed(MouseEvent e) {
         //not used
 
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseReleased(MouseEvent e) {
         //not used
     }

@@ -19,7 +19,7 @@ public interface PlayerRemote extends Remote {
      *
      * @throws RemoteException
      */
-    public String setShepherdRemote(int idShepherd, String stringedStreet)
+    String setShepherdRemote(int idShepherd, String stringedStreet)
             throws RemoteException;
 
     /**
@@ -32,7 +32,7 @@ public interface PlayerRemote extends Remote {
      *
      * @throws RemoteException
      */
-    public String moveShepherdRemote(String shepherdIndex, String newStreet)
+    String moveShepherdRemote(String shepherdIndex, String newStreet)
             throws
             RemoteException;
 
@@ -47,8 +47,8 @@ public interface PlayerRemote extends Remote {
      *
      * @throws RemoteException
      */
-    public String moveOvineRemote(String startRegion, String endRegion,
-                                  String type) throws RemoteException;
+    String moveOvineRemote(String startRegion, String endRegion,
+            String type) throws RemoteException;
 
     /**
      * Interface to call the buyLand method
@@ -59,40 +59,46 @@ public interface PlayerRemote extends Remote {
      *
      * @throws RemoteException
      */
-    public String buyLandRemote(String regionType) throws RemoteException;
-    
+    String buyLandRemote(String regionType) throws RemoteException;
+
     /**
      * Interface to call mateSheepWith method of the player
+     *
      * @param shepherdNumber
      * @param regionToMate
      * @param otherOvineType
      * @return
-     * @throws RemoteException 
+     * @throws RemoteException
      */
-    public String mateSheepWithRemote(String shepherdNumber, String regionToMate,
-                                String otherOvineType) throws RemoteException;
-    
+    String mateSheepWithRemote(String shepherdNumber, String regionToMate,
+            String otherOvineType) throws RemoteException;
+
     /**
      * Interface to call the method killOvineRemote of player
+     *
      * @param shepherdNumber
      * @param region
      * @param typeToKill
      * @return
-     * @throws RemoteException 
+     * @throws RemoteException
      */
-    public String killOvineRemote(String shepherdNumber, String region,
-                            String typeToKill) throws RemoteException;
+    String killOvineRemote(String shepherdNumber, String region,
+            String typeToKill) throws RemoteException;
+
     /**
      * Interface to calle the putCardInMarket of the player
+     *
      * @param card
      * @param price
-     * @throws RemoteException 
+     * @throws RemoteException
      */
-    public void putCardInMarketRemote(String card, int price) throws RemoteException;
+    void putCardInMarketRemote(String card, int price) throws RemoteException;
+
     /**
      * Interface to call teh sasme method in player
+     *
      * @param card card to buy
-     * @throws RemoteException 
+     * @throws RemoteException
      */
-    public void payCardFromMarketRemote(String card) throws RemoteException;
+    void payCardFromMarketRemote(String card) throws RemoteException;
 }

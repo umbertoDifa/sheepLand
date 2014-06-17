@@ -139,18 +139,38 @@ public class InfoPanel extends JPanel implements MouseListener {
         this.removeMouseListener(this);
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mousePressed(MouseEvent e) {
         //not used
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseReleased(MouseEvent e) {
         //not used
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseEntered(MouseEvent e) {
         //not used
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseExited(MouseEvent e) {
         //not used
     }

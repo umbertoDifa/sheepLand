@@ -9,17 +9,18 @@ import javax.swing.JLabel;
 /**
  * The class extends BackgroundAndTextJPanel adding a jlabel for the money
  * amount, method to setting it and graphic methods
+ *
  * @author Francesco
  */
-class Player extends BackgroundAndTextJPanel implements MouseListener{
+class Player extends BackgroundAndTextJPanel implements MouseListener {
 
     private JLabel moneyText;
 
     /**
-     * create a player with the indicated font and text for the
-     * nickname text
+     * create a player with the indicated font and text for the nickname text
+     *
      * @param text
-     * @param font 
+     * @param font
      */
     public Player(String text, Font font) {
         super(font, text);
@@ -27,9 +28,10 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
     }
 
     /**
-     * set dimensions of the jpanel, nickname text, money text.
-     * add money text to the panel according to xText2, yText2.
-     * add nickname text to the panel according to xText1, yText1.
+     * set dimensions of the jpanel, nickname text, money text. add money text
+     * to the panel according to xText2, yText2. add nickname text to the panel
+     * according to xText1, yText1.
+     *
      * @param imgPath1
      * @param imgPath2
      * @param xText1
@@ -37,7 +39,7 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
      * @param xText2
      * @param yText2
      * @param width
-     * @param height 
+     * @param height
      */
     public void setUp(String imgPath1, String imgPath2, int xText1, int yText1, int xText2, int yText2, int width, int height) {
         super.setUp(imgPath1, xText1, yText1, width, height);
@@ -51,60 +53,82 @@ class Player extends BackgroundAndTextJPanel implements MouseListener{
         this.setLayout(null);
         GuiView.addComponentsToPane(this, moneyPanel, xText2, yText2);
     }
-    
+
     /**
      * set the money text
-     * @param amount 
+     *
+     * @param amount
      */
-    public void setAmount(int amount){
+    public void setAmount(int amount) {
         moneyText.setText(String.valueOf(amount));
     }
-    
+
     /**
      * decrease the money text
-     * @param price 
+     *
+     * @param price
      */
-    public void pay(int price){
-        moneyText.setText(String.valueOf(Integer.parseInt(moneyText.getText())-price));
+    public void pay(int price) {
+        moneyText.setText(String.valueOf(Integer.parseInt(moneyText.getText()) - price));
     }
-    
+
     /**
      * remove the opacity from the image
      */
-    protected void isYourShift(){
+    protected void isYourShift() {
         super.setOpacity(false);
     }
-    
+
     /**
      * set opaque the image
      */
     protected void isNotYourShift() {
         super.setOpacity(true);
     }
-    
+
     /**
      * call the method to remove opacity
-     * @param e 
+     *
+     * @param e
      */
     public void mouseClicked(MouseEvent e) {
         isYourShift();
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mousePressed(MouseEvent e) {
         //not used
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseReleased(MouseEvent e) {
         //not used
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseEntered(MouseEvent e) {
         //not used
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @param e
+     */
     public void mouseExited(MouseEvent e) {
         //not used
     }
-
 
 }

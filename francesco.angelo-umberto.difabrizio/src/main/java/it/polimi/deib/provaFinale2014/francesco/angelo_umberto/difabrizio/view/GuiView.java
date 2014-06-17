@@ -556,7 +556,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
             actions[i].setOpaqueView(true);
         }
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -620,7 +622,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
             market.getCards().get(i).setEnabled(false);
         }
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1006,7 +1010,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         infoPanel.setVisible(true);
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1096,7 +1102,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         fenceJPanel.decrease(1);
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1114,12 +1122,13 @@ public class GuiView implements MouseListener, TypeOfViewController,
     public void showMoveOvine(String startRegion, String endRegion, String type) {
         hideInfoPanel();
 
-        //TODO animazione?
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mapJPanel.revalidate();
                 mapJPanel.repaint();
@@ -1136,7 +1145,6 @@ public class GuiView implements MouseListener, TypeOfViewController,
      */
     public void showMateSheepWith(String region, String otherType,
             String newType) {
-        //TODO animazione accoppiamento?
         hideInfoPanel();
 
         regionBoxes[Integer.parseInt(region)].addAnimal(newType);
@@ -1161,7 +1169,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         layeredPane.add(new RankPanel(result), Integer.valueOf(6));
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run 
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1328,7 +1338,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
                         streetIndex));
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1416,7 +1428,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
 
         historyPanel.show("E' il turno di " + currenPlayer);
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1539,7 +1553,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         historyPanel.show("Il giocatore " + player + " si è disconnesso");
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1589,7 +1605,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1644,7 +1662,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         regionBoxes[Integer.parseInt(startRegion)].removeOvine(type);
         regionBoxes[Integer.parseInt(endRegion)].addAnimal(type);
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1807,7 +1827,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
         cardsJPanels[RegionType.valueOf(regionType.toUpperCase()).getIndex()].bankNum.setText(
                 String.valueOf(availableCards));
     }
-
+    /**
+     * {@inheritDoc }
+     * @param action
+     * @return 
+     */
     public boolean askWillingTo(String action) {
         setMyShiftView();
 
@@ -1815,7 +1839,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         market.askWillingToView(action);
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1837,7 +1863,11 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
         return boolAnswer;
     }
-
+    /**
+     * {@inheritDoc }
+     * @param availableCards
+     * @return 
+     */
     public String askSellCard(String[] availableCards) {
         market.askWhatSellView(availableCards);
 
@@ -1847,7 +1877,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1858,7 +1890,10 @@ public class GuiView implements MouseListener, TypeOfViewController,
         market.setVisible(false);
         return cardToSell;
     }
-
+    /**
+     * {@inheritDoc }
+     * @return 
+     */
     public int askPriceCard() {
         market.askPriceView();
         List<JButton> buttons = market.getPriceButtons();
@@ -1867,7 +1902,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1879,7 +1916,12 @@ public class GuiView implements MouseListener, TypeOfViewController,
         return price;
 
     }
-
+    /**
+     * {@inheritDoc }
+     * @param availableCards
+     * @param prices
+     * @return 
+     */
     public String askBuyMarketCard(String[] availableCards, int[] prices) {
 
         market.askBuyView(availableCards, prices);
@@ -1890,7 +1932,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();
@@ -1919,7 +1963,9 @@ public class GuiView implements MouseListener, TypeOfViewController,
         }
 
         SwingUtilities.invokeLater(new Runnable() {
-
+            /**
+             * run
+             */
             public void run() {
                 mainJPanel.revalidate();
                 mainJPanel.repaint();

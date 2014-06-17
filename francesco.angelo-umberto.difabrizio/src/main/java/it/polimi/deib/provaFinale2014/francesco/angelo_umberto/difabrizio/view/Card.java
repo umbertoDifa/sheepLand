@@ -94,11 +94,17 @@ public class Card extends CardBoard implements MouseListener {
         DebugLogger.println(
                 "carta terreno clickata, dentro la catch dell evento");
     }
-
+    /**
+     * {@inheritDoc }
+     * @param e 
+     */
     public void mousePressed(MouseEvent e) {
         //not used
     }
-
+    /**
+     * {@inheritDoc }
+     * @param e 
+     */
     public void mouseReleased(MouseEvent e) {
         //not used        
     }
